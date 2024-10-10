@@ -15,15 +15,15 @@ const EditableInput: FC<EditableInputProps> = ({
   }, []);
 
   return (
-    <div className="flex justify-between mb-2">
-      <span className="pr-12">{label}</span>
+    <span className="flex mb-2 inline-flex">
+      <span className="pr-4">{label}</span>
       <Input
         disabled={props.disabled}
         name={props.name}
         value={info}
         onChange={(event: any) => setInfo(event.target.value)}
       />
-    </div>
+    </span>
   );
 };
 

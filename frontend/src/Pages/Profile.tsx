@@ -4,6 +4,7 @@ import { Button, Input } from "@mui/material";
 import * as Utils from "../Utils";
 import EditableInput from "../Components/EditableInput";
 import ImageGallery from "react-image-gallery";
+import EditableTextarea from "../Components/EditableTextarea";
 
 function Profile() {
   const location = useLocation();
@@ -29,7 +30,6 @@ function Profile() {
           setImages(temp);
         });
         Utils.getNotices(catNameFromURL).then((notices) => {
-          console.log(notices);
           setNotices(notices.data);
         });
         Utils.getProfileInfo(catNameFromURL).then((data) => {
@@ -76,9 +76,9 @@ function Profile() {
   return (
     <div className="w-full h-full flex">
       <ImageGallery items={images} />
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         {catInfo ? (
-          <form onSubmit={editInfoOrSubmitForm}>
+          <form onSubmit={editInfoOrSubmitForm} className="flex flex-col">
             <EditableInput disabled={!infoIsEditable} label="Nimi" name="nimi">
               {catInfo.nimi}
             </EditableInput>
@@ -89,24 +89,44 @@ function Profile() {
             >
               {Utils.getAge(catInfo.synniaeg)}
             </EditableInput>
-            <EditableInput
-              disabled={!infoIsEditable}
-              label="Järgmise vaktsiini aeg"
-              name="jargmine_kompleksvaktsiin"
-            >
-              {Utils.dateToWords(
-                catInfo.jargmine_kompleksvaktsiin.split("T")[0]
-              )}
-            </EditableInput>
-            <EditableInput
-              disabled={!infoIsEditable}
-              label="Järgmise marutaudi aeg"
-              name="jargmine_marutaudivaktsiin"
-            >
-              {Utils.dateToWords(
-                catInfo.jargmine_marutaudivaktsiin.split("T")[0]
-              )}
-            </EditableInput>
+            <span>
+              <EditableInput
+                disabled={!infoIsEditable}
+                label="Vaktsineeriti"
+                name="kompleksvaktsiin"
+              >
+                {Utils.dateToWords(catInfo.kompleksvaktsiin.split("T")[0])}
+              </EditableInput>
+              <EditableInput
+                disabled={!infoIsEditable}
+                label="Järgmise vaktsiini aeg"
+                name="jargmine_kompleksvaktsiin"
+              >
+                {Utils.dateToWords(
+                  catInfo.jargmine_kompleksvaktsiin.split("T")[0]
+                )}
+              </EditableInput>
+            </span>
+            <span>
+              <EditableInput
+                disabled={!infoIsEditable}
+                label="Marutaudi vastu vaktsineeriti"
+                name="marutaudivaktsiin"
+              >
+                {catInfo.marutaudivaktsiin &&
+                  Utils.dateToWords(catInfo.marutaudivaktsiin.split("T")[0])}
+              </EditableInput>
+              <EditableInput
+                disabled={!infoIsEditable}
+                label="Järgmise vaktsiini aeg"
+                name="jargmine_marutaudivaktsiin"
+              >
+                {catInfo.jargmine_marutaudivaktsiin &&
+                  Utils.dateToWords(
+                    catInfo.jargmine_marutaudivaktsiin.split("T")[0]
+                  )}
+              </EditableInput>
+            </span>
             <EditableInput
               disabled={!infoIsEditable}
               label="Kiibi number"
@@ -124,19 +144,20 @@ function Profile() {
             >
               {catInfo.karva_pikkus}
             </EditableInput>
-            <EditableInput
+            <EditableTextarea
               disabled={!infoIsEditable}
               label="Täiendavad märkmed"
               name="lisa"
             >
               {catInfo.lisa}
-            </EditableInput>
-            <EditableInput disabled={!infoIsEditable} label="Muu" name="muu">
+            </EditableTextarea>
+            <EditableTextarea disabled={!infoIsEditable} label="Muu" name="muu">
               {catInfo.muu}
-            </EditableInput>
+            </EditableTextarea>
             <Button type="submit">muuda</Button>
             <input
               type="file"
+              accept="image/*"
               multiple
               onChange={(e: any) =>
                 setFiles(Array.from(e.target.files) as File[])

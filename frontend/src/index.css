@@ -38,3 +38,7 @@ input:invalid {
   height: 600px;
   object-fit: cover;
 }
+
+.image-gallery-thumbnails-wrapper {
+  width: 600px;
+}

@@ -112,10 +112,15 @@ app.get("/hoiukodud", (req, res) => {
 });
 
 app.get("/pildid", (req, res) => {
-  fs.readdir("./public/Nunnu", (err, files) => {
+  const catName = req.query.nimi;
+  fs.readdir(`./public/${catName}`, (err, files) => {
+    if (files === undefined) {
+      return res.json([
+        `${req.protocol}://${req.get("host")}/public/Missing.png`,
+      ]);
+    }
     const fileUrls = files.map(
-      (file) =>
-        `${req.protocol}://${req.get("host")}/public/${req.query.nimi}/${file}`
+      (file) => `${req.protocol}://${req.get("host")}/public/${catName}/${file}`
     );
     res.json(fileUrls);
   });

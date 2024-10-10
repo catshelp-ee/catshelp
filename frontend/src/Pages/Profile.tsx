@@ -8,12 +8,13 @@ import ImageGallery from "react-image-gallery";
 function Profile() {
   const location = useLocation();
   const catNameFromURL: string = Utils.getCatNameFromURL(location.pathname);
-  const [imageOfCat, setImageOfCat] = useState<any>();
   const [images, setImages] = useState<any>([]);
   const [catInfo, setCatInfo] = useState<any>();
   const [infoIsEditable, setInfoIsEditable] = useState<boolean>(false);
   const [files, setFiles] = useState<any>([]);
   const [update, setUpdate] = useState(false);
+  const [notices, setNotices] = useState([]);
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -26,6 +27,10 @@ function Profile() {
             });
           });
           setImages(temp);
+        });
+        Utils.getNotices(catNameFromURL).then((notices) => {
+          console.log(notices);
+          setNotices(notices.data);
         });
         Utils.getProfileInfo(catNameFromURL).then((data) => {
           setCatInfo(data.data[0]);
@@ -70,7 +75,6 @@ function Profile() {
 
   return (
     <div className="w-full h-full flex">
-      <img src={imageOfCat} alt="" />
       <ImageGallery items={images} />
       <div className="flex flex-col">
         {catInfo ? (
@@ -153,9 +157,9 @@ function Profile() {
         <div className="p-12">
           <h1 className="text-4xl">TEADETE TAHVEL</h1>
           <ul className="list-disc">
-            <li>Teade1</li>
-            <li>Teade2</li>
-            <li>Teade3</li>
+            {notices.map((notice: any, index: number) => (
+              <li key={index}>{notice.teade}</li>
+            ))}
           </ul>
         </div>
       </div>

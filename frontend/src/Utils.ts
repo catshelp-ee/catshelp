@@ -15,15 +15,15 @@ export const convertPartitionedNumberToContinous = (
   return continuousStr;
 };
 
-export const getImages = async (name: string) => {
+export const getImages = async (catName: string) => {
   const images: string[] = await axios.get(
-    `http://localhost:8080/pildid?nimi=${name}`
+    `http://localhost:8080/pildid?nimi=${catName}`
   );
   return images;
 };
 
-export const getProfileInfo = (name: string) => {
-  return axios.get(`http://localhost:8080/kassid?nimi=${name}`);
+export const getProfileInfo = (catName: string) => {
+  return axios.get(`http://localhost:8080/kassid?nimi=${catName}`);
 };
 
 export const getAge = (birthDate: string) => {
@@ -184,4 +184,8 @@ export const uploadImages = async (files: any, catName: string) => {
 
 export const changeInfo = (info: Object) => {
   return axios.put(`http://localhost:8080/kassid`, { info });
+};
+
+export const getNotices = (catName: string) => {
+  return axios.get(`http://localhost:8080/teated?nimi=${catName}`);
 };

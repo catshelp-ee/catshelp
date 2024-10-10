@@ -79,6 +79,18 @@ app.put("/kassid", (req, res) => {
   console.log(req.body);
 });
 
+app.get("/teated", (req, res) => {
+  const q =
+    `select teade from teated, kassid where` +
+    ` nimi = '${req.query.nimi}' and kassid.id = kass_id;`;
+  db.query(q, (err, data) => {
+    if (err) {
+      return res.json(err);
+    }
+    return res.json(data);
+  });
+});
+
 app.get("/kassid", (req, res) => {
   const q = "select * from kassid;";
   db.query(q, (err, data) => {

@@ -4,6 +4,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "test": "cd frontend && react-scripts test",
     "start:frontend": "cd frontend && npm start",
     "start:backend": "cd backend && npm start"
   }

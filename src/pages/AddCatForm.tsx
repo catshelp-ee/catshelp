@@ -12,9 +12,9 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import * as Utils from "../utils";
-import { useState } from "react";
-import { Cat } from "../types";
+import * as Utils from "../utils.ts";
+import React, { useState } from "react";
+import { Cat } from "../types.ts";
 import dayjs from "dayjs";
 
 type ProcedureProps = {

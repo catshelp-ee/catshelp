@@ -1,14 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import AddCatForm from "./pages/AddCatForm";
+import Dashboard from "./pages/Dashboard/Dashboard.tsx";
+import AddCatForm from "./pages/AddCatForm.tsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import "dayjs/locale/et";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import "./App.css";
+import dayjs from "dayjs";
+import "dayjs/locale/et.js";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -16,7 +16,6 @@ dayjs.extend(localeData);
 function App() {
   dayjs.locale("et");
   dayjs().weekday(1);
-  const [count, setCount] = useState(0);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">

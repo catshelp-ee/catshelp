@@ -2,11 +2,19 @@ import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
 import multer from "multer";
+import * as jwt from "jsonwebtoken";
+import * as utils from "./utils.ts";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
 // Neid ei tohi kasutada, muidu keerab perase
 // DENO-l on enda API oleams failidega tegelemise jaoks
 //import fs from "fs";
 //import { fileURLToPath } from "url";
 //import { dirname, join } from "path";
+
+// <a href="http://localhost:3000/dashboard"></a>
 
 const fileExists = async (fileName: string): Promise<boolean> => {
   try {
@@ -19,10 +27,6 @@ const fileExists = async (fileName: string): Promise<boolean> => {
     throw error; // Re-throw other errors
   }
 };
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 //app.use("/public", express.static(join(__dirname, "public")));
 
 /*const storage = multer.diskStorage({
@@ -45,8 +49,30 @@ const db = mysql.createConnection({
   database: "catshelp",
 });
 
-app.get("/", (req, res) => {
-  res.json("Tere backendist!");
+/*router.post("/api", async (context) => {
+  const body = await context.request.body.json();
+  const id = body.id;
+  const email = body.email;
+  sendRequest(id, email);
+});*/
+
+app.post("/api/login", (req: any, res: any) => {
+  const body = req.body;
+  const id = body.id;
+  const email = body.email;
+  utils.sendRequest(id, email);
+  res.json("Success");
+});
+
+app.get("/api/verify", (req: any, res: any) => {
+  const token = req.query.token;
+  if (token == null) return res.sendStatus(401);
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    return res.redirect("/dashboard");
+  } catch (e) {
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -183,7 +209,14 @@ app.get("/images", (req, res) => {
   return res.sendFile("public/Missing.png", { root: "./" });
 });
 
-app.listen(8080, () => {
+*/
+app.listen(8000, () => {
   console.log("connected to backend!");
 });
-*/
+
+/*const app = new Application();
+app.use(oakCors());
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+await app.listen({ port: 8000 });*/

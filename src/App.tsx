@@ -9,6 +9,7 @@ import localeData from "dayjs/plugin/localeData";
 import "./App.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
+import Login from "./pages/Login.tsx";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -21,7 +22,8 @@ function App() {
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/lisa" element={<AddCatForm />} />
         </Routes>
       </BrowserRouter>

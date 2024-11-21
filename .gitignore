@@ -2,3 +2,4 @@ node_modules
 src/pages/Register
 .env
 .gitignore
+credentials.json

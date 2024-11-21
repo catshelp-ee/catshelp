@@ -79,11 +79,11 @@ const TodoList: React.FC<TodoListProps> = () => {
           <span className="self-stretch my-auto">Lisa meelespea</span>
         </button>
       </div>
-      <div className="flex flex-col mt-4 w-full max-w-[897px] max-md:max-w-full">
+      <table>
         {todoItems.map((item, index) => (
           <TodoItem key={index} {...item} />
         ))}
-      </div>
+      </table>
     </section>
   );
 };

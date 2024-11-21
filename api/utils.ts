@@ -43,6 +43,6 @@ const sendMagicLink = (email: string, token: string) => {
     to: `${email}`, // list of receivers
     subject: "🐈 Cats Help Sisselogimine", // Subject line
     //text: "Hello world?", // plain text body
-    html: `<a href="http://localhost:5173/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
+    html: `<a href="${process.env.BACKEND_LINK}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
   });
 };

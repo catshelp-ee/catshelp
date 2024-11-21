@@ -142,6 +142,7 @@ export const wordsToDate = (dateStr: string) => {
     jaanuar: "01",
     veebruar: "02",
     märts: "03",
+
     aprill: "04",
     mai: "05",
     juuni: "06",
@@ -177,7 +178,7 @@ export const uploadImages = async (files: File[], catName: string) => {
   });
   try {
     const response = await axios.post(
-      "http://localhost:8080/pilt/lisa",
+      "http://localhost:8080/api/pilt/lisa",
       formData,
       {
         headers: {
@@ -217,7 +218,7 @@ export const formatInput = (value: string): string => {
   return formattedValue;
 };
 
-export const submitNewCatProfile = (
+export const submitNewCatProfile = async (
   formData: {
     [k: string]: FormDataEntryValue;
   },
@@ -225,6 +226,11 @@ export const submitNewCatProfile = (
 ) => {
   formData.kiibi_nr = (formData.kiibi_nr as string).split("-").join("");
   formData.synniaeg = convertDateFormat(formData.synniaeg as string);
-  uploadImages(pictures, formData.nimi as string);
-  return axios.post("http://localhost:8080/api/animals", formData);
+  formData.leidmis_kp = convertDateFormat(formData.leidmis_kp as string);
+  const catID = await axios.post("http://localhost:8080/api/animals", formData);
+  if (formData.nimi === "") {
+    uploadImages(pictures, catID.data.id.toString());
+  } else {
+    uploadImages(pictures, formData.nimi as string);
+  }
 };

@@ -17,8 +17,8 @@ const FosterPets: React.FC<FosterPetsProps> = () => {
   ];
 
   return (
-    <section className="flex flex-wrap gap-3 items-center w-full max-md:max-w-full">
-      <div className="flex flex-col grow shrink self-stretch my-auto min-h-[171px] min-w-[240px] w-[639px] max-md:max-w-full">
+    <section className="flex w-full">
+      <div className="flex flex-col w-2/3">
         <h2 className="text-base font-bold leading-relaxed text-slate-500">
           TEATED CATS HELPILT
         </h2>

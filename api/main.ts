@@ -1,7 +1,6 @@
 import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
-import multer from "multer";
 import * as jwt from "jsonwebtoken";
 import * as utils from "./utils.ts";
 import * as dotenv from "dotenv";
@@ -9,7 +8,6 @@ import { CatFormData } from "../src/types.ts";
 import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
-import { MIMEType } from "node:util";
 import fileUpload from "express-fileupload";
 dotenv.config();
 
@@ -22,62 +20,10 @@ app.use(
     tempFileDir: "/tmp/",
   })
 );
-// Neid ei tohi kasutada, muidu keerab perse
-// DENO-l on enda API oleams failidega tegelemise jaoks
-//import fs from "fs";
-//import { fileURLToPath } from "url";
-//import { dirname, join } from "path";
 
 // Get the equivalent of __dirname
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = __filename.substring(0, __filename.lastIndexOf("/")); // Get the directory path
-
-// Check if a file exists
-async function checkFileExists(filePath: string): Promise<boolean> {
-  try {
-    await Deno.stat(filePath);
-    return true; // File exists
-  } catch (err) {
-    return false; // File doesn't exist
-  }
-}
-
-// Ensure a directory exists
-async function ensureDirectoryExists(dirPath: string): Promise<string> {
-  try {
-    // Check if the directory exists
-    await Deno.stat(dirPath);
-    return `Directory already exists: ${dirPath}`;
-  } catch (err) {
-    // Directory does not exist, create it
-    if (err instanceof Deno.errors.NotFound) {
-      try {
-        await Deno.mkdir(dirPath, { recursive: true });
-        return `Directory created: ${dirPath}`;
-      } catch (mkdirErr) {
-        return `Error creating directory: ${mkdirErr.message}`;
-      }
-    }
-    throw new Error(`Error accessing directory: ${err.message}`);
-  }
-}
-
-const isNull = (attr: string) => {
-  if (attr === "") return null;
-  return attr;
-};
-
-const fileExists = async (fileName: string): Promise<boolean> => {
-  try {
-    await Deno.stat(`./public/${fileName}`);
-    return true; // The file exists
-  } catch (error) {
-    if (error instanceof Deno.errors.NotFound) {
-      return false; // The file does not exist
-    }
-    throw error; // Re-throw other errors
-  }
-};
 
 const auth = new google.auth.GoogleAuth({
   keyFile: "credentials.json",
@@ -151,18 +97,6 @@ const uploadToDrive = async (
   }
 };
 
-const storage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const catName = req.get("Cat-Name");
-    await ensureDirectoryExists(`./public/Cats/${catName}`);
-    cb(null, `./public/Cats/${catName}`);
-  },
-  filename: async function (req, file, cb) {
-    cb(null, file.originalname); // see tuleb muuta, et ei kirjutata samanimelisi üle
-  },
-});
-
-const upload = multer({ storage: storage });
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -190,31 +124,6 @@ app.get("/api/verify", (req: any, res: any) => {
   }
 });
 
-/*
-
-
-app.get("/kassid", (req, res) => {
-  let q;
-  if (req.query.nimi !== undefined) {
-    q = "select * from kassid where nimi='" + req.query.nimi + "';";
-  } else {
-    q = "select * from kassid;";
-  }
-  db.query(q, (err, data) => {
-    if (err) {
-      return res.json(err);
-    }
-    return res.json(data);
-  });
-});
-
-app.put("/kassid", (req, res) => {
-  // update kassid
-  // set ... = ...
-  // where ... = ...;
-  console.log(req.body);
-});
-*/
 app.post("/api/animals", async (req: any, res: any) => {
   const formData: CatFormData = req.body;
   const rescueDate = formData.leidmis_kp;
@@ -309,59 +218,6 @@ app.post("/api/animals", async (req: any, res: any) => {
   });
 });
 
-/*
-app.get("/teated", (req, res) => {
-  const q =
-    `select teade from teated, kassid where` +
-    ` nimi = '${req.query.nimi}' and kassid.id = kass_id;`;
-  db.query(q, (err, data) => {
-    if (err) {
-      return res.json(err);
-    }
-    return res.json(data);
-  });
-});
-
-app.get("/hoiukodud", (req, res) => {
-  const q = "select * from hoiukodud;";
-  db.query(q, (err, data) => {
-    if (err) {
-      return res.json(err);
-    }
-    return res.json(data);
-  });
-});
-
-app.get("/pildid", (req, res) => {
-  const catName = req.query.nimi;
-  fs.readdir(`./public/${catName}`, (err, files) => {
-    if (files === undefined) {
-      return res.json([
-        `${req.protocol}://${req.get("host")}/public/Missing.png`,
-      ]);
-    }
-    const fileUrls = files.map(
-      (file) => `${req.protocol}://${req.get("host")}/public/${catName}/${file}`
-    );
-    res.json(fileUrls);
-  });
-  /*
-  const images = [];
-  console.log("tere");
-  fs.readdir(`./public/${req.query.nimi}`, (err, files) => {
-    if (err) {
-      console.log("mida?");
-      res.json("viga");
-    }
-    files.forEach((file) => {
-      images.push(file);
-    });
-  });
-  console.log(images);
-  res.json(images);
-});
-
-*/
 app.post("/api/pilt/lisa", async (req, res) => {
   try {
     const catName = req.get("Cat-Name");
@@ -383,23 +239,7 @@ app.post("/api/pilt/lisa", async (req, res) => {
     return res.error("Tekkis tõrge piltide üles laadimisega:", error);
   }
 });
-/*
 
-app.get("/images", (req, res) => {
-  const fileExists = checkFileExists(`./public/${req.query.nimi}.png`);
-  if (fileExists)
-    return res.sendFile(`public/${req.query.nimi}.png`, { root: "./" });
-  return res.sendFile("public/Missing.png", { root: "./" });
-});
-
-*/
 app.listen(8080, () => {
   console.log("connected to backend!");
 });
-
-/*const app = new Application();
-app.use(oakCors());
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-await app.listen({ port: 8000 });*/

@@ -38,52 +38,6 @@ type ProcedureProps = {
   setCat: React.Dispatch<React.SetStateAction<Cat>>;
 };
 
-const Procedure: React.FC<ProcedureProps> = ({
-  idx,
-  removeProcedure,
-  setCat,
-}) => {
-  const [menuItemValue, setMenuItemValue] = useState<string>("");
-  return (
-    <>
-      <Button onClick={() => removeProcedure(idx)}>
-        <RemoveIcon />
-      </Button>
-      <Select
-        className="flex-1 truncate"
-        defaultValue=""
-        onChange={(e) => {
-          setMenuItemValue(e.target.value);
-        }}
-      >
-        <MenuItem value="kompleks_vaktsiin">Kompleks-Vaktsiin</MenuItem>
-        <MenuItem value="marutaudi_vaktsiin">Marutaudi-Vaktsiin</MenuItem>
-        <MenuItem value="ussirohi">Ussirohi</MenuItem>
-        <MenuItem value="muu">muu</MenuItem>
-      </Select>
-      <DatePicker
-        onChange={(e) => {
-          const day = e.$D;
-          const month = e.$M;
-          const year = e.$y;
-          const date = `${year}-${month}-${day}`;
-          setCat((prevCat) => {
-            return {
-              ...prevCat,
-              proceduresValues: {
-                ...prevCat.proceduresValues,
-                [menuItemValue]: date,
-              },
-            };
-          });
-        }}
-        className="w-1/3"
-        format="DD-MM-YYYY"
-      />
-    </>
-  );
-};
-
 const AddCatForm = () => {
   const [cat, setCat] = useState<Cat>({
     foundDate: new Date(),
@@ -100,48 +54,10 @@ const AddCatForm = () => {
     const pictures: File[] = formData.getAll("pildid") as File[];
 
     if (!payload.sugu) payload.sugu = "";
-    if (!payload.llr) payload.llr = "";
     if (!payload.loigatud) payload.loigatud = "";
     if (payload.loigatud != "") payload.loigatud = payload.loigatud === "true";
-    if (payload.llr != "") payload.llr = payload.llr === "true";
 
     Utils.submitNewCatProfile(payload, pictures);
-  };
-
-  const formatChipNumber = (e: any) => {
-    const value = e.target.value;
-
-    // Format the input value to xxx-xxx-xxx-xxx pattern
-    const formattedValue = Utils.formatInput(value);
-    setCat({ ...cat, chipNumber: formattedValue });
-  };
-
-  const removeProcedure = (idx: number) => {
-    setCat((prevCat) => {
-      const procedures = prevCat.procedures;
-      delete procedures[idx];
-      return {
-        ...prevCat,
-        procedures: procedures,
-      };
-    });
-  };
-
-  const addProcedure = () => {
-    const size = Object.keys(cat.procedures).length;
-    setCat({
-      ...cat,
-      procedures: {
-        ...cat.procedures,
-        [size + 1]: (
-          <Procedure
-            idx={size + 1}
-            removeProcedure={removeProcedure}
-            setCat={setCat}
-          />
-        ),
-      },
-    });
   };
 
   return (
@@ -184,7 +100,7 @@ const AddCatForm = () => {
               variant="contained"
               startIcon={<CloudUploadIcon />}
             >
-              Upload files
+              lae üles pildid
               <VisuallyHiddenInput
                 name="pildid"
                 type="file"
@@ -199,12 +115,13 @@ const AddCatForm = () => {
               defaultValue={dayjs(cat.foundDate)}
             />
             <TextField name="nimi" label="Nimi" variant="outlined" />
-            <TextField
-              name="leidmiskoht"
-              label="Leidmiskoht"
-              variant="outlined"
-            />
-            <DatePicker name="synniaeg" label="Sünniaeg" format="DD-MM-YYYY" />
+            <div className="flex flex-col">
+              <h2 className="my-8 text-2xl">LEDIMISKOHT</h2>
+              <h3 className="">MAAKOND</h3>
+              <Select name="leidmis_maakond" className="mb-8 mt-2"></Select>
+              <h3>LINN</h3>
+              <Select name="leidmis_linn" className="mb-8 mt-2"></Select>
+            </div>
             <span className="flex place-content-between">
               <div>
                 <FormLabel>Sugu</FormLabel>
@@ -238,81 +155,6 @@ const AddCatForm = () => {
                 </RadioGroup>
               </div>
             </span>
-
-            <div>
-              <InputLabel id="select-karv">Karva Värv</InputLabel>
-              <Select
-                className="w-full"
-                defaultValue=""
-                onChange={(e) => {
-                  setCat({ ...cat, color: e.target.value });
-                }}
-                labelId="select-karv"
-                name="varv"
-              >
-                <MenuItem value="must">must</MenuItem>
-                <MenuItem value="valge">valge</MenuItem>
-                <MenuItem value="kirju">kirju</MenuItem>
-                <MenuItem value="muu">muu</MenuItem>
-              </Select>
-              {cat.color === "muu" && (
-                <TextField
-                  name="varv"
-                  label="Karva Värv"
-                  fullWidth
-                  margin="normal"
-                />
-              )}
-            </div>
-            <div>
-              <InputLabel id="select-varv">Karva Pikkus</InputLabel>
-              <Select
-                className="w-full"
-                defaultValue=""
-                onChange={(e) => {
-                  setCat({ ...cat, coatLength: e.target.value });
-                }}
-                labelId="select-varv"
-                name="karva_pikkus"
-              >
-                <MenuItem value="pikk">pikk</MenuItem>
-                <MenuItem value="lühike">lühike</MenuItem>
-                <MenuItem value="pool-pikk">pool-pikk</MenuItem>
-                <MenuItem value="muu">muu</MenuItem>
-              </Select>
-              {cat.coatLength === "muu" && (
-                <TextField
-                  label="Karva Pikkus"
-                  name="karva_pikkus"
-                  fullWidth
-                  margin="normal"
-                />
-              )}
-            </div>
-            <TextField
-              name="kiibi_nr"
-              label="Kiibi number"
-              variant="outlined"
-              value={cat.chipNumber}
-              onChange={formatChipNumber}
-            />
-            <FormLabel>Kiip LLR-is MTÜ nimel</FormLabel>
-            <RadioGroup name="llr">
-              <FormControlLabel value="true" control={<Radio />} label="Jah" />
-              <FormControlLabel value="false" control={<Radio />} label="Ei" />
-            </RadioGroup>
-            <h1 className="text-3xl">PROTSEDUURID</h1>
-            {Object.entries(cat.procedures).map(([idx, jsx]) => {
-              //console.log(jsx[1]);
-              return (
-                <div className="flex gap-2" key={idx}>
-                  {jsx}
-                </div>
-              );
-            })}
-            <Button onClick={addProcedure}>
-              <AddIcon />
-            </Button>
             <TextField
               name="lisa"
               label="Lisainfo"

@@ -43,6 +43,14 @@ const sendMagicLink = (email: string, token: string) => {
     to: `${email}`, // list of receivers
     subject: "🐈 Cats Help Sisselogimine", // Subject line
     //text: "Hello world?", // plain text body
-    html: `<a href="${process.env.BACKEND_LINK}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
+    html: `<a href="${process.env.BACKEND_URL}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
   });
+};
+
+export const getFileExtension = (filename: string) => {
+  const lastDotIndex = filename.lastIndexOf(".");
+  if (lastDotIndex === -1 || lastDotIndex === 0) {
+    return ""; // No extension found or hidden file without extension
+  }
+  return filename.slice(lastDotIndex + 1);
 };

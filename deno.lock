@@ -32,6 +32,7 @@
     "npm:eslint-plugin-react-hooks@5": "5.0.0_eslint@9.13.0",
     "npm:eslint-plugin-react-refresh@~0.4.14": "0.4.14_eslint@9.13.0",
     "npm:eslint@^9.13.0": "9.13.0",
+    "npm:express-fileupload@^1.5.1": "1.5.1",
     "npm:express@^4.21.1": "4.21.1",
     "npm:globals@^15.11.0": "15.11.0",
     "npm:googleapis@144": "144.0.0",
@@ -1478,6 +1479,12 @@
     "etag@1.8.1": {
       "integrity": "sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg=="
     },
+    "express-fileupload@1.5.1": {
+      "integrity": "sha512-LsYG1ALXEB7vlmjuSw8ABeOctMp8a31aUC5ZF55zuz7O2jLFnmJYrCv10py357ky48aEoBQ/9bVXgFynjvaPmA==",
+      "dependencies": [
+        "busboy"
+      ]
+    },
     "express@4.21.1": {
       "integrity": "sha512-YSFlK1Ee0/GC8QaO91tHcDxJiE/X4FbpAyQWkxAvG6AXCuR65YzK8ua6D9hvi/TzUfZMpc+BwuM1IPw8fmQBiQ==",
       "dependencies": [
@@ -2912,6 +2919,7 @@
         "npm:eslint-plugin-react-hooks@5",
         "npm:eslint-plugin-react-refresh@~0.4.14",
         "npm:eslint@^9.13.0",
+        "npm:express-fileupload@^1.5.1",
         "npm:express@^4.21.1",
         "npm:globals@^15.11.0",
         "npm:googleapis@144",

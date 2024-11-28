@@ -4,9 +4,13 @@ import cors from "cors";
 import multer from "multer";
 import * as jwt from "jsonwebtoken";
 import * as utils from "./utils.ts";
+import * as dotenv from "dotenv";
 import { CatFormData } from "../src/types.ts";
 import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
+import fs from "node:fs";
+import { MIMEType } from "node:util";
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -89,21 +93,64 @@ const createDriveFolder = (catName: string) => {
     parents: ["1_WfzFwV0623sWtsYwkp8RiYnCb2_igFd"],
     driveId: "0AAcl4FOHQ4b9Uk9PVA",
   };
-  drive.files.create({
+  return drive.files.create({
     supportsAllDrives: true,
     requestBody: fileMetadata,
     fields: "id",
   });
 };
 
+const uploadToDrive = async (
+  filename: string,
+  catName: string,
+  driveId: string
+) => {
+  const mimeTypes = {
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+    webp: "image/webp",
+    bmp: "image/bmp",
+    tiff: "image/tiff",
+    svg: "image/svg+xml",
+  };
+  const lastDotIndex = filename.lastIndexOf(".");
+  const ext = filename.slice(lastDotIndex + 1).toLowerCase();
+
+  const requestBody = {
+    name: filename,
+    fields: "id",
+    parents: [driveId],
+  };
+
+  const media = {
+    mimetype: mimeTypes[ext],
+    body: fs.createReadStream(`public/Cats/${catName}/${filename}`),
+  };
+
+  try {
+    const file = await drive.files.create({
+      supportsAllDrives: true,
+      requestBody,
+      media: media,
+      uploadType: "resumable",
+      fields: "id",
+    });
+    return file.data.id;
+  } catch (err) {
+    // TODO(developer) - Handle error
+    throw err;
+  }
+};
+
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
     const catName = req.get("Cat-Name");
-    await ensureDirectoryExists(`./public/${catName}`);
-    await createDriveFolder(catName);
-    cb(null, `./public/${catName}`);
+    await ensureDirectoryExists(`./public/Cats/${catName}`);
+    cb(null, `./public/Cats/${catName}`);
   },
-  filename: function (req, file, cb) {
+  filename: async function (req, file, cb) {
     cb(null, file.originalname); // see tuleb muuta, et ei kirjutata samanimelisi üle
   },
 });
@@ -162,10 +209,6 @@ app.put("/kassid", (req, res) => {
 */
 app.post("/api/animals", async (req: any, res: any) => {
   const formData: CatFormData = req.body;
-  const name = formData.nimi;
-  const birthday = formData.synniaeg;
-  const chipNumber = formData.kiibi_nr;
-  const isLLR = formData.llr;
   const rescueDate = formData.leidmis_kp;
 
   const auth = new google.auth.GoogleAuth({
@@ -180,13 +223,7 @@ app.post("/api/animals", async (req: any, res: any) => {
     auth: client,
   });
 
-  const SHEETS_ID = process.env.SHEETS_ID;
-
-  /*const metadata = await sheets.spreadsheets.get({
-    auth: auth,
-    spreadsheetId: SHEETS_ID,
-  });
-  */
+  const SHEETS_ID = process.env.CATS_SHEETS_ID;
 
   db.beginTransaction((err) => {
     if (err) {
@@ -197,76 +234,70 @@ app.post("/api/animals", async (req: any, res: any) => {
     const animalQuery = `
       INSERT INTO animals
       (name, birthday, description, status, chip_number, chip_registered_with_us)
-      VALUES (?, ?, NULL, NULL, ?, ?)
+      VALUES (NULL, NULL, NULL, NULL, NULL, NULL)
     `;
-    db.query(
-      animalQuery,
-      [name || null, birthday || null, chipNumber || null, isLLR || null],
-      async (err, animalResult) => {
+
+    db.query(animalQuery, async (err, animalResult) => {
+      if (err) {
+        return db.rollback(() => res.status(500).json({ error: err.message }));
+      }
+      const animalId = animalResult.insertId;
+
+      delete formData.pildid;
+      const a = { id: animalId, ...formData };
+
+      await sheets.spreadsheets.values.append({
+        auth: auth,
+        spreadsheetId: SHEETS_ID,
+        range: "HOIUKODUDES",
+        valueInputOption: "RAW",
+        resource: {
+          values: [Object.values(a)],
+        },
+      });
+
+      // Insert into animal_rescues table
+      const rescueQuery = `
+        INSERT INTO animal_rescues
+        (rank_nr, rescue_date, location, location_notes)
+        VALUES (NULL, ?, NULL, NULL)
+      `;
+      db.query(rescueQuery, [rescueDate || null], (err, rescueResult) => {
         if (err) {
           return db.rollback(() =>
             res.status(500).json({ error: err.message })
           );
         }
 
-        const animalId = animalResult.insertId;
+        const rescueId = rescueResult.insertId;
 
-        delete formData.pildid;
-        const a = { id: animalId, ...formData };
-
-        await sheets.spreadsheets.values.append({
-          auth: auth,
-          spreadsheetId: SHEETS_ID,
-          range: "HOIUKODUDES",
-          valueInputOption: "RAW",
-          resource: {
-            values: [Object.values(a)],
-          },
-        });
-
-        // Insert into animal_rescues table
-        const rescueQuery = `
-        INSERT INTO animal_rescues
-        (rank_nr, rescue_date, location, location_notes)
-        VALUES (NULL, ?, NULL, NULL)
-      `;
-        db.query(rescueQuery, [rescueDate || null], (err, rescueResult) => {
+        // Link the animal and the rescue in the animals_to_animal_rescues table
+        const linkQuery = `
+          INSERT INTO animals_to_animal_rescues
+          (animal_id, animal_rescue_id)
+          VALUES (?, ?)
+        `;
+        db.query(linkQuery, [animalId, rescueId], (err) => {
           if (err) {
             return db.rollback(() =>
               res.status(500).json({ error: err.message })
             );
           }
 
-          const rescueId = rescueResult.insertId;
-
-          // Link the animal and the rescue in the animals_to_animal_rescues table
-          const linkQuery = `
-          INSERT INTO animals_to_animal_rescues
-          (animal_id, animal_rescue_id)
-          VALUES (?, ?)
-        `;
-          db.query(linkQuery, [animalId, rescueId], (err) => {
+          db.commit((err) => {
             if (err) {
               return db.rollback(() =>
                 res.status(500).json({ error: err.message })
               );
             }
 
-            db.commit((err) => {
-              if (err) {
-                return db.rollback(() =>
-                  res.status(500).json({ error: err.message })
-                );
-              }
-
-              res.json({
-                id: rescueId,
-              });
+            res.json({
+              id: rescueId,
             });
           });
         });
-      }
-    );
+      });
+    });
   });
 });
 
@@ -326,10 +357,21 @@ app.get("/pildid", (req, res) => {
 app.post("/api/pilt/lisa", upload.array("images", 10), async (req, res) => {
   const catName = req.get("Cat-Name");
 
-  console.log(catName);
   if (req.files.length === 0) {
     ensureDirectoryExists(`./public/${catName}`);
   }
+
+  try {
+    // Read the directory entries
+    const driveFolder = await createDriveFolder(catName);
+    const folderID = driveFolder.data.id;
+    for await (const entry of Deno.readDir(`public/Cats/${catName}`)) {
+      uploadToDrive(entry.name, catName, folderID!);
+    }
+  } catch (err) {
+    console.error("Error reading directory:", err);
+  }
+
   res.json("");
 });
 /*

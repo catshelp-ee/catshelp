@@ -142,7 +142,6 @@ export const wordsToDate = (dateStr: string) => {
     jaanuar: "01",
     veebruar: "02",
     märts: "03",
-
     aprill: "04",
     mai: "05",
     juuni: "06",
@@ -224,10 +223,13 @@ export const submitNewCatProfile = async (
   },
   pictures: File[]
 ) => {
-  formData.kiibi_nr = (formData.kiibi_nr as string).split("-").join("");
-  formData.synniaeg = convertDateFormat(formData.synniaeg as string);
+  //formData.kiibi_nr = (formData.kiibi_nr as string).split("-").join("");
+  //formData.synniaeg = convertDateFormat(formData.synniaeg as string);
   formData.leidmis_kp = convertDateFormat(formData.leidmis_kp as string);
-  const catID = await axios.post("http://localhost:8080/api/animals", formData);
+  const catID = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/api/animals`,
+    formData
+  );
   if (formData.nimi === "") {
     uploadImages(pictures, catID.data.id.toString());
   } else {

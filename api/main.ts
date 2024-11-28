@@ -10,11 +10,18 @@ import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
 import { MIMEType } from "node:util";
+import fileUpload from "express-fileupload";
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 // Neid ei tohi kasutada, muidu keerab perse
 // DENO-l on enda API oleams failidega tegelemise jaoks
 //import fs from "fs";
@@ -102,7 +109,7 @@ const createDriveFolder = (catName: string) => {
 
 const uploadToDrive = async (
   filename: string,
-  catName: string,
+  filestream: fs.ReadStream,
   driveId: string
 ) => {
   const mimeTypes = {
@@ -126,7 +133,7 @@ const uploadToDrive = async (
 
   const media = {
     mimetype: mimeTypes[ext],
-    body: fs.createReadStream(`public/Cats/${catName}/${filename}`),
+    body: filestream,
   };
 
   try {
@@ -167,6 +174,7 @@ app.post("/api/login", (req: any, res: any) => {
   const body = req.body;
   const id = body.id;
   const email = body.email;
+  console.log(email);
   utils.sendRequest(id, email);
   res.json("Success");
 });
@@ -354,25 +362,26 @@ app.get("/pildid", (req, res) => {
 });
 
 */
-app.post("/api/pilt/lisa", upload.array("images", 10), async (req, res) => {
-  const catName = req.get("Cat-Name");
-
-  if (req.files.length === 0) {
-    ensureDirectoryExists(`./public/${catName}`);
-  }
-
+app.post("/api/pilt/lisa", async (req, res) => {
   try {
-    // Read the directory entries
+    const catName = req.get("Cat-Name");
     const driveFolder = await createDriveFolder(catName);
     const folderID = driveFolder.data.id;
-    for await (const entry of Deno.readDir(`public/Cats/${catName}`)) {
-      uploadToDrive(entry.name, catName, folderID!);
-    }
-  } catch (err) {
-    console.error("Error reading directory:", err);
-  }
+    let uploadedFiles = req.files.images;
 
-  res.json("");
+    uploadedFiles = Array.isArray(uploadedFiles)
+      ? uploadedFiles
+      : [uploadedFiles];
+
+    uploadedFiles.forEach((file, idx) => {
+      const tempPath = file.tempFilePath;
+      uploadToDrive(catName, fs.createReadStream(tempPath), folderID!);
+    });
+
+    return res.json("Pildid laeti üles edukalt");
+  } catch (error) {
+    return res.error("Tekkis tõrge piltide üles laadimisega:", error);
+  }
 });
 /*
 

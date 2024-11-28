@@ -1,3 +1,9 @@
+# How to run
+
+1. Install deno (https://docs.deno.com/runtime/getting_started/installation/)
+2. Run the command ```deno install``` to install node dependencies
+3. ```deno task dev``` to run the app
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

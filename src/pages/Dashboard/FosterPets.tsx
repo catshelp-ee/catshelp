@@ -1,20 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 interface FosterPetsProps {}
 
 const FosterPets: React.FC<FosterPetsProps> = () => {
-  const pets = [
-    {
-      name: "Peemot",
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/48eef3a5aea857c4f83dd0c1546a82986e21c65fff730fbfe444d3234e6b8776?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
-    },
-    {
-      name: "Postikana",
-      image:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/4aece5f68d1328f2c1380e883ff7b1f5325189aa4fbb2de576179448d3ef1a93?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
-    },
-  ];
+  const [pets, setPets] = useState([]);
+
+  useEffect(() => {
+    const getDashboardCats = async () => {
+      const response = await axios.get("/api/animals/dashboard");
+      const responsePets = response.data;
+      setPets([responsePets]);
+    };
+
+    getDashboardCats();
+
+    return () => {};
+  }, []);
 
   return (
     <section className="flex w-full">

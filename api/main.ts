@@ -8,18 +8,11 @@ import { CatFormData } from "../src/types.ts";
 import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
-import fileUpload from "express-fileupload";
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(
-  fileUpload({
-    useTempFiles: true,
-    tempFileDir: "/tmp/",
-  })
-);
 
 // Get the equivalent of __dirname
 const __filename = new URL(import.meta.url).pathname;
@@ -122,6 +115,84 @@ app.get("/api/verify", (req: any, res: any) => {
   } catch (e) {
     res.sendStatus(401);
   }
+});
+
+// TODO:
+// 1. query paramina hooldekodu nime kaudu otsimine
+// 2. meelespea tabel
+app.get("/api/animals/dashboard", async (req, res) => {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: "credentials.json",
+    scopes: "https://www.googleapis.com/auth/spreadsheets",
+  });
+
+  const client = await auth.getClient();
+
+  const sheets = google.sheets({
+    version: "v4",
+    auth: client,
+  });
+
+  const SHEETS_ID = process.env.CATS_SHEETS_ID;
+
+  const rows = await sheets.spreadsheets.get({
+    auth: auth,
+    spreadsheetId: SHEETS_ID,
+    ranges: ["HOIUKODUDES"],
+    includeGridData: true,
+  });
+
+  const random = rows.data.sheets![0].data;
+  const columnNamesWithIndexes: { [key: string]: number } = {};
+
+  random![0].rowData![0].values!.forEach((col, idx) => {
+    if (!col.formattedValue) return;
+    columnNamesWithIndexes[col.formattedValue!] = idx;
+  });
+
+  const fosterhomeCats: { [key: string]: any } = {};
+
+  const pattern = new RegExp("(?<=/d/).+(?=/)");
+
+  random?.forEach((grid) => {
+    grid.rowData!.forEach(async (row) => {
+      const fosterhome =
+        row.values![columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
+      if (fosterhome.formattedValue! !== "Mari Oks") return;
+
+      const values = row.values!;
+      fosterhomeCats["name"] =
+        values[columnNamesWithIndexes["KASSI NIMI"]].formattedValue;
+      fosterhomeCats["image"] = `${fosterhomeCats["name"]}.png`;
+      const imageID =
+        values[columnNamesWithIndexes["PILT"]].hyperlink!.match(pattern)![0];
+      console.log(imageID);
+
+      const file = await drive.files.get(
+        {
+          supportsAllDrives: true,
+          fileId: imageID,
+          alt: "media",
+        },
+        { responseType: "stream" }
+      );
+      const destination = fs.createWriteStream(
+        `./public/${fosterhomeCats["name"]}.png`
+      );
+
+      await new Promise((resolve) => {
+        file.data.pipe(destination);
+
+        destination.on("finish", () => {
+          console.log("Image saved successfully!");
+          resolve(true);
+        });
+      });
+      console.log("finished");
+    });
+  });
+
+  return res.json(fosterhomeCats);
 });
 
 app.post("/api/animals", async (req: any, res: any) => {

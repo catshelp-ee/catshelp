@@ -1,5 +1,4 @@
 import express from "express";
-import mysql from "mysql2";
 import cors from "cors";
 import * as jwt from "jsonwebtoken";
 import * as utils from "./utils.ts";
@@ -8,6 +7,7 @@ import { CatFormData } from "../src/types.ts";
 import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
+import { Sequelize, DataTypes } from "sequelize";
 dotenv.config();
 
 const app = express();
@@ -93,12 +93,118 @@ const uploadToDrive = async (
   }
 };
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "ch",
-});
+const db = new Sequelize(
+  process.env.DB_NAME!,
+  process.env.DB_USER!,
+  process.env.DB_PASSWORD!,
+  {
+    host: process.env.DB_HOST!,
+    dialect: "mysql",
+  }
+);
+
+const Animals = db.define(
+  "animals",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    birthday: {
+      type: DataTypes.DATE,
+      defaultValue: null,
+    },
+    description: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    chip_number: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    chip_registered_with_us: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: null,
+    },
+  },
+  {
+    timestamps: false,
+  }
+);
+
+const AnimalRescues = db.define(
+  "animal_rescues",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    rank_nr: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    rescue_date: {
+      type: DataTypes.DATE,
+      defaultValue: null,
+    },
+    location: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    location_notes: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+  },
+  {
+    timestamps: false,
+  }
+);
+
+const AnimalsToAnimalRescues = db.define(
+  "animals_to_animal_rescues",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    animal_id: {
+      type: DataTypes.INTEGER,
+      defaultValue: null,
+    },
+    animal_rescue_id: {
+      type: DataTypes.INTEGER,
+      defaultValue: null,
+    },
+  },
+  {
+    timestamps: false,
+  }
+);
+
+AnimalsToAnimalRescues.associate = (models) => {
+  AnimalsToAnimalRescues.belongsTo(models.Animals, {
+    foreignKey: "animal_id",
+    onDelete: "CASCADE",
+  });
+  AnimalsToAnimalRescues.belongsTo(models.AnimalRescues, {
+    foreignKey: "animal_rescue_id",
+    onDelete: "CASCADE",
+  });
+};
+
+console.log(db);
 
 app.post("/api/login", (req: any, res: any) => {
   const body = req.body;
@@ -257,79 +363,28 @@ app.post("/api/animals", async (req: any, res: any) => {
 
   const SHEETS_ID = process.env.CATS_SHEETS_ID;
 
-  db.beginTransaction((err) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+  const Animal = await Animals.create();
 
-    // Insert into animals table
-    const animalQuery = `
-      INSERT INTO animals
-      (name, birthday, description, status, chip_number, chip_registered_with_us)
-      VALUES (NULL, NULL, NULL, NULL, NULL, NULL)
-    `;
+  delete formData.pildid;
+  const a = { id: Animal.id, ...formData };
 
-    db.query(animalQuery, async (err, animalResult) => {
-      if (err) {
-        return db.rollback(() => res.status(500).json({ error: err.message }));
-      }
-      const animalId = animalResult.insertId;
+  await sheets.spreadsheets.values.append({
+    auth: auth,
+    spreadsheetId: SHEETS_ID,
+    range: "HOIUKODUDES",
+    valueInputOption: "RAW",
+    resource: {
+      values: [Object.values(a)],
+    },
+  });
 
-      delete formData.pildid;
-      const a = { id: animalId, ...formData };
+  const AnimalRescue = await AnimalRescues.create({
+    rescue_date: rescueDate,
+  });
 
-      await sheets.spreadsheets.values.append({
-        auth: auth,
-        spreadsheetId: SHEETS_ID,
-        range: "HOIUKODUDES",
-        valueInputOption: "RAW",
-        resource: {
-          values: [Object.values(a)],
-        },
-      });
-
-      // Insert into animal_rescues table
-      const rescueQuery = `
-        INSERT INTO animal_rescues
-        (rank_nr, rescue_date, location, location_notes)
-        VALUES (NULL, ?, NULL, NULL)
-      `;
-      db.query(rescueQuery, [rescueDate || null], (err, rescueResult) => {
-        if (err) {
-          return db.rollback(() =>
-            res.status(500).json({ error: err.message })
-          );
-        }
-
-        const rescueId = rescueResult.insertId;
-
-        // Link the animal and the rescue in the animals_to_animal_rescues table
-        const linkQuery = `
-          INSERT INTO animals_to_animal_rescues
-          (animal_id, animal_rescue_id)
-          VALUES (?, ?)
-        `;
-        db.query(linkQuery, [animalId, rescueId], (err) => {
-          if (err) {
-            return db.rollback(() =>
-              res.status(500).json({ error: err.message })
-            );
-          }
-
-          db.commit((err) => {
-            if (err) {
-              return db.rollback(() =>
-                res.status(500).json({ error: err.message })
-              );
-            }
-
-            res.json({
-              id: rescueId,
-            });
-          });
-        });
-      });
-    });
+  const AnimalToAnimalRescue = await AnimalsToAnimalRescues.create({
+    animal_id: Animal.id,
+    animal_rescue_id: AnimalRescue.id,
   });
 });
 

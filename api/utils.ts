@@ -22,7 +22,7 @@ const generateKey = () => {
 
 export const sendRequest = async (id: number, email: string) => {
   const token = jwt.sign({ userId: id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.LENGTH,
+    expiresIn: process.env.TOKEN_LENGTH,
   });
   await sendMagicLink(email, token);
 };
@@ -32,7 +32,7 @@ const transporter = createTransport({
   port: 465,
   secure: true, // true for port 465, false for other ports
   auth: {
-    user: process.env.EMAIL,
+    user: process.env.SMTP_EMAIL,
     pass: process.env.SMTP_PASSWORD,
   },
 });
@@ -43,7 +43,11 @@ const sendMagicLink = (email: string, token: string) => {
     to: `${email}`, // list of receivers
     subject: "🐈 Cats Help Sisselogimine", // Subject line
     //text: "Hello world?", // plain text body
+<<<<<<< HEAD
     html: `<a href="${process.env.FRONTEND_URL}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
+=======
+    html: `<a href="${process.env.VITE_FRONTEND_URL}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
+>>>>>>> 98953bc1f3ab1952841f53674b36a5cbda5fff82
   });
 };
 

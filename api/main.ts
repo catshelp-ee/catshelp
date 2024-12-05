@@ -410,6 +410,6 @@ app.post("/api/pilt/lisa", async (req, res) => {
   }
 });
 
-app.listen(8080, () => {
+app.listen(process.env.BACKEND_PORT, () => {
   console.log("connected to backend!");
 });

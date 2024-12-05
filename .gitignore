@@ -1,6 +1,4 @@
 node_modules
-src/pages/Register
 .env
 credentials.json
-AddCatForm.bk.tsx
-public/Cats
+.vscode

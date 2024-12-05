@@ -8,6 +8,7 @@ interface TodoItemProps {
   assignee: string;
   action: string;
   pet: string | null;
+  urgent: boolean;
   isCompleted: boolean;
 }
 
@@ -17,15 +18,14 @@ const TodoItem: React.FC<TodoItemProps> = ({
   assignee,
   action,
   pet,
+  urgent,
   isCompleted,
 }) => {
   const petImage =
     pet === "Peemot"
       ? "https://cdn.builder.io/api/v1/image/assets/TEMP/80e8356e58c23aa5528af7719b3f8796da083b19a92fcf490fc81fbe9e28b37d?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973"
       : "https://cdn.builder.io/api/v1/image/assets/TEMP/bad705e364fcce414200230d9611c07a2a21de27e3c139acd1766a2ed473edbf?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973";
-  const dateColor = date.startsWith("12/04/2022")
-    ? "text-red-400"
-    : "text-slate-500";
+  const dateColor = urgent ? "text-red-400" : "text-slate-500";
   const labels = { inputProps: { "aria-label": "Checkbox demo" } };
   return (
     <tr>

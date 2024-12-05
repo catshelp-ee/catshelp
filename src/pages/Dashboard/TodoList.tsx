@@ -1,9 +1,12 @@
 import React from "react";
 import TodoItem from "./TodoItem.tsx";
 
-interface TodoListProps {}
+interface TodoListProps {
+  todos: any;
+}
 
-const TodoList: React.FC<TodoListProps> = () => {
+const TodoList: React.FC<TodoListProps> = ({ todos }) => {
+  console.log(todos);
   const todoItems = [
     {
       label: "Täida hoiukoduankeet ja nõustu tingimustega",
@@ -80,9 +83,9 @@ const TodoList: React.FC<TodoListProps> = () => {
         </button>
       </div>
       <table>
-        {todoItems.map((item, index) => (
-          <TodoItem key={index} {...item} />
-        ))}
+        {todos.map((item, index) => {
+          return <TodoItem key={index} {...item} />;
+        })}
       </table>
     </section>
   );

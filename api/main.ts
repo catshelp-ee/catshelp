@@ -21,6 +21,9 @@ const __dirname = __filename.substring(0, __filename.lastIndexOf("/")); // Get t
 const auth = new google.auth.GoogleAuth({
   keyFile: "credentials.json",
   scopes: "https://www.googleapis.com/auth/drive",
+  clientOptions: {
+    subject: "markopeedosk@catshelp.ee",
+  },
 });
 
 const client = await auth.getClient();
@@ -90,7 +93,7 @@ const uploadToDrive = async (
   }
 };
 
-const db = mysql.createConnection({
+const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
@@ -150,7 +153,10 @@ app.get("/api/animals/dashboard", async (req, res) => {
     columnNamesWithIndexes[col.formattedValue!] = idx;
   });
 
-  const fosterhomeCats: { [key: string]: any } = {};
+  const fosterhomeCats: { [key: string]: any } = {
+    pets: [],
+    todos: [],
+  };
 
   const pattern = new RegExp("(?<=/d/).+(?=/)");
 
@@ -161,34 +167,72 @@ app.get("/api/animals/dashboard", async (req, res) => {
       if (fosterhome.formattedValue! !== "Mari Oks") return;
 
       const values = row.values!;
-      fosterhomeCats["name"] =
+      const catName =
         values[columnNamesWithIndexes["KASSI NIMI"]].formattedValue;
-      fosterhomeCats["image"] = `${fosterhomeCats["name"]}.png`;
-      const imageID =
-        values[columnNamesWithIndexes["PILT"]].hyperlink!.match(pattern)![0];
-      console.log(imageID);
-
-      const file = await drive.files.get(
-        {
-          supportsAllDrives: true,
-          fileId: imageID,
-          alt: "media",
-        },
-        { responseType: "stream" }
-      );
-      const destination = fs.createWriteStream(
-        `./public/${fosterhomeCats["name"]}.png`
-      );
-
-      await new Promise((resolve) => {
-        file.data.pipe(destination);
-
-        destination.on("finish", () => {
-          console.log("Image saved successfully!");
-          resolve(true);
-        });
+      fosterhomeCats.pets.push({
+        name: catName,
+        image: `Cats/${catName}.png`,
       });
-      console.log("finished");
+      if (
+        new Date(
+          values[
+            columnNamesWithIndexes["JÄRGMISE VAKTSIINI AEG"]
+          ].formattedValue!
+        ) < new Date()
+      ) {
+        console.log("overdue!");
+        fosterhomeCats["todos"].push({
+          label: "Broneeri veterinaari juures vaktsineerimise aeg",
+          date: values[columnNamesWithIndexes["JÄRGMISE VAKTSIINI AEG"]]
+            .formattedValue,
+          assignee: catName,
+          action: "Broneeri aeg",
+          pet: catName,
+          urgent: true,
+          isCompleted: false,
+        });
+      }
+      try {
+        const stat = await Deno.stat(`./public/Cats/${catName}.png`);
+        if (stat.isFile) {
+          console.log("The file exists.");
+        } else {
+          console.log("The path exists but is not a file.");
+        }
+      } catch (error) {
+        if (error instanceof Deno.errors.NotFound) {
+          // TODO: hyperlink voib olla undefined
+          const imageID =
+            values[columnNamesWithIndexes["PILT"]].hyperlink!.match(
+              pattern
+            )![0];
+
+          //TODO: kontrolli kas fail on juba kaustas olemas
+          const file = await drive.files.get(
+            {
+              supportsAllDrives: true,
+              fileId: imageID,
+              alt: "media",
+            },
+            { responseType: "stream" }
+          );
+
+          const destination = fs.createWriteStream(
+            `./public/Cats/${fosterhomeCats["pets"]["name"]}.png`
+          );
+
+          await new Promise((resolve) => {
+            file.data.pipe(destination);
+
+            destination.on("finish", () => {
+              resolve(true);
+            });
+          });
+          console.log("The file does not exist.");
+        } else {
+          console.error("An unexpected error occurred:", error);
+        }
+      }
     });
   });
 

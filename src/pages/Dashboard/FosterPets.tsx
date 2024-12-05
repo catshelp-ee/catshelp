@@ -1,23 +1,10 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
-interface FosterPetsProps {}
+interface FosterPetsProps {
+  pets: any;
+}
 
-const FosterPets: React.FC<FosterPetsProps> = () => {
-  const [pets, setPets] = useState([]);
-
-  useEffect(() => {
-    const getDashboardCats = async () => {
-      const response = await axios.get("/api/animals/dashboard");
-      const responsePets = response.data;
-      setPets([responsePets]);
-    };
-
-    getDashboardCats();
-
-    return () => {};
-  }, []);
-
+const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
   return (
     <section className="flex w-full">
       <div className="flex flex-col w-2/3">

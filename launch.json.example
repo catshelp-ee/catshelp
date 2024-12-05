@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "request": "launch",
+            "name": "Deno",
+            "type": "node",
+            "program": "${workspaceFolder}/api/main.ts",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "runtimeExecutable": "C:\\Users\\Karl\\.deno\\bin\\deno.EXE",
+            "runtimeArgs": [
+                "run",
+                "--unstable",
+                "--inspect-wait",
+                "--allow-all",
+            ],
+            "attachSimplePort": 9229
+        },
+        {
+            "name": "Vite",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/src",
+          }
+    ],
+    "compounds": [
+      {
+        "name": "fullstack",
+        "configurations": [
+          "Deno",
+          "Vite"
+        ]
+      }
+    ]
+}

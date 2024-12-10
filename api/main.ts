@@ -7,10 +7,8 @@ import { CatFormData } from "../src/types.ts";
 import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
-import Animal from "./models/animal.ts"
-import AnimalRescue  from "./models/animalrescue.ts"
-import AnimalToAnimalRescue from "./models/animaltoanimalrescue.ts"
-
+import db from "../models/index.cjs";
+db;
 dotenv.config();
 
 const app = express();

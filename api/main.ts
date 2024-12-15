@@ -8,6 +8,10 @@ import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
 import db from "../models/index.cjs";
+import Animal from "../models/animal.cjs";
+import AnimalRescue from "../models/animalrescue.cjs";
+import AnimalToAnimalRescue from "../models/animaltoanimalrescue.cjs";
+
 // Seda ei tohi eemaldada
 // Mingi fucked magic toimub siin, et peab vähemalt
 // üks kord kutsuma teda, muidu ei toimi

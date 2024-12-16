@@ -8,9 +8,6 @@ import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
 import db from "../models/index.cjs";
-import Animal from "../models/animal.cjs";
-import AnimalRescue from "../models/animalrescue.cjs";
-import AnimalToAnimalRescue from "../models/animaltoanimalrescue.cjs";
 
 // Seda ei tohi eemaldada
 // Mingi fucked magic toimub siin, et peab vähemalt
@@ -258,7 +255,7 @@ app.post("/api/animals", async (req: any, res: any) => {
 
   const SHEETS_ID = process.env.CATS_SHEETS_ID;
 
-  const animal = await Animal.create();
+  const animal = await db.Animal.create();
 
   delete formData.pildid;
   const a = { id: animal.id, ...formData };
@@ -273,13 +270,13 @@ app.post("/api/animals", async (req: any, res: any) => {
     },
   });
 
-  const animalRescue = await AnimalRescue.create({
+  const animalRescue = await db.AnimalRescue.create({
     rescue_date: rescueDate,
   });
 
-  const animalToAnimalRescue = await AnimalToAnimalRescue.create({
-    animal_id: Animal.id,
-    animal_rescue_id: AnimalRescue.id,
+  const animalToAnimalRescue = await db.AnimalToAnimalRescue.create({
+    animal_id: animal.id,
+    animal_rescue_id: animalRescue.id,
   });
 });
 

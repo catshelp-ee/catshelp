@@ -18,14 +18,24 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      rank_nr: DataTypes.STRING,
-      rescue_date: DataTypes.DATE,
+      rankNr: { 
+        type: DataTypes.STRING,
+        field: 'rank_nr'
+      },
+      rescueDate: {
+        type: DataTypes.DATE,
+        field: 'rescue_date'
+      },
       location: DataTypes.STRING,
-      location_notes: DataTypes.STRING,
+      locationNotes: {
+        type: DataTypes.STRING,
+        field: 'location_notes'
+      },
     },
     {
       sequelize,
       modelName: "AnimalRescue",
+      tableName: 'animal_rescues'
     }
   );
   return AnimalRescue;

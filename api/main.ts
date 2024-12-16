@@ -7,7 +7,12 @@ import { CatFormData } from "../src/types.ts";
 import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
-import { Sequelize, DataTypes } from "sequelize";
+import db from "../models/index.cjs";
+
+// Seda ei tohi eemaldada
+// Mingi fucked magic toimub siin, et peab vähemalt
+// üks kord kutsuma teda, muidu ei toimi
+db;
 dotenv.config();
 
 const app = express();
@@ -92,119 +97,6 @@ const uploadToDrive = async (
     throw err;
   }
 };
-
-const db = new Sequelize(
-  process.env.DB_NAME!,
-  process.env.DB_USER!,
-  process.env.DB_PASSWORD!,
-  {
-    host: process.env.DB_HOST!,
-    dialect: "mysql",
-  }
-);
-
-const Animals = db.define(
-  "animals",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-    birthday: {
-      type: DataTypes.DATE,
-      defaultValue: null,
-    },
-    description: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-    status: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-    chip_number: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-    chip_registered_with_us: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: null,
-    },
-  },
-  {
-    timestamps: false,
-  }
-);
-
-const AnimalRescues = db.define(
-  "animal_rescues",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    rank_nr: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-    rescue_date: {
-      type: DataTypes.DATE,
-      defaultValue: null,
-    },
-    location: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-    location_notes: {
-      type: DataTypes.STRING,
-      defaultValue: null,
-    },
-  },
-  {
-    timestamps: false,
-  }
-);
-
-const AnimalsToAnimalRescues = db.define(
-  "animals_to_animal_rescues",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    animal_id: {
-      type: DataTypes.INTEGER,
-      defaultValue: null,
-    },
-    animal_rescue_id: {
-      type: DataTypes.INTEGER,
-      defaultValue: null,
-    },
-  },
-  {
-    timestamps: false,
-  }
-);
-
-AnimalsToAnimalRescues.associate = (models) => {
-  AnimalsToAnimalRescues.belongsTo(models.Animals, {
-    foreignKey: "animal_id",
-    onDelete: "CASCADE",
-  });
-  AnimalsToAnimalRescues.belongsTo(models.AnimalRescues, {
-    foreignKey: "animal_rescue_id",
-    onDelete: "CASCADE",
-  });
-};
-
-console.log(db);
 
 app.post("/api/login", (req: any, res: any) => {
   const body = req.body;
@@ -363,10 +255,10 @@ app.post("/api/animals", async (req: any, res: any) => {
 
   const SHEETS_ID = process.env.CATS_SHEETS_ID;
 
-  const Animal = await Animals.create();
+  const animal = await db.Animal.create();
 
   delete formData.pildid;
-  const a = { id: Animal.id, ...formData };
+  const a = { id: animal.id, ...formData };
 
   await sheets.spreadsheets.values.append({
     auth: auth,
@@ -378,13 +270,13 @@ app.post("/api/animals", async (req: any, res: any) => {
     },
   });
 
-  const AnimalRescue = await AnimalRescues.create({
+  const animalRescue = await db.AnimalRescue.create({
     rescue_date: rescueDate,
   });
 
-  const AnimalToAnimalRescue = await AnimalsToAnimalRescues.create({
-    animal_id: Animal.id,
-    animal_rescue_id: AnimalRescue.id,
+  const animalToAnimalRescue = await db.AnimalToAnimalRescue.create({
+    animal_id: animal.id,
+    animal_rescue_id: animalRescue.id,
   });
 });
 

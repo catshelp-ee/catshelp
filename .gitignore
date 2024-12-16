@@ -3,3 +3,4 @@ node_modules
 credentials.json
 .public/Cats
 .vscode
+config/config.json

@@ -22,8 +22,14 @@ module.exports = (sequelize, DataTypes) => {
       birthday: DataTypes.DATE,
       description: DataTypes.STRING,
       status: DataTypes.STRING,
-      chip_number: DataTypes.STRING,
-      chip_registered_with_us: DataTypes.BOOLEAN,
+      chipNumber: {
+        type: DataTypes.STRING,
+        field: 'chip_number'
+      },
+      chipRegisteredWithUs: {
+        type: DataTypes.BOOLEAN,
+        field: 'chip_registered_with_us'
+      },
     },
     {
       sequelize,

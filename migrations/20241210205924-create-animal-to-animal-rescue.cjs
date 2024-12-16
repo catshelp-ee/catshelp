@@ -3,24 +3,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('AnimalToAnimalRescues', {
+    await queryInterface.createTable('animal_to_animal_rescues', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      animal_id: {
+      animalId: {
         type: Sequelize.INTEGER,
+        field: 'animal_id',
         references: {
-          model: 'animals',
-          key: 'id'
-        },
-        onDelete: 'CASCADE'
+          model: 'Animals',
+          field: 'id'
+        }
+      },
+      animalRescueId: {
+        type: Sequelize.INTEGER,
+        field: 'animal_rescue_id',
+        references: {
+          model: 'animal_rescues',
+          field: 'id'
+        }
       },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('AnimalToAnimalRescues');
+    await queryInterface.dropTable('animal_to_animal_rescues');
   }
 };

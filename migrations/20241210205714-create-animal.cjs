@@ -21,11 +21,13 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
-      chip_number: {
-        type: Sequelize.STRING
+      chipNumber: {
+        type: Sequelize.STRING,
+        field: 'chip_number'
       },
-      chip_registered_with_us: {
-        type: Sequelize.BOOLEAN
+      chipRegisteredWithUs: {
+        type: Sequelize.BOOLEAN,
+        field: 'chip_registered_with_us'
       },
     });
   },

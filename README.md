@@ -3,8 +3,10 @@
 1. Install deno (https://docs.deno.com/runtime/getting_started/installation/)
 2. Run the command ```deno install``` to install node dependencies
 3. Create the .env file based on the example
-4. You need to manually create the DB at the moment. Currently the DB info is in api\main.ts file. Will be refactored soon.
-5. ```deno task dev``` to run the app
+4. You need to manually create the DB at the moment. (Use mariaDb)
+5. Create the config/config.json based on the example
+6. ```npx sequelize-cli db:migrate ``` to create the database tables;
+7. ```deno task dev``` to run the app
 
 
 # Debugging

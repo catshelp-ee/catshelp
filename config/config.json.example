@@ -1,0 +1,10 @@
+{
+    "development": {
+      "username": "",
+      "password": "",
+      "database": "catshelp",
+      "host": "",
+      "dialect": "mariadb",
+      "port": 3306
+    }
+}

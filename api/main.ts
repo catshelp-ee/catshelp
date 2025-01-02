@@ -162,7 +162,7 @@ app.get("/api/animals/dashboard", async (req, res) => {
     grid.rowData!.forEach(async (row) => {
       const fosterhome =
         row.values![columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
-      if (fosterhome.formattedValue! !== "Mari Oks") return;
+      if (fosterhome.formattedValue! !== "Tatjana Gerassimova") return;
 
       const values = row.values!;
       const catName =
@@ -216,7 +216,7 @@ app.get("/api/animals/dashboard", async (req, res) => {
           );
 
           const destination = fs.createWriteStream(
-            `./public/Cats/${fosterhomeCats["pets"]["name"]}.png`
+            `./public/Cats/${catName}.png`
           );
 
           await new Promise((resolve) => {

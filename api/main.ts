@@ -237,6 +237,167 @@ app.get("/api/animals/dashboard", async (req, res) => {
   return res.json(fosterhomeCats);
 });
 
+// app.get("/api/cat-profile/:ownerName", async (req, res) => {
+//   const ownerName = req.params.ownerName;
+app.get("/api/cat-profile", async (req, res) => {
+  const ownerName = "Mari Oks";
+
+  const auth = new google.auth.GoogleAuth({
+    keyFile: "credentials.json",
+    scopes: "https://www.googleapis.com/auth/spreadsheets",
+  });
+
+  const client = await auth.getClient();
+
+  const sheets = google.sheets({
+    version: "v4",
+    auth: client,
+  });
+
+  const SHEETS_ID = process.env.CATS_SHEETS_ID!;
+
+  const sheetData = await fetchGoogleSheetData(
+    client,
+    SHEETS_ID,
+    "HOIUKODUDES"
+  );
+  const columnNamesWithIndexes: { [key: string]: number } = {};
+
+  sheetData![0].rowData![0].values!.forEach((col, idx) => {
+    if (col.formattedValue) {
+      columnNamesWithIndexes[col.formattedValue] = idx;
+    }
+  });
+
+  const catProfiles: any[] = [];
+
+  for (const grid of sheetData) {
+    for (const row of grid.rowData || []) {
+      const values = row.values;
+
+      const fosterhome =
+        row.values![columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
+      if (fosterhome.formattedValue! !== ownerName) continue;
+
+      if (!values) continue;
+
+      const catName =
+        values[columnNamesWithIndexes["KASSI NIMI"]]?.formattedValue || "";
+      const imageLink = values[columnNamesWithIndexes["PILT"]]?.hyperlink || "";
+
+      const catProfile = {
+        primaryInfo: {
+          name: catName,
+          image: "",
+          rescueId:
+            values[
+              columnNamesWithIndexes["PÄÄSTETUD JÄRJEKORRA NR (AA'KK nr ..)"]
+            ]?.formattedValue || "",
+          location:
+            values[columnNamesWithIndexes["ASUKOHT"]]?.formattedValue || "",
+          dateOfBirth:
+            values[columnNamesWithIndexes["SÜNNIAEG"]]?.formattedValue || "",
+          gender: values[columnNamesWithIndexes["SUGU"]]?.formattedValue || "",
+          color:
+            values[columnNamesWithIndexes["KASSI VÄRV"]]?.formattedValue || "",
+          furLength:
+            values[columnNamesWithIndexes["KASSI KARVA PIKKUS"]]
+              ?.formattedValue || "",
+          additionalNotes:
+            values[columnNamesWithIndexes["TÄIENDAVAD MÄRKMED"]]
+              ?.formattedValue || "",
+          chipId: values[columnNamesWithIndexes["KIIP"]]?.formattedValue || "",
+          rescueDate:
+            values[columnNamesWithIndexes["PÄÄSTMISKP/ SÜNNIKP"]]
+              ?.formattedValue || "",
+        },
+        moreInfo: {
+          otherInfo:
+            values[columnNamesWithIndexes["MUU"]]?.formattedValue || "",
+        },
+      };
+
+      if (imageLink && isHyperlink(imageLink)) {
+        const fileId = extractFileId(imageLink);
+
+        if (fileId) {
+          const destinationPath = `./public/Cats/${catName}.png`;
+
+          const downloadSuccess = await downloadImage(
+            drive,
+            fileId,
+            destinationPath
+          );
+          if (downloadSuccess) {
+            catProfile.primaryInfo.image = `Cats/${catName}.png`;
+          }
+        } else {
+          console.warn(`Unable to extract fileId from imageLink: ${imageLink}`);
+        }
+      }
+
+      catProfiles.push(catProfile);
+    }
+  }
+
+  return res.json({ catProfiles });
+});
+
+async function downloadImage(
+  drive: any,
+  fileId: string,
+  destinationPath: string
+) {
+  try {
+    const response = await drive.files.get(
+      { fileId, alt: "media" },
+      { responseType: "stream" }
+    );
+
+    const writeStream = fs.createWriteStream(destinationPath);
+    await new Promise((resolve, reject) => {
+      response.data
+        .pipe(writeStream)
+        .on("finish", () => resolve(true))
+        .on("error", reject);
+    });
+
+    console.log(`Image downloaded and saved to: ${destinationPath}`);
+    return true;
+  } catch (error) {
+    console.error(`Failed to download image with ID ${fileId}:`, error);
+    return false;
+  }
+}
+
+function isHyperlink(link: string): boolean {
+  try {
+    new URL(link);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function extractFileId(link: string): string | null {
+  const match = link.match(/\/file\/d\/(.+?)\//);
+  return match ? match[1] : null;
+}
+
+async function fetchGoogleSheetData(auth: any, sheetId: string, range: string) {
+  const sheets = google.sheets({ version: "v4", auth });
+  const response = await sheets.spreadsheets.get({
+    spreadsheetId: sheetId,
+    ranges: [range],
+    includeGridData: true,
+  });
+  if (!response.data.sheets || !response.data.sheets[0].data) {
+    throw new Error("No data available in the provided range or sheet.");
+  }
+
+  return response.data.sheets[0].data;
+}
+
 app.post("/api/animals", async (req: any, res: any) => {
   const formData: CatFormData = req.body;
   const rescueDate = formData.leidmis_kp;

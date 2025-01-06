@@ -6,43 +6,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Cat } from "../../types/Cat.ts";
 
-const mockCats: Cat = {
-  primaryInfo: {
-    name: "",
-    image: "",
-    rescueId: "",
-    location: "Põhja-Pärnumaa",
-    dateOfBirth: "",
-    gender: "Emane",
-    color: "Triibuline",
-    furLength: "",
-    additionalNotes: "",
-    chipId: "",
-    rescueDate: "",
-    description: "",
-  },
-  moreInfo: {
-    chronicIllnesses: "",
-    timeInFosterCare: "",
-    rescueHistory:
-      "Audrust suvilarajoonist koos poegadega. Oli kohe väga sõbralik ja seltsiv ning soovis tähelepanu ja paisid.",
-    personality: "Rahulik, sõbralik, seltsiv, rahumeelne",
-    likes:
-      "Pai saada, palju tähelepanu, magab öösiti voodis jalutsis. Kass kasutab liivakasti hästi, harjub kiirelt uue kohaga, kipub kratsima muud mööblit, usaldab inimesi kiiresti, eelistab kodutoitu kassikrõbinatele ja konservile. Tuleb jälgida ja hoolas olla",
-    otherPersonalityTraits: "",
-    dailyRoutine:
-      "Jälgib ja kutsub poegi korrale. Soovib poegadest puhkust. On selline kuninglik ja vaoshoitud",
-    interactions: {
-      cats: "Neutraalselt",
-      dogs: "Neutraalselt",
-      children: "Hästi",
-    },
-    type: "Toa- ja õuekassiks",
-    specialNeeds: "",
-    otherInfo: "",
-  },
-};
-
 const CatProfile: React.FC = () => {
   const navigate = useNavigate();
   const [cats, setCats] = useState<Cat[]>([]);
@@ -56,24 +19,13 @@ const CatProfile: React.FC = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const response = await axios.get("/api/animals/dashboard");
-        const fetchedCats = response.data.pets || [];
+        const response = await axios.get("/api/cat-profile");
+        const fetchedCats = response.data.catProfiles || [];
 
-        const mergedCats = fetchedCats.map((cat: any, index: number) => ({
-          primaryInfo: {
-            ...mockCats.primaryInfo,
-            ...cat,
-          },
-          moreInfo: {
-            ...mockCats.moreInfo,
-          },
-        }));
+        setCats(fetchedCats);
 
-        console.log(mergedCats);
-        setCats(mergedCats);
-
-        if (mergedCats.length > 0) {
-          setSelectedCat(mergedCats[0]);
+        if (fetchedCats.length > 0) {
+          setSelectedCat(fetchedCats[0]);
         }
       } catch (error) {
         console.error("Error fetching cat data:", error);
@@ -130,7 +82,7 @@ const CatProfile: React.FC = () => {
                   onClick={handleAddCat}
                   className="w-24 h-24 flex items-center justify-center bg-teal-500 text-white rounded-full shadow-md hover:bg-teal-600"
                 >
-                  <span className="text-4xl">+</span>
+                  <span className="text-4xl font-mono">+</span>
                 </button>
                 <div className="text-lg font-bold">Lisa uus kiisu</div>
               </div>

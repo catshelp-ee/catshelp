@@ -11,6 +11,7 @@ export interface Cat {
     chipId?: string;
     rescueDate?: string;
     description?: string;
+    heading?: string;
     image?: string;
   };
   moreInfo?: {
@@ -46,6 +47,7 @@ export const defaultCat: Cat = {
     chipId: "",
     rescueDate: "",
     description: "",
+    heading: "",
   },
   moreInfo: {
     chronicIllnesses: "",

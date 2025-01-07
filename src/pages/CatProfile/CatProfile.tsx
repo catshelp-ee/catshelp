@@ -13,7 +13,7 @@ const CatProfile: React.FC = () => {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
 
   const handleAddCat = () => {
-    navigate("/lisa");
+    navigate("/add-cat");
   };
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const CatProfile: React.FC = () => {
                   PEALKIRI:
                 </div>
                 <div className="text-l font-bold">
-                  Triibuline Kuninganna Kusja otsib oma inimest!
+                  {selectedCat.primaryInfo.heading}
                 </div>
                 <div className="text-sm font-medium text-gray-500 text-bold mt-3">
                   LOOMA KIRJELDUS:

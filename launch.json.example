@@ -8,7 +8,7 @@
             "request": "launch",
             "name": "Deno",
             "type": "node",
-            "program": "${workspaceFolder}/api/main.ts",
+            "program": "${workspaceFolder}/server/main.ts",
             "cwd": "${workspaceFolder}",
             "env": {},
             "runtimeExecutable": "C:\\Users\\Karl\\.deno\\bin\\deno.EXE",

@@ -166,6 +166,7 @@ app.post("/api/animals", async (req: any, res: any) => {
         animal_id: animal.id,
         animal_rescue_id: animalRescue.id,
     });
+    res.json("Success");
 });
 
 app.post("/api/pilt/lisa", async (req, res) => {

@@ -5,6 +5,9 @@
       "database": "catshelp",
       "host": "",
       "dialect": "mariadb",
-      "port": 3306
+      "port": 3306,
+      "define": {
+        "timestamps": false
+      }
     }
 }

@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "animal_id",
         onDelete: "CASCADE",
       });
-      console.log(models);
       AnimalToAnimalRescue.belongsTo(models.AnimalRescue, {
         foreignKey: "animal_rescue_id",
         onDelete: "CASCADE",

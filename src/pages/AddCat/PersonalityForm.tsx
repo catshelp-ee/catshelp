@@ -99,7 +99,6 @@ export const PersonalityForm: React.FC<PersonalityFormProps> = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <h2>Iseloom informatsioon</h2>
       <FormControl component="fieldset">
         <Typography variant="subtitle2">
           Kassi iseloom, vali sobivad lahtrid

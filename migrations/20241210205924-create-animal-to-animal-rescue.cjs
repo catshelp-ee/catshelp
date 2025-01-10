@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         field: "animal_id",
         references: {
-          model: "Animals",
+          model: "animals",
           key: "id",
         },
       },
@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         field: "animal_rescue_id",
         references: {
-          model: "Animal_rescues",
+          model: "animal_rescues",
           key: "id",
         },
       },

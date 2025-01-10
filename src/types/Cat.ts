@@ -12,15 +12,15 @@ export interface Cat {
     rescueDate?: string;
     description?: string;
     heading?: string;
-    image?: string;
+    images?: [];
   };
   moreInfo?: {
     chronicIllnesses?: string;
     timeInFosterCare?: string;
     rescueHistory?: string;
-    personality?: string;
-    likes?: string;
-    otherPersonalityTraits?: string;
+    personality?: [];
+    likes?: [];
+    otherTraits?: [];
     dailyRoutine?: string;
     interactions?: {
       cats?: string;
@@ -36,7 +36,7 @@ export interface Cat {
 export const defaultCat: Cat = {
   primaryInfo: {
     name: "",
-    image: "",
+    images: [],
     rescueId: "",
     location: "",
     dateOfBirth: "",
@@ -53,9 +53,9 @@ export const defaultCat: Cat = {
     chronicIllnesses: "",
     timeInFosterCare: "",
     rescueHistory: "",
-    personality: "",
-    likes: "",
-    otherPersonalityTraits: "",
+    personality: [],
+    likes: [],
+    otherTraits: [],
     dailyRoutine: "",
     interactions: {
       cats: "",

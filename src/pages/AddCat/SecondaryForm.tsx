@@ -23,7 +23,6 @@ export const SecondaryForm: React.FC<SecondaryFormProps> = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <h2>Lisa informatsioon</h2>
       <TextField
         label="Kiibi nr"
         name="chipId"

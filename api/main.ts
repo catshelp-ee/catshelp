@@ -402,6 +402,8 @@ app.post("/api/animals", async (req: any, res: any) => {
   const formData: CatFormData = req.body;
   const rescueDate = formData.leidmis_kp;
 
+  console.log(formData);
+
   const auth = new google.auth.GoogleAuth({
     keyFile: "credentials.json",
     scopes: "https://www.googleapis.com/auth/spreadsheets",

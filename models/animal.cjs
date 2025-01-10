@@ -24,16 +24,17 @@ module.exports = (sequelize, DataTypes) => {
       status: DataTypes.STRING,
       chipNumber: {
         type: DataTypes.STRING,
-        field: 'chip_number'
+        field: "chip_number",
       },
       chipRegisteredWithUs: {
         type: DataTypes.BOOLEAN,
-        field: 'chip_registered_with_us'
+        field: "chip_registered_with_us",
       },
     },
     {
       sequelize,
       modelName: "Animal",
+      tableName: "animals",
     }
   );
   return Animal;

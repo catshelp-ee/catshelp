@@ -195,7 +195,7 @@ export const PersonalityForm: React.FC<PersonalityFormProps> = ({
         <Select
           value={formData.interactionWithCats || ""}
           onChange={(e) =>
-            setFormData({ ...formData, interactionsWithCats: e.target.value })
+            setFormData({ ...formData, interactionWithCats: e.target.value })
           }
         >
           {interactionsWithCats.map((option) => (

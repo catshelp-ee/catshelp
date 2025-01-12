@@ -3,7 +3,8 @@ import { multiStepForm } from "./MultiStepForm.tsx";
 import { PrimaryForm } from "./PrimaryForm.tsx";
 import { SecondaryForm } from "./SecondaryForm.tsx";
 import { PersonalityForm } from "./PersonalityForm.tsx";
-import { Stack, Button } from "@mui/material";
+import { CatGenForm } from "./CatGenForm.tsx";
+import { Button } from "@mui/material";
 import Header from "../Header.tsx";
 import Sidebar from "../Dashboard/Sidebar.tsx";
 
@@ -37,6 +38,10 @@ const AddCat: React.FC = () => {
     interactionWithDogs: "",
     interactionWithChildren: "",
     type: "",
+
+    //gen Form
+    description: "",
+    heading: "",
   });
 
   const { currentStepIndex, step, isFirstStep, isLastStep, next, back, steps } =
@@ -44,6 +49,7 @@ const AddCat: React.FC = () => {
       <PrimaryForm formData={formData} setFormData={setFormData} />,
       <SecondaryForm formData={formData} setFormData={setFormData} />,
       <PersonalityForm formData={formData} setFormData={setFormData} />,
+      <CatGenForm formData={formData} setFormData={setFormData} />,
     ]);
 
   const handleSubmit = (e: any) => {
@@ -60,14 +66,6 @@ const AddCat: React.FC = () => {
           <div className="flex gap-5 max-md:flex-col">
             <Sidebar />
             <div className="flex-1 flex flex-col  max-w-3xl mx-auto max-md:ml-0 max-md:w-full text-left mb-3">
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <div
-                  className="bg-blue-600 h-2.5 rounded-full"
-                  style={{
-                    width: `${((currentStepIndex + 1) / steps.length) * 100}%`,
-                  }}
-                ></div>
-              </div>
 
               <div className="mb-3">{step}</div>
 

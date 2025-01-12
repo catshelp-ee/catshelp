@@ -8,6 +8,8 @@ import { google } from "googleapis";
 import { join } from "https://deno.land/std/path/mod.ts";
 import fs from "node:fs";
 import db from "../models/index.cjs";
+import { generateCatDescription } from "../services/groqService.ts";
+dotenv.config();
 
 // Seda ei tohi eemaldada
 // Mingi fucked magic toimub siin, et peab vähemalt
@@ -237,8 +239,6 @@ app.get("/api/animals/dashboard", async (req, res) => {
   return res.json(fosterhomeCats);
 });
 
-// app.get("/api/cat-profile/:ownerName", async (req, res) => {
-//   const ownerName = req.params.ownerName;
 app.get("/api/cat-profile", async (req, res) => {
   const ownerName = "Mari Oks";
 
@@ -463,6 +463,13 @@ app.post("/api/pilt/lisa", async (req, res) => {
   } catch (error) {
     return res.error("Tekkis tõrge piltide üles laadimisega:", error);
   }
+});
+
+app.post("/api/gen-ai-cat", async (req, res) => {
+  const catInfo = req.body.formData;
+  const description = await generateCatDescription(catInfo);
+
+  res.json({ description });
 });
 
 app.listen(process.env.BACKEND_PORT, () => {

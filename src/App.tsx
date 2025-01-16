@@ -11,7 +11,7 @@ import "./App.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
 import Login from "./pages/Login.tsx";
-import AddCat from "./pages/AddCat/AddCat.tsx";
+import EditCat from "./pages/EditCat/EditCat.tsx";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -26,7 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/add-cat" element={<AddCat />} />
+          <Route path="/edit-cat" element={<EditCat />} />
           <Route path="/cat-profile" element={<CatProfile />} />
         </Routes>
       </BrowserRouter>

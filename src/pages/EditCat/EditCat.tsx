@@ -8,7 +8,7 @@ import { Button } from "@mui/material";
 import Header from "../Header.tsx";
 import Sidebar from "../Dashboard/Sidebar.tsx";
 
-const AddCat: React.FC = () => {
+const EditCat: React.FC = () => {
   //TODO: use Cat interfaces defaultCat
   const [formData, setFormData] = useState({
     //Primary Form
@@ -66,7 +66,6 @@ const AddCat: React.FC = () => {
           <div className="flex gap-5 max-md:flex-col">
             <Sidebar />
             <div className="flex-1 flex flex-col  max-w-3xl mx-auto max-md:ml-0 max-md:w-full text-left mb-3">
-
               <div className="mb-3">{step}</div>
 
               <div className="flex justify-between items-center mt-4">
@@ -109,4 +108,4 @@ const AddCat: React.FC = () => {
   );
 };
 
-export default AddCat;
+export default EditCat;

@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const generateCatDescription = async (
   catInfo: Record<string, any>
-): Promise<string> => {
+): Promise<string | null> => {
   const groqQuery = `
     Oled abivalmis assistent, kes loob kassi kirjeldusi.
     Loo mulle detailne ja sõbralik kirjeldus järgmise kassi kohta. Anna maksimaalselt 3 lõiku.
@@ -30,11 +30,15 @@ export const generateCatDescription = async (
   return generateText(groqQuery);
 };
 
-export const generateText = async (query: string): Promise<string> => {
+export const generateText = async (query: string): Promise<string | null> => {
   try {
     const apiKey = process.env.GROQ_API_KEY;
+
     if (!apiKey) {
-      throw new Error("API key is missing.");
+      console.warn(
+        "Warning: API key is missing. AI generation is unavailable."
+      );
+      return null;
     }
 
     const payload = {
@@ -65,9 +69,18 @@ export const generateText = async (query: string): Promise<string> => {
       }
     );
 
+    if (
+      !response.data ||
+      !response.data.choices ||
+      response.data.choices.length === 0
+    ) {
+      console.warn("Warning: AI API returned an empty response.");
+      return null;
+    }
+
     return response.data.choices[0].message.content;
   } catch (error) {
     console.error("Error generating text:", error);
-    throw new Error("Failed to generate text.");
+    return null;
   }
 };

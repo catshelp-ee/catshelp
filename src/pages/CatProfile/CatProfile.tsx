@@ -5,21 +5,24 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Cat } from "../../types/Cat.ts";
+import { Button } from "@mui/material";
 
 const CatProfile: React.FC = () => {
   const navigate = useNavigate();
   const [cats, setCats] = useState<Cat[]>([]);
   const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleAddCat = () => {
-    navigate("/add-cat");
+  const handleEditCat = () => {
+    navigate("/edit-cat");
   };
 
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const response = await axios.get("/api/cat-profile");
+        setLoading(true);
+        const response = await axios.get("/api/animals/cat-profile");
         const fetchedCats = response.data.catProfiles || [];
 
         setCats(fetchedCats);
@@ -30,6 +33,8 @@ const CatProfile: React.FC = () => {
       } catch (error) {
         console.error("Error fetching cat data:", error);
         setCats([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCats();
@@ -74,24 +79,36 @@ const CatProfile: React.FC = () => {
                     )}
                   </div>
                 ))
+              ) : //TODO: loading animation
+              loading ? (
+                "Oota kuni kiisud kohale jõuavad"
               ) : (
-                <p>No cats available at the moment.</p>
+                <p>Hetkel pole kasse.</p>
               )}
-              <div className="flex flex-col items-center space-y-4 text-center">
+              {/* <div className="flex flex-col items-center space-y-4 text-center">
                 <button
-                  onClick={handleAddCat}
+                  onClick={handleEditCat}
                   className="w-24 h-24 flex items-center justify-center bg-teal-500 text-white rounded-full shadow-md hover:bg-teal-600"
                 >
                   <span className="text-4xl font-mono">+</span>
                 </button>
                 <div className="text-lg font-bold">Lisa uus kiisu</div>
-              </div>
+              </div> */}
             </div>
 
             {selectedCat && (
               <div className="flex flex-col w-full border border-gray-300 p-4 rounded-md shadow max-md:mt-10 max-md:max-w-full">
-                <div className="text-sm font-medium text-gray-500 text-bold">
-                  PEALKIRI:
+                <div className="flex flex-row justify-between items-center">
+                  <div className="text-sm font-medium text-gray-500 text-bold">
+                    PEALKIRI:
+                  </div>
+                  <Button
+                    sx={{ textTransform: "none" }}
+                    onClick={handleEditCat}
+                  >
+                    <img src="/edit.png" alt="Edit" className="w-5 h-5 mr-2" />
+                    Muuda/Lisa
+                  </Button>
                 </div>
                 <div className="text-l font-bold">
                   {selectedCat.primaryInfo.heading}

@@ -2,8 +2,6 @@ import {
   Button,
   FormControlLabel,
   FormLabel,
-  InputLabel,
-  MenuItem,
   Radio,
   RadioGroup,
   Select,

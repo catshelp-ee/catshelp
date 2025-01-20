@@ -1,32 +1,41 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
 interface SidebarProps {}
 
 const Sidebar: React.FC<SidebarProps> = () => {
+  const location = useLocation();
+
   const menuItems = [
     {
       icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/dabedf1b3f622fd4cdbde9bf88cc54c7f15def20e9115618108c061c0b20c463?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
       text: "Kiisude töölaud",
+      path: "/dashboard",
     },
     {
       icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/ff0ef206640f1fe81d9883f7d9d18bebaa5bff99b8a7357cac95691010dde4b4?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
       text: "Tervis ja kliinikud",
+      path: "/clinics",
     },
     {
       icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/f4de1566ab8cacc30996e6c5533726235e40dcfaa7aa0f72719d5307d485d767?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
       text: "Kiisu profiil veebis",
+      path: "/cat-profile",
     },
     {
       icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/80a901e8389e57f9ef31b15e19dc34806799ed10eb4d50ddb2c4d32f1a9d1c18?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
       text: "Kodu pakkumised",
+      path: "/home-offers",
     },
     {
       icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/edcf65bff9619bd0e8b06a3298aa129e7c3ced1e097657766b5323af526c61e8?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
       text: "Kiisu koju saatmine",
+      path: "/sending-home",
     },
     {
       icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/352cb48de117699101af3a1e52d17a1b04caaadefedf4fab7f4b0211eb3b7d9f?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973",
       text: "Juhendid ja lingid",
+      path: "/materials",
     },
   ];
 
@@ -34,20 +43,24 @@ const Sidebar: React.FC<SidebarProps> = () => {
     <nav className="flex flex-col w-[26%] max-md:ml-0 max-md:w-full">
       <div className="flex flex-col pt-12 pb-32 mx-auto w-full text-base font-medium text-white bg-teal-400 rounded-none shadow-sm max-md:pb-24 max-md:mt-10">
         {menuItems.map((item, index) => (
-          <div
-            key={index}
-            className={`flex gap-5 px-6 py-5 ${
-              index === 0 ? "bg-white bg-opacity-30" : ""
-            } max-md:px-5`}
-          >
-            <img
-              loading="lazy"
-              src={item.icon}
-              alt=""
-              className="object-contain shrink-0 w-6 aspect-square"
-            />
-            <div className="grow shrink my-auto">{item.text}</div>
-          </div>
+          <Link to={item.path} key={index} className="text-white">
+            <div
+              key={index}
+              className={`flex gap-5 px-6 py-5 max-md:px-5 transition-colors duration-200 ${
+                location.pathname === item.path
+                  ? "bg-white bg-opacity-30"
+                  : "hover:bg-white hover:bg-opacity-30"
+              }`}
+            >
+              <img
+                loading="lazy"
+                src={item.icon}
+                alt=""
+                className="object-contain shrink-0 w-6 aspect-square"
+              />
+              <div className="grow shrink my-auto">{item.text}</div>
+            </div>
+          </Link>
         ))}
         <div className="flex gap-4 self-start mt-96 ml-5 max-md:mt-10">
           <img

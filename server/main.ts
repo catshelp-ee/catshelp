@@ -8,7 +8,7 @@ import * as dashboardController from "./controllers/dashboard-controller.ts";
 import { authenticate } from "./middleware/authorization-middleware.ts";
 import db from "../models/index.cjs";
 
-initializeDb()
+initializeDb();
 dotenv.config();
 
 const app = express();
@@ -24,15 +24,21 @@ app.post("/api/animals", authenticate, animalController.postAnimal);
 app.post("/api/pilt/lisa", authenticate, animalController.addPicture);
 app.post("/api/login", authenticate, loginController.login);
 app.get("/api/verify", authenticate, loginController.verify);
-app.get("/api/animals/dashboard", authenticate, dashboardController.getDashboard);
+app.get(
+  "/api/animals/dashboard",
+  authenticate,
+  dashboardController.getDashboard
+);
+app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
+app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
 
 app.listen(process.env.BACKEND_PORT, () => {
-    console.log("connected to backend!");
+  console.log("connected to backend!");
 });
 
 function initializeDb() {
-    // Seda ei tohi eemaldada
-    // Mingi fucked magic toimub siin, et peab vähemalt
-    // üks kord kutsuma teda, muidu ei toimi
-    db;
+  // Seda ei tohi eemaldada
+  // Mingi fucked magic toimub siin, et peab vähemalt
+  // üks kord kutsuma teda, muidu ei toimi
+  db;
 }

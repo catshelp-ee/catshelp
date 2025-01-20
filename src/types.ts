@@ -10,7 +10,7 @@ export type Cat = {
 };
 
 export type CatFormData = {
-  pildid: File[];
+  pildid?: File[];
   nimi: string;
   synniaeg: string;
   sugu: string;

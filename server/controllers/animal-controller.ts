@@ -1,32 +1,36 @@
 import GoogleService from "../services/google-service.ts";
 import fs from "node:fs";
-import { CatFormData } from "../../src/types.ts";
 import db from "../../models/index.cjs";
 import { generateCatDescription } from "../services/ai-service.ts";
 
 export async function postAnimal(req: any, res: any) {
   const googleService = await GoogleService.create();
-  const formData: CatFormData = req.body;
-  const rescueDate = formData.leidmis_kp;
+  const formData = req.body;
+
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().split("T")[0];
 
   const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
 
   delete formData.pildid;
-  const a = { id: animal.id, ...formData };
+  const row = { id: animal.id, ...formData };
 
-  await googleService.addDataToSheet(
+  /*await googleService.addDataToSheet(
     process.env.CATS_SHEETS_ID,
     "HOIUKODUDES",
-    a
-  );
+    row
+  );*/
 
   const animalRescue = await db.AnimalRescue.create({
-    rescue_date: rescueDate,
+    rescueDate: formattedDate,
+    state: formData.maakond,
+    address: formData.asula,
+    locationNotes: formData.lisa,
   });
 
   const animalToAnimalRescue = await db.AnimalToAnimalRescue.create({
-    animal_id: animal.id,
-    animal_rescue_id: animalRescue.id,
+    animalId: animal.id,
+    animalRescueId: animalRescue.id,
   });
   res.json("Success");
 }

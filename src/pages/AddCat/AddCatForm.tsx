@@ -1,22 +1,12 @@
-import {
-  Button,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { Button, FormLabel, Select, TextField, MenuItem } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import * as Utils from "../utils.ts";
-import React, { useState } from "react";
-import { Cat } from "../types.ts";
-import dayjs from "dayjs";
-import Header from "./Header.tsx";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import * as Utils from "../../utils.ts";
+import React, { useState, useEffect } from "react";
+import { Cat, defaultCat } from "../../types/Cat.ts";
+import Header from "../Header.tsx";
+import Gallery from "./Gallery.tsx";
+import States from "./States.json";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -30,18 +20,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-type ProcedureProps = {
-  idx: number;
-  removeProcedure: (idx: number) => void;
-  setCat: React.Dispatch<React.SetStateAction<Cat>>;
-};
-
 const AddCatForm = () => {
-  const [cat, setCat] = useState<Cat>({
-    foundDate: new Date(),
-    procedures: {},
-    proceduresValues: {},
-  });
+  const [cat, setCat] = useState<Cat>(defaultCat);
 
   const submitForm = (e: any) => {
     e.preventDefault();
@@ -103,56 +83,21 @@ const AddCatForm = () => {
                 name="pildid"
                 type="file"
                 accept="image/*"
+                onChange={(event: any) => {
+                  const files: File[] = Array.from(event.target.files);
+                  const images = cat.primaryInfo.images!;
+                  for (let index = 0; index < files.length; index++) {
+                    images.set(index, files[index]);
+                  }
+                  setCat((prevCat) => ({
+                    ...prevCat,
+                    primaryInfo: { images: images },
+                  }));
+                }}
                 multiple
               />
             </Button>
-            <DatePicker
-              name="leidmis_kp"
-              label="Leidmiskuupäev"
-              format="DD-MM-YYYY"
-              defaultValue={dayjs(cat.foundDate)}
-            />
-            <TextField name="nimi" label="Nimi" variant="outlined" />
-            <div className="flex flex-col">
-              <h2 className="my-8 text-2xl">LEDIMISKOHT</h2>
-              <h3 className="">MAAKOND</h3>
-              <Select name="leidmis_maakond" className="mb-8 mt-2"></Select>
-              <h3>LINN</h3>
-              <Select name="leidmis_linn" className="mb-8 mt-2"></Select>
-            </div>
-            <span className="flex place-content-between">
-              <div>
-                <FormLabel>Sugu</FormLabel>
-                <RadioGroup name="sugu" defaultValue={""}>
-                  <FormControlLabel
-                    value="emane"
-                    control={<Radio />}
-                    label="Emane"
-                  />
-                  <FormControlLabel
-                    value="isane"
-                    control={<Radio />}
-                    label="Isane"
-                  />
-                </RadioGroup>
-              </div>
-
-              <div>
-                <FormLabel>Kastreeritud/Steriliseeritud</FormLabel>
-                <RadioGroup name="loigatud" defaultValue={""}>
-                  <FormControlLabel
-                    value="true"
-                    control={<Radio />}
-                    label="Jah"
-                  />
-                  <FormControlLabel
-                    value="false"
-                    control={<Radio />}
-                    label="Ei"
-                  />
-                </RadioGroup>
-              </div>
-            </span>
+            <Gallery files={cat.primaryInfo.images!} setCat={setCat} />
             <TextField
               name="lisa"
               label="Lisainfo"
@@ -160,6 +105,17 @@ const AddCatForm = () => {
               minRows={4}
               variant="outlined"
             />
+            <div className="flex flex-col">
+              <h2 className="my-8 text-2xl">LEDIMISKOHT</h2>
+              <h3 className="">MAAKOND</h3>
+              <Select name="leidmis_maakond" className="mb-8 mt-2">
+                {States.maakonnad.map((maakond: string, idx: number) => {
+                  return <MenuItem>{maakond}</MenuItem>;
+                })}
+              </Select>
+              <h3>ASULA</h3>
+              <TextField name="leidmis_linn" className="mb-8 mt-2"></TextField>
+            </div>
           </form>
         </div>
       </div>
@@ -168,3 +124,10 @@ const AddCatForm = () => {
 };
 
 export default AddCatForm;
+
+/*
+              <Select name="leidmis_maakond" className="mb-8 mt-2">
+                {States.maakonnad.map((maakond: string, idx: number) => {
+                  return <MenuItem>{maakond}</MenuItem>;
+                })}
+              </Select>*/

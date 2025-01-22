@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
-import AddCatForm from "./pages/AddCatForm.tsx";
+import AddCatForm from "./pages/AddCat/AddCatForm.tsx";
 import CatProfile from "./pages/CatProfile/CatProfile.tsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -28,6 +28,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/edit-cat" element={<EditCat />} />
           <Route path="/cat-profile" element={<CatProfile />} />
+          <Route path="/add-cat" element={<AddCatForm />} />
         </Routes>
       </BrowserRouter>
     </LocalizationProvider>

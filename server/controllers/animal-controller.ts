@@ -32,6 +32,7 @@ export async function postAnimal(req: any, res: any) {
     animalId: animal.id,
     animalRescueId: animalRescue.id,
   });
+
   res.json("Success");
 }
 

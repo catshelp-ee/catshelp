@@ -63,7 +63,7 @@ const AddCatForm = () => {
     const payload = Object.fromEntries(formData);
     const pictures = Array.from(cat.primaryInfo.images?.values() || []);
 
-    // Utils.submitNewCatProfile(payload, pictures);
+    Utils.submitNewCatProfile(payload, pictures);
   };
 
   return (

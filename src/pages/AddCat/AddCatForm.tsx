@@ -114,6 +114,7 @@ const AddCatForm = () => {
             >
               Lae üles pildid
               <VisuallyHiddenInput
+                required
                 name="pildid"
                 type="file"
                 accept="image/*"

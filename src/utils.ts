@@ -80,16 +80,6 @@ export const ageStringToDateString = (ageString: string): string => {
   return formattedDate;
 };
 
-// Viib kuupäeva kujul pp-kk-aaaa kujule aaaa-kk-pp
-function convertDateFormat(dateStr: string) {
-  if (dateStr === "") return "";
-  // Split the input date string by the hyphen
-  const [day, month, year] = dateStr.split("-");
-
-  // Rearrange to the 'yyyy-mm-dd' format
-  return `${year}-${month}-${day}`;
-}
-
 // Makes numbers more readable
 export const formatChipNumber = (chipNumber: string) => {
   // Use regex to add hyphens every three digits
@@ -173,16 +163,16 @@ export const uploadImages = async (files: File[], catName: string) => {
 
   // Append each file to the FormData object
   files.forEach((file: File) => {
-    formData.append("images", file); // Use the same key for all files, make sure it matches the multer key
+    formData.append("images", file);
   });
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/pilt/lisa",
+      `${import.meta.env.VITE_BACKEND_URL}/api/pilt/lisa`,
       formData,
       {
         headers: {
           "Cat-Name": catName,
-          "Content-Type": "multipart/form-data", // Set content type for file upload
+          "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -223,16 +213,9 @@ export const submitNewCatProfile = async (
   },
   pictures: File[]
 ) => {
-  //formData.kiibi_nr = (formData.kiibi_nr as string).split("-").join("");
-  //formData.synniaeg = convertDateFormat(formData.synniaeg as string);
-  formData.leidmis_kp = convertDateFormat(formData.leidmis_kp as string);
   const catID = await axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/api/animals`,
     formData
   );
-  if (formData.nimi === "") {
-    //uploadImages(pictures, catID.data.id.toString());
-  } else {
-    //uploadImages(pictures, formData.nimi as string);
-  }
+  uploadImages(pictures, catID.data.split(" ").pop());
 };

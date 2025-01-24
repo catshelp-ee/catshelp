@@ -7,6 +7,7 @@ import * as loginController from "./controllers/login-controller.ts";
 import * as dashboardController from "./controllers/dashboard-controller.ts";
 import { authenticate } from "./middleware/authorization-middleware.ts";
 import db from "../models/index.cjs";
+import multer from "multer";
 
 initializeDb();
 dotenv.config();
@@ -18,10 +19,38 @@ app.use(express.json());
 // Get the equivalent of __dirname
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = __filename.substring(0, __filename.lastIndexOf("/")); // Get the directory path
+app.use("/public", express.static(join(__dirname, "../public")));
 
-app.use("/public", express.static(join(__dirname, "public")));
+// Configure Multer storage options
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, join(__dirname, "../public/Temp")); // Specify the folder to save the uploaded files
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname); // Set the filename
+  },
+});
+
+// Set file upload limits and filter (optional)
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Max file size: 10MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true); // Accept image files
+    } else {
+      cb(new Error("Invalid file type"), false); // Reject non-image files
+    }
+  },
+});
+
 app.post("/api/animals", authenticate, animalController.postAnimal);
-app.post("/api/pilt/lisa", authenticate, animalController.addPicture);
+app.post(
+  "/api/pilt/lisa",
+  authenticate,
+  upload.array("images"),
+  animalController.addPicture
+);
 app.post("/api/login", authenticate, loginController.login);
 app.get("/api/verify", authenticate, loginController.verify);
 app.get(

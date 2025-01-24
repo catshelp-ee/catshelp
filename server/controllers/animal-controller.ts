@@ -33,7 +33,7 @@ export async function postAnimal(req: any, res: any) {
     animalRescueId: animalRescue.id,
   });
 
-  res.json("Success");
+  res.json(animalRescue.identifier);
 }
 
 export async function addPicture(req, res) {
@@ -43,16 +43,16 @@ export async function addPicture(req, res) {
     const catName = req.get("Cat-Name");
     const driveFolder = await googleService.createDriveFolder(catName);
     const folderID = driveFolder.data.id;
-    let uploadedFiles = req.files.images;
+    let uploadedFiles = req.files;
 
     uploadedFiles = Array.isArray(uploadedFiles)
       ? uploadedFiles
       : [uploadedFiles];
 
     uploadedFiles.forEach((file, idx) => {
-      const tempPath = file.tempFilePath;
+      const tempPath = file.path;
       googleService.uploadToDrive(
-        catName,
+        file.originalname,
         fs.createReadStream(tempPath),
         folderID!
       );
@@ -60,7 +60,7 @@ export async function addPicture(req, res) {
 
     return res.json("Pildid laeti üles edukalt");
   } catch (error) {
-    return res.error("Tekkis tõrge piltide üles laadimisega:", error);
+    return res.json("Tekkis tõrge piltide üles laadimisega: " + error);
   }
 }
 

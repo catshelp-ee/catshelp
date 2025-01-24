@@ -1,34 +1,39 @@
 import GoogleService from "../services/google-service.ts";
 import fs from "node:fs";
-import { CatFormData } from "../../src/types.ts";
 import db from "../../models/index.cjs";
 import { generateCatDescription } from "../services/ai-service.ts";
 
 export async function postAnimal(req: any, res: any) {
   const googleService = await GoogleService.create();
-  const formData: CatFormData = req.body;
-  const rescueDate = formData.leidmis_kp;
+  const formData = req.body;
+
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().split("T")[0];
 
   const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
 
+  const animalRescue = await db.AnimalRescue.create({
+    rescueDate: formattedDate,
+    state: formData.maakond,
+    address: formData.asula,
+    locationNotes: formData.lisa,
+  });
+
+  const animalToAnimalRescue = await db.AnimalToAnimalRescue.create({
+    animalId: animal.id,
+    animalRescueId: animalRescue.id,
+  });
+
   delete formData.pildid;
-  const a = { id: animal.id, ...formData };
+  const row = { id: animalRescue.rankNr, ...formData };
 
   await googleService.addDataToSheet(
     process.env.CATS_SHEETS_ID,
     "HOIUKODUDES",
-    a
+    row
   );
 
-  const animalRescue = await db.AnimalRescue.create({
-    rescue_date: rescueDate,
-  });
-
-  const animalToAnimalRescue = await db.AnimalToAnimalRescue.create({
-    animal_id: animal.id,
-    animal_rescue_id: animalRescue.id,
-  });
-  res.json("Success");
+  res.json(animalRescue.identifier);
 }
 
 export async function addPicture(req, res) {
@@ -38,16 +43,16 @@ export async function addPicture(req, res) {
     const catName = req.get("Cat-Name");
     const driveFolder = await googleService.createDriveFolder(catName);
     const folderID = driveFolder.data.id;
-    let uploadedFiles = req.files.images;
+    let uploadedFiles = req.files;
 
     uploadedFiles = Array.isArray(uploadedFiles)
       ? uploadedFiles
       : [uploadedFiles];
 
     uploadedFiles.forEach((file, idx) => {
-      const tempPath = file.tempFilePath;
+      const tempPath = file.path;
       googleService.uploadToDrive(
-        catName,
+        file.originalname,
         fs.createReadStream(tempPath),
         folderID!
       );
@@ -55,7 +60,7 @@ export async function addPicture(req, res) {
 
     return res.json("Pildid laeti üles edukalt");
   } catch (error) {
-    return res.error("Tekkis tõrge piltide üles laadimisega:", error);
+    return res.json("Tekkis tõrge piltide üles laadimisega: " + error);
   }
 }
 

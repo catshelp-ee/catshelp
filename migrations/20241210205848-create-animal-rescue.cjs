@@ -9,15 +9,22 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      identifier: {
+        type: Sequelize.INTEGER,
+      },
       rankNr: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         field: "rank_nr",
+        defaultValue: 1,
       },
       rescueDate: {
         type: Sequelize.DATE,
         field: "rescue_date",
       },
-      location: {
+      state: {
+        type: Sequelize.STRING,
+      },
+      address: {
         type: Sequelize.STRING,
       },
       locationNotes: {

@@ -12,6 +12,10 @@ import dayjs from "dayjs";
 import "dayjs/locale/et.js";
 import Login from "./pages/Login.tsx";
 import EditCat from "./pages/EditCat/EditCat.tsx";
+import RegisterForm from "./pages/Register/RegisterForm.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { CookiesProvider } from "react-cookie";
+import OAuth from "../oauth.json";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -21,17 +25,22 @@ function App() {
   dayjs().weekday(1);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/edit-cat" element={<EditCat />} />
-          <Route path="/cat-profile" element={<CatProfile />} />
-          <Route path="/add-cat" element={<AddCatForm />} />
-        </Routes>
-      </BrowserRouter>
-    </LocalizationProvider>
+    <GoogleOAuthProvider clientId={OAuth.web.client_id}>
+      <CookiesProvider defaultSetOptions={{ path: "/" }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/register" element={<RegisterForm />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/edit-cat" element={<EditCat />} />
+              <Route path="/cat-profile" element={<CatProfile />} />
+              <Route path="/add-cat" element={<AddCatForm />} />
+            </Routes>
+          </BrowserRouter>
+        </LocalizationProvider>
+      </CookiesProvider>
+    </GoogleOAuthProvider>
   );
 }
 

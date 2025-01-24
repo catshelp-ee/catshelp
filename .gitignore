@@ -1,6 +1,7 @@
 node_modules
 .env
 credentials.json
+oauth.json
 .public/Cats
 .vscode
 config/config.json

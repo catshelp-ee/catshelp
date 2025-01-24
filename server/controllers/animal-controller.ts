@@ -12,15 +12,6 @@ export async function postAnimal(req: any, res: any) {
 
   const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
 
-  delete formData.pildid;
-  const row = { id: animal.id, ...formData };
-
-  /*await googleService.addDataToSheet(
-    process.env.CATS_SHEETS_ID,
-    "HOIUKODUDES",
-    row
-  );*/
-
   const animalRescue = await db.AnimalRescue.create({
     rescueDate: formattedDate,
     state: formData.maakond,
@@ -32,6 +23,15 @@ export async function postAnimal(req: any, res: any) {
     animalId: animal.id,
     animalRescueId: animalRescue.id,
   });
+
+  delete formData.pildid;
+  const row = { id: animalRescue.rankNr, ...formData };
+
+  await googleService.addDataToSheet(
+    process.env.CATS_SHEETS_ID,
+    "HOIUKODUDES",
+    row
+  );
 
   res.json(animalRescue.identifier);
 }

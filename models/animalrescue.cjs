@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
 
           // Fetch the last rescue record to check the current month
           const lastRescue = await AnimalRescue.findOne({
-            order: [["rescueDate", "DESC"]],
+            order: [["id", "DESC"]],
           });
 
           if (

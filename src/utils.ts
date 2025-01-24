@@ -163,16 +163,16 @@ export const uploadImages = async (files: File[], catName: string) => {
 
   // Append each file to the FormData object
   files.forEach((file: File) => {
-    formData.append("images", file); // Use the same key for all files, make sure it matches the multer key
+    formData.append("images", file);
   });
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/pilt/lisa",
+      `${import.meta.env.VITE_BACKEND_URL}/api/pilt/lisa`,
       formData,
       {
         headers: {
           "Cat-Name": catName,
-          "Content-Type": "multipart/form-data", // Set content type for file upload
+          "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -217,5 +217,5 @@ export const submitNewCatProfile = async (
     `${import.meta.env.VITE_BACKEND_URL}/api/animals`,
     formData
   );
-  //uploadImages(pictures, catID.data.id.toString());
+  uploadImages(pictures, catID.data.split(" ").pop());
 };

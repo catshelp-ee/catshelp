@@ -1,21 +1,222 @@
 import GoogleService from "../services/google-service.ts";
+import rules from "./rules.json" with {type: "json"};
 import fs from "node:fs";
+import process from "node:process";
+
+const DAYS_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+const MONTHS_IN_MILLISECONDS = 30 * DAYS_IN_MILLISECONDS;
+const YEARS_IN_MILLISECONDS = 12 * MONTHS_IN_MILLISECONDS;
+
+interface ToDoResponse {
+  assignee: string;
+  urgent: boolean;
+  label: string;
+  due: string;
+  action: {
+    label: string;
+    redirect: string;
+  };
+}
 
 // TODO:
-// 1. query paramina hooldekodu nime kaudu otsimine
-// 2. meelespea tabel
-export async function getDashboard(req, res) {
-    const googleService = await GoogleService.create();
-    const rows = googleService.getSheetData(process.env.CATS_SHEETS_ID, "HOIUKODUDES")
+// 1. meelespea tabel
+export async function getDashboard(req: any, res: any) {
+  const username = req.params.name;
+  const googleService = await GoogleService.create();
+  const sheetsData = await googleService.getSheetData(
+    process.env.CATS_SHEETS_ID!,
+    "HOIUKODUDES"
+  );
 
-    const random = rows.data.sheets![0].data;
-    const columnNamesWithIndexes: { [key: string]: number } = {};
+  const sheetData = sheetsData.data.sheets![0].data;
 
-    random![0].rowData![0].values!.forEach((col, idx) => {
-        if (!col.formattedValue) return;
-        columnNamesWithIndexes[col.formattedValue!] = idx;
-    });
+  const namesOfColumnsWithCorrespondingPositionIndex: {
+    [key: string]: number;
+  } = {};
+  sheetData![0].rowData![0].values!.forEach((col: any, idx: number) => {
+    if (!col.formattedValue) return;
+    namesOfColumnsWithCorrespondingPositionIndex[col.formattedValue!] = idx;
+  });
 
+  const rows = findFosterHome(
+    username,
+    sheetData,
+    namesOfColumnsWithCorrespondingPositionIndex["_HOIUKODU/ KLIINIKU NIMI"]
+  );
+
+  const cats: string[] = [];
+
+  rows.forEach((row) => {
+    const cat = row[namesOfColumnsWithCorrespondingPositionIndex["KASSI NIMI"]];
+    cats.push(cat.formattedValue);
+  });
+
+  const [days, months, years] = rules.triggers[0].trigger_delta_time
+    .split("/")
+    .map(Number);
+  const trigger = rules.triggers[0];
+
+  let offset;
+  let offset2;
+
+  const response: ToDoResponse[] = [];
+  const currentDate = new Date();
+  const currentTime = currentDate.getTime();
+
+  for (let index = 0; index < rows.length; index++) {
+    const row = rows[index];
+
+    const [day, month, year] = row[
+      namesOfColumnsWithCorrespondingPositionIndex[trigger.columns[0]]
+    ].formattedValue
+      .split(".")
+      .map(Number);
+    const triggerDate = new Date(Date.UTC(year, month - 1, day));
+
+    const notifications = trigger.notifications;
+
+    const triggerTime = triggerDate.getTime();
+
+    // offset is added since in the config file
+    // when comparing to the past the number is negative
+    offset =
+      days * DAYS_IN_MILLISECONDS +
+      months * MONTHS_IN_MILLISECONDS +
+      years * YEARS_IN_MILLISECONDS;
+
+    currentDate.setTime(currentTime + offset);
+
+    // It hasnt been longer than the specified time in the trigger
+    if (triggerDate >= currentDate) {
+      console.log("no trigger");
+      console.log(currentDate);
+      console.log(triggerDate);
+      continue;
+    }
+    const dueDate = new Date();
+
+    for (let index1 = 0; index1 < notifications.length; index1++) {
+      const notification = notifications[index1];
+      const [days, months, years] = notification.date_delta
+        .split("/")
+        .map(Number);
+      const [days_latest, months_latest, years_latest] =
+        notification.time.latest.split("/").map(Number);
+
+      offset =
+        days * DAYS_IN_MILLISECONDS +
+        months * MONTHS_IN_MILLISECONDS +
+        years * YEARS_IN_MILLISECONDS;
+      currentDate.setTime(currentTime + offset);
+
+      offset2 =
+        days_latest * DAYS_IN_MILLISECONDS +
+        months_latest * MONTHS_IN_MILLISECONDS +
+        years_latest * YEARS_IN_MILLISECONDS;
+
+      triggerDate.setTime(triggerTime + offset2);
+      dueDate.setTime(triggerTime + offset + offset2);
+
+      const todo: ToDoResponse = {
+        label: notification.content,
+        assignee: cats[index],
+        due: dueDate.toLocaleDateString(),
+        action: {
+          label: notification.button.text,
+          redirect: notification.button.redirect,
+        },
+        urgent: false,
+      };
+
+      if (notification.button.internal)
+        todo.action.redirect = `${process.env.VITE_BACKEND_URL}${todo.action.redirect}`;
+      if (triggerDate < currentDate) todo.urgent = true;
+
+      response.push(todo);
+    }
+  }
+
+  /*
+  const [day, month, year] =
+    rows[0][
+      namesOfColumnsWithCorrespondingPositionIndex[trigger.columns[0]]
+    ].formattedValue.split(".").map(Number);
+  const triggerDate = new Date(Date.UTC(year, month - 1, day));
+  const currentDate = new Date();
+
+  const notifications = trigger.notifications;
+
+  const currentTime = currentDate.getTime();
+  const triggerTime = triggerDate.getTime();
+
+  // offset is added since in the config file
+  // when comparing to the past the number is negative
+  let offset =
+    days * DAYS_IN_MILLISECONDS +
+    months * MONTHS_IN_MILLISECONDS +
+    years * YEARS_IN_MILLISECONDS;
+
+  currentDate.setTime(currentTime + offset);
+
+  // It hasnt been longer than the specified time in the trigger
+  if (triggerDate >= currentDate) {
+    console.log("no trigger");
+    console.log(currentDate);
+    console.log(triggerDate);
+    return;
+  }
+
+  const response: ToDoResponse[] = [];
+
+  const dueDate = new Date();
+
+  let offset2;
+
+  for (let index = 0; index < notifications.length; index++) {
+    const notification = notifications[index];
+    const [days, months, years] = notification.date_delta
+      .split("/")
+      .map(Number);
+    const [days_latest, months_latest, years_latest] = notification.time.latest
+      .split("/")
+      .map(Number);
+
+    offset =
+      days * DAYS_IN_MILLISECONDS +
+      months * MONTHS_IN_MILLISECONDS +
+      years * YEARS_IN_MILLISECONDS;
+    currentDate.setTime(currentTime + offset);
+
+    offset2 =
+      days_latest * DAYS_IN_MILLISECONDS +
+      months_latest * MONTHS_IN_MILLISECONDS +
+      years_latest * YEARS_IN_MILLISECONDS;
+
+    triggerDate.setTime(triggerTime + offset2);
+    dueDate.setTime(triggerTime + offset + offset2);
+
+    const todo: ToDoResponse = {
+      label: notification.content,
+      assignee: cats[0],
+      due: dueDate.toLocaleDateString(),
+      action: {
+        label: notification.button.text,
+        redirect: notification.button.redirect,
+      },
+      urgent: false,
+    };
+
+    if (notification.button.internal)
+      todo.action.redirect = `${process.env.VITE_BACKEND_URL}${todo.action.redirect}`;
+    if (triggerDate < currentDate) todo.urgent = true;
+
+    response.push(todo);
+  }*/
+
+  console.log(response);
+  return res.json(response);
+
+  /*
     const fosterhomeCats: { [key: string]: any } = {
         pets: [],
         todos: [],
@@ -100,4 +301,36 @@ export async function getDashboard(req, res) {
     });
 
     return res.json(fosterhomeCats);
-};
+    */
+}
+
+function findFosterHome(
+  username: string,
+  sheetData: any,
+  usernameColIndex: number
+) {
+  const rowData = sheetData[0].rowData;
+  let row;
+  const rows = [];
+  for (let index = 0; index < rowData.length; index++) {
+    row = rowData[index].values;
+
+    const fosterhome = row[usernameColIndex];
+
+    if (fosterhome.formattedValue !== username) continue;
+
+    rows.push(row);
+  }
+  return rows;
+}
+
+function shiftDate(
+  dateToShift: Date,
+  days: number,
+  months: number,
+  years: number
+) {
+  dateToShift.setDate(dateToShift.getDate() + days);
+  dateToShift.setMonth(dateToShift.getMonth() + months);
+  dateToShift.setFullYear(dateToShift.getFullYear() + years);
+}

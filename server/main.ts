@@ -54,7 +54,7 @@ app.post(
 app.post("/api/login", authenticate, loginController.login);
 app.get("/api/verify", authenticate, loginController.verify);
 app.get(
-  "/api/animals/dashboard",
+  "/api/animals/dashboard/:name",
   authenticate,
   dashboardController.getDashboard
 );

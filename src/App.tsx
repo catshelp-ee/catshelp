@@ -25,7 +25,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/:name" element={<Dashboard />} />
           <Route path="/edit-cat" element={<EditCat />} />
           <Route path="/cat-profile" element={<CatProfile />} />
           <Route path="/add-cat" element={<AddCatForm />} />

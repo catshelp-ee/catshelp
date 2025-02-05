@@ -1,56 +1,48 @@
 import React from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
+import WarningIcon from "@mui/icons-material/Warning";
 
 interface TodoItemProps {
   label: string;
-  date: string;
   assignee: string;
-  action: string;
-  pet: string | null;
+  due: string;
+  action: {
+    label: string;
+    redirect: string;
+  };
   urgent: boolean;
-  isCompleted: boolean;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
   label,
-  date,
+  due,
   assignee,
   action,
-  pet,
   urgent,
-  isCompleted,
 }) => {
-  const petImage =
-    pet === "Peemot"
-      ? "https://cdn.builder.io/api/v1/image/assets/TEMP/80e8356e58c23aa5528af7719b3f8796da083b19a92fcf490fc81fbe9e28b37d?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973"
-      : "https://cdn.builder.io/api/v1/image/assets/TEMP/bad705e364fcce414200230d9611c07a2a21de27e3c139acd1766a2ed473edbf?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973";
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
   const labels = { inputProps: { "aria-label": "Checkbox demo" } };
   return (
     <tr>
       <td>
         <Checkbox {...labels} />
+        {urgent && <WarningIcon className={`${dateColor}`} />}
       </td>
-      <td>{label}</td>
+      <td className={`${dateColor}`}>{label}</td>
       <td>
         <table>
           <tr>
-            <td className={`${dateColor}`}>{date}</td>
-            <td>
-              <img
-                loading="lazy"
-                src={petImage}
-                alt=""
-                className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
-              />
-            </td>
-            <td className={`${dateColor}`}>{assignee}</td>
+            <td>{due}</td>
+            <td>|||</td>
+            <td>{assignee}</td>
           </tr>
         </table>
       </td>
       <td>
-        <Button>{action}</Button>
+        <a href={action.redirect} target="_blank">
+          <Button>{action.label}</Button>
+        </a>
       </td>
     </tr>
   );

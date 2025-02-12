@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, FormLabel, Select, TextField, MenuItem } from "@mui/material";
+import { Button, FormLabel, Select, TextField, MenuItem, Autocomplete } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as Utils from "../../utils.ts";
@@ -24,6 +24,7 @@ const AddCatForm = () => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isSlidingDown, setSlidingDown] = useState(false);
   const [isSlidingUp, setSlidingUp] = useState(false);
+  const [indexOffset, setIndexOffset] = useState(0);
 
   const handlePopupClose = () => {
     setSlidingUp(true);
@@ -39,8 +40,10 @@ const AddCatForm = () => {
     const images = cat.primaryInfo.images!;
 
     files.forEach((file, index) => {
-      images.set(index, file);
+      images.set(index+indexOffset, file);
     });
+
+    setIndexOffset(prev => prev + files.length);
 
     setCat((prevCat) => ({
       ...prevCat,
@@ -78,7 +81,7 @@ const AddCatForm = () => {
       <div className="flex flex-col w-1/3 max-sm:w-full">
         <Header className="mt-4" imgClass="m-auto" />
         <h1 className="text-5xl mt-2 max-sm:text-4xl">Lisa uus kass</h1>
-        <div className="flex flex-col flex-1 mb-24 mt-6 overflow-scroll items-center content-center">
+        <div className="flex flex-col flex-1 mb-24 mt-6 overflow-scroll no-scrollbar items-center content-center">
           <form
             onSubmit={handleSubmit}
             className="createForm flex w-full flex-col gap-4"
@@ -131,8 +134,26 @@ const AddCatForm = () => {
               variant="outlined"
             />
             <div className="flex flex-col">
-              <h2 className="my-8 text-2xl">Leidmiskoht</h2>
-              <h3>Maakond</h3>
+              <Autocomplete
+                disablePortal
+                options={States.maakonnad}
+                renderInput={(params) => <TextField {...params} label="Maakond" />}
+                className="mb-4 mt-12"
+               />
+              <TextField name="asula" label="Asula" multiline rows={4} className="mb-8 mt-2" />
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddCatForm;
+
+/*
+
+
               <Select
                 name="maakond"
                 className="mb-8 mt-2"
@@ -158,14 +179,5 @@ const AddCatForm = () => {
                   </MenuItem>
                 ))}
               </Select>
-              <h3>Asula</h3>
-              <TextField name="asula" className="mb-8 mt-2" />
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default AddCatForm;
+*/

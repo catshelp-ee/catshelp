@@ -6,6 +6,7 @@ import * as animalController from "./controllers/animal-controller.ts";
 import * as loginController from "./controllers/login-controller.ts";
 import * as dashboardController from "./controllers/dashboard-controller.ts";
 import { authenticate } from "./middleware/authorization-middleware.ts";
+import cookieParser from "cookie-parser";
 import db from "../models/index.cjs";
 import multer from "multer";
 
@@ -14,6 +15,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 // Get the equivalent of __dirname

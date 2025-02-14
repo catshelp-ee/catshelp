@@ -14,9 +14,8 @@ const TodoList: React.FC<TodoListProps> = ({ todos }) => {
         <h2 className="text-3xl font-bold text-slate-500 mb-4">
           SINU TEGEMISTE MEELESPEA
         </h2>
-        <table className="w-full">
+        <table className="w-full border-separate border-spacing-y-10">
           {todos.map((item, index) => {
-            console.log(item);
             return <TodoItem key={index} {...item} />;
           })}
         </table>

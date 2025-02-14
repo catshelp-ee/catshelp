@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
-import WarningIcon from "@mui/icons-material/Warning";
 
 interface TodoItemProps {
   label: string;
@@ -21,27 +20,31 @@ const TodoItem: React.FC<TodoItemProps> = ({
   action,
   urgent,
 }) => {
+  const [checked, setChecked] = useState(false);
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
-  const labels = { inputProps: { "aria-label": "Checkbox demo" } };
+
   return (
-    <tr>
-      <td>
-        <Checkbox {...labels} />
-        {urgent && <WarningIcon className={`${dateColor}`} />}
+    <tr className="pb-4">
+      <td className="w-1/2 text-sm whitespace-normal align-middle">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            sx={{ padding: 0 }}
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+          <span className={`${checked ? "line-through text-gray-400" : ""}`}>
+            {label}
+          </span>
+        </div>
       </td>
-      <td className={`${dateColor}`}>{label}</td>
-      <td>
-        <table>
-          <tr>
-            <td>{due}</td>
-            <td>|||</td>
-            <td>{assignee}</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <a href={action.redirect} target="_blank">
-          <Button>{action.label}</Button>
+      <td className={`text-left w-1/6 ${dateColor}`}>{due}</td>
+      <td className="flex text-left gap-4 items-end">
+        <object data="/cat.svg" width="30" height="30"></object>
+         {assignee}
+         </td>
+      <td className="text-right align-middle">
+        <a href={action.redirect} target="_blank" rel="noopener noreferrer">
+          <Button variant="contained">{action.label}</Button>
         </a>
       </td>
     </tr>
@@ -49,23 +52,3 @@ const TodoItem: React.FC<TodoItemProps> = ({
 };
 
 export default TodoItem;
-
-/*
-
-    <div className="flex text-xs gap-8">
-      <div className="flex my-auto gap-2 w-3/5">
-        <Checkbox {...labels} />
-        <div className="my-auto">{label}</div>
-      </div>
-      <div className="flex">
-        <span className={`my-auto ${dateColor}`}>{date}</span>
-        <img
-          loading="lazy"
-          src={petImage}
-          alt=""
-          className="object-contain shrink-0 self-stretch my-auto w-8 aspect-square"
-        />
-        <span className={`my-auto ${dateColor}`}>{assignee}</span>
-      </div>
-      <button className="text-white bg-blue-600 rounded-md">{action}</button>
-*/

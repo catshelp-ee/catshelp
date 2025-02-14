@@ -32,10 +32,6 @@ const Gallery: React.FC<GalleryProps> = ({ files, setCat }) => {
       const updatedImages = new Map(prevCat.primaryInfo.images);
       updatedImages.delete(key);
       if (updatedImages.size == 0) setIsCollapsed(true);
-<<<<<<< HEAD
-      if (updatedImages.size == 0) setIsCollapsed(true);
-=======
->>>>>>> 4573fbd11cc203e01059abc7f55e036ca761935f
       return {
         ...prevCat,
         primaryInfo: { ...prevCat.primaryInfo, images: updatedImages },

@@ -40,11 +40,12 @@ const Gallery: React.FC<GalleryProps> = ({ files, setCat }) => {
   };
 
   return (
-    <div>
+    <div className={`${files.size === 0 ? "hidden": "visible"}`}>
       <div
         className={`flex gap-x-4 ${
           isCollapsed ? "h-12 overflow-y-scroll bg-white [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1),rgba(0,0,0,0))] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1),rgba(0,0,0,0))]" : ""
-        }`}
+        }`
+      }
       >
         {columns.map((column, colIndex) => (
           <div key={colIndex} className="flex-1 space-y-4">
@@ -85,7 +86,7 @@ const Gallery: React.FC<GalleryProps> = ({ files, setCat }) => {
         ))}
       </div>
       <IconButton onClick={() => setIsCollapsed((prev) => !prev)}>
-        {files.size > 0 && (isCollapsed ? <AddIcon color="primary" variant="contained" /> : <RemoveIcon color="primary" />)}
+        {isCollapsed ? <AddIcon color="primary" variant="contained" /> : <RemoveIcon color="primary" />}
       </IconButton>
     </div>
   );

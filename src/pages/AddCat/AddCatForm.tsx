@@ -80,11 +80,10 @@ const AddCatForm = () => {
       />
       <div className="flex flex-col w-1/3 max-sm:w-full">
         <Header className="mt-4" imgClass="m-auto" />
-        <h1 className="text-5xl mt-2 max-sm:text-4xl">Lisa uus kass</h1>
-        <div className="flex flex-col flex-1 mb-24 mt-6 overflow-scroll no-scrollbar items-center content-center">
+        <h1 className="text-5xl mt-4 mb-16 max-sm:text-4xl">Lisa uus kass</h1>
           <form
             onSubmit={handleSubmit}
-            className="createForm flex w-full flex-col gap-4"
+            className="flex flex-col overflow-scroll no-scrollbar w-full gap-4"
           >
             <Button
               sx={{
@@ -99,17 +98,6 @@ const AddCatForm = () => {
             >
               Kinnita
             </Button>
-            <FormLabel
-              sx={{
-                fontSize: "2rem",
-                color: "#000",
-                "@media (max-width: 600px)": {
-                  fontSize: "1.5rem",
-                },
-              }}
-            >
-              Lisa pilte kassist
-            </FormLabel>
             <Button
               component="label"
               variant="contained"
@@ -133,17 +121,13 @@ const AddCatForm = () => {
               maxRows={4}
               variant="outlined"
             />
-            <div className="flex flex-col">
               <Autocomplete
                 disablePortal
                 options={States.maakonnad}
                 renderInput={(params) => <TextField {...params} label="Maakond" />}
-                className="mb-4"
                />
-              <TextField name="asula" label="Asula" multiline maxRows={4} className="mb-8 mt-2" />
-            </div>
+              <TextField name="asula" label="Asula" multiline maxRows={4} />
           </form>
-        </div>
       </div>
     </div>
   );

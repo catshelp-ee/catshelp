@@ -1,10 +1,12 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../authContext.tsx";
 
 interface SidebarProps {}
 
 const Sidebar: React.FC<SidebarProps> = () => {
   const location = useLocation();
+  const { logout } = useAuth();
 
   const menuItems = [
     {
@@ -62,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
             </div>
           </Link>
         ))}
-        <div className="flex gap-4 self-start mt-96 ml-5 max-md:mt-10">
+        <div className="flex gap-4 self-start mt-96 ml-5 max-md:mt-10" onClick={ logout }>
           <img
             loading="lazy"
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/1a8bfc2073ff01d8a09056dd451c41ede6ad1c5822731d52cf6535f974d3a452?placeholderIfAbsent=true&apiKey=a6209b244aa54c4e8f2b191433bea973"

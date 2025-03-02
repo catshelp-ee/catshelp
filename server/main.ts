@@ -5,6 +5,7 @@ import { join } from "@std/path";
 import * as animalController from "./controllers/animal-controller.ts";
 import * as loginController from "./controllers/login-controller.ts";
 import * as dashboardController from "./controllers/dashboard-controller.ts";
+import * as userController from "./controllers/user-controller.ts";
 import { authenticate } from "./middleware/authorization-middleware.ts";
 import cookieParser from "cookie-parser";
 import db from "../models/index.cjs";
@@ -46,20 +47,13 @@ const upload = multer({
   },
 });
 
+app.post("/api/login", loginController.login);
+app.post("/api/logout", loginController.logout);
 app.post("/api/animals", authenticate, animalController.postAnimal);
-app.post(
-  "/api/pilt/lisa",
-  authenticate,
-  upload.array("images"),
-  animalController.addPicture
-);
-app.post("/api/login", authenticate, loginController.login);
+app.post("/api/pilt/lisa", authenticate, upload.array("images"),animalController.addPicture);
+app.get("/api/user", authenticate, userController.getUserData);
 app.get("/api/verify", authenticate, loginController.verify);
-app.get(
-  "/api/animals/dashboard",
-  authenticate,
-  dashboardController.getDashboard
-);
+app.get("/api/animals/dashboard", authenticate, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
 

@@ -8,10 +8,9 @@ import localeData from "dayjs/plugin/localeData";
 import "./App.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
-import Login from "./pages/Login.tsx";
 import EditCat from "./pages/EditCat/EditCat.tsx";
-import RegisterForm from "./pages/Register/RegisterForm.tsx";
 import ProtectedRoute from "./pages/ProtectedRoute.tsx";
+import LoginForm from "./pages/Login/LoginForm.tsx";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -22,8 +21,8 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<RegisterForm />} />
+      <Route path="/" element={<Navigate to="/dashboard"></Navigate>}/>
+      <Route path="/login" element={<LoginForm />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/edit-cat" element={<EditCat />} />

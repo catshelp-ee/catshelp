@@ -83,7 +83,7 @@ const AddCatForm = () => {
         <h1 className="text-5xl mt-4 mb-16 max-sm:text-4xl">Lisa uus kass</h1>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col overflow-scroll no-scrollbar w-full gap-4"
+            className="flex flex-col overflow-scroll no-scrollbar w-full gap-4 mb-28"
           >
             <Button
               sx={{

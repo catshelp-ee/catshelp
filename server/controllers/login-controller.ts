@@ -2,10 +2,20 @@ import * as jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import { OAuth2Client } from 'google-auth-library';
 import { getUserByEmail, setTokenInvalid } from "../services/user-service.ts"
+import { sendRequest } from "../services/email-service.ts";
 
 const client = new OAuth2Client();
 
-export async function login(req: any, res: any) {
+function setCookie(res, token) {
+    res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: process.env.ENVIRONMENT !== 'TEST',
+        sameSite: "Strict",
+        maxAge: 24 * 60 * 60 * 1000,
+    });
+}
+
+export async function googleLogin(req: any, res: any) {
     const { credential, clientId } = req.body;
     var email = null;
     try {
@@ -28,14 +38,19 @@ export async function login(req: any, res: any) {
         expiresIn: process.env.TOKEN_LENGTH,
     });
 
-    res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.ENVIRONMENT !== 'TEST',
-        sameSite: "Strict",
-        maxAge: 24 * 60 * 60 * 1000,
-    });
+    setCookie(res, token);
     return res.sendStatus(200);
     
+};
+
+export async function emailLogin(req: any, res: any) {
+    const { email } = req.body;
+    const user = await getUserByEmail(email);
+    if (!user) {
+        return res.sendStatus(401);
+    }
+    await sendRequest(user.id, user.email);
+    return res.sendStatus(200);
 };
 
 export async function logout(req: any, res: any) {
@@ -50,13 +65,25 @@ export async function logout(req: any, res: any) {
     return res.sendStatus(200);
 };
 
-export function verify(req: any, res: any) {
-    const token = req.query.token;
-    if (token == null) return res.sendStatus(401);
+export async function verify(req: any, res: any) {
+    let token = req.query.token;
+    if (token == null) {
+        return res.sendStatus(401);
+    }
+    
+    let decodedToken;
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        return res.redirect("/dashboard");
+        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e) {
         return res.sendStatus(401);
     }
+
+    await setTokenInvalid(token, decodedToken);
+        
+    token = jwt.sign({ id: decodedToken.id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.TOKEN_LENGTH,
+    });
+
+    setCookie(res, token);
+    return res.redirect("/dashboard");
 };

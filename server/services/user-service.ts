@@ -42,10 +42,10 @@ export async function setTokenInvalid(token, decodedToken) {
 }
 
 export async function isTokenInvalid(token) {
-    if (token) {
+    if (!token) {
         return true;
     }
-    const { count, rows } = await db.InvalidToken.findAndCountAll({
+    const { count } = await db.InvalidToken.findAndCountAll({
         where: {
             token: token
         }

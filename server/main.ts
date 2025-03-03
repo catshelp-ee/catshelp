@@ -47,12 +47,16 @@ const upload = multer({
   },
 });
 
-app.post("/api/login", loginController.login);
+//Public endpoints
+app.post("/api/login-google", loginController.googleLogin);
+app.post("/api/login-email", loginController.emailLogin);
+app.get("/api/verify", loginController.verify);
 app.post("/api/logout", loginController.logout);
+
+//Secure endpoints
 app.post("/api/animals", authenticate, animalController.postAnimal);
 app.post("/api/pilt/lisa", authenticate, upload.array("images"),animalController.addPicture);
 app.get("/api/user", authenticate, userController.getUserData);
-app.get("/api/verify", authenticate, loginController.verify);
 app.get("/api/animals/dashboard", authenticate, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);

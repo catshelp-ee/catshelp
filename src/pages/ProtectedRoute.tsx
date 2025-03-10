@@ -1,10 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../authContext.tsx";
+import Cookies from 'js-cookie';
 
 const ProtectedRoute = () => {
-  const { user, setUser } = useAuth();
-  const isAuthed = user !== null;
-  return isAuthed ? <Outlet /> : <Navigate to="/login" />;
+  const loginCookie = Cookies.get('catshelp');
+  return loginCookie ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

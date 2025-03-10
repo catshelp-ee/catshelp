@@ -33,7 +33,7 @@ export async function setTokenInvalid(token, decodedToken) {
     const date = new Date(0);
     date.setUTCSeconds(decodedToken.exp);
 
-    await db.InvalidToken.findOrCreate({
+    await db.RevokedToken.findOrCreate({
         where: {
             token: token,
             expiresAt: date
@@ -45,7 +45,7 @@ export async function isTokenInvalid(token) {
     if (!token) {
         return true;
     }
-    const { count } = await db.InvalidToken.findAndCountAll({
+    const { count } = await db.RevokedToken.findAndCountAll({
         where: {
             token: token
         }

@@ -39,15 +39,17 @@ export async function authenticate(req, res, next) {
     var decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
   } catch (err) {
     res.cookie("jwt", "");
+    res.cookie("catshelp", "");
     return res.sendStatus(401);
   }
 
-  if (await isTokenInvalid(req.cookies.jwt)) {
+  if (!decodedToken || await isTokenInvalid(req.cookies.jwt)) {
     res.cookie("jwt", "");
+    res.cookie("catshelp", "");
     return res.sendStatus(401);
   }
 
-  if (!decodedToken || !await canViewPage(decodedToken)) {
+  if (!await canViewPage(decodedToken)) {
     return res.sendStatus(401);
   }
 

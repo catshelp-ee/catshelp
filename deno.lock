@@ -53,6 +53,7 @@
     "npm:jwt-decode@4": "4.0.0",
     "npm:mariadb@^3.4.0": "3.4.0",
     "npm:multer@^1.4.5-lts.1": "1.4.5-lts.1",
+    "npm:node-cron@^3.0.3": "3.0.3",
     "npm:nodemailer@^6.9.16": "6.9.16",
     "npm:path-to-regexp@6.2.1": "6.2.1",
     "npm:path-to-regexp@^6.3.0": "6.3.0",
@@ -2350,6 +2351,12 @@
     "next-tick@1.1.0": {
       "integrity": "sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ=="
     },
+    "node-cron@3.0.3": {
+      "integrity": "sha512-dOal67//nohNgYWb+nWmg5dkFdIwDm8EpeGYMekPMrngV3637lqnX0lbUcCtgibHTz6SEz7DAIjKvKDFYCnO1A==",
+      "dependencies": [
+        "uuid@8.3.2"
+      ]
+    },
     "node-fetch@2.7.0": {
       "integrity": "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==",
       "dependencies": [
@@ -3311,6 +3318,7 @@
         "npm:jwt-decode@4",
         "npm:mariadb@^3.4.0",
         "npm:multer@^1.4.5-lts.1",
+        "npm:node-cron@^3.0.3",
         "npm:nodemailer@^6.9.16",
         "npm:postcss@^8.4.47",
         "npm:react-dom@^18.3.1",

@@ -2,12 +2,11 @@ import React, { useRef } from "react";
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../authContext.tsx";
 import { Button, TextField } from "@mui/material";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+
 
   const googleAuthSuccess = async (response: any) => {
     const loginReq = await axios.post("/api/login-google", response);
@@ -15,14 +14,7 @@ const LoginForm: React.FC = () => {
       console.log("No user");
       return;
     }
-    const userReq = await axios.get('/api/user');
-    if (!userReq.data) {
-      console.log("Can't get user data");
-      return;
-    }
-
-    setUser(userReq.data);
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const submitForm = async (e: any) => {

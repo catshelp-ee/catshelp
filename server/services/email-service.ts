@@ -1,5 +1,6 @@
 import * as jwt from "jsonwebtoken";
 import { createTransport } from "nodemailer";
+import "dotenv/config";
 
 export const sendRequest = async (id: number, email: string) => {
   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {

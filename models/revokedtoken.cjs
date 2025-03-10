@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class InvalidToken extends Model {
+  class RevokedToken extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  InvalidToken.init({
+  RevokedToken.init({
     token: DataTypes.STRING,
     expiresAt: {
       type: DataTypes.DATE,
@@ -21,8 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'InvalidToken',
-    tableName: 'invalid_tokens',
+    modelName: 'RevokedToken',
+    tableName: 'revoked_tokens',
   });
-  return InvalidToken;
+  return RevokedToken;
 };

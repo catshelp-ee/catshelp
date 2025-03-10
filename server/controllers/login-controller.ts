@@ -1,18 +1,27 @@
 import * as jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import { OAuth2Client } from 'google-auth-library';
-import { getUserByEmail, setTokenInvalid } from "../services/user-service.ts"
+import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "../services/user-service.ts"
 import { sendRequest } from "../services/email-service.ts";
 
 const client = new OAuth2Client();
 
-function setCookie(res, token) {
+function setLoginCookies(res, token) {
+    res.cookie("catshelp", 'true', {
+        httpOnly: false
+    });
+
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: process.env.ENVIRONMENT !== 'TEST',
         sameSite: "Strict",
         maxAge: 24 * 60 * 60 * 1000,
     });
+}
+
+function resetLoginCookies(res) {
+    res.cookie("jwt", "");
+    res.cookie("catshelp", "");
 }
 
 export async function googleLogin(req: any, res: any) {
@@ -38,7 +47,7 @@ export async function googleLogin(req: any, res: any) {
         expiresIn: process.env.TOKEN_LENGTH,
     });
 
-    setCookie(res, token);
+    setLoginCookies(res, token);
     return res.sendStatus(200);
     
 };
@@ -61,7 +70,7 @@ export async function logout(req: any, res: any) {
     const decoded = jwtDecode(cookie);
     await setTokenInvalid(cookie, decoded);
 
-    res.cookie("jwt", "");
+    resetLoginCookies(res);
     return res.sendStatus(200);
 };
 
@@ -78,12 +87,16 @@ export async function verify(req: any, res: any) {
         return res.sendStatus(401);
     }
 
+    if (await isTokenInvalid(token)) {
+        return res.sendStatus(401);
+    }
+
     await setTokenInvalid(token, decodedToken);
         
-    token = jwt.sign({ id: decodedToken.id }, process.env.JWT_SECRET, {
+    const newToken = jwt.sign({ id: decodedToken.id }, process.env.JWT_SECRET, {
         expiresIn: process.env.TOKEN_LENGTH,
     });
 
-    setCookie(res, token);
+    setLoginCookies(res, newToken);
     return res.redirect("/dashboard");
 };

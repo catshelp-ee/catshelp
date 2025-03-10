@@ -10,14 +10,16 @@ import { authenticate } from "./middleware/authorization-middleware.ts";
 import cookieParser from "cookie-parser";
 import db from "../models/index.cjs";
 import multer from "multer";
+import CronRunner from "./cron/cron-runner.ts";
 
-initializeDb();
 dotenv.config();
+initializeDb();
 
 const app = express();
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
+startCronRunner();
 
 // Get the equivalent of __dirname
 const __filename = new URL(import.meta.url).pathname;
@@ -70,4 +72,9 @@ function initializeDb() {
   // Mingi fucked magic toimub siin, et peab vähemalt
   // üks kord kutsuma teda, muidu ei toimi
   db;
+}
+
+function startCronRunner() {
+  const runner = new CronRunner();
+  runner.startCronJobs();
 }

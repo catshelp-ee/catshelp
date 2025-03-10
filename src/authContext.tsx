@@ -8,6 +8,20 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
+    const getUser = async () => {
+        if (user) {
+            return user;
+        }
+        
+        const userReq = await axios.get('/api/user');
+        if (!userReq.data) {
+            console.log("Can't get user data");
+            return;
+        }
+        setUser(userReq.data);
+        return user;
+    };
+
     const logout = async () => {
         //DO axios logout
         await axios.post("/api/logout");
@@ -16,8 +30,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const value = {
-        user,
-        setUser,
+        getUser,
         logout 
     };
 

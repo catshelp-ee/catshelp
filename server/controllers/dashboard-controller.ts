@@ -5,17 +5,6 @@ import fs from "node:fs";
 // 1. query paramina hooldekodu nime kaudu otsimine
 // 2. meelespea tabel
 export async function getDashboard(req, res) {
-    //TEMP
-    if (true) {
-        const fosterhomeCats: { [key: string]: any } = {
-            pets: [],
-            todos: [],
-        };
-        return res.json(fosterhomeCats);
-    }
-
-    //TEMP
-
     const googleService = await GoogleService.create();
     const rows = googleService.getSheetData(process.env.CATS_SHEETS_ID, "HOIUKODUDES")
 

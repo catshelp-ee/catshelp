@@ -22,14 +22,21 @@ interface ToDoResponse {
 export async function getDashboard(req: any, res: any) {
   const username = req.params.name;
   const googleService = await GoogleService.create();
-  const sheetsData = await googleService.getSheetData(
+  const sheetsDataFosterHomes = await googleService.getSheetData(
     process.env.CATS_SHEETS_ID!,
     "HOIUKODUDES"
   );
+  const sheetsDataContracts = await googleService.getSheetData(
+    process.env.CONTRACTS_SHEETS_ID!,
+    "Hoiukodude lepingud"
+  );
 
-  const sheetData = sheetsData.data.sheets![0].data;
+  const sheetsData = {
+    "cats": sheetsDataFosterHomes.data.sheets![0].data,
+    "contracts": sheetsDataContracts.data.sheets![0].data
+  }
 
-  const dashboardService = new DashboardService(sheetData, username);
+  const dashboardService = new DashboardService(sheetsData, username);
   const response = dashboardService.displayNotifications();
 
   return res.json(response);

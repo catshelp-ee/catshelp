@@ -1,6 +1,8 @@
 import { DashboardNotification } from "./notifications/DasboardNotification.ts";
 import UssirohiNotification from "./notifications/UssirohiNotification.ts";
-import moment from "moment";
+import BroneeriArstiAegNotification from "./notifications/BroneeriArstiAegNotification.ts";
+import VaktsiiniKinnitusNotification from "./notifications/VaktsiiniKinnitusNotification.ts";
+import TaidaAnkeetNotification from "./notifications/TaidaAnkeetNotification.ts";
 
 type Result = {
     assignee: string;
@@ -17,15 +19,16 @@ export default class DashboardService {
     sheetColumnNamesWithIndex: { [key: string]: number } = {};
     rows = [];
     cats = [];
-    constructor(sheetData: any, username: string) {
-        sheetData![0].rowData![0].values!.forEach((col: any, idx: number) => {
+    userHasContract = false;
+    constructor(sheetsData: any, username: string) {
+        sheetsData.cats![0].rowData![0].values!.forEach((col: any, idx: number) => {
             if (!col.formattedValue) return;
             this.sheetColumnNamesWithIndex[col.formattedValue!] = idx;
         });
 
         this.rows = findFosterHome(
             username,
-            sheetData,
+            sheetsData.cats,
             this.sheetColumnNamesWithIndex["_HOIUKODU/ KLIINIKU NIMI"],
         );
 
@@ -33,12 +36,36 @@ export default class DashboardService {
             const cat = row[this.sheetColumnNamesWithIndex["KASSI NIMI"]];
             this.cats.push(cat.formattedValue);
         });
+
+        sheetsData.contracts![0].rowData![0].values!.forEach((col: any, idx: number) => {
+            if (!col.formattedValue) return;
+            this.sheetColumnNamesWithIndex[col.formattedValue!] = idx;
+        });
     }
-    notifications: DashboardNotification[] = [new UssirohiNotification()];
+    notifications: DashboardNotification[] = [new UssirohiNotification(), new BroneeriArstiAegNotification(), new VaktsiiniKinnitusNotification()];
 
     displayNotifications() {
         const results: Result[] = [];
-        let triggerDate;
+
+
+        const ankeetNotification = new TaidaAnkeetNotification();
+
+        let result: Result = {
+            label: ankeetNotification.getText(),
+            assignee: "Sina ise",
+            due: new Date().toLocaleDateString("ru-RU", { timeZone: "UTC" }),
+            action: {
+                label: ankeetNotification.buttonText,
+                redirect: ankeetNotification.redirectURL,
+            },
+            urgent: this.userHasContract,
+        };
+
+        results.push(result)
+        
+        let triggerDate: Date;
+        let dueDate: Date;
+
         this.notifications.forEach((notification) => {
             for (let index = 0; index < this.rows.length; index++) {
                 const row = this.rows[index];
@@ -57,13 +84,13 @@ export default class DashboardService {
                 if (!notification?.shouldShow(triggerDate)) {
                     continue;
                 }
+                
+                dueDate = notification.getDueDate(triggerDate);
 
-                triggerDate = moment(triggerDate).add(1, 'y').toDate();
-
-                const result: Result = {
+                result = {
                     label: notification.getText(),
                     assignee: this.cats[index],
-                    due: triggerDate.toLocaleDateString("ru-RU", { timeZone: "UTC" }),
+                    due: dueDate.toLocaleDateString("ru-RU", { timeZone: "UTC" }),
                     action: {
                         label: notification.buttonText,
                         redirect: notification.redirectURL,
@@ -71,7 +98,7 @@ export default class DashboardService {
                     urgent: false,
                 };
 
-                if(notification.isUrgent(triggerDate)){
+                if(notification.isUrgent(dueDate)){
                     result.urgent = true;
                 }
 

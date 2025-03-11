@@ -1,14 +1,14 @@
 import { DashboardNotification } from "./DasboardNotification.ts";
 import moment from "moment";
 
-export default class UssirohiNotification implements DashboardNotification {
+export default class TaidaAnkeetNotification implements DashboardNotification {
     getText(): string {
-        return "Anna vähemalt 2 kuud enne vaktsineerimist ussirohi";
+        return "Täida hoiukoduankeet ja nõustu tingimustega";
     }
 
     shouldShow(triggerDate: Date): boolean {
         const currentDate = moment(new Date());
-        currentDate.subtract(10, "M");
+        currentDate.subtract(1, "y");
 
         if (currentDate.toDate() < triggerDate) return false;
 
@@ -22,10 +22,10 @@ export default class UssirohiNotification implements DashboardNotification {
     }
 
     getDueDate(currentDate: Date): Date {
-        return moment(currentDate).add(1, 'y').toDate()
+        return moment(currentDate).add(1, 'y').add(14, "d").toDate();
     }
 
     dbColumnName = "KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)";
-    buttonText = "Vaata juhendit";
+    buttonText = "Broneeri aeg";
     redirectURL = "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
 }

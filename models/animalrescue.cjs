@@ -9,31 +9,21 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      AnimalRescue.hasMany(models.AnimalToAnimalRescue, {
+        sourceKey: "id",
+        foreignKey: "animal_rescue_id",
+        as: "animals_to_animal_rescues",
+      });
     }
   }
   AnimalRescue.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
       identifier: DataTypes.INTEGER,
-      rankNr: {
-        type: DataTypes.INTEGER,
-        field: "rank_nr",
-      },
-      rescueDate: {
-        type: DataTypes.DATE,
-        field: "rescue_date",
-      },
+      rankNr: DataTypes.INTEGER,
+      rescueDate: DataTypes.DATE,
       state: DataTypes.STRING,
       address: DataTypes.STRING,
-      locationNotes: {
-        type: DataTypes.STRING,
-        field: "location_notes",
-      },
+      locationNotes: DataTypes.STRING
     },
     {
       sequelize,

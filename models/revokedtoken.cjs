@@ -15,10 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   RevokedToken.init({
     token: DataTypes.STRING,
-    expiresAt: {
-      type: DataTypes.DATE,
-      field: "expires_at",
-    },
+    expiresAt: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'RevokedToken',

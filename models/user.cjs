@@ -10,12 +10,21 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      User.belongsTo(models.FosterHome)
-      models.FosterHome.hasOne(User, {
-        foreignKey: "foster_home_id",
+      User.belongsTo(models.FosterHome);
+      User.hasOne(models.FosterHome, {
+        foreignKey: "catshelp_mentor_id",
         onDelete: "CASCADE",
-      })
-      // define association here
+      });
+      User.hasMany(models.Contact, {
+        sourceKey: "id",
+        foreignKey: "user_id",
+        as: "contacts",
+      });
+      User.hasMany(models.UserRole, {
+        sourceKey: "id",
+        foreignKey: "user_id",
+        as: "user_roles",
+      });
     }
   }
   User.init({
@@ -28,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'User',
-    tableName: 'users'
+    tableName: 'users',
   });
   return User;
 };

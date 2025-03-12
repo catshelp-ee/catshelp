@@ -18,7 +18,8 @@ module.exports = {
         },
       },
       roleName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        field: "role_name"
       },
       active: {
         type: Sequelize.BOOLEAN

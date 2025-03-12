@@ -18,13 +18,15 @@ module.exports = {
         },
       },
       contactType: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        field: "contact_type",
       },
       value: {
         type: Sequelize.STRING
       },
       preferredContactMethod: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        field: "preferred_contact_method",
       },
     });
   },

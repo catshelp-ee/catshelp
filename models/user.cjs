@@ -10,11 +10,21 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      User.belongsTo(models.FosterHome)
+      models.FosterHome.hasOne(User, {
+        foreignKey: "foster_home_id",
+        onDelete: "CASCADE",
+      })
       // define association here
     }
   }
   User.init({
-    email: DataTypes.STRING
+    fullName: DataTypes.STRING,
+    identityCode: DataTypes.STRING,
+    citizenship: DataTypes.STRING,
+    blacklisted: DataTypes.BOOLEAN,
+    blacklistedReason: DataTypes.TEXT,
+    createdAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'User',

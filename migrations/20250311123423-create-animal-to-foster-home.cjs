@@ -26,7 +26,8 @@ module.exports = {
         },
       },
       fosterEndDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        field: "foster_end_date",
       },
     });
   },

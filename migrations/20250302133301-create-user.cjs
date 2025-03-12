@@ -10,10 +10,12 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       fullName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        field: "full_name",
       },
       identityCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        field: "identity_code",
       },
       citizenship: {
         type: Sequelize.STRING
@@ -22,10 +24,12 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       blacklistedReason: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        field: "blacklisted_reason",
       },
       createdAt: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        field: "created_at"
       }
     });
   },

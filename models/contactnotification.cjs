@@ -10,15 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       ContactNotification.belongsTo(models.Contact, {
         foreignKey: "contact_id",
         onDelete: "CASCADE",
-      });
-      models.Contact.hasMany(ContactNotification, {
-        sourceKey: "id",
-        foreignKey: "contact_id",
-        as: "contact_notifications",
       });
     }
   }

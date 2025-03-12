@@ -10,15 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       UserRole.belongsTo(models.User, {
         foreignKey: "user_id",
         onDelete: "CASCADE",
-      });
-      models.User.hasMany(UserRole, {
-        sourceKey: "id",
-        foreignKey: "user_id",
-        as: "user_roles",
       });
     }
   }

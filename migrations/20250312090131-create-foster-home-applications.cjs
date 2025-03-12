@@ -26,10 +26,12 @@ module.exports = {
         },
       },
       googleFormsSubmitDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        field: "google_forms_submit_date",
       },
       nonCatshelpAnimals: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        field: "non_catshelp_animals",
       },
     });
   },

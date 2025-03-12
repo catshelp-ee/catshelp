@@ -9,8 +9,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      email: {
+      fullName: {
         type: Sequelize.STRING
+      },
+      identityCode: {
+        type: Sequelize.STRING
+      },
+      citizenship: {
+        type: Sequelize.STRING
+      },
+      blacklisted: {
+        type: Sequelize.BOOLEAN
+      },
+      blacklistedReason: {
+        type: Sequelize.TEXT
+      },
+      createdAt: {
+        type: Sequelize.DATE
       }
     });
   },

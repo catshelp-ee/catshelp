@@ -18,8 +18,9 @@ const Dashboard: React.FC<DashboardProps> = () => {
   useEffect(() => {
     const getDashboardCats = async () => {
       const response = await axios.get(`/api/animals/dashboard/${name}`);
-      //setPets(response.data.pets);
-      setTodos(response.data);
+      console.log(response.data.pets);
+      setPets(response.data.pets);
+      setTodos(response.data.todos);
     };
 
     getDashboardCats();

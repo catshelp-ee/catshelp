@@ -29,7 +29,7 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
             >
               <img
                 loading="lazy"
-                src={pet.image}
+                src={`${pet.image}`}
                 alt={pet.name}
                 className="object-contain aspect-square rounded-[45px] w-[77px]"
               />

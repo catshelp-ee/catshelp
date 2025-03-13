@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import fs from "node:fs";
+import path from "node:path";
 
 export default class GoogleService {
   private auth;
@@ -121,6 +122,16 @@ export default class GoogleService {
     destinationPath: string
   ): Promise<boolean> {
     try {
+      if (fs.existsSync(destinationPath)) {
+        console.log(`Image already exists at: ${destinationPath}`);
+        return false; // Return false because the image already exists
+      }
+
+      // Ensure the destination folder exists
+      const folderPath = path.dirname(destinationPath);
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true }); // Creates all missing folders
+      }
       const response = await this.drive.files.get(
         { fileId, alt: "media" },
         { responseType: "stream" }

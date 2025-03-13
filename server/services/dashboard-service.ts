@@ -3,6 +3,8 @@ import UssirohiNotification from "./notifications/UssirohiNotification.ts";
 import BroneeriArstiAegNotification from "./notifications/BroneeriArstiAegNotification.ts";
 import VaktsiiniKinnitusNotification from "./notifications/VaktsiiniKinnitusNotification.ts";
 import TaidaAnkeetNotification from "./notifications/TaidaAnkeetNotification.ts";
+import GoogleService from "./google-service.ts";
+import { google } from "googleapis";
 
 type Result = {
     assignee: string;
@@ -20,7 +22,12 @@ export default class DashboardService {
     rows = [];
     cats = [];
     userHasContract = false;
-    constructor(sheetsData: any, username: string) {
+    username = "";
+    googleService?: GoogleService = undefined;
+    constructor(sheetsData: any, username: string, googleService: GoogleService) {
+        this.googleService = googleService;
+        this.username = username;
+
         sheetsData.cats![0].rowData![0].values!.forEach((col: any, idx: number) => {
             if (!col.formattedValue) return;
             this.sheetColumnNamesWithIndex[col.formattedValue!] = idx;
@@ -43,6 +50,28 @@ export default class DashboardService {
         });
     }
     notifications: DashboardNotification[] = [new UssirohiNotification(), new BroneeriArstiAegNotification(), new VaktsiiniKinnitusNotification()];
+
+    downloadImages(){
+        let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it
+        const imageUrls: {image: string, name: string} = [];
+        this.rows.forEach((row, index) => {
+            const image = row[this.sheetColumnNamesWithIndex["PILT"]];
+            const imageUrl = image.hyperlink;
+            if (imageUrl === undefined) return;
+
+
+            const imagePath = `Temp/${this.username}/${this.cats[index]}.png`
+
+            this.googleService!.downloadImage(
+                imageUrl.match(regex)[1],
+                `./public/Temp/${this.username}/${this.cats[index]}.png`
+            )
+            
+            imageUrls.push({image: `/Temp/${this.username}/${this.cats[index]}.png`, name: this.cats[index]});
+        })
+
+        return imageUrls;
+    }
 
     displayNotifications() {
         const results: Result[] = [];

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     googleFormsSubmitDate: DataTypes.DATE,
     nonCatshelpAnimals: DataTypes.STRING
   }, {
+    underscored: true,
     sequelize,
     modelName: 'FosterHomeApplications',
     tableName: 'foster_home_applications',

@@ -21,9 +21,10 @@ module.exports = (sequelize, DataTypes) => {
     roleName: DataTypes.STRING,
     active: DataTypes.BOOLEAN
   }, {
+    underscored: true,
     sequelize,
     tableName: 'user_roles',
-    modelName: 'userRole',
+    modelName: 'UserRole',
   });
   return UserRole;
 };

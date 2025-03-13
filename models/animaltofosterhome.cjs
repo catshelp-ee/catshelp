@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     fosterHomeId: DataTypes.INTEGER,
     fosterEndDate: DataTypes.DATE
   }, {
+    underscored: true,
     sequelize,
     modelName: 'AnimalToFosterHome',
     tableName: 'animal_to_foster_homes',

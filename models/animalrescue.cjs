@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       locationNotes: DataTypes.STRING
     },
     {
+      underscored: true,
       sequelize,
       modelName: "AnimalRescue",
       tableName: "animal_rescues",

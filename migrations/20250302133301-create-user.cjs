@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      email: {
+        type: Sequelize.STRING
+      },
       fullName: {
         type: Sequelize.STRING,
         field: "full_name",

@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     value: DataTypes.STRING,
     preferredContactMethod: DataTypes.BOOLEAN
   }, {
+    underscored: true,
     sequelize,
     modelName: 'Contact',
     tableName: 'contacts',

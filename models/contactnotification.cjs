@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     text: DataTypes.STRING,
     sent: DataTypes.BOOLEAN
   }, {
+    underscored: true,
     sequelize,
     modelName: 'ContactNotification',
     tableName: 'contact_notifications',

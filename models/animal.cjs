@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       chipRegisteredWithUs: DataTypes.BOOLEAN
     },
     {
+      underscored: true,
       sequelize,
       modelName: "Animal",
       tableName: "animals",

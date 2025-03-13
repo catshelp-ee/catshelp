@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       animalRescueId: DataTypes.INTEGER
     },
     {
+      underscored: true,
       sequelize,
       modelName: "AnimalToAnimalRescue",
       tableName: "animal_to_animal_rescues",

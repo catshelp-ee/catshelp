@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     token: DataTypes.STRING,
     expiresAt: DataTypes.DATE,
   }, {
+    underscored: true,
     sequelize,
     modelName: 'RevokedToken',
     tableName: 'revoked_tokens',

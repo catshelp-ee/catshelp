@@ -11,10 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       FosterHome.belongsTo(models.User);
-      FosterHome.hasOne(models.User, {
-        foreignKey: "foster_home_id",
-        onDelete: "CASCADE",
-      });
       FosterHome.hasMany(models.AnimalToFosterHome, {
         sourceKey: "id",
         foreignKey: "foster_home_id",
@@ -29,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     endDate: DataTypes.DATE,
     catshelpMentorId: DataTypes.STRING
   }, {
+    underscored: true,
     sequelize,
     modelName: 'FosterHome',
     tableName: 'foster_homes',

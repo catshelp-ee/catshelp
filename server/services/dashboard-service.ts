@@ -57,7 +57,10 @@ export default class DashboardService {
         this.rows.forEach((row, index) => {
             const image = row[this.sheetColumnNamesWithIndex["PILT"]];
             const imageUrl = image.hyperlink;
-            if (imageUrl === undefined) return;
+            if (imageUrl === undefined){
+                imageUrls.push({image: `missingCat.png`, name: this.cats[index]});
+                return;
+            };
 
 
             const imagePath = `Temp/${this.username}/${this.cats[index]}.png`
@@ -67,7 +70,7 @@ export default class DashboardService {
                 `./public/Temp/${this.username}/${this.cats[index]}.png`
             )
             
-            imageUrls.push({image: `/Temp/${this.username}/${this.cats[index]}.png`, name: this.cats[index]});
+            imageUrls.push({image: `Temp/${this.username}/${this.cats[index]}.png`, name: this.cats[index]});
         })
 
         return imageUrls;

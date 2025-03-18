@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Avatar, IconButton, Tooltip, Button } from "@mui/material";
 import AllPetsPopup from "./AllPetsPopup";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 interface FosterPetsProps {
   pets: any;
@@ -19,9 +21,9 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [viewAllPets]);
 
@@ -43,18 +45,15 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
         </h2>
         <div className="flex items-center justify-around space-x-3 px-8 relative">
           {displayPets.map((pet, index) => (
-            <Tooltip key={index} title={pet.name} className="flex flex-col items-center">
-              <Button sx={{
-                borderRadius: "9999px"
-              }}>
+            <Link to="/cat-profile/1">
+              <Tooltip title={pet.name} className="flex flex-col items-center">
                 <Avatar
                   src={`/${pet.image}`}
                   alt={pet.name}
                   sx={{ width: 64, height: 64 }} // Tailwind w-16 h-16
                 />
-                {/*<div className="mt-1.5 text-sm">{pet.name}</div> */}
-              </Button>
-            </Tooltip>
+              </Tooltip>
+            </Link>
           ))}
 
           {hiddenPets > 0 && (
@@ -75,7 +74,7 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
               </IconButton>
             </Tooltip>
           )}
-          {viewAllPets && <AllPetsPopup pets={pets} ref={dropdownRef}/>}
+          {viewAllPets && <AllPetsPopup pets={pets} ref={dropdownRef} />}
         </div>
       </div>
     </section>

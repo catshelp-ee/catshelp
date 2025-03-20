@@ -6,20 +6,17 @@ interface TodoListProps {
 }
 
 const TodoList: React.FC<TodoListProps> = ({ todos }) => {
-  console.log(todos);
-
   return (
-    <section className="flex overflow-hidden flex-col px-4 pt-5 pb-44 mt-3.5 w-full bg-white rounded-3xl border border-solid border-black border-opacity-20 min-h-[679px] max-md:pb-24 max-md:max-w-full">
-      <div className="flex flex-col items-baseline">
-        <h2 className="text-3xl font-bold text-slate-500 mb-4">
-          SINU TEGEMISTE MEELESPEA
-        </h2>
-        <table className="w-full border-separate border-spacing-y-10">
-          {todos.map((item, index) => {
-            return <TodoItem key={index} {...item} />;
-          })}
-        </table>
-      </div>
+    <section className="flex flex-col overflow-scroll px-4 my-4 rounded-3xl border border-solid border-black border-opacity-20">
+      <h2 className="text-3xl font-bold text-slate-500 mb-4">
+        SINU TEGEMISTE MEELESPEA
+      </h2>
+
+      <table className="w-full border-separate border-spacing-y-8">
+        {todos.map((item, index) => {
+          return <TodoItem key={index} {...item} />;
+        })}
+      </table>
     </section>
   );
 };

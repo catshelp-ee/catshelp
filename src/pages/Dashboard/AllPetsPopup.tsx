@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { Avatar, Button, Typography } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const AllPetsPopup = forwardRef(({ pets }, ref) => {

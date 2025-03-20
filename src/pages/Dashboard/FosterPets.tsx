@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Avatar, IconButton, Tooltip, Button } from "@mui/material";
+import { Avatar, IconButton, Tooltip } from "@mui/material";
 import AllPetsPopup from "./AllPetsPopup";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 interface FosterPetsProps {
   pets: any;
@@ -28,21 +27,17 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
   }, [viewAllPets]);
 
   return (
-    <section className="flex w-full">
-      <div className="flex flex-col w-2/3">
-        <h2 className="text-base font-bold text-slate-500">
-          TEATED CATS HELPILT
-        </h2>
-        <div className="px-4 py-6 mt-5 text-sm rounded-3xl border border-solid border-black border-opacity-20">
+    <div className="flex h-30">
+      <div className="flex flex-col w-2/3 p-4 border rounded-3xl border border-solid border-black border-opacity-20">
+        <h2 className="mb-2 text-left">TEATED CATS HELPILT</h2>
+        <p className="overflow-scroll text-left">
           Siia kirjutame informatiivseid teateid, millest tahame hoiukodule
           teada anda. Pikema teksti puhul tuleks sisemine scroll :) Tekstid
           tulevad Sheetsist.
-        </div>
+        </p>
       </div>
-      <div className="flex flex-col grow shrink self-stretch my-auto min-w-[240px] w-[194px]">
-        <h2 className="text-base font-bold mb-2 leading-relaxed text-slate-500">
-          SINU HOIULOOMAD
-        </h2>
+      <div className="flex flex-col w-1/3">
+        <h2 className="mb-4">SINU HOIULOOMAD</h2>
         <div className="flex items-center justify-around space-x-3 px-8 relative">
           {displayPets.map((pet, index) => (
             <Link to="/cat-profile/1">
@@ -77,7 +72,7 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
           {viewAllPets && <AllPetsPopup pets={pets} ref={dropdownRef} />}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

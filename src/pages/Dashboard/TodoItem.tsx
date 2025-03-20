@@ -24,8 +24,8 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
 
   return (
-    <tr className="pb-4">
-      <td className="w-1/2 text-sm whitespace-normal align-middle">
+    <tr>
+      <td className="w-1/2 text-sm whitespace">
         <div className="flex items-center gap-2">
           <Checkbox
             sx={{ padding: 0 }}
@@ -38,15 +38,20 @@ const TodoItem: React.FC<TodoItemProps> = ({
         </div>
       </td>
       <td className={`text-left w-1/6 ${dateColor}`}>{due}</td>
-      <td className="flex text-left gap-4 items-end">
-        <object data="/cat.svg" width="30" height="30"></object>
-         {assignee}
-         </td>
-      <td className="text-right align-middle">
+      <td className="text-left">
+        <div className="flex items-center gap-4">
+          <object data="/cat.svg" width="30" height="30"></object>
+          {assignee}
+        </div>
+      </td>
+      <td className="text-right">
         <a href={action.redirect} target="_blank" rel="noopener noreferrer">
-          <Button variant="contained">{action.label}</Button>
+          <Button sx={{ width: "100%"}} variant="contained">
+            {action.label}
+          </Button>
         </a>
       </td>
+
     </tr>
   );
 };

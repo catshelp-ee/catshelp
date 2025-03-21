@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import Sidebar from "./Sidebar.tsx";
 import Header from "../Header.tsx";
 import Notifications from "./Notifications.tsx";
 import FosterPets from "./FosterPets.tsx";
 import TodoList from "./TodoList.tsx";
-
 import axios from "axios";
-import "./todo.css";
+import { useAuth } from "../../authContext.tsx";
 
 interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
   const [pets, setPets] = useState([]);
   const [todos, setTodos] = useState([]);
-  const { name } = useParams();
+  const [name, setName] = useState("")
+  const { getUser } = useAuth();
+
 
   useEffect(() => {
     const getDashboardCats = async () => {
-      const response = await axios.get(`/api/animals/dashboard/${name}`);
+      const user = await getUser();
+      setName(user.fullName);
+
+      const response = await axios.get(`/api/animals/dashboard/${user.fullName}`);
       setPets(response.data.pets);
       setTodos(response.data.todos);
     };

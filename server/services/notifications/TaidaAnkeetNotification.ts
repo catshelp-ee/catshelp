@@ -26,6 +26,6 @@ export default class TaidaAnkeetNotification implements DashboardNotification {
     }
 
     dbColumnName = "KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)";
-    buttonText = "Broneeri aeg";
-    redirectURL = "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
+    buttonText = "Täida ankeet";
+    redirectURL = "https://docs.google.com/forms/d/e/1FAIpQLScVxngcYrKm4_ZgSLa39AL13Iap6_dz7TYMxQHIzv35wovnQA/viewform?usp=sf_link";
 }

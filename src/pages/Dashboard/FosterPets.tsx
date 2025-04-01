@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Avatar, IconButton, Tooltip } from "@mui/material";
+import { Avatar, IconButton, Tooltip, Typography } from "@mui/material";
 import AllPetsPopup from "./AllPetsPopup";
 import { Link } from "react-router-dom";
 
@@ -27,27 +27,34 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
   }, [viewAllPets]);
 
   return (
-    <div className="flex h-30">
-      <div className="flex flex-col w-2/3 p-4 border rounded-3xl border border-solid border-black border-opacity-20">
-        <h2 className="mb-2 text-left">TEATED CATS HELPILT</h2>
-        <p className="overflow-scroll text-left">
+    <div className="flex h-52">
+      <div className="flex flex-col w-2/3">
+        <h2 className="mb-8 text-left text-base font-bold leading-relaxed text-slate-500">
+          TEATED CATS HELPILT
+        </h2>
+        <p className="h-full p-4 whitespace-pre-line overflow-scroll text-left border rounded-3xl border border-solid border-black border-opacity-20">
           Siia kirjutame informatiivseid teateid, millest tahame hoiukodule
           teada anda. Pikema teksti puhul tuleks sisemine scroll :) Tekstid
           tulevad Sheetsist.
         </p>
       </div>
       <div className="flex flex-col w-1/3">
-        <h2 className="mb-4">SINU HOIULOOMAD</h2>
+        <h2 className="mb-12 text-base font-bold leading-relaxed text-slate-500">
+          SINU HOIULOOMAD
+        </h2>
         <div className="flex items-center justify-around space-x-3 px-8 relative">
           {displayPets.map((pet, index) => (
             <Link to="/cat-profile/1">
-              <Tooltip title={pet.name} className="flex flex-col items-center">
-                <Avatar
-                  src={`/${pet.image}`}
-                  alt={pet.name}
-                  sx={{ width: 64, height: 64 }} // Tailwind w-16 h-16
-                />
-              </Tooltip>
+              <Avatar
+                src={`/${pet.image}`}
+                alt=""
+                sx={{ width: 90, height: 90 }}
+              />
+              <Typography
+                sx={{ margin: "8px 0", color: "black", fontWeight: "bold" }}
+              >
+                {pet.name}
+              </Typography>
             </Link>
           ))}
 

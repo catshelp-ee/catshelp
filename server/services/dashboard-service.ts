@@ -98,6 +98,7 @@ export default class DashboardService {
         let triggerDate: Date;
         let dueDate: Date;
 
+        //TODO: Vaheta loopide järjekorra ära, et todod oleksid kassi kaupa mitte notificationi kaupa
         this.notifications.forEach((notification) => {
             for (let index = 0; index < this.rows.length; index++) {
                 const row = this.rows[index];

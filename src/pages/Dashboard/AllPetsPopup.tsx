@@ -6,7 +6,7 @@ const AllPetsPopup = forwardRef(({ pets }, ref) => {
   return (
     <div
       ref={ref}
-      className="flex flex-col absolute w-full h-48 overflow-scroll top-0 left-0 rounded-xl bg-white border"
+      className="flex flex-col absolute w-full max-h-102 z-10 overflow-scroll top-0 left-0 rounded-xl bg-white border"
     >
       {pets.map((pet, index) => (
         <Link
@@ -17,7 +17,7 @@ const AllPetsPopup = forwardRef(({ pets }, ref) => {
           <Avatar
             src={`/${pet.image}`}
             alt={pet.name}
-            sx={{ width: 64, height: 64 }} // Tailwind w-16 h-16
+            sx={{ width: 64, height: 64 }}
           />
           <Typography variant="body2">{pet.name}</Typography>
         </Link>

@@ -15,16 +15,18 @@ const Sidebar: React.FC<SidebarProps> = () => {
       text: "Kiisude töölaud",
       path: "/dashboard",
     },
+    /*
     {
       icon: "Heart.png",
       text: "Tervis ja kliinikud",
       path: "/clinics",
-    },
+    },*/
     {
       icon: "Document.png",
       text: "Kiisu profiil veebis",
       path: "/cat-profile",
     },
+    /*
     {
       icon: "Add-Person.png",
       text: "Kodu pakkumised",
@@ -40,11 +42,12 @@ const Sidebar: React.FC<SidebarProps> = () => {
       text: "Juhendid ja lingid",
       path: "/materials",
     },
+    */
   ];
 
   return (
     <nav className="flex flex-col w-1/5">
-      <div className="flex flex-col w-full h-full py-14 bg-[#30B0C7] relative">
+      <div className="flex flex-col w-full h-full py-14 bg-[#30B0C7] relative rounded-tr-lg shadow-[0_4px_8px_rgba(0,0,0,0.25)]">
         <div>
           {menuItems.map((item, index) => (
             <Link

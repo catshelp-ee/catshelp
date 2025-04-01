@@ -1,0 +1,112 @@
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { IconButton, Button } from "@mui/material";
+import { useAuth } from "../../authContext.tsx";
+import CloseIcon from "@mui/icons-material/Close";
+
+interface SidebarProps {
+  setView: any;
+  view: any;
+}
+
+const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
+  const [isClosed, setIsClosed] = useState(false);
+  const { logout } = useAuth();
+
+  const menuItems = [
+    {
+      icon: "Check.png",
+      text: "Kiisude töölaud",
+      path: "/dashboard",
+    },
+    /*
+    {
+      icon: "Heart.png",
+      text: "Tervis ja kliinikud",
+      path: "/clinics",
+    },*/
+    {
+      icon: "Document.png",
+      text: "Kiisu profiil veebis",
+      path: "/cat-profile",
+    },
+    /*
+    {
+      icon: "Add-Person.png",
+      text: "Kodu pakkumised",
+      path: "/home-offers",
+    },
+    {
+      icon: "Document-Fav.png",
+      text: "Kiisu koju saatmine",
+      path: "/sending-home",
+    },
+    {
+      icon: "Information-circle.png",
+      text: "Juhendid ja lingid",
+      path: "/materials",
+    },
+    */
+  ];
+
+  useEffect(() => {
+    if (!isClosed) return;
+
+    setTimeout(() => {
+      setView(false);
+    }, 280);
+  }, [isClosed]);
+
+  return (
+    <nav
+      className={`flex flex-col z-10 left-0 absolute h-full w-full bg-[#30B0C7] ${
+        isClosed ? "animate-slide-left" : "animate-slide-right"
+      }`}
+    >
+      <IconButton
+        sx={{
+          borderRadius: 0,
+          width: "20%",
+          height: "4rem",
+          padding: "1.25rem",
+          position: "absolute",
+          right: 0,
+          backgroundColor: "#E5E7EB", // Tailwind gray-300
+          "&:hover": { backgroundColor: "#D1D5DB" }, // Hover effect
+        }}
+        onClick={() => setIsClosed(true)}
+      >
+        <CloseIcon sx={{ width: "100%", height: "100%" }} />
+      </IconButton>
+      <div>
+        {menuItems.map((item, index) => (
+          <Link
+            to={item.path}
+            key={index}
+            className="flex text-white p-5 text-base w-4/5"
+          >
+            <img loading="lazy" src={`/${item.icon}`} alt="" className="mr-8" />
+            {item.text}
+          </Link>
+        ))}
+      </div>
+      <Button
+        sx={{
+          position: "absolute",
+          bottom: "15%",
+          padding: "16px",
+          color: "white",
+          textTransform: "none",
+          fontSize: "1rem",
+          lineHeight: "1.5rem",
+        }}
+        onClick={logout}
+      >
+        <img loading="lazy" src="/Vector.png" alt="" className="mr-8" />
+        Logi välja
+      </Button>
+    </nav>
+  );
+};
+
+export default SidebarMobile;

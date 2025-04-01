@@ -13,7 +13,7 @@ interface TodoItemProps {
   urgent: boolean;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({
+const TodoItemMobile: React.FC<TodoItemProps> = ({
   label,
   due,
   assignee,
@@ -24,9 +24,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
 
   return (
-    <tr className="h-11">
-      <td className="w-1/2 text-sm whitespace">
-        <div className="flex items-center gap-2">
+    <tr className="flex flex-col mb-8">
+      <td className="text-sm">
+        <div className="flex gap-2 text-left">
           <Checkbox
             sx={{ padding: 0 }}
             checked={checked}
@@ -37,33 +37,35 @@ const TodoItem: React.FC<TodoItemProps> = ({
           </span>
         </div>
       </td>
-      <td className={`text-left w-1/6 ${dateColor}`}>{due}</td>
-      <td className="text-left w-1/5">
+      <td className="flex justify-between items-end">
+        <div className={`${dateColor}`}>{due}</div>
+
         <div className="flex items-center gap-4">
           <object data="/cat.svg" width="30" height="30"></object>
           {assignee}
         </div>
-      </td>
-      <td className="text-right h-full">
-        <a href={action.redirect} target="_blank" rel="noopener noreferrer">
-          <Button
-            sx={{
-              width: "100%",
-              height: "100%",
-              backgroundColor: "#007AFF",
-              fontSize: "13px",
-              padding: "4px 12px",
-              borderRadius: "6px",
-              textTransform: "none",
-            }}
-            variant="contained"
-          >
-            {action.label}
-          </Button>
-        </a>
+
+        <div className="text-right h-full">
+          <a href={action.redirect} target="_blank" rel="noopener noreferrer">
+            <Button
+              sx={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "#007AFF",
+                fontSize: "13px",
+                padding: "4px 12px",
+                borderRadius: "6px",
+                textTransform: "none",
+              }}
+              variant="contained"
+            >
+              {action.label}
+            </Button>
+          </a>
+      </div>
       </td>
     </tr>
   );
 };
 
-export default TodoItem;
+export default TodoItemMobile;

@@ -6,13 +6,31 @@ import FosterPets from "./FosterPets.tsx";
 import TodoList from "./TodoList.tsx";
 import axios from "axios";
 import { useAuth } from "../../authContext.tsx";
+import DesktopView from "./DesktopView.tsx";
+import MobileView from "./MobileView.tsx";
 
 interface DashboardProps {}
+
+function useMediaQuery(query: any) {
+  const [matches, setMatches] = useState(window.matchMedia(query).matches);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const handleChange = () => setMatches(mediaQuery.matches);
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [query]);
+
+  return matches;
+}
+
 
 const Dashboard: React.FC<DashboardProps> = () => {
   const [pets, setPets] = useState([]);
   const [todos, setTodos] = useState([]);
   const [name, setName] = useState("")
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const { getUser } = useAuth();
 
 
@@ -30,19 +48,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
     return () => {};
   }, []);
-  return (
-    <div className="flex flex-col w-full h-screen">
-      <Header className="flex w-1/5 my-2 h-[113px] justify-center" />
-      <div className="flex h-[calc(100vh-129px)]"> {/*Only way I could figure out how to make this CURSED FUCKING TABLE to work. 113 is the height of the header and 16 is the margin. 8 top 8 bottom */}
-        <Sidebar />
-        <div className="flex flex-col w-full mx-12 mb-12 flex-1">
-          <Notifications name={name} />
-          <FosterPets pets={pets} />
-          <TodoList todos={todos} />
-        </div>
-      </div>
-    </div>
-  );
+  return isMobile ? <MobileView name={name} pets={pets} todos={todos} /> : <DesktopView name={name} pets={pets} todos={todos}/>
 };
 
 export default Dashboard;

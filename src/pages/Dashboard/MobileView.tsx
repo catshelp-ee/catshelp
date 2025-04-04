@@ -12,6 +12,7 @@ interface MobileViewProps {
 }
 
 const MobileView: React.FC<MobileViewProps> = ({name, pets, todos}) => {
+  console.log(todos)
   return (
     <div className='flex flex-col h-full items-center'>
         <Header imgClass="h-20" />

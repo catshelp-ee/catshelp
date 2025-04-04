@@ -15,6 +15,7 @@ type Result = {
         label: string;
         redirect: string;
     };
+    catColour: string;
 };
 
 export default class DashboardService {
@@ -23,6 +24,7 @@ export default class DashboardService {
     cats = [];
     userHasContract = false;
     username = "";
+    colours = ["#b24747", "#b28747", "#8eb200", "#23b200", "#00b247", "#47b2b2", "#0047b2", "#2300b2", "#8e00b2", "#b24787"];
     googleService?: GoogleService = undefined;
     constructor(sheetsData: any, username: string, googleService: GoogleService) {
         this.googleService = googleService;
@@ -129,6 +131,7 @@ export default class DashboardService {
                         redirect: notification.redirectURL,
                     },
                     urgent: false,
+                    catColour: this.colours[index],
                 };
 
                 if(notification.isUrgent(dueDate)){

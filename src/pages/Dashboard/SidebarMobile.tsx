@@ -54,7 +54,7 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
 
     setTimeout(() => {
       setView(false);
-    }, 280);
+    }, 200);
   }, [isClosed]);
 
   return (
@@ -76,15 +76,15 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
         }}
         onClick={() => setIsClosed(true)}
       >
-        <CloseIcon sx={{ width: "100%", height: "100%" }} />
+        <CloseIcon />
       </IconButton>
-      <div>
+      <div className="my-[40%]">
         {menuItems.map((item, index) => (
           <Link
             to={item.path}
             key={index}
             className="flex text-white p-5 text-base w-4/5"
-          >
+          > 
             <img loading="lazy" src={`/${item.icon}`} alt="" className="mr-8" />
             {item.text}
           </Link>

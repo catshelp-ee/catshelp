@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
+import CatSvg from "./CatSvg";
 
 interface TodoItemProps {
   label: string;
@@ -11,6 +12,7 @@ interface TodoItemProps {
     redirect: string;
   };
   urgent: boolean;
+  catColour: string,
 }
 
 const TodoItemMobile: React.FC<TodoItemProps> = ({
@@ -19,9 +21,12 @@ const TodoItemMobile: React.FC<TodoItemProps> = ({
   assignee,
   action,
   urgent,
+  catColour,
 }) => {
   const [checked, setChecked] = useState(false);
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
+
+  console.log(catColour)
 
   return (
     <tr className="flex flex-col mb-8">
@@ -37,22 +42,21 @@ const TodoItemMobile: React.FC<TodoItemProps> = ({
           </span>
         </div>
       </td>
-      <td className="flex justify-between items-end">
-        <div className={`${dateColor}`}>{due}</div>
+      <td className="flex items-end">
+        <div className={`${dateColor} w-1/3 text-sm`}>{due}</div>
 
-        <div className="flex items-center gap-4">
-          <object data="/cat.svg" width="30" height="30"></object>
+        <div className="flex items-center gap-4 w-1/3 text-sm text-left">
+          <CatSvg width={30} height={30} colour={`${catColour}`} />
           {assignee}
         </div>
 
-        <div className="text-right h-full">
+        <div className="w-1/3 px-2 ">
           <a href={action.redirect} target="_blank" rel="noopener noreferrer">
             <Button
               sx={{
                 width: "100%",
-                height: "100%",
                 backgroundColor: "#007AFF",
-                fontSize: "13px",
+                fontSize: "12px",
                 padding: "4px 12px",
                 borderRadius: "6px",
                 textTransform: "none",

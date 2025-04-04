@@ -2,7 +2,6 @@ import { DashboardNotification } from "./notifications/DasboardNotification.ts";
 import UssirohiNotification from "./notifications/UssirohiNotification.ts";
 import BroneeriArstiAegNotification from "./notifications/BroneeriArstiAegNotification.ts";
 import VaktsiiniKinnitusNotification from "./notifications/VaktsiiniKinnitusNotification.ts";
-import TaidaAnkeetNotification from "./notifications/TaidaAnkeetNotification.ts";
 import GoogleService from "./google-service.ts";
 import { google } from "googleapis";
 
@@ -82,27 +81,12 @@ export default class DashboardService {
         const results: Result[] = [];
 
 
-        const ankeetNotification = new TaidaAnkeetNotification();
-
-        let result: Result = {
-            label: ankeetNotification.getText(),
-            assignee: "Sina ise",
-            due: new Date().toLocaleDateString("ru-RU", { timeZone: "UTC" }),
-            action: {
-                label: ankeetNotification.buttonText,
-                redirect: ankeetNotification.redirectURL,
-            },
-            urgent: this.userHasContract,
-        };
-
-        results.push(result)
-        
         let triggerDate: Date;
         let dueDate: Date;
 
         //TODO: Vaheta loopide järjekorra ära, et todod oleksid kassi kaupa mitte notificationi kaupa
-        this.notifications.forEach((notification) => {
-            for (let index = 0; index < this.rows.length; index++) {
+        for (let index = 0; index < this.rows.length; index++) {
+            this.notifications.forEach((notification) => {
                 const row = this.rows[index];
 
                 const [day, month, year] =
@@ -117,7 +101,7 @@ export default class DashboardService {
 
                 triggerDate = new Date(Date.UTC(year, month - 1, day));
                 if (!notification?.shouldShow(triggerDate)) {
-                    continue;
+                    return;
                 }
                 
                 dueDate = notification.getDueDate(triggerDate);
@@ -140,8 +124,8 @@ export default class DashboardService {
 
 
                 results.push(result);
-            }
-        });
+            });
+        }
 
         return results;
     }

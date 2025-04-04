@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
+import CatSvg from "./CatSvg";
+
 
 interface TodoItemProps {
   label: string;
@@ -11,6 +13,7 @@ interface TodoItemProps {
     redirect: string;
   };
   urgent: boolean;
+  catColour: string;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
@@ -19,6 +22,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   assignee,
   action,
   urgent,
+  catColour,
 }) => {
   const [checked, setChecked] = useState(false);
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
@@ -40,7 +44,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
       <td className={`text-left w-1/6 ${dateColor}`}>{due}</td>
       <td className="text-left w-1/5">
         <div className="flex items-center gap-4">
-          <object data="/cat.svg" width="30" height="30"></object>
+          <CatSvg width={30} height={30} colour={`${catColour}`} />
           {assignee}
         </div>
       </td>

@@ -37,7 +37,7 @@ const FosterPetsMobile: React.FC<FosterPetsProps> = ({ pets }) => {
         Sheetsist.
       </p>
 
-      <div className="flex items-center relative justify-around px-8 border rounded-3xl border border-solid border-black border-opacity-20">
+      <div className="flex items-center relative min-h-24 justify-around px-8 border rounded-3xl border border-solid border-black border-opacity-20">
         {displayPets.map((pet, index) => (
           <Link to="/cat-profile/1">
             <Avatar

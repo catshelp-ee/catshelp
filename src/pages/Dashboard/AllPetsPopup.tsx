@@ -6,7 +6,7 @@ const AllPetsPopup = forwardRef(({ pets }, ref) => {
   return (
     <div
       ref={ref}
-      className="flex flex-col absolute w-full max-h-102 z-10 overflow-scroll top-0 left-0 rounded-xl bg-white border"
+      className="flex flex-col absolute w-full max-h-102 pt-4 z-10 overflow-scroll top-0 left-0 rounded-xl bg-white border"
     >
       {pets.map((pet, index) => (
         <Link

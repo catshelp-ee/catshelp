@@ -80,7 +80,9 @@ export default class DashboardService {
     displayNotifications() {
         const results: Result[] = [];
 
-
+        
+        
+        let result: Result;
         let triggerDate: Date;
         let dueDate: Date;
 

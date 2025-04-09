@@ -5,7 +5,6 @@ import Notifications from "./Notifications.tsx";
 import FosterPets from "./FosterPets.tsx";
 import TodoList from "./TodoList.tsx";
 import axios from "axios";
-import "./todo.css";
 
 interface DashboardProps {}
 

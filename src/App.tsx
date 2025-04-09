@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import AddCatForm from "./pages/AddCat/AddCatForm.tsx";
 import CatProfile from "./pages/CatProfile/CatProfile.tsx";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
-import "./App.css";
+import "@style/App.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
 import EditCat from "./pages/EditCat/EditCat.tsx";

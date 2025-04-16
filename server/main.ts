@@ -62,6 +62,9 @@ app.get("/api/user", authenticate, userController.getUserData);
 app.get("/api/animals/dashboard/:name", authenticate, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
+app.get('/api/ping', (req, res) => {
+  res.json({ message: 'pong' });
+});
 
 app.listen(process.env.BACKEND_PORT, () => {
   console.log("connected to backend!");

@@ -1,7 +1,7 @@
 import { DashboardNotification } from "./DasboardNotification.ts";
 import moment from "moment";
 
-export default class VaktsiiniKinnitusNotification implements DashboardNotification {
+export default class MarutaudVaktsiiniKinnitusNotification implements DashboardNotification {
     getText(): string {
         return "Broneeri veterinaari juures vaktsineerimise aeg";
     }

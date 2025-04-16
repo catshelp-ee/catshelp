@@ -1,7 +1,9 @@
 import { DashboardNotification } from "./notifications/DasboardNotification.ts";
 import UssirohiNotification from "./notifications/UssirohiNotification.ts";
 import BroneeriArstiAegNotification from "./notifications/BroneeriArstiAegNotification.ts";
-import VaktsiiniKinnitusNotification from "./notifications/VaktsiiniKinnitusNotification.ts";
+import KompleksVaktsiiniKinnitusNotification from "./notifications/KompleksVaktsiiniKinnitusNotification.ts";
+import MarutaudVaktsiiniKinnitusNotification from "./notifications/MarutaudVaktsiiniKinnitusNotification.ts";
+import PoleKassiNotification from "./notifications/PoleKassiNotification.ts";
 import GoogleService from "./google-service.ts";
 import { google } from "googleapis";
 
@@ -50,7 +52,7 @@ export default class DashboardService {
             this.sheetColumnNamesWithIndex[col.formattedValue!] = idx;
         });
     }
-    notifications: DashboardNotification[] = [new UssirohiNotification(), new BroneeriArstiAegNotification(), new VaktsiiniKinnitusNotification()];
+    notifications: DashboardNotification[] = [new UssirohiNotification(), new BroneeriArstiAegNotification(), new KompleksVaktsiiniKinnitusNotification(), new MarutaudVaktsiiniKinnitusNotification()];
 
     downloadImages(){
         let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it
@@ -79,14 +81,12 @@ export default class DashboardService {
 
     displayNotifications() {
         const results: Result[] = [];
-
-        
         
         let result: Result;
         let triggerDate: Date;
         let dueDate: Date;
 
-        //TODO: Vaheta loopide järjekorra ära, et todod oleksid kassi kaupa mitte notificationi kaupa
+
         for (let index = 0; index < this.rows.length; index++) {
             this.notifications.forEach((notification) => {
                 const row = this.rows[index];
@@ -127,6 +127,25 @@ export default class DashboardService {
 
                 results.push(result);
             });
+        }
+
+        if(this.rows.length === 0){
+            const notification = new PoleKassiNotification()
+            const dueDate = new Date();
+
+            result = {
+                label: notification.getText(),
+                assignee: "Sina ise",
+                due: dueDate.toLocaleDateString("ru-RU", { timeZone: "UTC" }),
+                action: {
+                    label: notification.buttonText,
+                    redirect: notification.redirectURL,
+                },
+                urgent: false,
+                catColour: "#000",
+            };
+
+            results.push(result);
         }
 
         return results;

@@ -11,7 +11,7 @@ const Header: React.FC<HeaderProps> = ({ className, imgClass }) => {
       <img
         className={`${imgClass}`}
         loading="lazy"
-        src="header.png"
+        src="/header.png"
         alt="Dashboard logo"
       />
     </header>

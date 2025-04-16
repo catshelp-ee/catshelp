@@ -18,8 +18,9 @@ export const AuthProvider = ({ children }) => {
             console.log("Can't get user data");
             return;
         }
+        
         setUser(userReq.data);
-        return user;
+        return userReq.data;
     };
 
     const logout = async () => {

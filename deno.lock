@@ -70,6 +70,7 @@
     "npm:tailwindcss@^3.4.14": "3.4.14_postcss@8.4.47",
     "npm:typescript-eslint@^8.11.0": "8.12.2_@typescript-eslint+parser@8.12.2__eslint@9.14.0__typescript@5.6.3_eslint@9.14.0_typescript@5.6.3",
     "npm:typescript@~5.6.2": "5.6.3",
+    "npm:vite-tsconfig-paths@^5.1.4": "5.1.4_vite@5.4.10__@types+node@22.8.7_typescript@5.6.3_@types+node@22.8.7",
     "npm:vite@^5.4.10": "5.4.10_@types+node@22.8.7"
   },
   "jsr": {
@@ -1852,6 +1853,9 @@
     "globals@15.11.0": {
       "integrity": "sha512-yeyNSjdbyVaWurlwCpcA6XNBrHTMIeDdj0/hnvX/OLJ9ekOXYbLsLinH/MucQyGvNnXhidTdNhTtJaffL2sMfw=="
     },
+    "globrex@0.1.2": {
+      "integrity": "sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg=="
+    },
     "google-auth-library@9.15.0": {
       "integrity": "sha512-7ccSEJFDFO7exFbO6NRyC+xH8/mZ1GZGG2xxx9iHxZWcjUjJpjWxIMw3cofAKcueZ6DATiukmmprD7yavQHOyQ==",
       "dependencies": [
@@ -3032,6 +3036,12 @@
     "ts-interface-checker@0.1.13": {
       "integrity": "sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA=="
     },
+    "tsconfck@3.1.5_typescript@5.6.3": {
+      "integrity": "sha512-CLDfGgUp7XPswWnezWwsCRxNmgQjhYq3VXHM0/XIRxhVrKw0M1if9agzryh1QS3nxjCROvV+xWxoJO1YctzzWg==",
+      "dependencies": [
+        "typescript"
+      ]
+    },
     "type-check@0.4.0": {
       "integrity": "sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==",
       "dependencies": [
@@ -3111,6 +3121,15 @@
     },
     "vary@1.1.2": {
       "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg=="
+    },
+    "vite-tsconfig-paths@5.1.4_vite@5.4.10__@types+node@22.8.7_typescript@5.6.3_@types+node@22.8.7": {
+      "integrity": "sha512-cYj0LRuLV2c2sMqhqhGpaO3LretdtMn/BVX4cPLanIZuwwrkVl+lK84E/miEXkCHWXuq65rhNN4rXsBcOB3S4w==",
+      "dependencies": [
+        "debug@4.3.7",
+        "globrex",
+        "tsconfck",
+        "vite"
+      ]
     },
     "vite@5.4.10_@types+node@22.8.7": {
       "integrity": "sha512-1hvaPshuPUtxeQ0hsVH3Mud0ZanOLwVTneA1EgbAM5LhaZEqyPWGRQ7BtaMvUrTDeEaC8pxtj6a6jku3x4z6SQ==",
@@ -3334,6 +3353,7 @@
         "npm:tailwindcss@^3.4.14",
         "npm:typescript-eslint@^8.11.0",
         "npm:typescript@~5.6.2",
+        "npm:vite-tsconfig-paths@^5.1.4",
         "npm:vite@^5.4.10"
       ]
     }

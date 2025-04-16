@@ -16,38 +16,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "animal_rescue_id",
         onDelete: "CASCADE",
       });
-      models.Animal.hasMany(AnimalToAnimalRescue, {
-        sourceKey: "id",
-        foreignKey: "animal_id",
-        as: "animals_to_animal_rescues",
-      });
-      models.AnimalRescue.hasMany(AnimalToAnimalRescue, {
-        sourceKey: "id",
-        foreignKey: "animal_rescue_id",
-        as: "animals_to_animal_rescues",
-      });
     }
   }
   AnimalToAnimalRescue.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      animalId: {
-        type: DataTypes.INTEGER,
-        field: 'animal_id'
-      },
-      animalRescueId: {
-        type: DataTypes.INTEGER,
-        field: 'animal_rescue_id'
-      },
+      animalId: DataTypes.INTEGER,
+      animalRescueId: DataTypes.INTEGER
     },
     {
+      underscored: true,
       sequelize,
       modelName: "AnimalToAnimalRescue",
-      tableName: "animal_to_animal_rescues"
+      tableName: "animal_to_animal_rescues",
     }
   );
   return AnimalToAnimalRescue;

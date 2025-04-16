@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../Header.tsx";
-import Sidebar from "../Dashboard/Sidebar.tsx";
+import Sidebar from "../Dashboard/DesktopView/Sidebar.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";

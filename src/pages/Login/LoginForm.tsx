@@ -3,9 +3,12 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
+import { useAuth } from "../../authContext.tsx";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
+  const { getUser } = useAuth();
+  
 
 
   const googleAuthSuccess = async (response: any) => {
@@ -14,7 +17,9 @@ const LoginForm: React.FC = () => {
       console.log("No user");
       return;
     }
-    navigate("/dashboard");
+    
+    const user = await getUser();
+    navigate(`/dashboard/${user.id}`);
   };
 
   const submitForm = async (e: any) => {

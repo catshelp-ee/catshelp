@@ -9,29 +9,29 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Animal.hasMany(models.AnimalToAnimalRescue, {
+        sourceKey: "id",
+        foreignKey: "animal_id",
+        as: "animals_to_animal_rescues",
+      });
+      Animal.hasMany(models.AnimalToFosterHome, {
+        sourceKey: "id",
+        foreignKey: "animal_id",
+        as: "animal_to_foster_homes",
+      });
     }
   }
   Animal.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
       name: DataTypes.STRING,
       birthday: DataTypes.DATE,
       description: DataTypes.STRING,
       status: DataTypes.STRING,
-      chipNumber: {
-        type: DataTypes.STRING,
-        field: "chip_number",
-      },
-      chipRegisteredWithUs: {
-        type: DataTypes.BOOLEAN,
-        field: "chip_registered_with_us",
-      },
+      chipNumber: DataTypes.STRING,
+      chipRegisteredWithUs: DataTypes.BOOLEAN
     },
     {
+      underscored: true,
       sequelize,
       modelName: "Animal",
       tableName: "animals",

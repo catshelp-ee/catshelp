@@ -25,6 +25,7 @@ startCronRunner();
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = __filename.substring(0, __filename.lastIndexOf("/")); // Get the directory path
 app.use("/public", express.static(join(__dirname, "../public")));
+app.use(express.static("dist"));
 
 // Configure Multer storage options
 const storage = multer.diskStorage({
@@ -62,9 +63,6 @@ app.get("/api/user", authenticate, userController.getUserData);
 app.get("/api/animals/dashboard/:name", authenticate, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
-app.get('/api/ping', (req, res) => {
-  res.json({ message: 'pong' });
-});
 
 app.listen(process.env.BACKEND_PORT, () => {
   console.log("connected to backend!");

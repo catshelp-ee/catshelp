@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
-import SidebarMobile from "./SidebarMobile";
+import SidebarMobile from "../MobileView/SidebarMobile";
 
 const HamburgerMenu = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);

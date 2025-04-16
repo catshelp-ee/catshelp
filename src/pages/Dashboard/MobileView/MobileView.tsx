@@ -1,9 +1,9 @@
 import React from 'react'
-import Header from '../Header'
-import Notifications from './Notifications'
+import Header from '../../Header'
+import Notifications from '../Notifications'
 import FosterPetsMobile from './FosterPetsMobile'
 import TodoListMobile from './TodoListMobile'
-import HamburgerMenu from './HamburgerMenu'
+import HamburgerMenu from '../DesktopView/HamburgerMenu'
 
 interface MobileViewProps {
     name: string,

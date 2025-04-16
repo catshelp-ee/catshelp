@@ -7,9 +7,10 @@
     "dev": "deno task dev:api & deno task dev:vite",
     "dev:api": "deno run --allow-env --allow-net --allow-read --allow-write --allow-sys server/main.ts",
     "dev:vite": "deno run -A npm:vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "deno run --allow-env --allow-read --allow-write --allow-ffi --allow-sys --allow-run npm:vite build ",
+    "lint": "tsc-b && eslint .",
+    "preview": "vite preview",
+    "serve": "deno task build && deno task dev:api"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",

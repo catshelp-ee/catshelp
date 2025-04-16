@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar.tsx";
-import Header from "../Header.tsx";
-import Notifications from "./Notifications.tsx";
-import FosterPets from "./FosterPets.tsx";
+import Header from "../../Header.tsx";
+import Notifications from "../Notifications.tsx";
+import FosterPets from "../FosterPets.tsx";
 import TodoList from "./TodoList.tsx";
 
 interface DesktopViewProps {

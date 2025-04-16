@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { IconButton, Button } from "@mui/material";
-import { useAuth } from "../../authContext.tsx";
+import { useAuth } from "../../../authContext.tsx";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface SidebarProps {

@@ -6,7 +6,7 @@ import { PersonalityForm } from "./PersonalityForm.tsx";
 import { CatGenForm } from "./CatGenForm.tsx";
 import { Button } from "@mui/material";
 import Header from "../Header.tsx";
-import Sidebar from "../Dashboard/Sidebar.tsx";
+import Sidebar from "../Dashboard/DesktopView/Sidebar.tsx";
 
 const EditCat: React.FC = () => {
   //TODO: use Cat interfaces defaultCat

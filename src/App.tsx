@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
-import { useAuth } from "./authContext.tsx";
+import { Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import AddCatForm from "./pages/AddCat/AddCatForm.tsx";
 import CatProfile from "./pages/CatProfile/CatProfile.tsx";
@@ -19,23 +17,10 @@ dayjs.extend(localeData);
 function App() {
   dayjs.locale("et");
   dayjs().weekday(1);
-  const { getUser } = useAuth();
-  const [userID, setUserID] = useState();
-
-  useEffect(() => {
-    const getUserID = async () => {
-      const user = await getUser();
-      setUserID(user.id);
-    }
-
-    getUserID();
-  }, [])
-  
 
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={`/dashboard/${userID}`}></Navigate>}/>
       <Route path="/login" element={<LoginForm />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard/:userID" element={<Dashboard />} />

@@ -6,3 +6,4 @@ oauth.json
 .vscode
 config/config.json
 public/Temp
+dist

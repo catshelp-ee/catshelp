@@ -7,9 +7,6 @@ import { useAuth } from "../../authContext.tsx";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { getUser } = useAuth();
-  
-
 
   const googleAuthSuccess = async (response: any) => {
     const loginReq = await axios.post("/api/login-google", response);
@@ -17,9 +14,8 @@ const LoginForm: React.FC = () => {
       console.log("No user");
       return;
     }
-    
-    const user = await getUser();
-    navigate(`/dashboard/${user.id}`);
+  
+    navigate(`/dashboard`);
   };
 
   const submitForm = async (e: any) => {

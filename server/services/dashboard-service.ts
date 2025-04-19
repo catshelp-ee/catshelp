@@ -5,7 +5,6 @@ import KompleksVaktsiiniKinnitusNotification from "./notifications/KompleksVakts
 import MarutaudVaktsiiniKinnitusNotification from "./notifications/MarutaudVaktsiiniKinnitusNotification.ts";
 import PoleKassiNotification from "./notifications/PoleKassiNotification.ts";
 import GoogleService from "./google-service.ts";
-import { google } from "googleapis";
 
 type Result = {
     assignee: string;

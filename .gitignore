@@ -5,3 +5,5 @@ oauth.json
 .public/Cats
 .vscode
 config/config.json
+public/Temp
+dist

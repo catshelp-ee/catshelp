@@ -40,7 +40,7 @@ export async function addPicture(req, res) {
   const googleService = await GoogleService.create();
 
   try {
-    const catName = req.get("Cat-Name");
+    const catName = req.body.catName;
     const driveFolder = await googleService.createDriveFolder(catName);
     const folderID = driveFolder.data.id;
     let uploadedFiles = req.files;

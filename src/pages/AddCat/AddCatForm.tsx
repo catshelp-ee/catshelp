@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, FormLabel, Select, TextField, MenuItem } from "@mui/material";
+import { Button, FormLabel, Select, TextField, MenuItem, Autocomplete } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as Utils from "../../utils.ts";
@@ -24,6 +24,7 @@ const AddCatForm = () => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isSlidingDown, setSlidingDown] = useState(false);
   const [isSlidingUp, setSlidingUp] = useState(false);
+  const [indexOffset, setIndexOffset] = useState(0);
 
   const handlePopupClose = () => {
     setSlidingUp(true);
@@ -39,8 +40,10 @@ const AddCatForm = () => {
     const images = cat.primaryInfo.images!;
 
     files.forEach((file, index) => {
-      images.set(index, file);
+      images.set(index+indexOffset, file);
     });
+
+    setIndexOffset(prev => prev + files.length);
 
     setCat((prevCat) => ({
       ...prevCat,
@@ -77,11 +80,10 @@ const AddCatForm = () => {
       />
       <div className="flex flex-col w-1/3 max-sm:w-full">
         <Header className="mt-4" imgClass="m-auto" />
-        <h1 className="text-5xl mt-2 max-sm:text-4xl">Lisa uus kass</h1>
-        <div className="flex flex-col flex-1 mb-24 mt-6 overflow-scroll items-center content-center">
+        <h1 className="text-5xl mt-4 mb-16 max-sm:text-4xl">Lisa uus kass</h1>
           <form
             onSubmit={handleSubmit}
-            className="createForm flex w-full flex-col gap-4"
+            className="flex flex-col overflow-scroll no-scrollbar w-full gap-4 mb-28"
           >
             <Button
               sx={{
@@ -96,17 +98,6 @@ const AddCatForm = () => {
             >
               Kinnita
             </Button>
-            <FormLabel
-              sx={{
-                fontSize: "2rem",
-                color: "#000",
-                "@media (max-width: 600px)": {
-                  fontSize: "1.5rem",
-                },
-              }}
-            >
-              Lisa pilte kassist
-            </FormLabel>
             <Button
               component="label"
               variant="contained"
@@ -127,42 +118,16 @@ const AddCatForm = () => {
               name="lisa"
               label="Lisainfo"
               multiline
-              minRows={4}
+              maxRows={4}
               variant="outlined"
             />
-            <div className="flex flex-col">
-              <h2 className="my-8 text-2xl">Leidmiskoht</h2>
-              <h3>Maakond</h3>
-              <Select
-                name="maakond"
-                className="mb-8 mt-2"
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: "50%", // Set the maximum height for the dropdown
-                      overflowY: "auto", // Enable vertical scrolling
-                    },
-                  },
-                  sx: {
-                    "@media (max-width: 375px)": {
-                      ".MuiPopover-paper": {
-                        left: "0 !important",
-                      },
-                    },
-                  },
-                }}
-              >
-                {States.maakonnad.map((maakond: string, idx: number) => (
-                  <MenuItem key={idx} value={maakond}>
-                    {maakond}
-                  </MenuItem>
-                ))}
-              </Select>
-              <h3>Asula</h3>
-              <TextField name="asula" className="mb-8 mt-2" />
-            </div>
+              <Autocomplete
+                disablePortal
+                options={States.maakonnad}
+                renderInput={(params) => <TextField {...params} label="Maakond" />}
+               />
+              <TextField name="asula" label="Asula" multiline maxRows={4} />
           </form>
-        </div>
       </div>
     </div>
   );

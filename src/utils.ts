@@ -7,15 +7,16 @@ export const uploadImages = async (files: File[], catName: string) => {
   files.forEach((file: File) => {
     formData.append("images", file);
   });
+  formData.append("catName", catName);
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/api/pilt/lisa`,
       formData,
       {
         headers: {
-          "Cat-Name": catName,
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       }
     );
     console.log("Upload successful:", response.data);
@@ -32,7 +33,10 @@ export const submitNewCatProfile = async (
 ) => {
   const catID = await axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/api/animals`,
-    formData
+    formData, 
+    {
+      withCredentials:true,
+    }
   );
   uploadImages(pictures, catID.data.split(" ").pop());
 };

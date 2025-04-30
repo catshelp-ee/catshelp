@@ -12,12 +12,18 @@ import cookieParser from "cookie-parser";
 import db from "../models/index.cjs";
 import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
+import { METHODS } from "node:http";
 
 dotenv.config();
 initializeDb();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: process.env.VITE_FRONTEND_URL,
+  methods: 'GET,POST',
+  allowedHeaders: 'Content-Type,Authorization',
+  credentials: true 
+}));
 app.use(cookieParser());
 app.use(express.json());
 startCronRunner();

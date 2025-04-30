@@ -1,21 +1,45 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "./Sidebar.tsx";
+import Sidebar from "./DesktopView/Sidebar.tsx";
 import Header from "../Header.tsx";
 import Notifications from "./Notifications.tsx";
 import FosterPets from "./FosterPets.tsx";
-import TodoList from "./TodoList.tsx";
+import TodoList from "../TodoList.tsx";
 import axios from "axios";
-import "./todo.css";
+import { useAuth } from "../../authContext.tsx";
+import DesktopView from "./DesktopView/DesktopView.tsx";
+import MobileView from "./MobileView/MobileView.tsx";
 
 interface DashboardProps {}
+
+function useMediaQuery(query: any) {
+  const [matches, setMatches] = useState(window.matchMedia(query).matches);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const handleChange = () => setMatches(mediaQuery.matches);
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [query]);
+
+  return matches;
+}
+
 
 const Dashboard: React.FC<DashboardProps> = () => {
   const [pets, setPets] = useState([]);
   const [todos, setTodos] = useState([]);
+  const [name, setName] = useState("")
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { getUser } = useAuth();
+
 
   useEffect(() => {
     const getDashboardCats = async () => {
-      const response = await axios.get("/api/animals/dashboard");
+      const user = await getUser();
+      setName(user.fullName);
+
+      const response = await axios.get(`/api/animals/dashboard/${user.fullName}`);
       setPets(response.data.pets);
       setTodos(response.data.todos);
     };
@@ -24,23 +48,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
     return () => {};
   }, []);
-  return (
-    <div className="flex flex-col w-full h-full">
-      <Header />
-      <div className="mt-6 max-md:max-w-full">
-        <div className="flex gap-5 max-md:flex-col">
-          <Sidebar />
-          <main className="flex flex-col ml-5 w-[74%] max-md:ml-0 max-md:w-full">
-            <div className="flex flex-col w-full max-md:mt-10 max-md:max-w-full">
-              <Notifications />
-              <FosterPets pets={pets} />
-              <TodoList todos={todos} />
-            </div>
-          </main>
-        </div>
-      </div>
-    </div>
-  );
+  return isMobile ? <MobileView name={name} pets={pets} todos={todos} /> : <DesktopView name={name} pets={pets} todos={todos}/>
 };
 
 export default Dashboard;

@@ -9,9 +9,7 @@ export const uploadImages = async (files: File[], catName: string) => {
   });
   formData.append("catName", catName);
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/api/pilt/lisa`,
-      formData,
+    const response = await axios.post(`/api/pilt/lisa`, formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -31,9 +29,7 @@ export const submitNewCatProfile = async (
   },
   pictures: File[]
 ) => {
-  const catID = await axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/api/animals`,
-    formData, 
+  const catID = await axios.post(`/api/animals`, formData, 
     {
       withCredentials:true,
     }

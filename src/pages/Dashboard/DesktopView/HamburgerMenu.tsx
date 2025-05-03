@@ -20,7 +20,9 @@ const HamburgerMenu = () => {
       >
         <MenuIcon />
       </IconButton>
-      {isSidebarVisible && <SidebarMobile setView={setIsSidebarVisible} view={isSidebarVisible} />}
+      {isSidebarVisible && (
+        <SidebarMobile setView={setIsSidebarVisible} view={isSidebarVisible} />
+      )}
     </>
   );
 };

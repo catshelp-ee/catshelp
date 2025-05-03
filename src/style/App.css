@@ -3,13 +3,20 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter'), url('../assets/font/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-family: "Inter";
+  src: local("Inter"),
+    url("../assets/font/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+}
+
+@layer utilities {
+  .text-secondary {
+    @apply text-secondaryText;
+  }
 }
 
 #root {
   font-family: Inter;
-  color: '#212427';
+  color: "#212427";
 }
 
 .login-background {
@@ -18,11 +25,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #6AC7DB;
+  background-color: #6ac7db;
 }
 
 .login-background::before {
-  content:"";
+  content: "";
   position: absolute;
   background-image: url("../assets/login_background.png");
   background-size: 100% 136%;
@@ -47,10 +54,9 @@
 .login-form {
   margin: 10% 4%;
   width: 40%;
-  
 }
 
-.login-form h1{
+.login-form h1 {
   font-size: 36px;
   font-weight: 500;
 }

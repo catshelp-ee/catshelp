@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Cat } from "../../types/Cat.ts";
 import { Button } from "@mui/material";
+import HamburgerMenu from "../Dashboard/DesktopView/HamburgerMenu.tsx";
 
 const CatProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -43,18 +44,29 @@ const CatProfile: React.FC = () => {
   return (
     <div className="flex flex-col w-full h-screen">
       <Header />
-      <div className="flex h-[calc(100vh-129px)]">
+      <div className="flex flex-col h-[calc(100vh-129px)] md:flex-row">
         <Sidebar />
-        <main className="flex flex-col w-full mx-12 mb-4 flex-1">
-          <section className="flex">
-            <h1 className="text-xl md:text-4xl">Kiisude profiilid veebis</h1>
-            <img loading="lazy" src="/welcome.svg" alt="" />
+        <div className="block md:hidden w-full">
+          <HamburgerMenu />
+        </div>
+
+        <main className="flex flex-col w-full md:mx-12 mb-4 flex-1">
+          <section className="flex my-4 items-center">
+            <h1 className="text-xl mx-4 md:text-4xl">
+              Kiisude profiilid veebis
+            </h1>
+            <img
+              loading="lazy"
+              className="w-12 h-12"
+              src="/welcome.svg"
+              alt=""
+            />
           </section>
-          <p className="mt-4 text-secondary">
+          <p className="mt-4 mx-4 text-secondary">
             Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
             veebilehel Valimiseks klõpsa hoiulooma pildil
           </p>
-          <div className="flex flex-row flex-wrap gap-4 my-6">
+          <div className="flex mx-4 flex-row flex-wrap gap-4 my-6">
             {cats.length > 0 ? (
               cats.map((cat, index) => (
                 <div
@@ -99,7 +111,7 @@ const CatProfile: React.FC = () => {
           </div>
 
           {selectedCat && (
-            <div className="flex flex-col w-full border border-gray-300 p-4 rounded-md shadow max-md:mt-10 max-md:max-w-full">
+            <div className="flex mx-4 flex-col border border-gray-300 p-4 rounded-md shadow">
               <div className="flex flex-row justify-between items-center">
                 <div className="text-sm font-medium text-secondary text-bold">
                   PEALKIRI:

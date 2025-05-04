@@ -59,7 +59,7 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
 
   return (
     <nav
-      className={`flex flex-col z-10 left-0 absolute h-full w-full bg-[#30B0C7] ${
+      className={`flex flex-col z-10 top-0 left-0 absolute h-full w-full bg-[#30B0C7] ${
         isClosed ? "animate-slide-left" : "animate-slide-right"
       }`}
     >

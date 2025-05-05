@@ -1,6 +1,9 @@
 import GoogleService from "./google-service.ts";
 
-export async function getCatProfilesByOwner(ownerName: string, googleService: GoogleService) {
+export async function getCatProfilesByOwner(
+  ownerName: string,
+  googleService: GoogleService
+) {
   const sheetData = await googleService.getSheetData(
     process.env.CATS_SHEETS_ID,
     "HOIUKODUDES"
@@ -26,9 +29,13 @@ export async function getCatProfilesByOwner(ownerName: string, googleService: Go
         values[columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
       if (fosterhome?.formattedValue !== ownerName) continue;
 
-      console.log([ownerName])
+      console.log([ownerName]);
 
-      const catProfile = await buildCatProfile(values, columnNamesWithIndexes, googleService);
+      const catProfile = await buildCatProfile(
+        values,
+        columnNamesWithIndexes,
+        googleService
+      );
       catProfiles.push(catProfile);
     }
   }
@@ -36,47 +43,84 @@ export async function getCatProfilesByOwner(ownerName: string, googleService: Go
   return catProfiles;
 }
 
-async function buildCatProfile(values: any[], columnMap: { [key: string]: number }, googleService: any) {
+async function buildCatProfile(
+  values: any[],
+  columnMap: { [key: string]: number },
+  googleService: any
+) {
   const catName = values[columnMap["KASSI NIMI"]]?.formattedValue || "";
   const imageLink = values[columnMap["PILT"]]?.hyperlink || "";
 
-  const appearance = values[columnMap["KASSI VÄRV"]]?.formattedValue + ", " + values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue || "";
+  const appearance =
+    values[columnMap["KASSI VÄRV"]]?.formattedValue +
+      ", " +
+      values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue || "";
+
+  const procedures: string[] = getCatProcedures(columnMap, values);
 
   const catProfile = {
-    primaryInfo: {
-      name: catName,
-      age: values[columnMap["SÜNNIAEG"]]?.formattedValue || "",
-      color: values[columnMap["KASSI VÄRV"]]?.formattedValue || "",
-      image: "",
-      rescueId: values[columnMap["PÄÄSTETUD JÄRJEKORRA NR (AA'KK nr ..)"]]?.formattedValue || "",
-      location: values[columnMap["ASUKOHT"]]?.formattedValue || "",
-      gender: values[columnMap["SUGU"]]?.formattedValue || "",
-      furLength: values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue || "",
-      additionalNotes: values[columnMap["TÄIENDAVAD MÄRKMED"]]?.formattedValue || "",
-      chipId: values[columnMap["KIIP"]]?.formattedValue || "",
-      rescueDate: values[columnMap["PÄÄSTMISKP/ SÜNNIKP"]]?.formattedValue || "",
-    },
-    moreInfo: {
-      otherInfo: values[columnMap["MUU"]]?.formattedValue || "",
-    },
+    title: "",
+    description: "",
+    name: catName,
+    age: values[columnMap["SÜNNIAEG"]]?.formattedValue || "",
+    appearance: appearance,
+    procedures: procedures,
+    issues: "",
+    rescueDate: values[columnMap["PÄÄSTMISKP/ SÜNNIKP"]]?.formattedValue || "",
+    history: "",
+    characteristics: "",
+    likes: "",
+    descriptionOfCharacter: "",
+    treatOtherCats: "",
+    treatDogs: "",
+    treatChildren: "",
+    outdoorsIndoors: "",
+    images: [],
   };
 
   if (imageLink && isHyperlink(imageLink)) {
     const fileId = extractFileId(imageLink);
     if (fileId) {
       const destinationPath = `./public/Cats/${catName}.png`;
-      const success = await googleService.downloadImage(fileId, destinationPath);
+      const success = await googleService.downloadImage(
+        fileId,
+        destinationPath
+      );
       if (success) {
-        catProfile.primaryInfo.image = `Cats/${catName}.png`;
+        catProfile.images.push(`Cats/${catName}.png`);
       }
     } else {
       console.warn(`Unable to extract fileId from imageLink: ${imageLink}`);
     }
   } else {
-    console.warn(`Skipping image for ${catName} due to invalid or missing image link.`);
+    console.warn(
+      `Skipping image for ${catName} due to invalid or missing image link.`
+    );
   }
 
   return catProfile;
+}
+
+function getCatProcedures(columnMap: any, values: any) {
+  const procedures: string[] = [];
+
+  if (values[columnMap["ASUKOHT"]]?.formattedValue === "JAH")
+    procedures.push("Lõigatud");
+  if (
+    new Date() <
+    new Date(values[columnMap["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue)
+  )
+    procedures.push("Kompleksvaktsiin");
+  if (
+    new Date() <
+    new Date(values[columnMap["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue)
+  )
+    procedures.push("Marutaudi vaktsiin");
+  if (values[columnMap["USSIROHU/ TURJATILGA KP"]]?.formattedValue !== "") {
+    procedures.push("Ussirohi");
+  }
+
+  return procedures;
 }
 
 function isHyperlink(link: string): boolean {

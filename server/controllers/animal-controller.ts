@@ -66,7 +66,7 @@ export async function addPicture(req, res) {
 
 export async function getProfile(req, res) {
   try {
-    const ownerName = "Mari Oks";
+    const ownerName = "Roger Suur";
 
     const googleService = await GoogleService.create();
     const sheetData = await googleService.getSheetData(
@@ -100,6 +100,7 @@ export async function getProfile(req, res) {
           primaryInfo: {
             name: catName,
             image: "",
+            imageUrl: "/Temp/Roger Suur/Karvakera.png",
             rescueId:
               values[
                 columnNamesWithIndexes["PÄÄSTETUD JÄRJEKORRA NR (AA'KK nr ..)"]

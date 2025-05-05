@@ -13,6 +13,7 @@ export interface Cat {
     description?: string;
     heading?: string;
     images?: Map<number, File>;
+    imageUrl?: string;
   };
   moreInfo?: {
     chronicIllnesses?: string;
@@ -48,6 +49,7 @@ export const defaultCat: Cat = {
     rescueDate: "",
     description: "",
     heading: "",
+    imageUrl: "",
   },
   moreInfo: {
     chronicIllnesses: "",

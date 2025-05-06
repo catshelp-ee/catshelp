@@ -1,71 +1,44 @@
 export interface Cat {
-  primaryInfo: {
-    name?: string;
-    rescueId?: string;
-    location?: string;
-    dateOfBirth?: string;
-    gender?: string;
-    color?: string;
-    furLength?: string;
-    additionalNotes?: string;
-    chipId?: string;
-    rescueDate?: string;
-    description?: string;
-    heading?: string;
-    images?: Map<number, File>;
-    imageUrl?: string;
-  };
-  moreInfo?: {
-    chronicIllnesses?: string;
-    timeInFosterCare?: string;
-    rescueHistory?: string;
-    personality?: [];
-    likes?: [];
-    otherTraits?: [];
-    dailyRoutine?: string;
-    interactions?: {
-      cats?: string;
-      dogs?: string;
-      children?: string;
-    };
-    type?: string;
-    specialNeeds?: string;
-    otherInfo?: string;
-  };
+  title?: string;
+  description?: string;
+  name?: string;
+  age?: string;
+  appearance?: string;
+  procedures?: string;
+  issues?: string;
+  rescueDate?: string;
+  history?: string;
+  characteristics?: string;
+  likes?: string;
+  descriptionOfCharacter?: string;
+  treatOtherCats?: string;
+  treatDogs?: string;
+  treatChildren?: string;
+  outdoorsIndoors?: string;
+  images?: string[];
 }
 
 export const defaultCat: Cat = {
-  primaryInfo: {
-    name: "",
-    images: new Map<number, File>(),
-    rescueId: "",
-    location: "",
-    dateOfBirth: "",
-    gender: "",
-    color: "",
-    furLength: "",
-    additionalNotes: "",
-    chipId: "",
-    rescueDate: "",
-    description: "",
-    heading: "",
-    imageUrl: "",
-  },
-  moreInfo: {
-    chronicIllnesses: "",
-    timeInFosterCare: "",
-    rescueHistory: "",
-    personality: [],
-    likes: [],
-    otherTraits: [],
-    dailyRoutine: "",
-    interactions: {
-      cats: "",
-      dogs: "",
-      children: "",
-    },
-    type: "",
-    specialNeeds: "",
-    otherInfo: "",
-  },
+  title: "armas kiisu otsib kodu",
+  description: "väga nunnu ja sõbralik talle meeldib mängida palju",
+  name: "Karvakera",
+  age: "01.11.2018",
+  appearance: "Must, Pikakarvaline",
+  procedures: "Marutaudi vaktsiin, Ussirohi",
+  issues: "nohu",
+  rescueDate: "21.11.2020",
+  history: "",
+  characteristics: "",
+  likes: "linde vaadata",
+  descriptionOfCharacter: "",
+  treatOtherCats: "",
+  treatDogs: "",
+  treatChildren: "",
+  outdoorsIndoors: "toa ja õuekassiks",
+  images: [
+    "/Cats/ingver.png",
+    "/Cats/cute-cat.jpg",
+    "/Cats/cute-cat2.jpg",
+    "/Cats/cute-cat3.jpg",
+  ],
 };

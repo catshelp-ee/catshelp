@@ -19,13 +19,19 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "animal_id",
         as: "animal_to_foster_homes",
       });
+      Animal.belongsTo(models.AnimalCharacteristic, {
+        sourceKey: "id",
+        foreignKey: "animal_id",
+        as: "animal_to_foster_homes",
+      });
     }
   }
   Animal.init(
     {
       name: DataTypes.STRING,
       birthday: DataTypes.DATE,
-      description: DataTypes.STRING,
+      profileTitle: DataTypes.TEXT,
+      description: DataTypes.TEXT,
       status: DataTypes.STRING,
       chipNumber: DataTypes.STRING,
       chipRegisteredWithUs: DataTypes.BOOLEAN

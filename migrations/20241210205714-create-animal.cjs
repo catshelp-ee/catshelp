@@ -15,8 +15,11 @@ module.exports = {
       birthday: {
         type: Sequelize.DATE,
       },
+      profileTitle: {
+        type: Sequelize.TEXT,
+      },
       description: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       status: {
         type: Sequelize.STRING,

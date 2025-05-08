@@ -10,7 +10,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       animalId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        field: "animal_id",
       },
       name: {
         type: Sequelize.TEXT

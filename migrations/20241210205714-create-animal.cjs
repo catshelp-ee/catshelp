@@ -17,6 +17,7 @@ module.exports = {
       },
       profileTitle: {
         type: Sequelize.TEXT,
+        field: "profile_title",
       },
       description: {
         type: Sequelize.TEXT,

@@ -1,5 +1,6 @@
 import GoogleService from "./google-service.ts";
-
+import db from "../../models/index.cjs";
+import moment from "moment";
 
 export async function getCatProfilesByOwner(
   ownerName: string,
@@ -30,7 +31,7 @@ export async function getCatProfilesByOwner(
         values[columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
       if (fosterhome?.formattedValue !== ownerName) continue;
 
-      console.log([ownerName]);
+      console.log("loll + " + [ownerName]);
 
       const catProfile = await buildCatProfile(
         values,
@@ -59,23 +60,27 @@ async function buildCatProfile(
 
   const procedures: string[] = getCatProcedures(columnMap, values);
 
+  const animal = await db.Animal.findByPk(3);
+
+  const characteristics: any = await getCharacteristics(animal.id);
+
   const catProfile = {
-    title: "",
-    description: "",
+    title: animal.profileTitle || "",
+    description: animal.description || "",
     name: catName,
     age: values[columnMap["SÜNNIAEG"]]?.formattedValue || "",
     appearance: appearance,
-    procedures: procedures,
-    issues: "",
+    procedures: procedures.join(", "),
+    issues: characteristics.issues || "",
     rescueDate: values[columnMap["PÄÄSTMISKP/ SÜNNIKP"]]?.formattedValue || "",
-    history: "",
-    characteristics: "",
-    likes: "",
-    descriptionOfCharacter: "",
-    treatOtherCats: "",
-    treatDogs: "",
-    treatChildren: "",
-    outdoorsIndoors: "",
+    history: characteristics.history || "",
+    characteristics: characteristics.characteristics || "",
+    likes: characteristics.likes || "",
+    descriptionOfCharacter: characteristics.descriptionOfCharacter || "",
+    treatOtherCats: characteristics.treatOtherCats || "",
+    treatDogs: characteristics.treatDogs || "",
+    treatChildren: characteristics.treatChildren || "",
+    outdoorsIndoors: characteristics.outdoorsIndoors || "",
     images: [],
   };
 
@@ -99,7 +104,23 @@ async function buildCatProfile(
     );
   }
 
+  console.log(catProfile);
   return catProfile;
+}
+
+async function getCharacteristics(id: number) {
+  const characteristics = await db.AnimalCharacteristic.findAll({
+    where: {
+      animalId: id,
+    },
+  });
+
+  const characteristicsObject = {};
+  characteristics.forEach((characteristic) => {
+    characteristicsObject[characteristic.type] = characteristic.name;
+  });
+
+  return characteristicsObject;
 }
 
 function getCatProcedures(columnMap: any, values: any) {
@@ -108,13 +129,27 @@ function getCatProcedures(columnMap: any, values: any) {
   if (values[columnMap["ASUKOHT"]]?.formattedValue === "JAH")
     procedures.push("Lõigatud");
   if (
-    new Date() <
-    new Date(values[columnMap["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue)
+    moment(new Date()).isBefore(
+      moment(
+        values[columnMap["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue.replaceAll(
+          ".",
+          "-"
+        ),
+        "DD-MM-YYYY"
+      )
+    )
   )
     procedures.push("Kompleksvaktsiin");
   if (
-    new Date() <
-    new Date(values[columnMap["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue)
+    moment(new Date()).isBefore(
+      moment(
+        values[columnMap["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue.replaceAll(
+          ".",
+          "-"
+        ),
+        "DD-MM-YYYY"
+      )
+    )
   )
     procedures.push("Marutaudi vaktsiin");
   if (values[columnMap["USSIROHU/ TURJATILGA KP"]]?.formattedValue !== "") {

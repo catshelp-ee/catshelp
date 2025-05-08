@@ -19,10 +19,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "animal_id",
         as: "animal_to_foster_homes",
       });
-      Animal.belongsTo(models.AnimalCharacteristic, {
-        sourceKey: "id",
+      Animal.hasMany(models.AnimalCharacteristic, {
         foreignKey: "animal_id",
-        as: "animal_to_foster_homes",
       });
     }
   }

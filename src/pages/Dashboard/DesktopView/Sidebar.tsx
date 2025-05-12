@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
   ];
 
   return (
-    <nav className="hidden md:flex flex-col w-1/5 h-full">
+    <nav className="hidden md:flex flex-col w-1/5 sticky top-0 h-screen">
       {/* <Header /> */}
       <div className="flex flex-col w-full flex-grow h-full py-14 bg-[#30B0C7] relative rounded-r-lg shadow-[0_4px_8px_rgba(0,0,0,0.25)]">
         <div>

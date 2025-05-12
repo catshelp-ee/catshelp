@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import PageLayout from "./pages/App/PageLayout.tsx";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import AddCatForm from "./pages/AddCat/AddCatForm.tsx";
 import CatProfile from "./pages/CatProfile/CatProfile.tsx";
@@ -21,13 +22,15 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard"></Navigate>}/>
+      <Route path="/" element={<Navigate to="/dashboard"></Navigate>} />
       <Route path="/login" element={<LoginForm />} />
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/edit-cat" element={<EditCat />} />
-        <Route path="/cat-profile" element={<CatProfile />} />
-        <Route path="/add-cat" element={<AddCatForm />} />
+        <Route element={<PageLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/edit-cat" element={<EditCat />} />
+          <Route path="/cat-profile" element={<CatProfile />} />
+          <Route path="/add-cat" element={<AddCatForm />} />
+        </Route>
       </Route>
     </Routes>
   );

@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "./DesktopView/Sidebar.tsx";
-import Header from "../Header.tsx";
-import Notifications from "./Notifications.tsx";
-import FosterPets from "./FosterPets.tsx";
-import TodoList from "../TodoList.tsx";
 import axios from "axios";
 import { useAuth } from "../../authContext.tsx";
 import DesktopView from "./DesktopView/DesktopView.tsx";
 import MobileView from "./MobileView/MobileView.tsx";
-
-interface DashboardProps {}
 
 function useMediaQuery(query: any) {
   const [matches, setMatches] = useState(window.matchMedia(query).matches);
@@ -26,7 +19,7 @@ function useMediaQuery(query: any) {
 }
 
 
-const Dashboard: React.FC<DashboardProps> = () => {
+const Dashboard: React.FC<Props> = () => {
   const [pets, setPets] = useState([]);
   const [todos, setTodos] = useState([]);
   const [name, setName] = useState("")

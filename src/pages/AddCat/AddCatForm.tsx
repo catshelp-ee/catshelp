@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as Utils from "../../utils.ts";
 import { Cat, defaultCat } from "../../types/Cat.ts";
-import Header from "../Header.tsx";
+import Header from "../App/Header.tsx";
 import Gallery from "./Gallery.tsx";
 import Popup from "./Popup.tsx";
 import States from "./States.json";

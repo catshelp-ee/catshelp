@@ -4,6 +4,10 @@ import GoogleService from "../services/google-service.ts";
 export async function getDashboard(req: any, res: any) {
   const username = req.params.name;
   const googleService = await GoogleService.create();
+  if (true) {
+    const x = null;
+    x[y][z] = 2;
+  }
   const sheetsDataFosterHomes = await googleService.getSheetData(
     process.env.CATS_SHEETS_ID!,
     "HOIUKODUDES"

@@ -3,15 +3,17 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
-import { useAuth } from "../../authContext.tsx";
+import { useAlert } from "@context/AlertContext";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   const googleAuthSuccess = async (response: any) => {
-    const loginReq = await axios.post("/api/login-google", response);
-    if (loginReq == null) {
-      console.log("No user");
+    try {
+      await axios.post("/api/login-google", response);
+    } catch (error ) {
+      showAlert('Error', "Kasutajat ei leitud");
       return;
     }
   
@@ -20,18 +22,24 @@ const LoginForm: React.FC = () => {
 
   const submitForm = async (e: any) => {
     e.preventDefault();
-
+    
     const formData = new FormData(e.target);
     const payload = Object.fromEntries(formData);
 
     if (!payload.email) {
       return;
     }
-    await axios.post("/api/login-email", { email: payload.email });
+
+    try {
+      await axios.post("/api/login-email", { email: payload.email });
+      showAlert('Success', "Emailile saadeti link juhistega");
+    } catch (error) {
+      showAlert('Success', "Emaili saatmine ebaõnnestus");
+    }
   }
 
   const errorMessage = (error: any) => {
-    console.log(error);
+    showAlert('Error', "Google abil sisenemine ebaõnnestus");
   };
 
   return (

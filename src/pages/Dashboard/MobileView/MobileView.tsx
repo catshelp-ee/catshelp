@@ -1,7 +1,7 @@
 import React from 'react'
-import Notifications from '../Notifications'
-import FosterPetsMobile from './FosterPetsMobile'
-import TodoListMobile from './TodoListMobile'
+import Notifications from '@pages/Dashboard/Notifications'
+import FosterPetsMobile from '@pages/Dashboard/MobileView/FosterPetsMobile'
+import TodoListMobile from '@pages/Dashboard/MobileView/TodoListMobile'
 
 interface MobileViewProps {
     name: string,

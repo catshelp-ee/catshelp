@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "@/pages/App/Header";
-import Sidebar from "@pages/App/DesktopView/Sidebar.tsx";
-import HamburgerMenu from "@pages/App/HamburgerMenu.tsx";
+import Sidebar from "@pages/App/DesktopView/Sidebar";
+import HamburgerMenu from "@pages/App/HamburgerMenu";
 
 interface LayoutProps { }
 

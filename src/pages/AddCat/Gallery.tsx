@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
-import { Cat } from "../../types/Cat.ts";
+import { Cat } from "@types/Cat.ts";
 
 interface GalleryProps {
   files: Map<number, File>;

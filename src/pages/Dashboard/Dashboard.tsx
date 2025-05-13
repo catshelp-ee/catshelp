@@ -4,6 +4,8 @@ import { useAuth } from "@/context/AuthContext";
 import DesktopView from "@pages/Dashboard/DesktopView/DesktopView";
 import MobileView from "@pages/Dashboard/MobileView/MobileView";
 
+interface DashboardProps {}
+
 function useMediaQuery(query: any) {
   const [matches, setMatches] = useState(window.matchMedia(query).matches);
 
@@ -19,7 +21,7 @@ function useMediaQuery(query: any) {
 }
 
 
-const Dashboard: React.FC<Props> = () => {
+const Dashboard: React.FC<DashboardProps> = () => {
   const [pets, setPets] = useState([]);
   const [todos, setTodos] = useState([]);
   const [name, setName] = useState("")

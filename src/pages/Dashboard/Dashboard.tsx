@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "../../authContext.tsx";
-import DesktopView from "./DesktopView/DesktopView.tsx";
-import MobileView from "./MobileView/MobileView.tsx";
+import { useAuth } from "@/context/AuthContext";
+import DesktopView from "@pages/Dashboard/DesktopView/DesktopView";
+import MobileView from "@pages/Dashboard/MobileView/MobileView";
 
 function useMediaQuery(query: any) {
   const [matches, setMatches] = useState(window.matchMedia(query).matches);

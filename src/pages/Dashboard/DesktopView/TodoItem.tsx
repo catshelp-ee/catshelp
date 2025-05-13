@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
-import CatSvg from "../CatSvg";
+import CatSvg from "@pages/Dashboard/CatSvg";
 
 
 interface TodoItemProps {

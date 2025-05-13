@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Button, FormLabel, Select, TextField, MenuItem, Autocomplete } from "@mui/material";
+import { Button, TextField, Autocomplete } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import * as Utils from "../../utils.ts";
-import { Cat, defaultCat } from "../../types/Cat.ts";
+import * as Utils from "@utils/utils.ts";
+import { Cat, defaultCat } from "@types/Cat.ts";
 import Header from "../App/Header.tsx";
-import Gallery from "./Gallery.tsx";
-import Popup from "./Popup.tsx";
-import States from "./States.json";
+import Gallery from "@pages/AddCat/Gallery.tsx";
+import Popup from "@pages/AddCat/Popup.tsx";
+import States from "@pages/AddCat/States.json";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

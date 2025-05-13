@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Notifications from "../Notifications.tsx";
-import FosterPets from "../FosterPets.tsx";
-import TodoList from "./TodoList.tsx";
+import Notifications from "@pages/Dashboard/Notifications";
+import FosterPets from "@pages/Dashboard/FosterPets";
+import TodoList from "@pages/Dashboard/DesktopView/TodoList";
 
 interface DesktopViewProps {
     name: string,

@@ -2,8 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Cat } from "../../types/Cat.ts";
+import { Cat } from "@types/Cat.ts";
 import { Button } from "@mui/material";
+import { useAlert } from "@context/AlertContext";
 
 const CatProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const CatProfile: React.FC = () => {
   const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showAlert } = useAlert();
 
   const handleEditCat = () => {
     navigate("/edit-cat");
@@ -20,7 +22,8 @@ const CatProfile: React.FC = () => {
     const fetchCats = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/animals/cat-profile");
+        
+        const response = await axios.get("/api/animals/cat-profile");         
         const fetchedCats = response.data.catProfiles || [];
 
         setCats(fetchedCats);
@@ -30,6 +33,7 @@ const CatProfile: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching cat data:", error);
+        showAlert('Error', "Kassi andmete pärimine ebaõnnestus");
         setCats([]);
       } finally {
         setLoading(false);

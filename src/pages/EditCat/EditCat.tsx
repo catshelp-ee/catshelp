@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { multiStepForm } from "./MultiStepForm.tsx";
-import { PrimaryForm } from "./PrimaryForm.tsx";
-import { SecondaryForm } from "./SecondaryForm.tsx";
-import { PersonalityForm } from "./PersonalityForm.tsx";
-import { CatGenForm } from "./CatGenForm.tsx";
+import { multiStepForm } from "@pages/EditCat/MultiStepForm.tsx";
+import { PrimaryForm } from "@pages/EditCat/PrimaryForm.tsx";
+import { SecondaryForm } from "@pages/EditCat/SecondaryForm.tsx";
+import { PersonalityForm } from "@pages/EditCat/PersonalityForm.tsx";
+import { CatGenForm } from "@pages/EditCat/CatGenForm.tsx";
 import { Button } from "@mui/material";
 
 const EditCat: React.FC = () => {

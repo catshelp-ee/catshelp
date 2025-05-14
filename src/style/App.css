@@ -16,17 +16,16 @@
 
 #root {
   font-family: Inter;
-  color: '#212427';
-  height: 100vh;
+  color: "#212427";
 }
 
 .login-background {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #6AC7DB;
-  height:100%
+  background-color: #6ac7db;
 }
 
 .login-background::before {

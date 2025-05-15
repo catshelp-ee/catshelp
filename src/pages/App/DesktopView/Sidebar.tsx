@@ -1,8 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import Header from "@pages/Header";
-import { Avatar, Button, Typography } from "@mui/material";
-import { useAuth } from "../../../authContext.tsx";
+import { Button } from "@mui/material";
+import { useAuth } from "@/context/AuthContext";
 
 interface SidebarProps {}
 

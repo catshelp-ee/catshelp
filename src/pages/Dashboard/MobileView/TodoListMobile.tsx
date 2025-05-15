@@ -1,5 +1,5 @@
 import React from "react";
-import TodoItemMobile from "./TodoItemMobile.tsx";
+import TodoItemMobile from "@pages/Dashboard/MobileView/TodoItemMobile";
 
 interface TodoListProps {
   todos: any;

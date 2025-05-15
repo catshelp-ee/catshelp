@@ -5,16 +5,23 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import OAuth from "../oauth.json";
-import { AuthProvider } from "./authContext.tsx";
+import { AuthProvider } from "@context/AuthContext";
+import { PostHogProviderWrapper } from "@analytics/PostHogProviderWrapper";
+import { AlertProvider } from "@context/AlertContext.tsx";
+
 
 createRoot(document.getElementById("root")!).render(
-    <GoogleOAuthProvider clientId={OAuth.web.client_id}>
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
-            <BrowserRouter>
-                <AuthProvider>
-                    <App />
-                </AuthProvider>
-            </BrowserRouter>
-        </LocalizationProvider>
-    </GoogleOAuthProvider>
+    <PostHogProviderWrapper>
+        <GoogleOAuthProvider clientId={OAuth.web.client_id}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
+                <BrowserRouter>
+                    <AlertProvider>
+                        <AuthProvider>
+                            <App />
+                        </AuthProvider>
+                    </AlertProvider>
+                </BrowserRouter>
+            </LocalizationProvider>
+        </GoogleOAuthProvider>
+    </PostHogProviderWrapper>
 );

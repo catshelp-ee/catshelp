@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { multiStepForm } from "./MultiStepForm.tsx";
-import { PrimaryForm } from "./PrimaryForm.tsx";
-import { SecondaryForm } from "./SecondaryForm.tsx";
-import { PersonalityForm } from "./PersonalityForm.tsx";
-import { CatGenForm } from "./CatGenForm.tsx";
+import { multiStepForm } from "@pages/EditCat/MultiStepForm.tsx";
+import { PrimaryForm } from "@pages/EditCat/PrimaryForm.tsx";
+import { SecondaryForm } from "@pages/EditCat/SecondaryForm.tsx";
+import { PersonalityForm } from "@pages/EditCat/PersonalityForm.tsx";
+import { CatGenForm } from "@pages/EditCat/CatGenForm.tsx";
 import { Button } from "@mui/material";
-import Header from "../Header.tsx";
-import Sidebar from "../Dashboard/DesktopView/Sidebar.tsx";
 
 const EditCat: React.FC = () => {
   //TODO: use Cat interfaces defaultCat
@@ -59,50 +57,41 @@ const EditCat: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="flex flex-col w-full h-full">
-        <Header />
-        <div className="mt-6 max-md:max-w-full">
-          <div className="flex gap-5 max-md:flex-col">
-            <Sidebar />
-            <div className="flex-1 flex flex-col  max-w-3xl mx-auto max-md:ml-0 max-md:w-full text-left mb-3">
-              <div className="mb-3">{step}</div>
 
-              <div className="flex justify-between items-center mt-4">
-                {!isFirstStep && (
-                  <Button
-                    onClick={back}
-                    variant="outlined"
-                    className="flex-grow-0 flex-shrink-0"
-                  >
-                    Tagasi
-                  </Button>
-                )}
+    <div className="flex-1 flex flex-col  max-w-3xl mx-auto max-md:ml-0 max-md:w-full text-left mb-3">
+      <div className="mb-3">{step}</div>
 
-                <div className="flex-grow"></div>
+      <div className="flex justify-between items-center mt-4">
+        {!isFirstStep && (
+          <Button
+            onClick={back}
+            variant="outlined"
+            className="flex-grow-0 flex-shrink-0"
+          >
+            Tagasi
+          </Button>
+        )}
 
-                {!isLastStep ? (
-                  <Button
-                    onClick={next}
-                    variant="contained"
-                    className="flex-grow-0 flex-shrink-0"
-                  >
-                    Edasi
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    color="primary"
-                    className="flex-grow-0 flex-shrink-0"
-                  >
-                    Saada
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <div className="flex-grow"></div>
+
+        {!isLastStep ? (
+          <Button
+            onClick={next}
+            variant="contained"
+            className="flex-grow-0 flex-shrink-0"
+          >
+            Edasi
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+            className="flex-grow-0 flex-shrink-0"
+          >
+            Saada
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -23,9 +23,13 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@/*": ["./src/*"],
+      "@analytics/*": ["./src/analytics/*"],
       "@assets/*": ["./src/assets/*"],
+      "@context/*": ["./src/context/*"],
       "@pages/*": ["./src/pages/*"],
-      "@style/*": ["./src/style/*"]
+      "@style/*": ["./src/style/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"],
     }
   },
   "include": ["src"]

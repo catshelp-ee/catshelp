@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Avatar, IconButton, Tooltip, Typography } from "@mui/material";
-import AllPetsPopup from "./AllPetsPopup";
+import AllPetsPopup from "@pages/Dashboard/AllPetsPopup";
 import { Link } from "react-router-dom";
 
 interface FosterPetsProps {

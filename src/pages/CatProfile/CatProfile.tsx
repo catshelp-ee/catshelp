@@ -1,11 +1,10 @@
 import React from "react";
-import Header from "../Header.tsx";
-import Sidebar from "../Dashboard/DesktopView/Sidebar.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Cat, defaultCat } from "../../types/Cat.ts";
+import { Cat } from "@types/Cat.ts";
 import { Button } from "@mui/material";
+import { useAlert } from "@context/AlertContext";
 import HamburgerMenu from "../Dashboard/DesktopView/HamburgerMenu.tsx";
 import ImageGallery from "./ImageGallery.tsx";
 import CatSelection from "./CatSelection.tsx";
@@ -16,6 +15,7 @@ const CatProfile: React.FC = () => {
   const [cats, setCats] = useState<Cat[]>([]);
   const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
   const [loading, setLoading] = useState(false);
+  const { showAlert } = useAlert();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const handleGalleryOpen = () => {
@@ -30,7 +30,8 @@ const CatProfile: React.FC = () => {
     const fetchCats = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/animals/cat-profile");
+        
+        const response = await axios.get("/api/animals/cat-profile");         
         const fetchedCats = response.data.catProfiles || [];
 
         setCats(fetchedCats[0]);
@@ -42,6 +43,8 @@ const CatProfile: React.FC = () => {
         // setSelectedCat(defaultCat);
       } catch (error) {
         console.error("Error fetching cat data:", error);
+        showAlert('Error', "Kassi andmete pärimine ebaõnnestus");
+        setCats([]);
         setCats([defaultCat]);
       } finally {
         setLoading(false);

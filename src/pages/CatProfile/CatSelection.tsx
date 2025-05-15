@@ -1,5 +1,5 @@
 import React from "react";
-import { Cat, defaultCat } from "../../types/Cat.ts";
+import { Cat } from "../../types/Cat.ts";
 
 interface CatSelectionProps {
   cats: Cat[];

@@ -33,13 +33,13 @@ const CatProfile: React.FC = () => {
         const response = await axios.get("/api/animals/cat-profile");
         const fetchedCats = response.data.catProfiles || [];
 
-        // setCats(fetchedCats[0]);
-        // if (fetchedCats[0].length > 0) {
-        //   setSelectedCat(fetchedCats[0]);
-        // }
+        setCats(fetchedCats[0]);
+        if (fetchedCats[0].length > 0) {
+          setSelectedCat(fetchedCats[0]);
+        }
 
-        setCats([defaultCat]);
-        setSelectedCat(defaultCat);
+        // setCats([defaultCat]);
+        // setSelectedCat(defaultCat);
       } catch (error) {
         console.error("Error fetching cat data:", error);
         setCats([defaultCat]);

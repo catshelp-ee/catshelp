@@ -21,7 +21,7 @@ function refreshToken(decodedToken, res) {
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.ENVIRONMENT !== 'TEST',
+    secure: process.env.VITE_ENVIRONMENT !== 'TEST',
     sameSite: "Strict",
     maxAge: 24 * 60 * 60 * 1000,
   });

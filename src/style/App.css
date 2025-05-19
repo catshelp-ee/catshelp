@@ -10,15 +10,16 @@
 #root {
   font-family: Inter;
   color: '#212427';
+  height: 100vh;
 }
 
 .login-background {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #6AC7DB;
+  height:100%
 }
 
 .login-background::before {
@@ -63,4 +64,11 @@
 .email-login {
   margin-top: 30px;
   margin-bottom: 30px;
+}
+
+.alert-container {
+  position: absolute;
+  width: 100%;
+  padding: 10px 10px;
+  z-index: 2;
 }

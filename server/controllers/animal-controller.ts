@@ -68,11 +68,9 @@ export async function addPicture(req, res) {
 export async function getProfile(req: Request, res: Response) {
   try {
     const googleService = await GoogleService.create();
-    //const ownerName = req.body.ownerName;
-    const ownerName = "markop";
-    console.log([ownerName])
+    const ownerName = req.query.ownerName;
     const catProfiles = await getCatProfilesByOwner(ownerName, googleService);
-    res.json({ catProfiles });
+    res.json({ profiles: catProfiles });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch profile data" });
   }

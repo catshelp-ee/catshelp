@@ -16,7 +16,7 @@
 
 #root {
   font-family: Inter;
-  color: "#212427";
+  height: 100vh;
 }
 
 .login-background {
@@ -26,13 +26,14 @@
   justify-content: center;
   align-items: center;
   background-color: #6ac7db;
+  height: 100%;
 }
 
 .login-background::before {
   content: "";
   position: absolute;
   background-image: url("../assets/login_background.png");
-  background-size: 100% 136%;
+  background-size: 60% 136%;
   opacity: 8%;
   top: 0px;
   left: 0px;
@@ -69,6 +70,13 @@
 .email-login {
   margin-top: 30px;
   margin-bottom: 30px;
+  display: flex;
+  gap: 10px;
+}
+
+.login-button-container {
+  height: 100%;
+  align-self: center;
 }
 
 .alert-container {
@@ -76,4 +84,29 @@
   width: 100%;
   padding: 10px 10px;
   z-index: 2;
+  height: fit-content;
+}
+
+@media (max-width: 768px) {
+  .login-background::before {
+    background-size: 180% 100%;
+  }
+
+  .login-form-box {
+    background-image: none;
+    background-color: white;
+    aspect-ratio: auto;
+  }
+
+  .login-form-box {
+    width: 100%;
+  }
+
+  .login-form {
+    width: 100%;
+  }
+
+  .email-login {
+    flex-direction: column;
+  }
 }

@@ -31,8 +31,6 @@ export async function getCatProfilesByOwner(
         values[columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
       if (fosterhome?.formattedValue !== ownerName) continue;
 
-      console.log("loll + " + [ownerName]);
-
       const catProfile = await buildCatProfile(
         values,
         columnNamesWithIndexes,
@@ -41,7 +39,6 @@ export async function getCatProfilesByOwner(
       catProfiles.push(catProfile);
     }
   }
-
   return catProfiles;
 }
 
@@ -104,7 +101,6 @@ async function buildCatProfile(
     );
   }
 
-  console.log(catProfile);
   return catProfile;
 }
 

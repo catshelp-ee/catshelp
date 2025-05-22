@@ -1,46 +1,64 @@
+// controllers/animal-controller.ts
 import GoogleService from "../services/google-service.ts";
+import AnimalService from "../services/animal-service.ts";
 import fs from "node:fs";
 import db from "../../models/index.cjs";
 import { generateCatDescription } from "../services/ai-service.ts";
-import { getCatProfilesByOwner } from "../services/animal-service.ts";
+import { Request, Response } from "express";
 
-export async function postAnimal(req: any, res: any) {
-  const googleService = await GoogleService.create();
-  const formData = req.body;
+// Initialize services once
+let googleService: GoogleService;
+let catProfileService: AnimalService;
 
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString().split("T")[0];
-
-  const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
-
-  const animalRescue = await db.AnimalRescue.create({
-    rescueDate: formattedDate,
-    state: formData.maakond,
-    address: formData.asula,
-    locationNotes: formData.lisa,
-  });
-
-  const animalToAnimalRescue = await db.AnimalToAnimalRescue.create({
-    animalId: animal.id,
-    animalRescueId: animalRescue.id,
-  });
-
-  delete formData.pildid;
-  const row = { id: animalRescue.rankNr, ...formData };
-
-  await googleService.addDataToSheet(
-    process.env.CATS_SHEETS_ID,
-    "HOIUKODUDES",
-    row
-  );
-
-  res.json(animalRescue.identifier);
+async function initializeServices() {
+  if (!googleService) {
+    googleService = await GoogleService.create();
+    catProfileService = new AnimalService(googleService);
+  }
 }
 
-export async function addPicture(req, res) {
-  const googleService = await GoogleService.create();
+// Initialize services when this module loads
+initializeServices().catch(console.error);
 
+export async function postAnimal(req: Request, res: Response) {
   try {
+    await initializeServices(); // Ensure services are ready
+    const formData = req.body;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split("T")[0];
+
+    const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
+    const animalRescue = await db.AnimalRescue.create({
+      rescueDate: formattedDate,
+      state: formData.maakond,
+      address: formData.asula,
+      locationNotes: formData.lisa,
+    });
+
+    await db.AnimalToAnimalRescue.create({
+      animalId: animal.id,
+      animalRescueId: animalRescue.id,
+    });
+
+    delete formData.pildid;
+    const row = { id: animalRescue.rankNr, ...formData };
+
+    await googleService.addDataToSheet(
+      process.env.CATS_SHEETS_ID,
+      "HOIUKODUDES",
+      row
+    );
+
+    res.json(animalRescue.identifier);
+  } catch (error) {
+    console.error("Error creating animal:", error);
+    res.status(500).json({ error: "Failed to create animal record" });
+  }
+}
+
+export async function addPicture(req: Request, res: Response) {
+  try {
+    await initializeServices();
     const catName = req.body.catName;
     const driveFolder = await googleService.createDriveFolder(catName);
     const folderID = driveFolder.data.id;
@@ -49,37 +67,56 @@ export async function addPicture(req, res) {
     uploadedFiles = Array.isArray(uploadedFiles)
       ? uploadedFiles
       : [uploadedFiles];
-
-    uploadedFiles.forEach((file, idx) => {
+    const uploadPromises = uploadedFiles.map((file) => {
       const tempPath = file.path;
-      googleService.uploadToDrive(
+      return googleService.uploadToDrive(
         file.originalname,
         fs.createReadStream(tempPath),
         folderID!
       );
     });
 
-    return res.json("Pildid laeti üles edukalt");
+    await Promise.all(uploadPromises);
+    res.json("Pildid laeti üles edukalt");
   } catch (error) {
-    return res.json("Tekkis tõrge piltide üles laadimisega: " + error);
+    console.error("Error uploading pictures:", error);
+    res.status(500).json({
+      error: "Tekkis tõrge piltide üles laadimisega: " + error.message,
+    });
   }
 }
 
 export async function getProfile(req: Request, res: Response) {
   try {
-    const googleService = await GoogleService.create();
-    const ownerName = req.query.ownerName;
-    const catProfiles = await getCatProfilesByOwner(ownerName, googleService);
+    await initializeServices();
+    const ownerName = req.query.ownerName as string;
+    const catProfiles = await catProfileService.getCatProfilesByOwner(
+      ownerName
+    );
     res.json({ profiles: catProfiles });
   } catch (error) {
+    console.error("Error fetching profile:", error);
     res.status(500).json({ error: "Failed to fetch profile data" });
   }
 }
 
-export async function genText(req: any, res: any) {
+export async function updatePet(req: Request, res: Response) {
+  try {
+    await initializeServices();
+    const catData = req.body;
+    await catProfileService.updateCatProfile(catData);
+    res.json("uuendatud edukalt");
+  } catch (error) {
+    console.error("Error updating pet:", error);
+    res.status(500).json({ error: "Failed to update pet data" });
+  }
+}
+
+export async function genText(req: Request, res: Response) {
   try {
     const catInfo = req.body.formData;
     const description = await generateCatDescription(catInfo);
+
     if (!description || description.trim() === "") {
       return res
         .status(503)

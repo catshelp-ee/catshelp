@@ -117,6 +117,85 @@ export default class GoogleService {
     });
   }
 
+  public async updateSheetCells(
+    sheetId: string,
+    tabName: string,
+    find: any,
+    data: any
+  ) {
+    const sheetData = await this.getSheetData(sheetId, tabName);
+
+    const rows = sheetData.data.sheets![0].data || [];
+    const pageID = sheetData.data.sheets![0].properties.sheetId;
+
+    const columnNamesWithIndexes: { [key: string]: number } = {};
+    rows[0]?.rowData?.[0]?.values?.forEach((col, idx) => {
+      if (col.formattedValue) {
+        columnNamesWithIndexes[col.formattedValue] = idx;
+      }
+    });
+
+    let catRow;
+
+    let rowIndex = 0;
+
+    for (const grid of rows) {
+      for (const row of grid.rowData || []) {
+        rowIndex++;
+        const values = row.values;
+        if (!values) continue;
+
+        const fosterhome =
+          values[columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
+        if (fosterhome?.formattedValue !== "markop") continue;
+        const cat = values[columnNamesWithIndexes["KASSI NIMI"]];
+
+        if (cat?.formattedValue !== data.name) continue;
+
+        catRow = row;
+        break;
+      }
+      if (catRow) break;
+    }
+
+    const updateRequests: any = [];
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "owner") return;
+      const columnIndex = columnNamesWithIndexes[find[key]];
+      updateRequests.push({
+        updateCells: {
+          start: {
+            sheetId: pageID,
+            rowIndex: rowIndex - 1,
+            columnIndex,
+          },
+          rows: [
+            {
+              values: [
+                {
+                  userEnteredValue: { stringValue: value },
+                },
+              ],
+            },
+          ],
+          fields: "userEnteredValue",
+        },
+      });
+      console.log(key, value);
+    });
+    try {
+      await this.sheets.spreadsheets.batchUpdate({
+        spreadsheetId: sheetId,
+        requestBody: { requests: updateRequests },
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+    console.log("DONE!");
+  }
+
   public async downloadImage(
     fileId: string,
     destinationPath: string

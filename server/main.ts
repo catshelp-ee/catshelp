@@ -67,6 +67,7 @@ app.post("/api/pilt/lisa", authenticate, upload.array("images"), animalControlle
 app.get("/api/user", authenticate, userController.getUserData);
 app.get("/api/animals/dashboard/:name", authenticate, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
+app.put("/api/animals/cat-profile", authenticate, animalController.updatePet);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
 
 // Fallback for client-side routes (React Router)

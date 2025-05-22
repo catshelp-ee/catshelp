@@ -182,7 +182,6 @@ export default class GoogleService {
           fields: "userEnteredValue",
         },
       });
-      console.log(key, value);
     });
     try {
       await this.sheets.spreadsheets.batchUpdate({
@@ -190,10 +189,8 @@ export default class GoogleService {
         requestBody: { requests: updateRequests },
       });
     } catch (e) {
-      console.log(e);
+      console.warn(e);
     }
-
-    console.log("DONE!");
   }
 
   public async downloadImage(

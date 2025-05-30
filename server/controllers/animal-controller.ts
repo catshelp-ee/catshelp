@@ -5,6 +5,7 @@ import fs from "node:fs";
 import db from "../../models/index.cjs";
 import { generateCatDescription } from "../services/ai-service.ts";
 import { Request, Response } from "express";
+import { getUserCats } from "../services/user-service.ts";
 
 // Initialize services once
 let googleService: GoogleService;
@@ -30,9 +31,9 @@ export async function postAnimal(req: Request, res: Response) {
     const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
     const animalRescue = await db.AnimalRescue.create({
       rescueDate: formattedDate,
-      state: formData.maakond,
-      address: formData.asula,
-      locationNotes: formData.lisa,
+      state: formData.state,
+      address: formData.location,
+      locationNotes: formData.notes,
     });
 
     await db.AnimalToAnimalRescue.create({
@@ -45,24 +46,31 @@ export async function postAnimal(req: Request, res: Response) {
 
     await googleService.addDataToSheet(
       process.env.CATS_SHEETS_ID,
-      "HOIUKODUDES",
+      process.env.CATS_TABLE_NAME,
       row
     );
 
-    res.json(animalRescue.identifier);
+    const folderId = await createFolder(animalRescue.rankNr);
+    animal.update({
+      driveId: folderId,
+    });
+    res.json(folderId);
   } catch (error) {
     console.error("Error creating animal:", error);
     res.status(500).json({ error: "Failed to create animal record" });
   }
 }
 
+async function createFolder(catId: string) {
+  const driveFolder = await googleService.createDriveFolder(catId);
+  return driveFolder.data.id;
+}
+
 export async function addPicture(req: Request, res: Response) {
   try {
     await initializeServices();
-    const catName = req.body.catName;
-    const driveFolder = await googleService.createDriveFolder(catName);
-    const folderID = driveFolder.data.id;
     let uploadedFiles = req.files;
+    const folderID = req.body.driveId;
 
     uploadedFiles = Array.isArray(uploadedFiles)
       ? uploadedFiles
@@ -89,10 +97,8 @@ export async function addPicture(req: Request, res: Response) {
 export async function getProfile(req: Request, res: Response) {
   try {
     await initializeServices();
-    const ownerName = req.query.ownerName as string;
-    const catProfiles = await catProfileService.getCatProfilesByOwner(
-      ownerName
-    );
+    const owner = req.query.owner;
+    const catProfiles = await catProfileService.getCatProfilesByOwner(owner);
     res.json({ profiles: catProfiles });
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -104,7 +110,11 @@ export async function updatePet(req: Request, res: Response) {
   try {
     await initializeServices();
     const catData = req.body;
-    await catProfileService.updateCatProfile(catData);
+    const cats = await getUserCats(catData.owner.email);
+    await catProfileService.updateCatProfile(
+      catData,
+      cats?.find((cat) => cat.name === catData.name)
+    );
     res.json("uuendatud edukalt");
   } catch (error) {
     console.error("Error updating pet:", error);

@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import fs from "node:fs";
+import moment from "moment";
 import path from "node:path";
 
 export default class GoogleService {
@@ -47,9 +48,9 @@ export default class GoogleService {
     return new GoogleService(auth, drive, sheets);
   }
 
-  public createDriveFolder(catName: string) {
+  public createDriveFolder(name: string) {
     var fileMetadata = {
-      name: catName,
+      name: name,
       mimeType: "application/vnd.google-apps.folder",
       parents: ["1_WfzFwV0623sWtsYwkp8RiYnCb2_igFd"],
       driveId: "0AAcl4FOHQ4b9Uk9PVA",
@@ -106,13 +107,20 @@ export default class GoogleService {
   }
 
   public async addDataToSheet(sheetId: string, tabName: string, data: any) {
+    const row = new Array(30).fill("");
+
+    row[0] = data.id;
+    row[1] = data.id;
+    row[17] = moment(new Date(), "DD.MM.YYYY").toDate().toString();
+    row[20] = `${data.state}, ${data.location}`;
+    row[30] = data.notes;
     await this.sheets.spreadsheets.values.append({
       auth: this.auth,
       spreadsheetId: sheetId,
       range: tabName,
       valueInputOption: "RAW",
       resource: {
-        values: [Object.values(data)],
+        values: [row],
       },
     });
   }
@@ -147,7 +155,7 @@ export default class GoogleService {
 
         const fosterhome =
           values[columnNamesWithIndexes["_HOIUKODU/ KLIINIKU NIMI"]];
-        if (fosterhome?.formattedValue !== "markop") continue;
+        if (fosterhome?.formattedValue !== data.owner.name) continue;
         const cat = values[columnNamesWithIndexes["KASSI NIMI"]];
 
         if (cat?.formattedValue !== data.name) continue;
@@ -161,7 +169,7 @@ export default class GoogleService {
     const updateRequests: any = [];
 
     Object.entries(data).forEach(([key, value]) => {
-      if (key === "owner") return;
+      if (!(key in find)) return;
       const columnIndex = columnNamesWithIndexes[find[key]];
       updateRequests.push({
         updateCells: {
@@ -191,6 +199,31 @@ export default class GoogleService {
     } catch (e) {
       console.warn(e);
     }
+  }
+
+  public async downloadImages(
+    folderId: string,
+    ownerName: string,
+    catProfile: any
+  ): Promise<boolean> {
+    const res = await this.drive.files.list({
+      q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
+      fields: "files(id, name, mimeType)",
+      supportsAllDrives: true, // ✅ Key for shared drives!
+      includeItemsFromAllDrives: true, // ✅ Also needed
+      corpora: "drive", // Use 'drive' instead of 'user'
+      driveId: "0AAcl4FOHQ4b9Uk9PVA", // 🔑 Required for shared drives
+    });
+
+    await Promise.all(
+      res.data.files.map(async (file) => {
+        const filePath = `./public/Temp/${ownerName}/${file.name}`;
+        await this.downloadImage(file.id, filePath);
+        catProfile.images.push(`Temp/${ownerName}/${file.name}`);
+      })
+    );
+
+    return true;
   }
 
   public async downloadImage(

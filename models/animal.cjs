@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.TEXT,
       status: DataTypes.STRING,
       chipNumber: DataTypes.STRING,
-      chipRegisteredWithUs: DataTypes.BOOLEAN
+      chipRegisteredWithUs: DataTypes.BOOLEAN,
+      driveId: DataTypes.STRING,
     },
     {
       underscored: true,

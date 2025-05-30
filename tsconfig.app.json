@@ -28,9 +28,9 @@
       "@context/*": ["./src/context/*"],
       "@pages/*": ["./src/pages/*"],
       "@style/*": ["./src/style/*"],
-      "@types/*": ["./src/types/*"],
+      "@models/*": ["./src/types/*"],
       "@utils/*": ["./src/utils/*"],
-      "@hooks/*": ["./src/hooks/*"],
+      "@hooks/*": ["./src/hooks/*"]
     }
   },
   "include": ["src"]

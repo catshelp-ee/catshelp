@@ -59,7 +59,7 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
 
   return (
     <nav
-      className={`flex flex-col z-10 left-0 absolute h-full w-full bg-[#30B0C7] ${
+      className={`flex flex-col z-10 top-0 left-0 absolute h-full w-full bg-[#30B0C7] ${
         isClosed ? "animate-slide-left" : "animate-slide-right"
       }`}
     >
@@ -78,14 +78,19 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
       >
         <CloseIcon />
       </IconButton>
-      <div className="my-[40%]">
+      <div className="mt-[20%] mb-[20%]">
         {menuItems.map((item, index) => (
           <Link
             to={item.path}
             key={index}
             className="flex text-white p-5 text-base w-4/5"
-          > 
-            <img loading="lazy" src={`/${item.icon}`} alt="" className="mr-8" />
+          >
+            <img
+              loading="lazy"
+              src={`/${item.icon}`}
+              alt=""
+              className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"
+            />
             {item.text}
           </Link>
         ))}
@@ -94,7 +99,7 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
         sx={{
           position: "absolute",
           bottom: "15%",
-          padding: "16px",
+          padding: "1.25rem",
           color: "white",
           textTransform: "none",
           fontSize: "1rem",
@@ -102,7 +107,12 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
         }}
         onClick={logout}
       >
-        <img loading="lazy" src="/Vector.png" alt="" className="mr-8" />
+        <img
+          loading="lazy"
+          src="/Vector.png"
+          alt=""
+          className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"
+        />
         Logi välja
       </Button>
     </nav>

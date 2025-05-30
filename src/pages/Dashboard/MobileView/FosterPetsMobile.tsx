@@ -28,16 +28,16 @@ const FosterPetsMobile: React.FC<FosterPetsProps> = ({ pets }) => {
 
   return (
     <div className="">
-      <h2 className="my-4 text-base font-bold leading-relaxed text-slate-500">
+      <h2 className="my-4 mx-4 text-base font-bold leading-relaxed text-slate-500">
         TEATED CATS HELPILT
       </h2>
-      <p className="h-28 mb-4 p-4 whitespace-pre-line overflow-scroll text-left border rounded-3xl border border-solid border-black border-opacity-20">
+      <p className="h-28 mb-4 mx-4  p-4 whitespace-pre-line overflow-auto text-left border rounded-3xl border-solid border-black border-opacity-20">
         Siia kirjutame informatiivseid teateid, millest tahame hoiukodule teada
         anda. Pikema teksti puhul tuleks sisemine scroll :) Tekstid tulevad
         Sheetsist.
       </p>
 
-      <div className="flex items-center relative min-h-24 justify-around px-8 border rounded-3xl border border-solid border-black border-opacity-20">
+      <div className="flex items-center mx-4 relative min-h-24 justify-around px-8 rounded-3xl border border-solid border-black border-opacity-20">
         {displayPets.map((pet, index) => (
           <Link to="/cat-profile/1">
             <Avatar

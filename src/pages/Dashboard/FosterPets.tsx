@@ -32,7 +32,7 @@ const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
         <h2 className="mb-8 text-left text-base font-bold leading-relaxed text-slate-500">
           TEATED CATS HELPILT
         </h2>
-        <p className="h-full p-4 whitespace-pre-line overflow-scroll text-left border rounded-3xl border border-solid border-black border-opacity-20">
+        <p className="h-full p-4 whitespace-pre-line overflow-auto text-left border rounded-3xl border-solid border-black border-opacity-20">
           Siia kirjutame informatiivseid teateid, millest tahame hoiukodule
           teada anda. Pikema teksti puhul tuleks sisemine scroll :) Tekstid
           tulevad Sheetsist.

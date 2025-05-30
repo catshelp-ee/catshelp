@@ -1,44 +1,92 @@
-export interface Cat {
-  title?: string;
-  description?: string;
-  name?: string;
-  age?: string;
-  appearance?: string;
-  procedures?: string;
-  issues?: string;
-  rescueDate?: string;
-  history?: string;
-  characteristics?: string;
-  likes?: string;
-  descriptionOfCharacter?: string;
-  treatOtherCats?: string;
-  treatDogs?: string;
-  treatChildren?: string;
-  outdoorsIndoors?: string;
-  images?: string[];
+export interface Descriptors {
+  coatColour: string;
+  coatLength: string;
+  gender: string;
+  cut: string;
+  procedures: string;
+  duration: string;
+  appearance: string;
+  issues: string;
+  history: string;
+  characteristics: string[];
+  likes: string[];
+  cat: string[];
+  descriptionOfCharacter: string;
+  treatOtherCats: string;
+  treatDogs: string;
+  treatChildren: string;
+  outdoorsIndoors: string;
+  other: string;
+  wishes: string;
 }
 
-export const defaultCat: Cat = {
-  title: "armas kiisu otsib kodu",
-  description: "väga nunnu ja sõbralik talle meeldib mängida palju",
-  name: "Karvakera",
-  age: "01.11.2018",
-  appearance: "Must, Pikakarvaline",
-  procedures: "Marutaudi vaktsiin, Ussirohi",
-  issues: "nohu",
-  rescueDate: "21.11.2020",
+export const descriptors: Descriptors = {
+  duration: "",
+  gender: "",
+  coatColour: "",
+  coatLength: "",
+  cut: "false",
+  appearance: "",
+  issues: "",
   history: "",
-  characteristics: "",
-  likes: "linde vaadata",
+  procedures: "",
+  characteristics: [],
+  likes: [],
+  cat: [],
   descriptionOfCharacter: "",
   treatOtherCats: "",
   treatDogs: "",
   treatChildren: "",
-  outdoorsIndoors: "toa ja õuekassiks",
-  images: [
-    "/Cats/ingver.png",
-    "/Cats/cute-cat.jpg",
-    "/Cats/cute-cat2.jpg",
-    "/Cats/cute-cat3.jpg",
-  ],
+  outdoorsIndoors: "",
+  other: "",
+  wishes: "",
+};
+
+export interface Cat extends Descriptors {
+  title: string;
+  description: string;
+  name: string;
+  birthDate: Date | null;
+  chipNr: string;
+  llr: string;
+  genderLabel: string;
+  wormMedName: string;
+  wormMedDate: Date | null;
+  rescueDate: Date | null;
+  foundLoc: string;
+  age: string;
+  currentLoc: string;
+  appearence: string;
+  vacc: Date | null;
+  vaccEnd: Date | null;
+  rabiesVacc: Date | null;
+  rabiesVaccEnd: Date | null;
+  images: [];
+  driveId: string;
+}
+
+export const defaultCat: Cat = {
+  ...descriptors,
+  title: "",
+  description: "",
+  name: "",
+  birthDate: null,
+  currentLoc: "",
+  appearence: "",
+  age: "",
+  chipNr: "",
+  llr: "false",
+  genderLabel: "",
+  wormMedName: "",
+  wormMedDate: null,
+  rescueDate: null,
+  foundLoc: "",
+  vacc: null,
+  vaccEnd: null,
+  rabiesVacc: null,
+  rabiesVaccEnd: null,
+  images: [],
+  other: "",
+  wishes: "",
+  driveId: "",
 };

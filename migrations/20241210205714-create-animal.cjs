@@ -33,6 +33,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         field: "chip_registered_with_us",
       },
+      driveID: {
+        type: Sequelize.STRING,
+        field: "drive_id",
+      },
     });
   },
   async down(queryInterface, Sequelize) {

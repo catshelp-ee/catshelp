@@ -7,7 +7,7 @@ export async function getDashboard(req: any, res: any) {
 
   const sheetsDataFosterHomes = await googleService.getSheetData(
     process.env.CATS_SHEETS_ID!,
-    "HOIUKODUDES"
+    process.env.CATS_TABLE_NAME!
   );
   const sheetsDataContracts = await googleService.getSheetData(
     process.env.CONTRACTS_SHEETS_ID!,
@@ -15,11 +15,15 @@ export async function getDashboard(req: any, res: any) {
   );
 
   const sheetsData = {
-    "cats": sheetsDataFosterHomes.data.sheets![0].data,
-    "contracts": sheetsDataContracts.data.sheets![0].data
-  }
+    cats: sheetsDataFosterHomes.data.sheets![0].data,
+    contracts: sheetsDataContracts.data.sheets![0].data,
+  };
 
-  const dashboardService = new DashboardService(sheetsData, username, googleService);
+  const dashboardService = new DashboardService(
+    sheetsData,
+    username,
+    googleService
+  );
 
   const response = {
     todos: dashboardService.displayNotifications(),

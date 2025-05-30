@@ -18,12 +18,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   AnimalRescue.init(
     {
-      identifier: DataTypes.INTEGER,
       rankNr: DataTypes.INTEGER,
       rescueDate: DataTypes.DATE,
       state: DataTypes.STRING,
       address: DataTypes.STRING,
-      locationNotes: DataTypes.STRING
+      locationNotes: DataTypes.STRING,
     },
     {
       underscored: true,
@@ -49,19 +48,19 @@ module.exports = (sequelize, DataTypes) => {
             lastRescue.rescueDate.getFullYear() !== currentYear
           ) {
             // If the month has changed, reset the rankNr
-            instance.rankNr = 1; // Start fresh with rankNr 1 for the new month
+            if (currentMonth + 1 < 10)
+              instance.rankNr = Number(
+                `${currentYear % 1000}0${currentMonth + 1}1`
+              );
+            // Start fresh with rankNr 1 for the new month
+            else
+              instance.rankNr = Number(
+                `${currentYear % 1000}${currentMonth + 1}1`
+              ); // Start fresh with rankNr 1 for the new month
           } else {
             // If the month is the same, increment the rankNr
             instance.rankNr = lastRescue.rankNr + 1; // Increment the rankNr based on the last record
           }
-
-          const catIdent = `
-          ${currentDate.getFullYear().toString().slice(-2)}${(
-            currentDate.getMonth() + 1
-          )
-            .toString()
-            .padStart(2, "0")}${instance.rankNr}`;
-          instance.identifier = catIdent;
         },
       },
     }

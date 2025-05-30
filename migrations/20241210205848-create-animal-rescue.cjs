@@ -9,9 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      identifier: {
-        type: Sequelize.INTEGER,
-      },
       rankNr: {
         type: Sequelize.INTEGER,
         field: "rank_nr",

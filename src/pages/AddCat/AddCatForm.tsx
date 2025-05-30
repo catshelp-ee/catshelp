@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Button, TextField, Autocomplete } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Autocomplete,
+  ImageList,
+  ImageListItem,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as Utils from "@utils/utils.ts";
-import { Cat, defaultCat } from "@types/Cat.ts";
 import Header from "../App/Header.tsx";
-import Gallery from "@pages/AddCat/Gallery.tsx";
 import Popup from "@pages/AddCat/Popup.tsx";
 import States from "@pages/AddCat/States.json";
 
@@ -20,11 +24,10 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const AddCatForm = () => {
-  const [cat, setCat] = useState<Cat>(defaultCat);
+  const [images, setImages] = useState<File[]>([]);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isSlidingDown, setSlidingDown] = useState(false);
   const [isSlidingUp, setSlidingUp] = useState(false);
-  const [indexOffset, setIndexOffset] = useState(0);
 
   const handlePopupClose = () => {
     setSlidingUp(true);
@@ -33,22 +36,6 @@ const AddCatForm = () => {
       setSlidingUp(false);
       setPopupVisible(false);
     }, 300);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    const images = cat.primaryInfo.images!;
-
-    files.forEach((file, index) => {
-      images.set(index+indexOffset, file);
-    });
-
-    setIndexOffset(prev => prev + files.length);
-
-    setCat((prevCat) => ({
-      ...prevCat,
-      primaryInfo: { images },
-    }));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -63,10 +50,14 @@ const AddCatForm = () => {
     }
 
     const formData = new FormData(e.target as HTMLFormElement);
-    const payload = Object.fromEntries(formData);
-    const pictures = Array.from(cat.primaryInfo.images?.values() || []);
 
-    Utils.submitNewCatProfile(payload, pictures);
+    const obj = {
+      notes: formData.get("notes"),
+      location: formData.get("location"),
+      state: formData.get("state"),
+    };
+
+    Utils.submitNewCatProfile(obj, images);
   };
 
   return (
@@ -81,53 +72,76 @@ const AddCatForm = () => {
       <div className="flex flex-col w-1/3 max-sm:w-full">
         <Header className="mt-4" imgClass="m-auto" />
         <h1 className="text-5xl mt-4 mb-16 max-sm:text-4xl">Lisa uus kass</h1>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col overflow-scroll no-scrollbar w-full gap-4 mb-28"
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col overflow-scroll no-scrollbar w-full gap-4 mb-28"
+        >
+          <Button
+            sx={{
+              width: "300px",
+              position: "fixed",
+              bottom: "25px",
+              left: "50%",
+              transform: "translate(-50%, 0)",
+            }}
+            type="submit"
+            variant="outlined"
           >
-            <Button
-              sx={{
-                width: "300px",
-                position: "fixed",
-                bottom: "25px",
-                left: "50%",
-                transform: "translate(-50%, 0)",
-              }}
-              type="submit"
-              variant="outlined"
-            >
-              Kinnita
-            </Button>
-            <Button
-              component="label"
-              variant="contained"
-              startIcon={<CloudUploadIcon />}
-            >
-              Lae üles pildid
-              <VisuallyHiddenInput
-                required
-                name="pildid"
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                multiple
-              />
-            </Button>
-            <Gallery files={cat.primaryInfo.images!} setCat={setCat} />
-            <TextField
-              name="lisa"
-              label="Lisainfo"
-              multiline
-              maxRows={4}
-              variant="outlined"
+            Kinnita
+          </Button>
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+          >
+            Lae üles pildid
+            <VisuallyHiddenInput
+              required
+              name="images"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImages(Array.from(e.target.files ?? []))}
+              multiple
             />
-              <Autocomplete
-                disablePortal
-                options={States.maakonnad}
-                renderInput={(params) => <TextField {...params} label="Maakond" />}
-               />
-              <TextField name="asula" label="Asula" multiline maxRows={4} />
-          </form>
+          </Button>
+          <ImageList cols={3}>
+            {images.map((image, index) => (
+              <ImageListItem key={index} className="relative">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt={`preview-${index}`}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImages((prev) => prev.filter((_, i) => i !== index));
+                  }}
+                  className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-opacity-80"
+                >
+                  ×
+                </button>
+              </ImageListItem>
+            ))}
+          </ImageList>
+
+          <TextField
+            name="notes"
+            label="Lisainfo"
+            multiline
+            maxRows={4}
+            variant="outlined"
+          />
+          <Autocomplete
+            disablePortal
+            options={States.maakonnad}
+            renderInput={(params) => (
+              <TextField name="state" {...params} label="Maakond" />
+            )}
+          />
+          <TextField name="location" label="Asula" multiline maxRows={4} />
+        </form>
       </div>
     </div>
   );

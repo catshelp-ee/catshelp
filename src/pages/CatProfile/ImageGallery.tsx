@@ -1,13 +1,20 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Dialog, Button } from "@mui/material";
+import {
+  Dialog,
+  Button,
+  IconButton,
+  ImageList,
+  ImageListItem,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface ImageGalleryProps {
+  name?: string;
   images: string[];
   isEditMode?: boolean;
-  previews: PreviewImage[];
-  setPreviews: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
+  previews?: PreviewImage[];
+  setPreviews?: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
 }
 
 interface PreviewImage {
@@ -17,6 +24,7 @@ interface PreviewImage {
 }
 
 const ImageGallery: React.FC<ImageGalleryProps> = ({
+  name,
   images,
   isEditMode = false,
   previews,
@@ -96,12 +104,12 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         <div className="flex flex-col items-center">
           <button
             onClick={() => setIsOpen(true)}
-            className="rounded-2xl h-72 rounded-full mb-4"
+            className="rounded-2xl max-w-72 h-72 rounded-full mb-4"
           >
             <img src={images[0]} className="h-full rounded-2xl" />
           </button>
           <button
-            className="relative h-72 rounded-2xl mb-4"
+            className="relative max-w-72 h-72 rounded-2xl mb-4"
             onClick={() => setIsOpen(true)}
           >
             <img
@@ -110,7 +118,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
               alt="More images"
             />
             <div className="absolute inset-0 flex items-center justify-center font-bold">
-              +4 images
+              +{images.length - 1} pilti
             </div>
           </button>
 
@@ -119,7 +127,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
               {...getRootProps()}
               className="w-72 h-72 border-2 border-black rounded-2xl flex items-center justify-center cursor-pointer bg-white relative overflow-hidden"
             >
-              <input {...getInputProps()} />
+              <input {...getInputProps({ name })} />
               {previews.length > 0 ? renderPreview() : renderUploadPrompt()}
             </div>
           )}
@@ -127,15 +135,20 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
       </div>
 
       <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8 p-6">
-          {images.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Gallery image ${index + 1}`}
-              className="w-2/3 md:w-1/3 object-cover rounded-lg"
-            />
-          ))}
+        <div className="w-full p-4">
+          <div className="w-full flex justify-end mb-4">
+            <IconButton onClick={() => setIsOpen(false)} sx={{}}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+
+          <ImageList cols={3}>
+            {images.map((image, index) => (
+              <ImageListItem key={index}>
+                <img srcSet={image} src={image} loading="lazy" />
+              </ImageListItem>
+            ))}
+          </ImageList>
         </div>
       </Dialog>
     </div>

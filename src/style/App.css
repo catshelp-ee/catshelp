@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Inter';
-  src: local('Inter'), url('../assets/font/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-family: "Inter";
+  src: local("Inter"),
+    url("../assets/font/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+}
+
+@layer utilities {
+  .text-secondary {
+    @apply text-secondaryText;
+  }
 }
 
 #root {
@@ -13,12 +20,13 @@
 }
 
 .login-background {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #6AC7DB;
-  height: 100%
+  background-color: #6ac7db;
+  height: 100%;
 }
 
 .login-background::before {
@@ -79,8 +87,8 @@
   height: fit-content;
 }
 
-@media(max-width: 768px) {
-  .login-background::before  {
+@media (max-width: 768px) {
+  .login-background::before {
     background-size: 180% 100%;
   }
 
@@ -99,6 +107,6 @@
   }
 
   .email-login {
-    flex-direction: column;  
+    flex-direction: column;
   }
 }

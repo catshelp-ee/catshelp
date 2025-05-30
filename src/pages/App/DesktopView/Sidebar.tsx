@@ -46,8 +46,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
   ];
 
   return (
-    <nav className="flex flex-col w-1/5">
-      <div className="flex flex-col w-full h-full py-14 bg-[#30B0C7] relative rounded-tr-lg shadow-[0_4px_8px_rgba(0,0,0,0.25)]">
+    <nav className="md:flex flex-col w-1/5 sticky top-0 h-screen">
+      <div className="flex flex-col w-full h-full py-14 bg-[#30B0C7] relative rounded-r-lg shadow-[0_4px_8px_rgba(0,0,0,0.25)] overflow-y-auto">
         <div>
           {menuItems.map((item, index) => (
             <Link
@@ -59,25 +59,36 @@ const Sidebar: React.FC<SidebarProps> = () => {
                 loading="lazy"
                 src={`/${item.icon}`}
                 alt=""
-                className="mr-8"
+                className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"
               />
               {item.text}
             </Link>
           ))}
         </div>
+
         <Button
           sx={{
             position: "absolute",
             bottom: "15%",
-            padding: "16px",
+            padding: "1.25rem",
             color: "white",
             textTransform: "none",
             fontSize: "1rem",
             lineHeight: "1.5rem",
+            width: "100%",
+            justifyContent: "flex-start",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.4)",
+            },
           }}
           onClick={logout}
         >
-          <img loading="lazy" src="/Vector.png" alt="" className="mr-8" />
+          <img
+            loading="lazy"
+            src="/Vector.png"
+            alt=""
+            className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"
+          />
           Logi välja
         </Button>
       </div>

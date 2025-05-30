@@ -13,8 +13,6 @@ import db from "../models/index.cjs";
 import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
 import { METHODS } from "node:http";
-import errorMiddleware from "./middleware/error-middleware.ts";
-import 'express-async-errors';
 
 dotenv.config();
 initializeDb();
@@ -76,8 +74,6 @@ app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
 app.get('*', (req, res) => {
   res.sendFile(path.join(rootDir, 'dist', 'index.html'));
 });
-
-app.use(errorMiddleware);
 
 app.listen(process.env.BACKEND_PORT, () => {
   console.log("connected to backend!");

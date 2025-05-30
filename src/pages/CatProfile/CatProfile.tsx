@@ -1,144 +1,106 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Cat } from "@types/Cat.ts";
-import { Button } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useAlert } from "@context/AlertContext";
-import HamburgerMenu from "../Dashboard/DesktopView/HamburgerMenu.tsx";
-import ImageGallery from "./ImageGallery.tsx";
+import { useAuth } from "@context/AuthContext.tsx";
 import CatSelection from "./CatSelection.tsx";
 import CatDetails from "./CatDetails.tsx";
+import EditProfile from "./EditProfile.tsx";
+import { Cat, defaultCat } from "@models/Cat.ts";
+
+const CatProfileHeader = () => (
+  <div>
+    <section className="flex my-4 items-center">
+      <h1 className="text-xl md:text-4xl">Kiisude profiilid veebis</h1>
+      <img
+        loading="lazy"
+        className="w-12 h-12"
+        src="/welcome.svg"
+        alt="Welcome"
+      />
+    </section>
+    <p className="mt-4 text-secondary">
+      Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
+      veebilehel Valimiseks klõpsa hoiulooma pildil
+    </p>
+  </div>
+);
 
 const CatProfile: React.FC = () => {
-  const navigate = useNavigate();
-  const [cats, setCats] = useState<Cat[]>([]);
-  const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { getUser } = useAuth();
   const { showAlert } = useAlert();
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-
-  const handleGalleryOpen = () => {
-    setIsGalleryOpen(true);
-  };
-
-  const handleEditCat = () => {
-    navigate("/edit-cat");
-  };
+  const [cats, setCats] = useState<Cat[]>([]);
+  const [selectedCat, setSelectedCat] = useState<Cat>(defaultCat);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        setLoading(true);
-        
-        const response = await axios.get("/api/animals/cat-profile");         
-        const fetchedCats = response.data.catProfiles || [];
+        setIsLoading(true);
+        const user = await getUser();
 
-        setCats(fetchedCats[0]);
-        if (fetchedCats[0].length > 0) {
+        const response = await axios.get("/api/animals/cat-profile", {
+          params: {
+            owner: {
+              name: user.fullName,
+              email: user.email,
+            },
+          },
+        });
+
+        const fetchedCats = response.data.profiles;
+        setCats(fetchedCats);
+        if (fetchedCats.length > 0) {
           setSelectedCat(fetchedCats[0]);
         }
-
-        // setCats([defaultCat]);
-        // setSelectedCat(defaultCat);
       } catch (error) {
         console.error("Error fetching cat data:", error);
-        showAlert('Error', "Kassi andmete pärimine ebaõnnestus");
+        showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
         setCats([]);
-        setCats([defaultCat]);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
+
     fetchCats();
-  }, []);
+  }, [getUser, showAlert]);
 
-  return (
-    <div className="flex flex-col w-full h-screen">
-      <Header />
-      <div className="flex flex-col flex-grow md:flex-row">
-        <Sidebar />
-        <div className="block md:hidden w-full">
-          <HamburgerMenu />
-        </div>
-
-        <main className="flex flex-col w-full md:mx-12 mb-4 flex-1">
+  const renderContent = () => {
+    if (isEditMode) {
+      return (
+        <>
           <CatSelection
             cats={cats}
+            setIsEditMode={setIsEditMode}
+            setSelectedCat={setSelectedCat}
+          />
+          <EditProfile
+            setIsEditMode={setIsEditMode}
             selectedCat={selectedCat}
             setSelectedCat={setSelectedCat}
-            loading={loading}
           />
+        </>
+      );
+    }
 
-          {selectedCat && (
-            <>
-              <div className="flex mx-4 my-6 flex-row border border-gray-300 p-4 rounded-md shadow">
-                <div className="flex flex-col flex-1">
-                  <div className="flex flex-col md:flex-row  items-start">
-                    <CatDetails
-                      selectedCat={selectedCat}
-                      handleEditCat={handleEditCat}
-                    />
-                    <div className="flex flex-col w-full md:w-auto md:flex-wrap my-4 items-center justify-center">
-                      {selectedCat.images && selectedCat.images[0] && (
-                        <div className="w-full md:w-auto flex justify-center">
-                          <img
-                            src={`${selectedCat.images[0]}`}
-                            alt={`${selectedCat.images[0]}`}
-                            className="w-24 h-24 min-w-52 min-h-52 object-cover rounded-lg mb-3"
-                          />
-                        </div>
-                      )}
+    return (
+      <>
+        <CatSelection cats={cats} setSelectedCat={setSelectedCat} />
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
+          <CatDetails selectedCat={selectedCat} setIsEditMode={setIsEditMode} />
+        )}
+      </>
+    );
+  };
 
-                      {selectedCat.images && selectedCat.images.length > 1 && (
-                        <>
-                          <div className="hidden md:block relative">
-                            <img
-                              src={`${selectedCat.images[0]}`}
-                              alt={`${selectedCat.images[0]}`}
-                              className="w-24 h-24 min-w-52 min-h-52 object-cover rounded-lg"
-                            />
-                            <div className="absolute inset-0 bg-white bg-opacity-60"></div>
-                            <div
-                              className="absolute inset-0 flex items-center justify-center font-semibold text-xl cursor-pointer"
-                              onClick={handleGalleryOpen}
-                              role="button"
-                            >
-                              + {selectedCat.images.length - 1} pilti
-                            </div>
-                          </div>
-                          <div className="block md:hidden cursor-pointer">
-                            <Button
-                              sx={{
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "#007AFF",
-                                fontSize: "13px",
-                                padding: "4px 12px",
-                                borderRadius: "6px",
-                                textTransform: "none",
-                              }}
-                              onClick={handleGalleryOpen}
-                              variant="contained"
-                            >
-                              Vaata veel
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <ImageGallery
-                images={selectedCat.images || []}
-                open={isGalleryOpen}
-                onClose={() => setIsGalleryOpen(false)}
-              />
-            </>
-          )}
-        </main>
+  return (
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col mr-4 ml-24">
+        <CatProfileHeader />
+        {renderContent()}
       </div>
     </div>
   );

@@ -5,8 +5,8 @@ export default {
     extend: {
       keyframes: {
         slideDown: {
-          "0%": { transform: "translateX(0) translateY(-100%)" },
-          "100%": { transform: "translateX(0) translateY(0)" },
+          "0%": { transform: "translate(-50%, -80%)", opacity: "0" },
+          "100%": { transform: "translate(-50%, 0)", opacity: "1" },
         },
         slideUp: {
           "0%": { transform: "translateX(0) translateY(0)" },

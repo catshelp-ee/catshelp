@@ -19,12 +19,23 @@ interface DynamicFormFieldsProps {
   tempSelectedCat: Cat;
   updateField: (e: any, key: string) => void;
   updateFieldMultiselect: (e: any, key: string) => void;
+  isMobile: boolean;
 }
+
+const wrappingStyle = {
+  shrink: true,
+  sx: {
+    whiteSpace: "normal",
+    overflowWrap: "break-word",
+    maxWidth: "100%", // or set to a specific width
+  },
+};
 
 export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
   tempSelectedCat,
   updateField,
   updateFieldMultiselect,
+  isMobile,
 }) => (
   <>
     {Object.entries(FORM_FIELDS).map(([key, label], index) => {
@@ -37,7 +48,10 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
               multiple
               value={tempSelectedCat[key as keyof Cat]}
               onChange={(e) => updateFieldMultiselect(e, key)}
-              MenuProps={{ PaperProps: { style: { maxHeight: 500 } } }}
+              renderValue={(selected) => selected.join(", ")}
+              MenuProps={{
+                PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
+              }}
             >
               {MULTISELECT_FIELD_VALUES[key].map((val, idx) => (
                 <MenuItem key={idx} value={val}>
@@ -69,7 +83,9 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
               name={key}
               value={tempSelectedCat[key as keyof Cat]}
               onChange={(e) => updateField(e, key)}
-              MenuProps={{ PaperProps: { style: { maxHeight: 500 } } }}
+              MenuProps={{
+                PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
+              }}
             >
               {FIELD_VALUES[key].map((val, idx) => (
                 <MenuItem key={idx} value={val}>
@@ -84,14 +100,18 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
         );
       }
       return (
-        <TextField
-          key={index}
-          label={label}
-          value={tempSelectedCat[key as keyof Cat]}
-          onChange={(e) => updateField(e, key)}
-          name={key}
-          variant="standard"
-        />
+        <div key={index} className="w-full">
+          <FormLabel className="block text-sm font-medium mb-1 break-words whitespace-normal">
+            {label}
+          </FormLabel>
+          <TextField
+            value={tempSelectedCat[key as keyof Cat]}
+            onChange={(e) => updateField(e, key)}
+            name={key}
+            variant="standard"
+            fullWidth
+          />
+        </div>
       );
     })}
   </>

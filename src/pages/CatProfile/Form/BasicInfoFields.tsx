@@ -17,11 +17,17 @@ import { COAT_COLOURS, COAT_LENGTHS } from "./FormData";
 interface BasicInfoFieldsProps {
   tempSelectedCat: Cat;
   updateField: (e: any, key: string) => void;
+  isMobile: boolean;
 }
+
+const labelStyles = {
+  marginLeft: "16px",
+};
 
 export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   tempSelectedCat,
   updateField,
+  isMobile,
 }) => (
   <div className="flex flex-col gap-4">
     <TextField
@@ -95,7 +101,9 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
         name="coatLength"
         value={tempSelectedCat?.coatLength}
         onChange={(e) => updateField(e, "coatLength")}
-        MenuProps={{ PaperProps: { style: { maxHeight: 500 } } }}
+        MenuProps={{
+          PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
+        }}
       >
         {COAT_LENGTHS.map((length, index) => (
           <MenuItem key={index} value={length}>
@@ -111,7 +119,9 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
         name="coatColour"
         value={tempSelectedCat?.coatColour}
         onChange={(e) => updateField(e, "coatColour")}
-        MenuProps={{ PaperProps: { style: { maxHeight: 500 } } }}
+        MenuProps={{
+          PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
+        }}
       >
         {COAT_COLOURS.map((colour, index) => (
           <MenuItem key={index} value={colour}>
@@ -127,5 +137,17 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       value={tempSelectedCat?.chipNr}
       onChange={(e) => updateField(e, "chipNr")}
     />
+
+    <FormControl>
+      <FormLabel>Kiip LLR-is MTÜ nimel</FormLabel>
+      <RadioGroup
+        name="llr"
+        value={tempSelectedCat?.llr}
+        onChange={(e) => updateField(e, "llr")}
+      >
+        <FormControlLabel value={true} control={<Radio />} label="Jah" />
+        <FormControlLabel value={false} control={<Radio />} label="Ei" />
+      </RadioGroup>
+    </FormControl>
   </div>
 );

@@ -15,6 +15,7 @@ interface ImageGalleryProps {
   isEditMode?: boolean;
   previews?: PreviewImage[];
   setPreviews?: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
+  isMobile?: boolean;
 }
 
 interface PreviewImage {
@@ -29,6 +30,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
   isEditMode = false,
   previews,
   setPreviews,
+  isMobile,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -99,21 +101,25 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
   );
 
   return (
-    <div className="w-1/3">
+    <div className={`${isMobile ? "w-full mt-8" : "w-1/3"}`}>
       <div className="flex flex-wrap justify-center gap-6 md:gap-8">
         <div className="flex flex-col items-center">
           <button
             onClick={() => setIsOpen(true)}
-            className="rounded-2xl max-w-72 h-72 rounded-full mb-4"
+            className={`rounded-2xl ${
+              isMobile ? "max-w-52 h-52" : "max-w-72 h-72"
+            } rounded-full mb-4`}
           >
             <img src={images[0]} className="h-full rounded-2xl" />
           </button>
           <button
-            className="relative max-w-72 h-72 rounded-2xl mb-4"
+            className={`relative ${
+              isMobile ? "max-w-52 h-52" : "max-w-72 h-72"
+            } rounded-2xl mb-4`}
             onClick={() => setIsOpen(true)}
           >
             <img
-              className="opacity-50 h-full rounded-2xl"
+              className={`opacity-50 h-full rounded-2xl`}
               src={images[0]}
               alt="More images"
             />
@@ -125,7 +131,9 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
           {isEditMode && (
             <div
               {...getRootProps()}
-              className="w-72 h-72 border-2 border-black rounded-2xl flex items-center justify-center cursor-pointer bg-white relative overflow-hidden"
+              className={`${
+                isMobile ? "max-w-52 h-52" : "max-w-72 h-72"
+              } border-2 border-black rounded-2xl flex items-center justify-center cursor-pointer bg-white relative overflow-hidden`}
             >
               <input {...getInputProps({ name })} />
               {previews.length > 0 ? renderPreview() : renderUploadPrompt()}

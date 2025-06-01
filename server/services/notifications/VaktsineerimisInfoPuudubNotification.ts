@@ -22,6 +22,5 @@ export default class VaktsineerimiseInfoPuudubNotification
 
   dbColumnName = "";
   buttonText = "Täida infot profiili vaates";
-  redirectURL =
-    "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
+  redirectURL = "/cat-profile";
 }

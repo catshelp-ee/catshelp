@@ -84,6 +84,7 @@ const SidebarMobile: React.FC<SidebarProps> = ({ setView, view }) => {
             to={item.path}
             key={index}
             className="flex text-white p-5 text-base w-4/5"
+            onClick={() => setIsClosed(true)}
           >
             <img
               loading="lazy"

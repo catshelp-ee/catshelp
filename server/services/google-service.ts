@@ -232,7 +232,7 @@ export default class GoogleService {
   ): Promise<boolean> {
     try {
       if (fs.existsSync(destinationPath)) {
-        console.log(`Image already exists at: ${destinationPath}`);
+        //console.log(`Image already exists at: ${destinationPath}`);
         return false; // Return false because the image already exists
       }
 
@@ -254,7 +254,7 @@ export default class GoogleService {
           .on("error", reject);
       });
 
-      console.log(`Image downloaded and saved to: ${destinationPath}`);
+      //console.log(`Image downloaded and saved to: ${destinationPath}`);
       return true;
     } catch (error) {
       console.error(`failed to download image with ID ${fileId}:`, error);

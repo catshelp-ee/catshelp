@@ -335,7 +335,6 @@ class AnimalService {
       images: [],
     };
 
-    console.log(catProfile);
     await this.processCatImage(catProfile, imageLink, ownerName);
 
     return catProfile;
@@ -454,7 +453,6 @@ class AnimalService {
       ownerName,
       catProfile
     );
-    console.log("Done!");
   }
 
   private isValidHyperlink(link: string): boolean {

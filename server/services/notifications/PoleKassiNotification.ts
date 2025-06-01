@@ -20,5 +20,5 @@ export default class PoleKassiNotification implements DashboardNotification {
 
     dbColumnName = "";
     buttonText = "Võtke kass";
-    redirectURL = "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
+    redirectURL = "https://www.catshelp.ee/kassitoa-kassid";
 }

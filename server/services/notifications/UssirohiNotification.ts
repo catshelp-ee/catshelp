@@ -2,30 +2,31 @@ import { DashboardNotification } from "./DasboardNotification.ts";
 import moment from "moment";
 
 export default class UssirohiNotification implements DashboardNotification {
-    getText(): string {
-        return "Anna vähemalt 2 kuud enne vaktsineerimist ussirohi";
-    }
+  getText(): string {
+    return "Anna vähemalt 2 kuud enne vaktsineerimist ussirohi";
+  }
 
-    shouldShow(triggerDate: Date): boolean {
-        const currentDate = moment(new Date());
-        currentDate.subtract(10, "M");
+  shouldShow(triggerDate: Date): boolean {
+    const currentDate = moment(new Date());
+    currentDate.subtract(10, "M");
 
-        if (currentDate.toDate() < triggerDate) return false;
+    if (currentDate.toDate() < triggerDate) return false;
 
-        return true;
-    }
+    return true;
+  }
 
-    isUrgent(compareDate: Date): boolean {
-        const currentDate = moment(new Date());
-        if (currentDate.toDate() > compareDate) return true;
-        return false;
-    }
+  isUrgent(compareDate: Date): boolean {
+    const currentDate = moment(new Date());
+    if (currentDate.toDate() > compareDate) return true;
+    return false;
+  }
 
-    getDueDate(currentDate: Date): Date {
-        return moment(currentDate).add(1, 'y').toDate()
-    }
+  getDueDate(currentDate: Date): Date {
+    return moment(currentDate).add(1, "y").toDate();
+  }
 
-    dbColumnName = "KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)";
-    buttonText = "Vaata juhendit";
-    redirectURL = "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
+  dbColumnName = "USSIROHU/ TURJATILGA KP";
+  buttonText = "Vaata juhendit";
+  redirectURL =
+    "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
 }

@@ -13,6 +13,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Cat } from "@models/Cat.ts";
 import { COAT_COLOURS, COAT_LENGTHS } from "./FormData";
+import ResponsiveMultiSelect from "./ResponsiveMultiSelect";
 
 interface BasicInfoFieldsProps {
   tempSelectedCat: Cat;
@@ -97,38 +98,32 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
 
     <FormControl>
       <FormLabel>Karva pikkus</FormLabel>
-      <Select
+      <ResponsiveMultiSelect
         name="coatLength"
         value={tempSelectedCat?.coatLength}
         onChange={(e) => updateField(e, "coatLength")}
-        MenuProps={{
-          PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
-        }}
       >
         {COAT_LENGTHS.map((length, index) => (
           <MenuItem key={index} value={length}>
             {length}
           </MenuItem>
         ))}
-      </Select>
+      </ResponsiveMultiSelect>
     </FormControl>
 
     <FormControl>
       <FormLabel>Karva värv</FormLabel>
-      <Select
+      <ResponsiveMultiSelect
         name="coatColour"
         value={tempSelectedCat?.coatColour}
         onChange={(e) => updateField(e, "coatColour")}
-        MenuProps={{
-          PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
-        }}
       >
         {COAT_COLOURS.map((colour, index) => (
           <MenuItem key={index} value={colour}>
             {colour}
           </MenuItem>
         ))}
-      </Select>
+      </ResponsiveMultiSelect>
     </FormControl>
 
     <TextField

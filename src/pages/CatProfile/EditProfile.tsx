@@ -12,6 +12,7 @@ import { VaccinationFields } from "./Form/VaccinationFields";
 import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
 import { Section } from "./Form/Section";
+import { useIsMobile } from "@/hooks/isMobile";
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -32,6 +33,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 }) => {
   const { getUser } = useAuth();
   const [previews, setPreviews] = useState<PreviewImage[]>([]);
+  const isMobile = useIsMobile();
 
   const {
     tempSelectedCat,
@@ -80,7 +82,9 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
   return (
     <form
-      className="flex mr-3 my-4 border-2 rounded-lg p-4"
+      className={`flex ${
+        isMobile ? "flex-col w-full p-4" : "mr-3 my-4 border-2 rounded-lg p-4"
+      }`}
       onSubmit={handleSubmit}
     >
       <Popup
@@ -89,7 +93,18 @@ const EditProfile: React.FC<CatDetailsProps> = ({
         title="🐈‍⬛ Andmed uuendatud! 🐈‍⬛"
       />
 
-      <div className="w-2/3">
+      {isMobile && (
+        <ImageGallery
+          name="images"
+          images={selectedCat?.images || []}
+          isEditMode={true}
+          isMobile={isMobile}
+          previews={previews}
+          setPreviews={setPreviews}
+        />
+      )}
+
+      <div className={`${isMobile ? `mt-16` : "w-2/3"}`}>
         <Section title="PEALKIRI:">
           <TextField
             name="title"
@@ -107,11 +122,11 @@ const EditProfile: React.FC<CatDetailsProps> = ({
             onChange={(e) => updateField(e, "description")}
             sx={{ textAlign: "justify", width: "100%" }}
           />
-          <ActionButtons />
         </Section>
 
         <div className="flex flex-col gap-4">
           <BasicInfoFields
+            isMobile={isMobile}
             tempSelectedCat={tempSelectedCat}
             updateField={updateField}
           />
@@ -121,23 +136,25 @@ const EditProfile: React.FC<CatDetailsProps> = ({
             updateField={updateField}
           />
 
-          <ActionButtons />
-
           <DynamicFormFields
             tempSelectedCat={tempSelectedCat}
+            isMobile={isMobile}
             updateField={updateField}
             updateFieldMultiselect={updateFieldMultiselect}
           />
         </div>
       </div>
 
-      <ImageGallery
-        name="images"
-        images={selectedCat?.images || []}
-        isEditMode={true}
-        previews={previews}
-        setPreviews={setPreviews}
-      />
+      {!isMobile && (
+        <ImageGallery
+          name="images"
+          images={selectedCat?.images || []}
+          isEditMode={true}
+          previews={previews}
+          setPreviews={setPreviews}
+        />
+      )}
+      <ActionButtons />
     </form>
   );
 };

@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  TextField,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Cat } from "@models/Cat.ts";
@@ -21,18 +14,6 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
   updateField,
 }) => (
   <>
-    <FormControl>
-      <FormLabel>Kiip LLR-is MTÜ nimel</FormLabel>
-      <RadioGroup
-        name="llr"
-        value={tempSelectedCat?.llr}
-        onChange={(e) => updateField(e, "llr")}
-      >
-        <FormControlLabel value={true} control={<Radio />} label="Jah" />
-        <FormControlLabel value={false} control={<Radio />} label="Ei" />
-      </RadioGroup>
-    </FormControl>
-
     <DatePicker
       label="Vaktsineerimis-kuupäev"
       name="vacc"

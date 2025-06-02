@@ -13,15 +13,22 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Cat } from "@models/Cat.ts";
 import { COAT_COLOURS, COAT_LENGTHS } from "./FormData";
+import ResponsiveMultiSelect from "./ResponsiveMultiSelect";
 
 interface BasicInfoFieldsProps {
   tempSelectedCat: Cat;
   updateField: (e: any, key: string) => void;
+  isMobile: boolean;
 }
+
+const labelStyles = {
+  marginLeft: "16px",
+};
 
 export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   tempSelectedCat,
   updateField,
+  isMobile,
 }) => (
   <div className="flex flex-col gap-4">
     <TextField
@@ -91,34 +98,32 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
 
     <FormControl>
       <FormLabel>Karva pikkus</FormLabel>
-      <Select
+      <ResponsiveMultiSelect
         name="coatLength"
         value={tempSelectedCat?.coatLength}
         onChange={(e) => updateField(e, "coatLength")}
-        MenuProps={{ PaperProps: { style: { maxHeight: 500 } } }}
       >
         {COAT_LENGTHS.map((length, index) => (
           <MenuItem key={index} value={length}>
             {length}
           </MenuItem>
         ))}
-      </Select>
+      </ResponsiveMultiSelect>
     </FormControl>
 
     <FormControl>
       <FormLabel>Karva värv</FormLabel>
-      <Select
+      <ResponsiveMultiSelect
         name="coatColour"
         value={tempSelectedCat?.coatColour}
         onChange={(e) => updateField(e, "coatColour")}
-        MenuProps={{ PaperProps: { style: { maxHeight: 500 } } }}
       >
         {COAT_COLOURS.map((colour, index) => (
           <MenuItem key={index} value={colour}>
             {colour}
           </MenuItem>
         ))}
-      </Select>
+      </ResponsiveMultiSelect>
     </FormControl>
 
     <TextField
@@ -127,5 +132,17 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       value={tempSelectedCat?.chipNr}
       onChange={(e) => updateField(e, "chipNr")}
     />
+
+    <FormControl>
+      <FormLabel>Kiip LLR-is MTÜ nimel</FormLabel>
+      <RadioGroup
+        name="llr"
+        value={tempSelectedCat?.llr}
+        onChange={(e) => updateField(e, "llr")}
+      >
+        <FormControlLabel value={true} control={<Radio />} label="Jah" />
+        <FormControlLabel value={false} control={<Radio />} label="Ei" />
+      </RadioGroup>
+    </FormControl>
   </div>
 );

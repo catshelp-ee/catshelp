@@ -2,6 +2,7 @@ import React from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import { Cat } from "../../types/Cat.ts";
 import ImageGallery from "./ImageGallery.tsx";
+import { useIsMobile } from "@/hooks/isMobile.tsx";
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -64,9 +65,17 @@ const CatDetails: React.FC<CatDetailsProps> = ({
   setIsEditMode,
 }) => {
   const handleEditClick = () => setIsEditMode(true);
+  const isMobile = useIsMobile();
 
   return (
-    <div className="flex my-4 border-2 rounded-lg p-4">
+    <div
+      className={`flex ${
+        isMobile ? "flex-col" : ""
+      } my-4 border-2 rounded-lg p-4`}
+    >
+      {isMobile && (
+        <ImageGallery isMobile={isMobile} images={selectedCat?.images || []} />
+      )}
       <div className="w-full">
         <CatDetailsHeader
           title={selectedCat?.title || ""}
@@ -87,7 +96,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
         </div>
       </div>
 
-      <ImageGallery images={selectedCat?.images || []} />
+      {!isMobile && <ImageGallery images={selectedCat?.images || []} />}
     </div>
   );
 };

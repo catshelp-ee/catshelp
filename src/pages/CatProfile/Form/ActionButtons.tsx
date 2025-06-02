@@ -15,12 +15,9 @@ const buttonStyles = {
 };
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ className }) => (
-  <div className={`flex justify-end mt-8 ${className}`}>
+  <div className={`flex justify-center my-8 ${className}`}>
     <Button sx={buttonStyles} variant="contained" type="submit">
       Salvesta
-    </Button>
-    <Button sx={buttonStyles} variant="contained" type="submit">
-      Uuenda veebi (IGNORE)
     </Button>
   </div>
 );

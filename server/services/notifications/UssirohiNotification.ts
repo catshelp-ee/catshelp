@@ -10,15 +10,12 @@ export default class UssirohiNotification implements DashboardNotification {
     const currentDate = moment(new Date());
     currentDate.subtract(10, "M");
 
-    if (currentDate.toDate() < triggerDate) return false;
-
-    return true;
+    return currentDate.toDate() > triggerDate;
   }
 
   isUrgent(compareDate: Date): boolean {
     const currentDate = moment(new Date());
-    if (currentDate.toDate() > compareDate) return true;
-    return false;
+    return currentDate.toDate() > compareDate;
   }
 
   getDueDate(currentDate: Date): Date {
@@ -27,6 +24,5 @@ export default class UssirohiNotification implements DashboardNotification {
 
   dbColumnName = "USSIROHU/ TURJATILGA KP";
   buttonText = "Vaata juhendit";
-  redirectURL =
-    "https://docs.google.com/document/d/1fJeYtNlLr8Bw_XJ18tr0bQcuupCYtaQAtK2Yfs7LhQo/edit?usp=sharing";
+  redirectURL = process.env.WORD_MED_REDIRECT!;
 }

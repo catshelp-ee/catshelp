@@ -22,5 +22,5 @@ export default class VaktsineerimiseInfoPuudubNotification
 
   dbColumnName = "";
   buttonText = "Täida infot profiili vaates";
-  redirectURL = "/cat-profile";
+  redirectURL = process.env.MISSING_INFO_REDIRECT!;
 }

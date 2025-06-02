@@ -2,11 +2,11 @@ import React from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import { Cat } from "../../types/Cat.ts";
 import ImageGallery from "./ImageGallery.tsx";
+import { useIsMobile } from "@/hooks/isMobile.tsx";
 
 interface CatDetailsProps {
   selectedCat: Cat;
   setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-  isMobile: boolean;
 }
 
 const FIELD_LABELS = {
@@ -63,9 +63,9 @@ const CatProfileField: React.FC<{
 const CatDetails: React.FC<CatDetailsProps> = ({
   selectedCat,
   setIsEditMode,
-  isMobile,
 }) => {
   const handleEditClick = () => setIsEditMode(true);
+  const isMobile = useIsMobile();
 
   return (
     <div

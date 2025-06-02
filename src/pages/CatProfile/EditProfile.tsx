@@ -12,12 +12,12 @@ import { VaccinationFields } from "./Form/VaccinationFields";
 import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
 import { Section } from "./Form/Section";
+import { useIsMobile } from "@/hooks/isMobile";
 
 interface CatDetailsProps {
   selectedCat: Cat;
   setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCat: React.Dispatch<React.SetStateAction<Cat>>;
-  isMobile: boolean;
 }
 
 interface PreviewImage {
@@ -30,10 +30,10 @@ const EditProfile: React.FC<CatDetailsProps> = ({
   selectedCat,
   setIsEditMode,
   setSelectedCat,
-  isMobile,
 }) => {
   const { getUser } = useAuth();
   const [previews, setPreviews] = useState<PreviewImage[]>([]);
+  const isMobile = useIsMobile();
 
   const {
     tempSelectedCat,

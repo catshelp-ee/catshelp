@@ -1,6 +1,5 @@
 import { DashboardNotification } from "@notifications/DasboardNotification.ts";
 import UssirohiNotification from "@notifications/UssirohiNotification.ts";
-import BroneeriArstiAegNotification from "@notifications/BroneeriArstiAegNotification.ts";
 import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification.ts";
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification.ts";
 import PoleKassiNotification from "@notifications/PoleKassiNotification.ts";
@@ -53,7 +52,7 @@ export default class DashboardService {
         });
 
     }
-    notifications: DashboardNotification[] = [new UssirohiNotification(), new BroneeriArstiAegNotification(), new KompleksVaktsiiniKinnitusNotification(), new MarutaudVaktsiiniKinnitusNotification()];
+    notifications: DashboardNotification[] = [new UssirohiNotification(), new KompleksVaktsiiniKinnitusNotification(), new MarutaudVaktsiiniKinnitusNotification()];
 
     downloadImages(){
         let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it

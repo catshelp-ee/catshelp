@@ -8,6 +8,7 @@ import CatSelection from "./CatSelection.tsx";
 import CatDetails from "./CatDetails.tsx";
 import EditProfile from "./EditProfile.tsx";
 import { Cat, defaultCat } from "@models/Cat.ts";
+import { useIsMobile } from "@hooks/isMobile";
 
 const CatProfileHeader = ({ isMobile }: { isMobile: boolean }) => {
   if (isMobile) {
@@ -52,11 +53,11 @@ const CatProfileHeader = ({ isMobile }: { isMobile: boolean }) => {
 const CatProfile: React.FC = () => {
   const { getUser } = useAuth();
   const { showAlert } = useAlert();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [cats, setCats] = useState<Cat[]>([]);
   const [selectedCat, setSelectedCat] = useState<Cat>(defaultCat);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchCats = async () => {
@@ -100,7 +101,6 @@ const CatProfile: React.FC = () => {
             setSelectedCat={setSelectedCat}
           />
           <EditProfile
-            isMobile={isMobile}
             setIsEditMode={setIsEditMode}
             selectedCat={selectedCat}
             setSelectedCat={setSelectedCat}
@@ -115,11 +115,7 @@ const CatProfile: React.FC = () => {
         {isLoading ? (
           <CircularProgress />
         ) : (
-          <CatDetails
-            isMobile={isMobile}
-            selectedCat={selectedCat}
-            setIsEditMode={setIsEditMode}
-          />
+          <CatDetails selectedCat={selectedCat} setIsEditMode={setIsEditMode} />
         )}
       </>
     );

@@ -9,7 +9,7 @@ import * as dashboardController from "./controllers/dashboard-controller.ts";
 import * as userController from "./controllers/user-controller.ts";
 import { authenticate } from "./middleware/authorization-middleware.ts";
 import cookieParser from "cookie-parser";
-import db from "../models/index.cjs";
+import db from "@models/index.cjs";
 import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
 import { METHODS } from "node:http";

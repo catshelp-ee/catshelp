@@ -1,4 +1,4 @@
-import db from "../../models/index.cjs";
+import db from "@models/index.cjs";
 
 export async function getUserByEmail(email) {
   if (!email) {

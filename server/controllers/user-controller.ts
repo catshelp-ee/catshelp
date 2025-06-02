@@ -1,4 +1,4 @@
-import { getUserById } from "../services/user-service.ts";
+import { getUserById } from "@services/user-service.ts";
 import * as jwt from "jsonwebtoken";
 
 export async function getUserData (req: any, res: any) {

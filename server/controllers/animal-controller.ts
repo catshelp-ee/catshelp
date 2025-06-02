@@ -1,11 +1,11 @@
 // controllers/animal-controller.ts
-import GoogleService from "../services/google-service.ts";
-import AnimalService from "../services/animal-service.ts";
+import GoogleService from "@services/google-service.ts";
+import AnimalService from "@services/animal-service.ts";
 import fs from "node:fs";
-import db from "../../models/index.cjs";
-import { generateCatDescription } from "../services/ai-service.ts";
+import db from "@models/index.cjs";
+import { generateCatDescription } from "@services/ai-service.ts";
 import { Request, Response } from "express";
-import { getUserCats } from "../services/user-service.ts";
+import { getUserCats } from "@services/user-service.ts";
 
 // Initialize services once
 let googleService: GoogleService;

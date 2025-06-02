@@ -1,30 +1,54 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useMediaQuery } from "@mui/material";
 import { useAlert } from "@context/AlertContext";
 import { useAuth } from "@context/AuthContext.tsx";
 import CatSelection from "./CatSelection.tsx";
 import CatDetails from "./CatDetails.tsx";
 import EditProfile from "./EditProfile.tsx";
 import { Cat, defaultCat } from "@models/Cat.ts";
+import { useIsMobile } from "@hooks/isMobile";
 
-const CatProfileHeader = () => (
-  <div>
-    <section className="flex my-4 items-center">
-      <h1 className="text-xl md:text-4xl">Kiisude profiilid veebis</h1>
-      <img
-        loading="lazy"
-        className="w-12 h-12"
-        src="/welcome.svg"
-        alt="Welcome"
-      />
-    </section>
-    <p className="mt-4 text-secondary">
-      Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
-      veebilehel Valimiseks klõpsa hoiulooma pildil
-    </p>
-  </div>
-);
+const CatProfileHeader = ({ isMobile }: { isMobile: boolean }) => {
+  if (isMobile) {
+    return (
+      <>
+        <section className="flex items-center my-4">
+          <h1 className="text-xl mr-4 ">Kiisude profiilid veebis</h1>
+          <img
+            loading="lazy"
+            src="/welcome.svg"
+            height={28}
+            width={28}
+            alt="Welcome"
+          />
+        </section>
+        <p className="text-secondary text-justify px-8 leading-7">
+          Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
+          veebilehel Valimiseks klõpsa hoiulooma pildil
+        </p>
+      </>
+    );
+  }
+  return (
+    <div>
+      <section className="flex my-4 items-center">
+        <h1 className="text-xl md:text-4xl">Kiisude profiilid veebis</h1>
+        <img
+          loading="lazy"
+          className="w-12 h-12"
+          src="/welcome.svg"
+          alt="Welcome"
+        />
+      </section>
+      <p className="mt-4 text-secondary">
+        Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
+        veebilehel Valimiseks klõpsa hoiulooma pildil
+      </p>
+    </div>
+  );
+};
 
 const CatProfile: React.FC = () => {
   const { getUser } = useAuth();
@@ -33,6 +57,7 @@ const CatProfile: React.FC = () => {
   const [selectedCat, setSelectedCat] = useState<Cat>(defaultCat);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchCats = async () => {
@@ -98,8 +123,10 @@ const CatProfile: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex flex-col mr-4 ml-24">
-        <CatProfileHeader />
+      <div
+        className={`flex flex-col ${isMobile ? "items-center" : "ml-24 mr-4"}`}
+      >
+        <CatProfileHeader isMobile={isMobile} />
         {renderContent()}
       </div>
     </div>

@@ -14,6 +14,7 @@ import {
   MULTISELECT_FIELD_VALUES,
   FIELD_VALUES,
 } from "./FormData";
+import ResponsiveMultiSelect from "./ResponsiveMultiSelect";
 
 interface DynamicFormFieldsProps {
   tempSelectedCat: Cat;
@@ -43,15 +44,12 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
         return (
           <FormControl key={index}>
             <FormLabel>{label}</FormLabel>
-            <Select
+            <ResponsiveMultiSelect
               name={key}
               multiple
               value={tempSelectedCat[key as keyof Cat]}
               onChange={(e) => updateFieldMultiselect(e, key)}
               renderValue={(selected) => selected.join(", ")}
-              MenuProps={{
-                PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
-              }}
             >
               {MULTISELECT_FIELD_VALUES[key].map((val, idx) => (
                 <MenuItem key={idx} value={val}>
@@ -69,7 +67,7 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
                   )}
                 </MenuItem>
               ))}
-            </Select>
+            </ResponsiveMultiSelect>
             {tempSelectedCat[key as keyof Cat][0] === "Other" && (
               <TextField name={key} />
             )}
@@ -79,20 +77,17 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
         return (
           <FormControl key={index}>
             <FormLabel>{label}</FormLabel>
-            <Select
+            <ResponsiveMultiSelect
               name={key}
               value={tempSelectedCat[key as keyof Cat]}
               onChange={(e) => updateField(e, key)}
-              MenuProps={{
-                PaperProps: { style: { maxHeight: isMobile ? 300 : 500 } },
-              }}
             >
               {FIELD_VALUES[key].map((val, idx) => (
                 <MenuItem key={idx} value={val}>
                   {val}
                 </MenuItem>
               ))}
-            </Select>
+            </ResponsiveMultiSelect>
             {tempSelectedCat[key as keyof Cat] === "Other" && (
               <TextField name={key} />
             )}

@@ -21,7 +21,7 @@ function refreshToken(decodedToken, res) {
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.ENVIRONMENT !== 'TEST',
+    secure: process.env.VITE_ENVIRONMENT !== 'TEST',
     sameSite: "Strict",
     maxAge: 24 * 60 * 60 * 1000,
   });
@@ -58,4 +58,9 @@ export async function authenticate(req, res, next) {
   }
 
   next();
+}
+
+export async function getCurrentUser(req) {
+  var decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+  return await getUserById(decodedToken.id);
 }

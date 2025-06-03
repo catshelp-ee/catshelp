@@ -31,7 +31,9 @@ export default class DashboardService {
         this.username = username;
 
         sheetsData.cats![0].rowData![0].values!.forEach((col: any, idx: number) => {
-            if (!col.formattedValue) return;
+            if (!col.formattedValue) {
+                return;
+            } 
             this.sheetColumnNamesWithIndex[col.formattedValue!] = idx;
         });
 
@@ -178,7 +180,9 @@ function findFosterHome(
 
         const fosterhome = row[usernameColIndex];
 
-        if (fosterhome.formattedValue !== username) continue;
+        if (!fosterhome || fosterhome.formattedValue !== username) {
+            continue;
+        }
 
         rows.push(row);
     }

@@ -1,8 +1,9 @@
 import DashboardService from "@services/dashboard-service.ts";
+import { getCurrentUser } from "@middleware/authorization-middleware.ts";
 import GoogleService from "@services/google-service.ts";
 
 export async function getDashboard(req: any, res: any) {
-  const username = req.params.name;
+  const user = await getCurrentUser(req);
   const googleService = await GoogleService.create();
 
   const sheetsDataFosterHomes = await googleService.getSheetData(
@@ -21,7 +22,7 @@ export async function getDashboard(req: any, res: any) {
 
   const dashboardService = new DashboardService(
     sheetsData,
-    username,
+    user.fullName,
     googleService
   );
 

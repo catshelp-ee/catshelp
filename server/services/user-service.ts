@@ -37,6 +37,11 @@ export async function getUserCats(email) {
       user_id: user.id,
     },
   });
+
+  if (!fosterhome) {
+    return [];
+  }
+  
   const fosterhomeCats = await db.AnimalToFosterHome.findAll({
     where: {
       foster_home_id: fosterhome.id,

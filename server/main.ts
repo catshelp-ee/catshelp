@@ -12,7 +12,8 @@ import cookieParser from "cookie-parser";
 import db from "@models/index.cjs";
 import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
-import { METHODS } from "node:http";
+import errorMiddleware from "./middleware/error-middleware.ts";
+import 'express-async-errors';
 
 dotenv.config();
 initializeDb();
@@ -65,7 +66,7 @@ app.post("/api/logout", loginController.logout);
 app.post("/api/animals", authenticate, animalController.postAnimal);
 app.post("/api/pilt/lisa", authenticate, upload.array("images"), animalController.addPicture);
 app.get("/api/user", authenticate, userController.getUserData);
-app.get("/api/animals/dashboard/:name", authenticate, dashboardController.getDashboard);
+app.get("/api/animals/dashboard", authenticate, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
 app.put("/api/animals/cat-profile", authenticate, animalController.updatePet);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
@@ -74,6 +75,8 @@ app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
 app.get('*', (req, res) => {
   res.sendFile(path.join(rootDir, 'dist', 'index.html'));
 });
+
+app.use(errorMiddleware);
 
 app.listen(process.env.BACKEND_PORT, () => {
   console.log("connected to backend!");

@@ -14,6 +14,10 @@ class AnimalService {
   }
 
   public async getCatProfilesByOwner(owner: any) {
+    if (!owner) {
+      return [];
+    }
+    
     const sheetData = await this.googleService.getSheetData(
       process.env.CATS_SHEETS_ID,
       process.env.CATS_TABLE_NAME
@@ -30,10 +34,14 @@ class AnimalService {
     for (const grid of rows) {
       for (const row of grid.rowData || []) {
         const values = row.values;
-        if (!values) continue;
+        if (!values) {
+          continue;
+        } 
 
         const fosterhome = values[columnMap["_HOIUKODU/ KLIINIKU NIMI"]];
-        if (fosterhome?.formattedValue !== owner.name) continue;
+        if (!fosterhome || fosterhome.formattedValue !== owner.name) {
+          continue;
+        }
 
         const catName = values[columnMap["KASSI NIMI"]].formattedValue;
 
@@ -153,6 +161,9 @@ class AnimalService {
   }
 
   private processGenderData(catData: any) {
+    if (!catData.gender) {
+      return;
+    }
     const [cut, gender] = catData.gender.split(" ");
     catData.gender = gender;
     catData.cut = "false";

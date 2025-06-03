@@ -21,7 +21,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
       setName(user.fullName);
 
       const response = await axios.get(
-        `/api/animals/dashboard/${user.fullName}`
+        `/api/animals/dashboard`
       );
       setIsLoading(false);
       setPets(response.data.pets);

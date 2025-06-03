@@ -3,7 +3,7 @@ import moment from "moment";
 
 export default class PoleKassiNotification implements DashboardNotification {
   getText(): string {
-    return "Teil pole kassi. Võta ühe palun 🙏";
+    return "Teil pole kassi. Võta üks palun 🙏";
   }
 
   shouldShow(triggerDate: Date): boolean {

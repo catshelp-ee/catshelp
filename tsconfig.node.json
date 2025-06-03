@@ -18,7 +18,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@notifications/*": ["./server/services/notifications/*"],
+      "@services/*": ["./server/services/*"],
+      "@customTypes/*": ["./src/types/*"],
+      "@models/*": ["./models/*"]
+    }
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "server", "src"]
 }

@@ -1,10 +1,8 @@
 import GoogleService from "./google-service.ts";
-import db from "../../models/index.cjs";
+import db from "@models/index.cjs";
 import moment from "moment";
 import { getUserCats } from "./user-service.ts";
-import { toFormData } from "axios";
-import { Cat, defaultCat, descriptors } from "../../src/types/Cat.ts";
-import { or } from "sequelize";
+import { Cat, defaultCat, descriptors } from "@customTypes/Cat.ts";
 
 class AnimalService {
   private googleService: GoogleService;
@@ -199,7 +197,10 @@ class AnimalService {
       genderLabel = "Kastreeritud isane";
     }
 
-    const birthDate = moment(values[columnMap["SÜNNIAEG"]]?.formattedValue);
+    const birthDate = moment(
+      values[columnMap["SÜNNIAEG"]]?.formattedValue,
+      "DD.MM.YYYY"
+    );
     const years = this.now.diff(birthDate, "years");
     const months = this.now.diff(
       birthDate.clone().add(years, "years"),
@@ -335,7 +336,6 @@ class AnimalService {
       images: [],
     };
 
-    console.log(catProfile);
     await this.processCatImage(catProfile, imageLink, ownerName);
 
     return catProfile;
@@ -454,7 +454,6 @@ class AnimalService {
       ownerName,
       catProfile
     );
-    console.log("Done!");
   }
 
   private isValidHyperlink(link: string): boolean {

@@ -1,8 +1,8 @@
 import * as jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import { OAuth2Client } from 'google-auth-library';
-import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "../services/user-service.ts"
-import { sendRequest } from "../services/email-service.ts";
+import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user-service.ts"
+import { sendRequest } from "@services/email-service.ts";
 
 const client = new OAuth2Client();
 

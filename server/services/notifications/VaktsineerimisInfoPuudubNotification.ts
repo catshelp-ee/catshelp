@@ -1,9 +1,11 @@
 import { DashboardNotification } from "./DasboardNotification.ts";
 import moment from "moment";
 
-export default class PoleKassiNotification implements DashboardNotification {
+export default class VaktsineerimiseInfoPuudubNotification
+  implements DashboardNotification
+{
   getText(): string {
-    return "Teil pole kassi. Võta ühe palun 🙏";
+    return "Info vaktsineerimise või ussirohu kohta puudub";
   }
 
   shouldShow(triggerDate: Date): boolean {
@@ -15,10 +17,10 @@ export default class PoleKassiNotification implements DashboardNotification {
   }
 
   getDueDate(currentDate: Date): Date {
-    return currentDate;
+    return new Date();
   }
 
   dbColumnName = "";
-  buttonText = "Võtke kass";
-  redirectURL = process.env.NO_CAT_REDIRECT!;
+  buttonText = "Täida infot profiili vaates";
+  redirectURL = process.env.MISSING_INFO_REDIRECT!;
 }

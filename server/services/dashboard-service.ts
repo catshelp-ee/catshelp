@@ -1,10 +1,10 @@
-import { DashboardNotification } from "./notifications/DasboardNotification.ts";
-import UssirohiNotification from "./notifications/UssirohiNotification.ts";
-import BroneeriArstiAegNotification from "./notifications/BroneeriArstiAegNotification.ts";
-import KompleksVaktsiiniKinnitusNotification from "./notifications/KompleksVaktsiiniKinnitusNotification.ts";
-import MarutaudVaktsiiniKinnitusNotification from "./notifications/MarutaudVaktsiiniKinnitusNotification.ts";
-import PoleKassiNotification from "./notifications/PoleKassiNotification.ts";
+import { DashboardNotification } from "@notifications/DasboardNotification.ts";
+import UssirohiNotification from "@notifications/UssirohiNotification.ts";
+import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification.ts";
+import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification.ts";
+import PoleKassiNotification from "@notifications/PoleKassiNotification.ts";
 import GoogleService from "./google-service.ts";
+import VaktsineerimiseInfoPuudubNotification from "@notifications/VaktsineerimisInfoPuudubNotification.ts";
 
 type Result = {
     assignee: string;
@@ -50,8 +50,9 @@ export default class DashboardService {
             if (!col.formattedValue) return;
             this.sheetColumnNamesWithIndex[col.formattedValue!] = idx;
         });
+
     }
-    notifications: DashboardNotification[] = [new UssirohiNotification(), new BroneeriArstiAegNotification(), new KompleksVaktsiiniKinnitusNotification(), new MarutaudVaktsiiniKinnitusNotification()];
+    notifications: DashboardNotification[] = [new UssirohiNotification(), new KompleksVaktsiiniKinnitusNotification(), new MarutaudVaktsiiniKinnitusNotification()];
 
     downloadImages(){
         let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it
@@ -85,18 +86,32 @@ export default class DashboardService {
         let triggerDate: Date;
         let dueDate: Date;
 
-
+        
         for (let index = 0; index < this.rows.length; index++) {
             this.notifications.forEach((notification) => {
                 const row = this.rows[index];
 
-                const [day, month, year] =
-                    row[
-                        this.sheetColumnNamesWithIndex[
-                            notification.dbColumnName
-                        ]
-                    ]
-                        .formattedValue
+                const sheetsDate = row[this.sheetColumnNamesWithIndex[notification.dbColumnName]].formattedValue;
+                if (!sheetsDate){
+                    const notification = new VaktsineerimiseInfoPuudubNotification();
+                    result = {
+                        label: notification.getText(),
+                        assignee: this.cats[index],
+                        due: new Date().toLocaleDateString("et-EE"),
+                        action: {
+                            label: notification.buttonText,
+                            redirect: notification.redirectURL,
+                        },
+                        urgent: true,
+                        catColour: this.colours[index],
+
+                    };
+
+                    results.push(result);
+                    return;
+                }
+
+                const [day, month, year] = sheetsDate
                         .split(".")
                         .map(Number);
 
@@ -110,7 +125,7 @@ export default class DashboardService {
                 result = {
                     label: notification.getText(),
                     assignee: this.cats[index],
-                    due: dueDate.toLocaleDateString("ru-RU", { timeZone: "UTC" }),
+                    due: dueDate.toLocaleDateString("et-EE"),
                     action: {
                         label: notification.buttonText,
                         redirect: notification.redirectURL,
@@ -122,7 +137,6 @@ export default class DashboardService {
                 if(notification.isUrgent(dueDate)){
                     result.urgent = true;
                 }
-
 
                 results.push(result);
             });

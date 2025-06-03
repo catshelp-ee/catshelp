@@ -1,5 +1,5 @@
-import DashboardService from "../services/dashboard-service.ts";
-import GoogleService from "../services/google-service.ts";
+import DashboardService from "@services/dashboard-service.ts";
+import GoogleService from "@services/google-service.ts";
 
 export async function getDashboard(req: any, res: any) {
   const username = req.params.name;

@@ -3,6 +3,7 @@ import db from "@models/index.cjs";
 import moment from "moment";
 import { getUserCats } from "./user-service.ts";
 import { Cat, defaultCat, descriptors } from "@customTypes/Cat.ts";
+import process from "node:process";
 
 class AnimalService {
   private googleService: GoogleService;
@@ -13,17 +14,31 @@ class AnimalService {
     this.now = moment();
   }
 
+  private checkSheets(){
+    if(!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) 
+      throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env")
+  }
+
   public async getCatProfilesByOwner(owner: any) {
     if (!owner) {
-      return [];
+      throw new Error("Owner is undefined or null");
     }
-    
+
+    this.checkSheets();
+
     const sheetData = await this.googleService.getSheetData(
-      process.env.CATS_SHEETS_ID,
-      process.env.CATS_TABLE_NAME
+      process.env.CATS_SHEETS_ID!,
+      process.env.CATS_TABLE_NAME!
     );
 
-    const rows = sheetData.data.sheets![0].data || [];
+    if (!sheetData.data.sheets || sheetData.data.sheets.length === 0)
+      throw new Error("No sheet found");
+
+    const rows = sheetData.data.sheets[0].data;
+
+    if (!rows || rows.length === 0)
+      throw new Error("No rows in sheet");
+
     const columnMap = this.createColumnMap(rows[0]);
 
     const catProfiles: Cat[] = [];
@@ -36,7 +51,7 @@ class AnimalService {
         const values = row.values;
         if (!values) {
           continue;
-        } 
+        }
 
         const fosterhome = values[columnMap["_HOIUKODU/ KLIINIKU NIMI"]];
         if (!fosterhome || fosterhome.formattedValue !== owner.name) {
@@ -45,10 +60,13 @@ class AnimalService {
 
         const catName = values[columnMap["KASSI NIMI"]].formattedValue;
 
+        const cat = cats.find((cat) => cat.name === catName);
+        if (!cat) continue;
+
         const catProfile = await this.buildCatProfile(
           values,
           columnMap,
-          cats?.find((cat) => cat.name === catName),
+          cat,
           owner.name
         );
         catProfiles.push(catProfile);
@@ -78,73 +96,95 @@ class AnimalService {
     };
 
     this.processGenderData(catData);
-    await db.Animal.update(
-      {
-        name: catData.name,
-        birthday: moment(catData.birthDate, "DD.MM.YYYY").toDate(),
-        profileTitle: catData.title,
-        description: catData.description,
-        chipNumber: catData.chipNr,
-        chipRegisteredWithUs: catData.llr,
-      },
-      {
-        where: { id: cat.id },
-      }
-    );
+    const t = await db.sequelize.transaction();
 
-    Object.keys(descriptors).forEach(async (characteristic) => {
-      const characteristics = await db.AnimalCharacteristic.findAll({
-        where: { animalId: cat.id, type: characteristic },
+    try {
+      await db.Animal.update(
+        { /* fields */ },
+        { where: { id: cat.id }, transaction: t }
+      );
+
+      await Promise.all(
+        Object.keys(descriptors).map(async (characteristic) => {
+          const characteristics = await db.AnimalCharacteristic.findAll({
+            where: { animalId: cat.id, type: characteristic },
+            transaction: t,
+          });
+
+          if (["characteristics", "cat", "likes"].includes(characteristic)) {
+            for (const row of characteristics) {
+              await row.destroy({ transaction: t });
+            }
+            for (const val of catData[characteristic].split(",")) {
+              await db.AnimalCharacteristic.create(
+                {
+                  animalId: cat.id,
+                  type: characteristic,
+                  name: val.trim(),
+                },
+                { transaction: t }
+              );
+            }
+          } else {
+            if (characteristics.length === 0) {
+              await db.AnimalCharacteristic.create(
+                {
+                  animalId: cat.id,
+                  type: characteristic,
+                  name: catData[characteristic],
+                },
+                { transaction: t }
+              );
+            } else {
+              await characteristics[0].update(
+                { name: catData[characteristic] },
+                { transaction: t }
+              );
+            }
+          }
+        })
+      );
+
+      const AnimalToAnimalRescue = await db.AnimalToAnimalRescue.findOne({
+        where: { animalId: cat.id },
+        transaction: t,
       });
 
-      if (
-        characteristic === "characteristics" ||
-        characteristic === "cat" ||
-        characteristic === "likes"
-      ) {
-        for (const row of characteristics) {
-          await row.destroy();
-        }
-        for (const val of catData[characteristic].split(",")) {
-          await db.AnimalCharacteristic.create({
-            animalId: cat.id,
-            type: characteristic,
-            name: val,
-          });
-        }
-        return;
-      } else {
-        if (characteristics.length === 0) {
-          await db.AnimalCharacteristic.create({
-            animalId: cat.id,
-            type: characteristic,
-            name: catData[characteristic],
-          });
-          return;
-        }
+      if (!AnimalToAnimalRescue) {
+        throw new Error(`AnimalRescue relation missing for cat ID: ${cat.id}`);
       }
 
-      await characteristics[0].update({
-        name: catData[characteristic],
-      });
-    });
+      const AnimalRescue = await db.AnimalRescue.findByPk(
+        AnimalToAnimalRescue.animalRescueId,
+        { transaction: t }
+      );
 
-    const AnimalToAnimalRescue = await db.AnimalToAnimalRescue.findOne({
-      where: { animalId: cat.id },
-    });
+      if (!AnimalRescue) {
+        throw new Error(
+          `AnimalRescue with ID ${AnimalToAnimalRescue.animalRescueId} not found`
+        );
+      }
 
-    const AnimalRescue = await db.AnimalRescue.findByPk(
-      AnimalToAnimalRescue.animalRescueId
-    );
+      await AnimalRescue.update(
+        {
+          rescueDate: moment(catData.foundDate, "DD.MM.YYYY").toDate(),
+          address: catData.foundLoc,
+        },
+        { transaction: t }
+      );
 
-    await AnimalRescue.update({
-      rescueDate: moment(catData.foundDate, "DD.MM.YYYY").toDate(),
-      address: catData.foundLoc,
-    });
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      console.error("Failed to update cat:", err);
+      throw err; // or throw a custom error
+    }
+
+    this.checkSheets();
 
     await this.googleService.updateSheetCells(
-      process.env.CATS_SHEETS_ID,
-      process.env.CATS_TABLE_NAME,
+      process.env.CATS_SHEETS_ID!,
+      process.env.CATS_TABLE_NAME!,
       mappedColumnNames,
       catData
     );
@@ -152,7 +192,7 @@ class AnimalService {
 
   private createColumnMap(row: any): { [key: string]: number } {
     const columnMap: { [key: string]: number } = {};
-    row?.rowData?.[0]?.values?.forEach((col, idx) => {
+    row.rowData[0].values.forEach((col, idx) => {
       if (col.formattedValue) {
         columnMap[col.formattedValue] = idx;
       }
@@ -176,8 +216,8 @@ class AnimalService {
   // of if the selected profile. Also images start compounding on reload, as in on 1st load x images
   // reload 2*x images, 3rd reload 3*x images etc...
   private async buildCatProfile(
-    values: any[],
-    columnMap: { [key: string]: number },
+    values: any[], // never empty, otherwise an error is thrown beforehand
+    columnMap: { [key: string]: number }, // also never empty
     animal: any,
     ownerName: string
   ) {
@@ -191,7 +231,7 @@ class AnimalService {
 
     const orDefault = (value, fallback) => value ?? fallback;
     const orDefaultDate = (value, fallback) => {
-      if (isNaN(value.getTime())) {
+      if (!value || isNaN(value.getTime())) {
         return fallback;
       }
       return value;
@@ -212,19 +252,21 @@ class AnimalService {
       values[columnMap["SÜNNIAEG"]]?.formattedValue,
       "DD.MM.YYYY"
     );
-    const years = this.now.diff(birthDate, "years");
-    const months = this.now.diff(
-      birthDate.clone().add(years, "years"),
-      "months"
-    );
 
-    let age;
-    if (years === 0) {
-      age = `${months} kuud`;
-    } else {
-      age = `${years} aastat ja ${months} kuud`;
+    let age = "";
+    if (birthDate){
+      const years = this.now.diff(birthDate, "years");
+      const months = this.now.diff(
+        birthDate.clone().add(years, "years"),
+        "months"
+      );
+
+      if (years === 0) {
+        age = `${months} kuud`;
+      } else {
+        age = `${years} aastat ja ${months} kuud`;
+      }
     }
-
     const catProfile: Cat = {
       ...defaultCat,
       title: orDefault(animal.profileTitle, defaultCat.title),

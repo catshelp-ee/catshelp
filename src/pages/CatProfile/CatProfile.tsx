@@ -89,7 +89,7 @@ const CatProfile: React.FC = () => {
     };
 
     fetchCats();
-  }, [getUser, showAlert]);
+  }, []);
 
   const renderContent = () => {
     if (isEditMode) {

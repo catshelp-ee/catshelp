@@ -97,6 +97,7 @@ export default class GoogleService {
   }
 
   public async getSheetData(sheetId: string, tabName: string) {
+    try{
     const rows = await this.sheets.spreadsheets.get({
       auth: this.auth,
       spreadsheetId: sheetId,
@@ -104,6 +105,10 @@ export default class GoogleService {
       includeGridData: true,
     });
     return rows;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Error getting data from sheets");
+    }
   }
 
   public async addDataToSheet(sheetId: string, tabName: string, data: any) {
@@ -133,8 +138,15 @@ export default class GoogleService {
   ) {
     const sheetData = await this.getSheetData(sheetId, tabName);
 
-    const rows = sheetData.data.sheets![0].data || [];
-    const pageID = sheetData.data.sheets![0].properties.sheetId;
+    if (!sheetData || sheetData.data.sheets.length === 0)
+      throw new Error("No sheet found")
+
+    const rows = sheetData.data.sheets[0].data;
+
+    if (!rows || rows.length === 0)
+      throw new Error("No rows in sheet");
+
+    const pageID = sheetData.data.sheets[0].properties.sheetId;
 
     const columnNamesWithIndexes: { [key: string]: number } = {};
     rows[0]?.rowData?.[0]?.values?.forEach((col, idx) => {

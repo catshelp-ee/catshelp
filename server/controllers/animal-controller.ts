@@ -102,7 +102,7 @@ export async function getProfile(req: Request, res: Response) {
     res.json({ profiles: catProfiles });
   } catch (error) {
     console.error("Error fetching profile:", error);
-    res.status(500).json({ error: "Failed to fetch profile data" });
+    res.status(500).json({ error: "Failed to fetch profile data", debugMessage: error });
   }
 }
 

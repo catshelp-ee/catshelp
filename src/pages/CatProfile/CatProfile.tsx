@@ -65,6 +65,20 @@ const CatProfile: React.FC = () => {
         setIsLoading(true);
         const user = await getUser();
 
+        const localStorageProfiles = localStorage.getItem("profiles");
+
+        if(localStorageProfiles){
+          let profiles = JSON.parse(localStorageProfiles);
+          profiles = profiles.map(profile => ({
+            ...profile,
+            images: profile.images.map((image) => `Temp/${user.fullName}/${image}`)
+          }))
+          setCats(profiles);
+          if (profiles.length > 0)
+            setSelectedCat(profiles[0]);
+          return;
+        }
+
         const response = await axios.get("/api/animals/cat-profile", {
           params: {
             owner: {
@@ -75,6 +89,8 @@ const CatProfile: React.FC = () => {
         });
 
         const fetchedCats = response.data.profiles;
+        console.log(fetchedCats);
+        localStorage.setItem("profiles", JSON.stringify(fetchedCats));
         setCats(fetchedCats);
         if (fetchedCats.length > 0) {
           setSelectedCat(fetchedCats[0]);

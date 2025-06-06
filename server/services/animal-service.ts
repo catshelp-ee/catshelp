@@ -501,7 +501,7 @@ class AnimalService {
 
     const destinationPath = `./public/Temp/${ownerName}/${catProfile.name}.png`;
     await this.googleService.downloadImage(fileId, destinationPath);
-    catProfile.images.push(`Temp/${ownerName}/${catProfile.name}.png`);
+    catProfile.images.push(`${catProfile.name}.png`);
     await this.googleService.downloadImages(
       catProfile.driveId,
       ownerName,

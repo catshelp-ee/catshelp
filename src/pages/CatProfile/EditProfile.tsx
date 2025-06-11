@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { TextField } from "@mui/material";
+import { TextField, Button, IconButton } from "@mui/material";
 import * as Utils from "@utils/utils.ts";
 import ImageGallery from "@pages/CatProfile/ImageGallery.tsx";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +13,8 @@ import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
 import { Section } from "./Form/Section";
 import { useIsMobile } from "@/hooks/isMobile";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { preview } from "vite";
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -81,81 +83,99 @@ const EditProfile: React.FC<CatDetailsProps> = ({
   };
 
   return (
-    <form
-      className={`flex ${
-        isMobile ? "flex-col w-full p-4" : "mr-3 my-4 border-2 rounded-lg p-4"
-      }`}
-      onSubmit={handleSubmit}
-    >
-      <Popup
-        isVisible={isPopupVisible}
-        slidingDown={isSlidingDown}
-        title="🐈‍⬛ Andmed uuendatud! 🐈‍⬛"
-      />
-
-      {isMobile && (
-        <ImageGallery
-          name="images"
-          images={selectedCat?.images || []}
-          isEditMode={true}
-          isMobile={isMobile}
-          previews={previews}
-          setPreviews={setPreviews}
+    <>
+      <form
+        className={`flex ${isMobile ? "flex-col w-full" : ""}`}
+        onSubmit={handleSubmit}
+      >
+        <Popup
+          isVisible={isPopupVisible}
+          slidingDown={isSlidingDown}
+          title="🐈‍⬛ Andmed uuendatud! 🐈‍⬛"
         />
-      )}
 
-      <div className={`${isMobile ? `mt-16` : "w-2/3"}`}>
-        <Section title="PEALKIRI:">
-          <TextField
-            name="title"
-            value={tempSelectedCat.title}
-            onChange={(e) => updateField(e, "title")}
-            sx={{ "& .MuiInputBase-input": { fontWeight: "bold" } }}
+        {isMobile && (
+          <ImageGallery
+            name="images"
+            images={selectedCat?.images || []}
+            isEditMode={true}
+            previews={previews}
+            setPreviews={setPreviews}
           />
-        </Section>
+        )}
 
-        <Section title="LOOMA KIRJELDUS:">
-          <TextField
-            name="description"
-            multiline
-            value={tempSelectedCat?.description}
-            onChange={(e) => updateField(e, "description")}
-            sx={{ textAlign: "justify", width: "100%" }}
-          />
-        </Section>
+        <div className={`${isMobile ? `mt-16` : "w-2/3"}`}>
+          <div className="mb-16">
+            <h1 className="text-secondary">PEALKIRI: </h1>
+            <div className="flex justify-between">
+              <TextField
+                name="title"
+                value={tempSelectedCat.title}
+                onChange={(e) => updateField(e, "title")}
+                sx={{ "& .MuiInputBase-input": { fontWeight: "bold", fontSize: "24px", padding: 0  } }}
+              />
+              <IconButton
+                onClick={() => setIsEditMode(false)}
+                sx={{
+                  width: "96px",
+                  backgroundColor: "#007AFF",
+                  borderRadius: "8px",
+                  color: "#FFF",
+                  "&:hover": {
+                    backgroundColor: "#3696ff",
+                  },
+                  
+                }}
+              >
+                <KeyboardBackspaceIcon /> {/* default is 24 */}
+              </IconButton>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-4">
-          <BasicInfoFields
-            isMobile={isMobile}
-            tempSelectedCat={tempSelectedCat}
-            updateField={updateField}
-          />
+          <div className="mb-16">
+            <h1 className="text-secondary"> LOOMA KIRJELDUS: </h1>
+            <TextField
+              name="title"
+              value={tempSelectedCat.description}
+              onChange={(e) => updateField(e, "description")}
+              sx={{width: "100%"}}
+              multiline
+            />
+          </div>
 
-          <VaccinationFields
-            tempSelectedCat={tempSelectedCat}
-            updateField={updateField}
-          />
+          <div className="flex flex-col gap-4">
+            <BasicInfoFields
+              isMobile={isMobile}
+              tempSelectedCat={tempSelectedCat}
+              updateField={updateField}
+            />
 
-          <DynamicFormFields
-            tempSelectedCat={tempSelectedCat}
-            isMobile={isMobile}
-            updateField={updateField}
-            updateFieldMultiselect={updateFieldMultiselect}
-          />
+            <VaccinationFields
+              tempSelectedCat={tempSelectedCat}
+              updateField={updateField}
+            />
+
+            <DynamicFormFields
+              tempSelectedCat={tempSelectedCat}
+              isMobile={isMobile}
+              updateField={updateField}
+              updateFieldMultiselect={updateFieldMultiselect}
+            />
+          </div>
         </div>
-      </div>
 
-      {!isMobile && (
-        <ImageGallery
-          name="images"
-          images={selectedCat?.images || []}
-          isEditMode={true}
-          previews={previews}
-          setPreviews={setPreviews}
-        />
-      )}
+        {!isMobile && (
+          <ImageGallery
+            name="images"
+            images={selectedCat?.images || []}
+            isEditMode={true}
+            previews={previews}
+            setPreviews={setPreviews}
+          />
+        )}
+      </form>
       <ActionButtons />
-    </form>
+    </>
   );
 };
 

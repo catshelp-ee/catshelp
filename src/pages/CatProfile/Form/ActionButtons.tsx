@@ -15,7 +15,7 @@ const buttonStyles = {
 };
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ className }) => (
-  <div className={`flex justify-center my-8 ${className}`}>
+  <div className={`flex justify-center my-8 ${className? className: ""}`}>
     <Button sx={buttonStyles} variant="contained" type="submit">
       Salvesta
     </Button>

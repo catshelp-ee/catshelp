@@ -94,24 +94,16 @@ const CatProfile: React.FC = () => {
   const renderContent = () => {
     if (isEditMode) {
       return (
-        <>
-          <CatSelection
-            cats={cats}
-            setIsEditMode={setIsEditMode}
-            setSelectedCat={setSelectedCat}
-          />
           <EditProfile
             setIsEditMode={setIsEditMode}
             selectedCat={selectedCat}
             setSelectedCat={setSelectedCat}
           />
-        </>
       );
     }
 
     return (
       <>
-        <CatSelection cats={cats} setSelectedCat={setSelectedCat} />
         {isLoading ? (
           <CircularProgress />
         ) : (
@@ -122,12 +114,13 @@ const CatProfile: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <div
-        className={`flex flex-col ${isMobile ? "items-center" : "ml-24 mr-4"}`}
-      >
+    <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
+      <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
         <CatProfileHeader isMobile={isMobile} />
-        {renderContent()}
+        <CatSelection cats={cats} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat}/>
+        <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
+         {renderContent()}
+        </div>
       </div>
     </div>
   );

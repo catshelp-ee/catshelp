@@ -56,7 +56,6 @@ export interface Cat extends Descriptors {
   foundLoc: string;
   age: string;
   currentLoc: string;
-  appearence: string;
   vacc: Date | null;
   vaccEnd: Date | null;
   rabiesVacc: Date | null;
@@ -72,7 +71,6 @@ export const defaultCat: Cat = {
   name: "",
   birthDate: null,
   currentLoc: "",
-  appearence: "",
   age: "",
   chipNr: "",
   llr: "false",

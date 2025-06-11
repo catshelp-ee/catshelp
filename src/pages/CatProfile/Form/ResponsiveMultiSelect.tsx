@@ -1,6 +1,7 @@
+// deno-lint-ignore-file
 import React from "react";
-import Select, { SelectProps } from "@mui/material/Select";
-import { useIsMobile } from "@/hooks/isMobile";
+import { Select, SelectProps } from "@mui/material";
+import { useIsMobile } from "@hooks/isMobile.tsx";
 
 interface ResponsiveMultiSelectProps extends Omit<SelectProps, "children"> {
   children: React.ReactNode;

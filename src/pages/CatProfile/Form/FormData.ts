@@ -39,7 +39,7 @@ export const MULTISELECT_FIELD_VALUES = {
     "Õrnahingeline",
     "Rahumeelne",
     "Isekas",
-    "Sisiseb palju",
+    "Sisiseb palju"
   ],
   likes: [
     "Süles olla",
@@ -47,7 +47,7 @@ export const MULTISELECT_FIELD_VALUES = {
     "Pai saada",
     "Palju tähelepanu",
     "Mängida mänguasjadega inimesega",
-    "Mängida mänguasjadega üksinda",
+    "Mängida mänguasjadega üksinda"
   ],
   cat: [
     "Kasutab liivakasti hästi",
@@ -55,7 +55,7 @@ export const MULTISELECT_FIELD_VALUES = {
     "On valikuline toiduga, pirtsutab",
     "Harjub kiirelt uue kohaga",
     "Kipub kratsima muud mööblit",
-    "Usaldab inimesi kiiresti",
+    "Usaldab inimesi kiiresti"
   ],
 };
 
@@ -67,8 +67,7 @@ export const FIELD_VALUES = {
     "Umbusklik",
     "Ei meeldi",
     "Ei ole tutvunud teiste kassidega",
-    "Peab olema ainus kass peres",
-    "Other",
+    "Peab olema ainus kass peres"
   ],
   treatDogs: [
     "Jumaldab koeri, tahaks väga koertega koju saada",
@@ -76,18 +75,16 @@ export const FIELD_VALUES = {
     "Neutraalselt",
     "Umbusklik",
     "Ei meeldi",
-    "Pole tutvunud",
-    "Other",
+    "Pole tutvunud"
   ],
   treatChildren: [
     "Hästi",
     "Neutraalselt",
     "Umbusklik",
     "Ei sobi lastega",
-    "Ei ole kohanud lapsi, ei tea",
-    "Other",
+    "Ei ole kohanud lapsi, ei tea"
   ],
-  outdoorsIndoors: ["Toakassiks", "Õuekassiks", "Toa- ja õuekassiks", "Other"],
+  outdoorsIndoors: ["Toakassiks", "Õuekassiks", "Toa- ja õuekassiks"],
 };
 
 export const COAT_COLOURS = [

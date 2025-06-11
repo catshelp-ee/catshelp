@@ -6,8 +6,10 @@ import {
   IconButton,
   ImageList,
   ImageListItem,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useIsMobile } from "@hooks/isMobile";
 
 interface ImageGalleryProps {
   name?: string;
@@ -15,7 +17,6 @@ interface ImageGalleryProps {
   isEditMode?: boolean;
   previews?: PreviewImage[];
   setPreviews?: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
-  isMobile?: boolean;
 }
 
 interface PreviewImage {
@@ -30,8 +31,8 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
   isEditMode = false,
   previews,
   setPreviews,
-  isMobile,
 }) => {
+  const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -54,30 +55,26 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
   });
 
   const renderPreview = () => (
-    <div className="flex flex-wrap gap-2 p-2">
-      {previews.map((img) => (
-        <div
-          key={img.id}
-          className="relative w-24 h-24 border rounded overflow-hidden"
-        >
-          <img
-            src={img.preview}
-            alt="Preview"
-            className="w-full h-full object-cover"
-          />
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              removeImage(img.id);
-            }}
-            className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-bl px-1"
-          >
-            <CloseIcon fontSize="small" />
-          </button>
-        </div>
-      ))}
-    </div>
+  <ImageList cols={2} sx={{ height: '100%', overflowY: 'auto' }}>
+    {previews.map((img, index) => (
+      <ImageListItem key={index} className="relative">
+        <img
+          className="rounded"
+          srcSet={img.preview}
+          src={img.preview}
+          loading="lazy"
+        />
+        <CloseIcon
+          fontSize="small"
+          className="absolute top-1 right-1 bg-white/80 rounded-full p-1 cursor-pointer hover:bg-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            setPreviews((prev) => prev.filter((_, i) => i !== index));
+          }}
+        />
+      </ImageListItem>
+    ))}
+  </ImageList>
   );
 
   const renderUploadPrompt = () => (
@@ -99,7 +96,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
       </Button>
     </div>
   );
-
   return (
     <div className={`${isMobile ? "w-full mt-8" : "w-1/3"}`}>
       <div className="flex flex-wrap justify-center gap-6 md:gap-8">
@@ -107,14 +103,14 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
           <button
             onClick={() => setIsOpen(true)}
             className={`rounded-2xl ${
-              isMobile ? "max-w-52 h-52" : "max-w-72 h-72"
+              isMobile ? "max-w-52 h-52" : "max-w-72"
             } rounded-full mb-4`}
           >
             <img src={images[0]} className="h-full rounded-2xl" />
-          </button>
+          </button> 
           <button
             className={`relative ${
-              isMobile ? "max-w-52 h-52" : "max-w-72 h-72"
+              isMobile ? "max-w-52 h-52" : "max-w-72"
             } rounded-2xl mb-4`}
             onClick={() => setIsOpen(true)}
           >
@@ -123,8 +119,8 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
               src={images[0]}
               alt="More images"
             />
-            <div className="absolute inset-0 flex items-center justify-center font-bold">
-              +{images.length - 1} pilti
+            <div className="absolute inset-0 text-xl flex items-center justify-center font-bold">
+              +{images.length - 1} Pilti
             </div>
           </button>
 
@@ -132,7 +128,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
             <div
               {...getRootProps()}
               className={`${
-                isMobile ? "max-w-52 h-52" : "max-w-72 h-72"
+                isMobile ? "w-52 h-52" : "w-72 h-72 p-4"
               } border-2 border-black rounded-2xl flex items-center justify-center cursor-pointer bg-white relative overflow-hidden`}
             >
               <input {...getInputProps({ name })} />
@@ -142,18 +138,26 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         </div>
       </div>
 
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="w-full p-4">
-          <div className="w-full flex justify-end mb-4">
+      <Dialog  PaperProps={{
+        sx: {
+          borderRadius: "16px", 
+          maxWidth: '50vw', // 50% of the viewport width
+          width: '100%',     // ensures it uses the full allowed width
+        },
+      }}
+      open={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="w-full p-10">
+          <div className="w-full flex justify-between items-center mb-4">
+            <Typography variant="h4" >Taadu hetkede varakamber ✨</Typography>
             <IconButton onClick={() => setIsOpen(false)} sx={{}}>
               <CloseIcon />
             </IconButton>
           </div>
 
-          <ImageList cols={3}>
+          <ImageList cols={5} gap={8}>
             {images.map((image, index) => (
               <ImageListItem key={index}>
-                <img srcSet={image} src={image} loading="lazy" />
+                <img className="rounded" srcSet={image} src={image} loading="lazy" />
               </ImageListItem>
             ))}
           </ImageList>

@@ -49,7 +49,11 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
               multiple
               value={tempSelectedCat[key as keyof Cat]}
               onChange={(e) => updateFieldMultiselect(e, key)}
-              renderValue={(selected) => selected.join(", ")}
+              renderValue={(selected) => (
+                <div className="flex flex-wrap whitespace-normal break-words">
+                  {selected.join(', ')}
+                </div>
+              )}  
             >
               {MULTISELECT_FIELD_VALUES[key].map((val, idx) => (
                 <MenuItem key={idx} value={val}>
@@ -68,9 +72,6 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
                 </MenuItem>
               ))}
             </ResponsiveMultiSelect>
-            {tempSelectedCat[key as keyof Cat][0] === "Other" && (
-              <TextField name={key} />
-            )}
           </FormControl>
         );
       } else if (key in FIELD_VALUES) {
@@ -88,14 +89,11 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
                 </MenuItem>
               ))}
             </ResponsiveMultiSelect>
-            {tempSelectedCat[key as keyof Cat] === "Other" && (
-              <TextField name={key} />
-            )}
           </FormControl>
         );
       }
       return (
-        <div key={index} className="w-full">
+        <div key={index}>
           <FormLabel className="block text-sm font-medium mb-1 break-words whitespace-normal">
             {label}
           </FormLabel>
@@ -103,7 +101,6 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
             value={tempSelectedCat[key as keyof Cat]}
             onChange={(e) => updateField(e, key)}
             name={key}
-            variant="standard"
             fullWidth
           />
         </div>

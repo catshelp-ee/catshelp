@@ -1,8 +1,9 @@
-import React from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import { IconButton, TextField, Typography } from "@mui/material";
 import { Cat } from "../../types/Cat.ts";
 import ImageGallery from "./ImageGallery.tsx";
 import { useIsMobile } from "@/hooks/isMobile.tsx";
+import EditIcon from '@mui/icons-material/Edit';
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -12,7 +13,7 @@ interface CatDetailsProps {
 const FIELD_LABELS = {
   gender: "Kassi sugu",
   age: "Kassi vanus",
-  appearence: "Kassi välimus",
+  appearance: "Kassi välimus",
   currentLoc: "Kassi asukoht",
   procedures: "Mis protseduurid hoiulisel tehtud on?",
   issues:
@@ -38,7 +39,21 @@ const CatDetailsHeader: React.FC<{
     <h1 className="text-secondary">PEALKIRI:</h1>
     <span className="flex justify-between">
       <h1 className="text-2xl font-bold">{title}</h1>
-      <Button onClick={onEditClick}>Muuda/Lisa</Button>
+      <IconButton
+        onClick={onEditClick}
+        sx={{
+          width: "96px",
+          backgroundColor: "#007AFF",
+          borderRadius: "8px",
+          color: "#FFF",
+          "&:hover": {
+            backgroundColor: "#3696ff",
+          },
+          
+        }}
+      >
+        <EditIcon /> {/* default is 24 */}
+      </IconButton>
     </span>
   </div>
 );
@@ -56,7 +71,9 @@ const CatProfileField: React.FC<{
 }> = ({ label, value }) => (
   <div>
     <h2 className="font-bold">{label}</h2>
-    <TextField disabled variant="standard" value={value || ""} fullWidth />
+    <Typography variant="body1">
+      {Array.isArray(value) ? value.join(", ") : value}
+    </Typography>
   </div>
 );
 
@@ -68,15 +85,11 @@ const CatDetails: React.FC<CatDetailsProps> = ({
   const isMobile = useIsMobile();
 
   return (
-    <div
-      className={`flex ${
-        isMobile ? "flex-col" : ""
-      } my-4 border-2 rounded-lg p-4`}
-    >
+    <>
       {isMobile && (
-        <ImageGallery isMobile={isMobile} images={selectedCat?.images || []} />
+        <ImageGallery images={selectedCat?.images || []} />
       )}
-      <div className="w-full">
+      <div className={`${isMobile ? "w-full" : "w-2/3"}`}>
         <CatDetailsHeader
           title={selectedCat?.title || ""}
           onEditClick={handleEditClick}
@@ -86,18 +99,19 @@ const CatDetails: React.FC<CatDetailsProps> = ({
 
         <div className="flex flex-col gap-4">
           <h1 className="text-secondary">LOOMA PROFIIL:</h1>
-          {Object.entries(FIELD_LABELS).map(([key, label]) => (
+          {Object.entries(FIELD_LABELS).map(([key, label]) => {
+            return(
             <CatProfileField
               key={key}
               label={label}
               value={selectedCat[key as keyof Cat]}
-            />
-          ))}
+            />)
+})}
         </div>
       </div>
 
       {!isMobile && <ImageGallery images={selectedCat?.images || []} />}
-    </div>
+    </>
   );
 };
 

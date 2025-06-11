@@ -277,7 +277,7 @@ class AnimalService {
       llr: orDefault(animal.chipRegisteredWithUs, defaultCat.llr),
       gender: orDefault(characteristics.gender as string, defaultCat.gender),
       genderLabel: orDefault(genderLabel, defaultCat.genderLabel),
-      appearence: orDefault(appearance, defaultCat.appearance),
+      appearance: orDefault(appearance, defaultCat.appearance),
       currentLoc: orDefault(
         values[columnMap["ASUKOHT"]]?.formattedValue,
         defaultCat.currentLoc
@@ -397,12 +397,14 @@ class AnimalService {
   private getCatAppearance(
     values: any[],
     columnMap: { [key: string]: number }
-  ): string {
-    return (
-      values[columnMap["KASSI VÄRV"]]?.formattedValue +
-        ", " +
-        values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue || ""
-    );
+  ): string[] | null  {
+    const appearance = [];
+    const coatColor = values[columnMap["KASSI VÄRV"]]?.formattedValue;
+    if (coatColor) appearance.push(coatColor);
+    const coatLength = values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue;
+    if (coatLength) appearance.push(coatLength);
+
+    return appearance.length == 0 ? null : appearance;
   }
 
   private async getCharacteristics(animalId: number) {

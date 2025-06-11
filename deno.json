@@ -2,6 +2,15 @@
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.1.2",
     "@std/path": "jsr:@std/path@^1.0.8",
-    "@tajpouria/cors": "jsr:@tajpouria/cors@^1.2.1"
+    "@tajpouria/cors": "jsr:@tajpouria/cors@^1.2.1",
+    "@/": "./src/",
+    "@analytics/": "./src/analytics/",
+    "@assets/": "./src/assets/",
+    "@context/": "./src/context/",
+    "@pages/": "./src/pages/",
+    "@style/": "./src/style/",
+    "@models/": "./src/types/",
+    "@utils/": "./src/utils/",
+    "@hooks/": "./src/hooks/"
   }
 }

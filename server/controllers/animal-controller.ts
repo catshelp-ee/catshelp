@@ -5,7 +5,6 @@ import fs from "node:fs";
 import db from "@models/index.cjs";
 import { generateCatDescription } from "@services/ai-service.ts";
 import { Request, Response } from "express";
-import { getUserCats } from "@services/user-service.ts";
 
 // Initialize services once
 let googleService: GoogleService;

@@ -1,7 +1,7 @@
 import GoogleService from "./google-service.ts";
 import db from "@models/index.cjs";
 import moment from "moment";
-import { getUserCats } from "./user-service.ts";
+import { getUserByEmail } from "./user-service.ts";
 import { Cat, defaultCat, descriptors } from "@customTypes/Cat.ts";
 import process from "node:process";
 
@@ -18,6 +18,37 @@ class AnimalService {
     if(!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) 
       throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env")
   }
+
+  private async getUserCats(email: string) {
+  if (!email) {
+    return null;
+  }
+
+  const user = await getUserByEmail(email);
+  const fosterhome = await db.FosterHome.findOne({
+    where: {
+      user_id: user.id,
+    },
+  });
+
+  if (!fosterhome) {
+    return [];
+  }
+  
+  const fosterhomeCats = await db.AnimalToFosterHome.findAll({
+    where: {
+      foster_home_id: fosterhome.id,
+    },
+  });
+
+  const cats = await Promise.all(
+    fosterhomeCats.map(async (fosterhomeCat) => {
+      return await db.Animal.findByPk(fosterhomeCat.animalId);
+    })
+  );
+
+  return cats;
+}
 
   public async getCatProfilesByOwner(owner: any) {
     if (!owner) {
@@ -43,7 +74,7 @@ class AnimalService {
 
     const catProfiles: Cat[] = [];
 
-    const cats = await getUserCats(owner.email);
+    const cats = await this.getUserCats(owner.email);
 
     // Sheets
     for (const grid of rows) {

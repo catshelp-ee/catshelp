@@ -19,7 +19,7 @@ class AnimalService {
       throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env")
   }
 
-  private async getUserCats(email: string) {
+  public static async getUserCats(email: string) {
   if (!email) {
     return null;
   }
@@ -74,7 +74,7 @@ class AnimalService {
 
     const catProfiles: Cat[] = [];
 
-    const cats = await this.getUserCats(owner.email);
+    const cats = await AnimalService.getUserCats(owner.email);
 
     // Sheets
     for (const grid of rows) {

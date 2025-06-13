@@ -109,7 +109,7 @@ export async function updatePet(req: Request, res: Response) {
   try {
     await initializeServices();
     const catData = req.body;
-    const cats = await getUserCats(catData.owner.email);
+    const cats = await AnimalService.getUserCats(catData.owner.email);
     await catProfileService.updateCatProfile(
       catData,
       cats?.find((cat) => cat.name === catData.name)

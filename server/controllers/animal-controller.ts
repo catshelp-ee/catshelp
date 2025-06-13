@@ -5,7 +5,6 @@ import fs from "node:fs";
 import db from "@models/index.cjs";
 import { generateCatDescription } from "@services/ai-service.ts";
 import { Request, Response } from "express";
-import { getUserCats } from "@services/user-service.ts";
 
 // Initialize services once
 let googleService: GoogleService;
@@ -110,7 +109,7 @@ export async function updatePet(req: Request, res: Response) {
   try {
     await initializeServices();
     const catData = req.body;
-    const cats = await getUserCats(catData.owner.email);
+    const cats = await AnimalService.getUserCats(catData.owner.email);
     await catProfileService.updateCatProfile(
       catData,
       cats?.find((cat) => cat.name === catData.name)

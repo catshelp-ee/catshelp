@@ -95,7 +95,7 @@ export default class DashboardService {
 
                 const sheetsDate = row[this.sheetColumnNamesWithIndex[notification.dbColumnName]].formattedValue;
                 if (!sheetsDate){
-                    const notification = new VaktsineerimiseInfoPuudubNotification();
+                    notification.cellIsEmpty = true;
                     result = {
                         label: notification.getText(),
                         assignee: this.cats[index],
@@ -151,7 +151,7 @@ export default class DashboardService {
             result = {
                 label: notification.getText(),
                 assignee: "Sina ise",
-                due: dueDate.toLocaleDateString("ru-RU", { timeZone: "UTC" }),
+                due: dueDate.toLocaleDateString("et-EE"),
                 action: {
                     label: notification.buttonText,
                     redirect: notification.redirectURL,

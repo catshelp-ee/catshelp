@@ -10,42 +10,45 @@ import EditProfile from "./EditProfile.tsx";
 import { Cat, defaultCat } from "@models/Cat.ts";
 import { useIsMobile } from "@hooks/isMobile";
 
-const CatProfileHeader = ({ isMobile }: { isMobile: boolean }) => {
+const CatProfileHeader = ({ isMobile, cats, isLoading }: { isMobile: boolean, cats: any, isLoading: boolean }) => {
   if (isMobile) {
     return (
       <>
         <section className="flex items-center my-4">
-          <h1 className="text-xl mr-4 ">Kiisude profiilid veebis</h1>
-          <img
-            loading="lazy"
-            src="/welcome.svg"
-            height={28}
-            width={28}
-            alt="Welcome"
-          />
+          <h1 className="text-2xl mr-4 ">Kiisude profiilid veebis 😺</h1>
         </section>
-        <p className="text-secondary text-justify px-8 leading-7">
-          Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
-          veebilehel Valimiseks klõpsa hoiulooma pildil
+        {cats.length === 0 && !isLoading? (
+          <>
+          <h1 className="text-xl my-12">Oota, kus mu nunnud on? 😺</h1>
+          <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
+          <img src="sleeping.webp" width={512} />
+          </>
+        ) : (<> 
+        <p className="text-secondary text-lg text-justify pb-8">
+          Vaata üle ja uuenda oma hoiuloomade kuulutused siin 🐾 <br />
+          Klõpsa oma karvase sõbra pildile, et alustada! 📷💖
         </p>
+        </>)}
       </>
     );
   }
   return (
     <div>
       <section className="flex my-4 items-center">
-        <h1 className="text-xl md:text-4xl">Kiisude profiilid veebis</h1>
-        <img
-          loading="lazy"
-          className="w-12 h-12"
-          src="/welcome.svg"
-          alt="Welcome"
-        />
+        <h1 className="text-6xl">Kiisude profiilid veebis 😺</h1>
       </section>
-      <p className="mt-4 text-secondary">
-        Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
-        veebilehel Valimiseks klõpsa hoiulooma pildil
-      </p>
+        {cats.length === 0 && !isLoading ? (
+          <>
+          <h1 className="text-4xl my-12">Oota, kus mu nunnud on? 😺</h1>
+          <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
+          <img src="sleeping.webp" width={512} />
+          </>
+        ) : (<> 
+        <p className="text-secondary text-xl text-justify pb-8">
+          Vaata üle ja uuenda oma hoiuloomade kuulutused siin 🐾 <br />
+          Klõpsa oma karvase sõbra pildile, et alustada! 📷💖
+        </p>
+        </>)}
     </div>
   );
 };
@@ -116,14 +119,11 @@ const CatProfile: React.FC = () => {
   return (
     <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
       <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
-        {cats.length === 0  ? (<>
-        <h1 className="text-4xl my-12">Oota, kus mu kassid on? 😺</h1>
-        <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
-        <img src="sleeping.webp" width={512} />
+        <CatProfileHeader isMobile={isMobile} cats={cats} isLoading={isLoading} />
+        {cats.length === 0 && !isLoading  ? (<>
         </>)
         :(
           <>
-        <CatProfileHeader isMobile={isMobile} />
         <CatSelection cats={cats} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat}/>
         <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
          {renderContent()}

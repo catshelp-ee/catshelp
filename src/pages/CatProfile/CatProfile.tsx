@@ -116,11 +116,20 @@ const CatProfile: React.FC = () => {
   return (
     <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
       <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
+        {cats.length === 0  ? (<>
+        <h1 className="text-4xl my-12">Oota, kus mu kassid on? 😺</h1>
+        <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
+        <img src="sleeping.webp" width={512} />
+        </>)
+        :(
+          <>
         <CatProfileHeader isMobile={isMobile} />
         <CatSelection cats={cats} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat}/>
         <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
          {renderContent()}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -21,14 +21,12 @@ export const cache = async (req, res, next) => {
   try {
     const cachedData = await redisClient.get(key);
     if (cachedData) {
-    console.log("🔍 Redis GET:", key, cachedData);
       return res.json({ source: "cache", data: JSON.parse(cachedData) });
     }
 
     // Override res.json to cache response
     const originalJson = res.json.bind(res);
     res.json = async (body) => {
-        console.log("✅ Redis SET:", key, body.data ?? body);
       await redisClient.setEx(key, TTL, JSON.stringify(body.data ?? body));
       return originalJson(body);
     };

@@ -1,7 +1,6 @@
 import GoogleService from "./google-service.ts";
 import db from "@models/index.cjs";
 import moment from "moment";
-import { getUserByEmail } from "./user-service.ts";
 import { Cat, defaultCat, descriptors } from "@customTypes/Cat.ts";
 import process from "node:process";
 
@@ -20,35 +19,38 @@ class AnimalService {
   }
 
   public static async getUserCats(email: string) {
-  if (!email) {
-    return null;
+    if (!email) {
+      return null;
+    }
+
+    const user = await db.User.findOne({
+      where: { email },
+      include: {
+        model: db.FosterHome,
+        as: 'foster_home',
+        include: {
+          model: db.AnimalToFosterHome,
+          as: 'animal_links',
+          include: {
+            model: db.Animal,
+            as: 'animal',
+          },
+        },
+      },
+    });
+
+    const fosterHome = user?.foster_home;
+    if (!fosterHome || !fosterHome.animal_links) {
+      return [];
+    }
+
+    const cats = fosterHome.animal_links
+      .map(link => link.animal)
+      .filter(Boolean); // in case any links are broken
+
+    return cats;
   }
 
-  const user = await getUserByEmail(email);
-  const fosterhome = await db.FosterHome.findOne({
-    where: {
-      user_id: user.id,
-    },
-  });
-
-  if (!fosterhome) {
-    return [];
-  }
-  
-  const fosterhomeCats = await db.AnimalToFosterHome.findAll({
-    where: {
-      foster_home_id: fosterhome.id,
-    },
-  });
-
-  const cats = await Promise.all(
-    fosterhomeCats.map(async (fosterhomeCat) => {
-      return await db.Animal.findByPk(fosterhomeCat.animalId);
-    })
-  );
-
-  return cats;
-}
 
   public async getCatProfilesByOwner(owner: any) {
     if (!owner) {

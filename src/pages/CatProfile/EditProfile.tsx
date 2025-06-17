@@ -47,10 +47,8 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     updateFieldMultiselect,
   } = useCatForm(selectedCat);
 
-  console.log("first")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("submitted");
     e.preventDefault();
     if (isPopupVisible) return;
 
@@ -108,7 +106,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
             <ImageGallery
               name="images"
               images={selectedCat?.images || []}
-              isEditMode={true}
+              isEditMode
               previews={previews}
               setPreviews={setPreviews}
             />
@@ -177,8 +175,8 @@ const EditProfile: React.FC<CatDetailsProps> = ({
           {!isMobile && (
             <ImageGallery
               name="images"
-              images={selectedCat?.images || []}
-              isEditMode={true}
+              images={selectedCat.images}
+              isEditMode
               previews={previews}
               setPreviews={setPreviews}
             />

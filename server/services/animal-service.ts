@@ -45,8 +45,9 @@ class AnimalService {
 
     const cats = await getUserCats(owner.email);
 
-    if (cats.length === 0)
+    if (cats.length === 0){
       return [];
+    }
 
     // Sheets
     for (const grid of rows) {

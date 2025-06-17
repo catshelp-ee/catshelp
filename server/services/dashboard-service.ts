@@ -4,7 +4,6 @@ import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsi
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification.ts";
 import PoleKassiNotification from "@notifications/PoleKassiNotification.ts";
 import GoogleService from "./google-service.ts";
-import VaktsineerimiseInfoPuudubNotification from "@notifications/VaktsineerimisInfoPuudubNotification.ts";
 
 type Result = {
     assignee: string;

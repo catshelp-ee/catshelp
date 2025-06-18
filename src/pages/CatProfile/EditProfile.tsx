@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { TextField, Button, IconButton } from "@mui/material";
-import * as Utils from "@utils/utils.ts";
+import { uploadImages } from "@utils/google-utils.ts";
 import ImageGallery from "@pages/CatProfile/ImageGallery.tsx";
 import { useAuth } from "@/context/AuthContext";
 import Popup from "@pages/AddCat/Popup";
@@ -63,7 +63,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     const images: File[] = previews.map((p) => p.file);
 
     if (images.length > 0) {
-      Utils.uploadImages(images, tempSelectedCat.driveId);
+      uploadImages(images, tempSelectedCat.driveId);
     }
 
     try {

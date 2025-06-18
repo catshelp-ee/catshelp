@@ -74,12 +74,7 @@ const CatProfile: React.FC = () => {
           },
         });
 
-        let fetchedCats;
-        if (response.data.source === "cache"){
-          fetchedCats = response.data.data.profiles;
-        } else{
-          fetchedCats = response.data.profiles;
-        }
+        const fetchedCats = response.data.profiles;
 
         setCats(fetchedCats);
         if (fetchedCats.length > 0) {

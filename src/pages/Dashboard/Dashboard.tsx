@@ -24,13 +24,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
         `/api/animals/dashboard`
       );
       setIsLoading(false);
-      if (response.data.source === "cache"){
-        setPets(response.data.data.pets);
-        setTodos(response.data.data.todos);
-      } else{
-        setPets(response.data.pets);
-        setTodos(response.data.todos);
-      }
+      setPets(response.data.pets);
+      setTodos(response.data.todos);
     };
 
     getDashboardCats();

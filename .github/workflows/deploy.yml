@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build frontend and compile backend
+      - name: Build frontend and compile  backend
         run: npm run deploy
 
       - name: Upload to server

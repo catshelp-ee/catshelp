@@ -13,7 +13,7 @@ import db from "@models/index.cjs";
 import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
 import errorMiddleware from "./middleware/error-middleware.ts";
-import 'express-async-errors';
+import './express-async-errors.ts';
 
 dotenv.config();
 initializeDb();

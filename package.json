@@ -11,7 +11,7 @@
     "lint": "tsc-b && eslint .",
     "preview": "vite preview",
     "serve": "deno task build && deno task dev:api",
-    "deploy": "deno run -A npm:vite build && deno compile --allow-env --allow-net --allow-read --allow-write --allow-sys --output dist/server server/main.ts",
+    "deploy": "deno run -A npm:vite build && deno compile --allow-env --allow-net --allow-read --allow-write --allow-sys --output dist/server --import-map=import_map.json --no-check server/main.ts",
     "start": "cd dist && ./server"
   },
   "dependencies": {
@@ -56,6 +56,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^1.4.13",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",

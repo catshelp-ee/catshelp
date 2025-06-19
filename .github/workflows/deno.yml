@@ -35,5 +35,8 @@ jobs:
       # - name: Verify formatting
       #   run: deno fmt --check
 
+      - name: Install dependencies
+        run: deno install
+
       - name: Build project
         run: deno task build

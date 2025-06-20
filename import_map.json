@@ -1,9 +1,0 @@
-{
-  "imports": {
-    "@notifications/": "./server/services/notifications/",
-    "@services/": "./server/services/",
-    "@customTypes/": "./src/types/",
-    "@models/": "./models/",
-    "@middleware/": "./server/middleware/"
-  }
-}

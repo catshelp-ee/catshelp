@@ -1,4 +1,4 @@
-import { createClient } from "redis";
+/*import { createClient } from "redis";
 
 let redisClient: ReturnType<typeof createClient> | null = null;
 const TTL = 60; // seconds
@@ -44,3 +44,4 @@ export const cache = async (req, res, next) => {
     next();
   }
 };
+*/

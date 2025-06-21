@@ -13,10 +13,12 @@ import db from "@models/index.cjs";
 import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
 import errorMiddleware from "./middleware/error-middleware.ts";
-import './express-async-errors.ts';
+import 'express-async-errors';
+import {initializeRedis, cache} from "./middleware/caching-middleware.ts";
 
 dotenv.config();
 initializeDb();
+await initializeRedis();
 
 const app = express();
 app.use(cors({
@@ -28,6 +30,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 startCronRunner();
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
@@ -66,8 +69,8 @@ app.post("/api/logout", loginController.logout);
 app.post("/api/animals", authenticate, animalController.postAnimal);
 app.post("/api/pilt/lisa", authenticate, upload.array("images"), animalController.addPicture);
 app.get("/api/user", authenticate, userController.getUserData);
-app.get("/api/animals/dashboard", authenticate, dashboardController.getDashboard);
-app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
+app.get("/api/animals/dashboard", authenticate, cache, dashboardController.getDashboard);
+app.get("/api/animals/cat-profile", authenticate, cache, animalController.getProfile);
 app.put("/api/animals/cat-profile", authenticate, animalController.updatePet);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
 

@@ -1,4 +1,9 @@
 {
+  "tasks" : {
+    "dev": "deno task dev:api & deno task dev:vite",
+    "dev:api": "deno run --allow-env --allow-net --allow-read --allow-write --allow-sys --import-map=import_map.json server/main.ts",
+    "dev:vite": "deno run -A npm:vite"
+  },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.1.2",
     "@std/path": "jsr:@std/path@^1.0.8",

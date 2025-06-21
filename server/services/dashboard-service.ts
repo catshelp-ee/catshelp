@@ -1,10 +1,9 @@
-import { DashboardNotification } from "@notifications/DasboardNotification.ts";
-import UssirohiNotification from "@notifications/UssirohiNotification.ts";
-import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification.ts";
-import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification.ts";
-import PoleKassiNotification from "@notifications/PoleKassiNotification.ts";
-import GoogleService from "./google-service.ts";
-import VaktsineerimiseInfoPuudubNotification from "@notifications/VaktsineerimisInfoPuudubNotification.ts";
+import { DashboardNotification } from "@notifications/DasboardNotification";
+import UssirohiNotification from "@notifications/UssirohiNotification";
+import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
+import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
+import PoleKassiNotification from "@notifications/PoleKassiNotification";
+import GoogleService from "./google-service";
 
 type Result = {
     assignee: string;
@@ -58,7 +57,7 @@ export default class DashboardService {
 
     downloadImages(){
         let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it
-        const imageUrls: {image: string, name: string} = [];
+        const imageUrls: {image: string, name: string}[] = [];
         this.rows.forEach((row, index) => {
             const image = row[this.sheetColumnNamesWithIndex["PILT"]];
             const imageUrl = image.hyperlink;
@@ -95,7 +94,7 @@ export default class DashboardService {
 
                 const sheetsDate = row[this.sheetColumnNamesWithIndex[notification.dbColumnName]].formattedValue;
                 if (!sheetsDate){
-                    const notification = new VaktsineerimiseInfoPuudubNotification();
+                    notification.cellIsEmpty = true;
                     result = {
                         label: notification.getText(),
                         assignee: this.cats[index],
@@ -151,7 +150,7 @@ export default class DashboardService {
             result = {
                 label: notification.getText(),
                 assignee: "Sina ise",
-                due: dueDate.toLocaleDateString("ru-RU", { timeZone: "UTC" }),
+                due: dueDate.toLocaleDateString("et-EE"),
                 action: {
                     label: notification.buttonText,
                     redirect: notification.redirectURL,

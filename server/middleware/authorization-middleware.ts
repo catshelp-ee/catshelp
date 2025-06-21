@@ -1,5 +1,5 @@
-import * as jwt from "jsonwebtoken";
-import { getUserById, isTokenInvalid } from "../services/user-service.ts";
+import jwt from "jsonwebtoken";
+import { getUserById, isTokenInvalid } from "@services/user-service";
 
 async function canViewPage(token) {
   const user = await getUserById(token.id);
@@ -29,7 +29,7 @@ function refreshToken(decodedToken, res) {
 
 function tokenNeedsRefresh(decodedToken) {
   const tokenExpTime = new Date(decodedToken.exp * 1000);
-  const difInMilliseconds = new Date() - tokenExpTime;
+  const difInMilliseconds = new Date().getTime() - tokenExpTime.getTime();
   const refreshTime = 120000; //2 min
   return difInMilliseconds < refreshTime;
 }

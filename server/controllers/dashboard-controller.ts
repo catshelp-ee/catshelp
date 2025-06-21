@@ -1,6 +1,6 @@
-import DashboardService from "@services/dashboard-service.ts";
-import { getCurrentUser } from "@middleware/authorization-middleware.ts";
-import GoogleService from "@services/google-service.ts";
+import DashboardService from "@services/dashboard-service";
+import { getCurrentUser } from "@middleware/authorization-middleware";
+import GoogleService from "@services/google-service";
 
 export async function getDashboard(req: any, res: any) {
   const user = await getCurrentUser(req);

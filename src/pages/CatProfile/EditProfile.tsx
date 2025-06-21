@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { TextField, Button, IconButton } from "@mui/material";
 import { uploadImages } from "@utils/google-utils.ts";
 import ImageGallery from "@pages/CatProfile/ImageGallery.tsx";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@context/AuthContext";
 import Popup from "@pages/AddCat/Popup";
 import { Cat } from "@models/Cat";
 import { useCatForm } from "@hooks/useCatForm";
@@ -12,7 +12,7 @@ import { VaccinationFields } from "./Form/VaccinationFields";
 import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
 import { Section } from "./Form/Section";
-import { useIsMobile } from "@/hooks/isMobile";
+import { useIsMobile } from "@hooks/isMobile";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { preview } from "vite";
 

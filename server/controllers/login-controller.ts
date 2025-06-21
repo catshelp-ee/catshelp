@@ -1,8 +1,8 @@
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import { OAuth2Client } from 'google-auth-library';
-import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user-service.ts"
-import { sendRequest } from "@services/email-service.ts";
+import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user-service"
+import { sendRequest } from "@services/email-service";
 
 const client = new OAuth2Client();
 
@@ -43,6 +43,7 @@ export async function googleLogin(req: any, res: any) {
         res.sendStatus(401);
         return;
     }
+
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
         expiresIn: process.env.TOKEN_LENGTH,
     });

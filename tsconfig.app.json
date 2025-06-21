@@ -28,7 +28,7 @@
       "@context/*": ["./src/context/*"],
       "@pages/*": ["./src/pages/*"],
       "@style/*": ["./src/style/*"],
-      "@models/*": ["./src/types/*"],
+      "@types/*": ["./src/types/*"],
       "@utils/*": ["./src/utils/*"],
       "@hooks/*": ["./src/hooks/*"]
     }

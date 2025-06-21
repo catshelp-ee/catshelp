@@ -1,0 +1,13 @@
+model User {
+  id                Int         @id @default(autoincrement())
+  fosterHome        FosterHome?
+  fullName          String?     @map("full_name")
+  email             String?
+  identityCode      String?     @map("identity_code")
+  citizenship       String?
+  blacklisted       Boolean     @default(false) 
+  blacklistedReason String?     @map("blacklisted_reason")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  @@map("users")
+}

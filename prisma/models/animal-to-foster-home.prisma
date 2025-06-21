@@ -1,0 +1,10 @@
+model AnimalToFosterHome { 
+    id                Int        @id @default(autoincrement())
+    animalId          Int        @map("animal_id")
+    animal            Animal     @relation(fields: [animalId], references: [id])
+    fosterHomeId      Int        @map("foster_home_id")
+    fosterHome        FosterHome @relation(fields: [fosterHomeId], references: [id])
+    fosterHomeEndDate DateTime?   @map("foster_home_end_date")
+
+    @@map("animals_to_foster_homes")
+}

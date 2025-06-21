@@ -1,4 +1,4 @@
-import { DashboardNotification } from "./DasboardNotification.ts";
+import { DashboardNotification } from "./DasboardNotification";
 import moment from "moment";
 
 export default class UssirohiNotification implements DashboardNotification {

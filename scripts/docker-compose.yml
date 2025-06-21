@@ -12,9 +12,8 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - db-data:/var/lib/mysql
-      - ./init-db:/docker-entrypoint-initdb.d
-
+      - ./init-db:/docker-entrypoint-initdb.d  # Mount the init-db directory
+      #- db-data:/var/lib/mysql
   adminer:
     image: adminer
     restart: always
@@ -31,5 +30,5 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
 
 volumes:
-  db-data:
-  redis-data:
+  #db-data:
+  #redis-data:

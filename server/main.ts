@@ -1,24 +1,27 @@
+import path from 'node:path';
+
 import express from "express";
 import cors from "cors";
-import * as dotenv from "dotenv";
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import * as animalController from "./controllers/animal-controller.ts";
-import * as loginController from "./controllers/login-controller.ts";
-import * as dashboardController from "./controllers/dashboard-controller.ts";
-import * as userController from "./controllers/user-controller.ts";
-import { authenticate } from "./middleware/authorization-middleware.ts";
 import cookieParser from "cookie-parser";
-import db from "@models/index.cjs";
-import CronRunner from "./cron/cron-runner.ts";
-import errorMiddleware from "./middleware/error-middleware.ts";
-import uploadImages from "./middleware/storage-middleware.ts";
+import * as dotenv from "dotenv";
 import 'express-async-errors';
 import {initializeRedis, cache} from "./middleware/caching-middleware.ts";
 
+import * as animalController from "./controllers/animal-controller";
+import * as dashboardController from "./controllers/dashboard-controller";
+import * as loginController from "./controllers/login-controller";
+import * as userController from "./controllers/user-controller";
+
+import { authenticate } from "./middleware/authorization-middleware";
+import errorMiddleware from "./middleware/error-middleware";
+import uploadImages from "./middleware/storage-middleware";
+import { initializeRedis, cache } from "./middleware/caching-middleware";
+
+import CronRunner from "./cron/cron-runner";
+
+
 dotenv.config();
-initializeDb();
-await initializeRedis();
+initializeRedis();
 
 const app = express();
 app.use(cors({
@@ -33,8 +36,6 @@ app.use(express.static("dist"));
 
 startCronRunner();
 
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
 
 //Public endpoints
@@ -51,7 +52,6 @@ app.get("/api/animals/dashboard", authenticate, cache, dashboardController.getDa
 app.get("/api/animals/cat-profile", authenticate, cache, animalController.getProfile);
 app.put("/api/animals/cat-profile", authenticate, animalController.updatePet);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
-
 // Fallback for client-side routes (React Router)
 app.get('*', (req, res) => {
   res.sendFile(path.join(rootDir, 'dist', 'index.html'));
@@ -60,15 +60,9 @@ app.get('*', (req, res) => {
 app.use(errorMiddleware);
 
 app.listen(process.env.BACKEND_PORT, () => {
-  console.log("connected to backend!");
+  console.log(`connected to backend on port ${process.env.BACKEND_PORT}!`);
 });
 
-function initializeDb() {
-  // Seda ei tohi eemaldada
-  // Mingi fucked magic toimub siin, et peab vähemalt
-  // üks kord kutsuma teda, muidu ei toimi
-  db;
-}
 
 function startCronRunner() {
   const runner = new CronRunner();

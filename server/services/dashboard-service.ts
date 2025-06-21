@@ -1,10 +1,9 @@
-import { DashboardNotification } from "@notifications/DasboardNotification.ts";
-import UssirohiNotification from "@notifications/UssirohiNotification.ts";
-import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification.ts";
-import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification.ts";
-import PoleKassiNotification from "@notifications/PoleKassiNotification.ts";
-import GoogleService from "./google-service.ts";
-
+import { DashboardNotification } from "@notifications/DasboardNotification";
+import UssirohiNotification from "@notifications/UssirohiNotification";
+import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
+import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
+import PoleKassiNotification from "@notifications/PoleKassiNotification";
+import GoogleService from "./google-service";
 type Result = {
     assignee: string;
     urgent: boolean;
@@ -57,7 +56,7 @@ export default class DashboardService {
 
     downloadImages(){
         let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it
-        const imageUrls: {image: string, name: string} = [];
+        const imageUrls: {image: string, name: string}[] = [];
         this.rows.forEach((row, index) => {
             const image = row[this.sheetColumnNamesWithIndex["PILT"]];
             const imageUrl = image.hyperlink;

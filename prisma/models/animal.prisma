@@ -1,0 +1,16 @@
+model Animal {
+    id                    Int      @id @default(autoincrement())
+    name                  String?
+    birthday              DateTime?
+    profileTitle          String?  @map("profile_title")
+    status                String?
+    chipNumber            String?  @map("chip_number")
+    chipRegisteredWithUs  Boolean  @default(false) @map("chip_registered_with_us")
+    driveId               String?  @map("drive_id")
+    animalsToRescue       AnimalToAnimalRescue[]
+    animalCharacteristic  AnimalCharacteristic[]
+    fosterHomeAnimals     AnimalToFosterHome[]
+
+
+    @@map("animals")
+}

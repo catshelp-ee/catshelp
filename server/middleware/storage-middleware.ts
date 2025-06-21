@@ -1,11 +1,8 @@
 import path from "node:path";
 import multer from "multer";
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.join(__dirname, "..");
-const tempDir = path.join(rootDir, "public", "Temp");
+const tempDir = path.join(process.cwd(), "public", "Temp");
 
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });

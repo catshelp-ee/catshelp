@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import * as Utils from "@utils/utils.ts";
+import { submitNewCatProfile } from "@utils/cat-profile-utils.ts";
 import Header from "../App/Header.tsx";
 import Popup from "@pages/AddCat/Popup.tsx";
 import States from "@pages/AddCat/States.json";
@@ -57,7 +57,7 @@ const AddCatForm = () => {
       state: formData.get("state"),
     };
 
-    Utils.submitNewCatProfile(obj, images);
+    submitNewCatProfile(obj, images);
   };
 
   return (

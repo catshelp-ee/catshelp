@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm-run-all --parallel dev:api dev:vite",
     "dev:api": "nodemon --watch server --ext ts,tsx --exec tsx server/main.ts",
+    "dev:vite": "vite",
     "build": "vite build && npm run bundle --prefix ./server",
     "start": "node dist/bundle.cjs"
   },
@@ -53,8 +54,6 @@
     "react-oauth": "^0.0.1",
     "react-router-dom": "^6.27.0",
     "redis": "^5.5.6",
-    "sequelize": "^6.37.5",
-    "sequelize-cli": "^6.6.2",
     "tailwindcss": "^3.4.14",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
@@ -66,9 +65,9 @@
     "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^1.4.13",
+    "@types/node": "^24.0.3",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.17",
-    "@types/node": "^24.0.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/sequelize": "^4.28.20",

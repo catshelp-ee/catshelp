@@ -23,28 +23,28 @@ class AnimalService {
       return null;
     }
 
-    const user = await db.User.findOne({
-      where: { email },
+    const user = await prisma.user.findFirst({
+      where: { email: email },
       include: {
-        model: db.FosterHome,
-        as: 'foster_home',
-        include: {
-          model: db.AnimalToFosterHome,
-          as: 'animal_links',
+        fosterHome: {
           include: {
-            model: db.Animal,
-            as: 'animal',
+            fosterAnimals: {
+              include: {
+                animal: true,
+              },
+            },
           },
         },
       },
     });
 
-    const fosterHome = user?.foster_home;
-    if (!fosterHome || !fosterHome.animal_links) {
+
+    const fosterHome = user?.fosterHome;
+    if (!fosterHome || !fosterHome.fosterAnimals) {
       return [];
     }
 
-    const cats = fosterHome.animal_links
+    const cats = fosterHome.fosterAnimals
       .map(link => link.animal)
       .filter(Boolean); // in case any links are broken
 

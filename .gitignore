@@ -8,4 +8,4 @@ config/config.json
 public/Temp
 dist
 generated
-
+prisma/migrations

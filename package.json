@@ -7,7 +7,8 @@
     "dev": "npm-run-all --parallel dev:api dev:vite",
     "dev:api": "nodemon --watch server --ext ts,tsx --exec tsx server/main.ts",
     "dev:vite": "vite",
-    "build": "vite build && npm run bundle --prefix ./server",
+    "copy:pm2": "cp server/pm2.config.js dist/",
+    "build": "vite build && npm run bundle --prefix ./server && npm run copy:pm2",
     "start": "node dist/bundle.cjs"
   },
   "prisma": {

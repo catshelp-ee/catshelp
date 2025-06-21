@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useMediaQuery } from "@mui/material";
@@ -9,46 +9,63 @@ import CatDetails from "./CatDetails.tsx";
 import EditProfile from "./EditProfile.tsx";
 import { Cat, defaultCat } from "@models/Cat.ts";
 import { useIsMobile } from "@hooks/isMobile";
+import { createContextHook } from "@hooks/createContextHook.tsx";
+import { isLoadingWrapper } from "@hooks/isLoading.tsx";
 
-const CatProfileHeader = ({ isMobile }: { isMobile: boolean }) => {
+const CatProfileHeader = ({ cats }: { cats: any }) => {
+  const {isLoading, setIsLoading} = useLoading();
+  const isMobile = useIsMobile();
   if (isMobile) {
     return (
       <>
         <section className="flex items-center my-4">
-          <h1 className="text-xl mr-4 ">Kiisude profiilid veebis</h1>
-          <img
-            loading="lazy"
-            src="/welcome.svg"
-            height={28}
-            width={28}
-            alt="Welcome"
-          />
+          <h1 className="text-2xl mr-4 ">Kiisude profiilid veebis 😺</h1>
         </section>
-        <p className="text-secondary text-justify px-8 leading-7">
-          Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
-          veebilehel Valimiseks klõpsa hoiulooma pildil
+        {cats.length === 0 && !isLoading? (
+          <>
+          <h1 className="text-xl my-12">Oota, kus mu nunnud on? 😺</h1>
+          <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
+          <img src="sleeping.webp" width={512} />
+          </>
+        ) : (<> 
+        <p className="text-secondary text-lg text-justify pb-8">
+          Vaata üle ja uuenda oma hoiuloomade kuulutused siin 🐾 <br />
+          Klõpsa oma karvase sõbra pildile, et alustada! 📷💖
         </p>
+        </>)}
       </>
     );
   }
   return (
     <div>
       <section className="flex my-4 items-center">
-        <h1 className="text-xl md:text-4xl">Kiisude profiilid veebis</h1>
-        <img
-          loading="lazy"
-          className="w-12 h-12"
-          src="/welcome.svg"
-          alt="Welcome"
-        />
+        <h1 className="text-6xl">Kiisude profiilid veebis 😺</h1>
       </section>
-      <p className="mt-4 text-secondary">
-        Siin näed ja saad muuta oma hoiulooma(de) kuulutus(i) catshelp.ee
-        veebilehel Valimiseks klõpsa hoiulooma pildil
-      </p>
+        {cats.length === 0 && !isLoading ? (
+          <>
+            <h1 className="text-4xl my-12">Oota, kus mu nunnud on? 😺</h1>
+            <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
+            <img src="sleeping.webp" width={512} />
+          </>
+        ) : (
+        <> 
+          <p className="text-secondary text-xl text-justify pb-8">
+            Vaata üle ja uuenda oma hoiuloomade kuulutused siin 🐾 <br />
+            Klõpsa oma karvase sõbra pildile, et alustada! 📷💖
+          </p>
+        </>
+      )}
     </div>
   );
 };
+
+interface LoadingContextType {
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const IsLoadingContext = createContext<LoadingContextType | undefined>(undefined);
+export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
 const CatProfile: React.FC = () => {
   const { getUser } = useAuth();
@@ -60,9 +77,8 @@ const CatProfile: React.FC = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const fetchCats = async () => {
+    const loadUserCats = async () => {
       try {
-        setIsLoading(true);
         const user = await getUser();
 
         const response = await axios.get("/api/animals/cat-profile", {
@@ -74,22 +90,25 @@ const CatProfile: React.FC = () => {
           },
         });
 
-        const fetchedCats = response.data.profiles;
 
-        setCats(fetchedCats);
-        if (fetchedCats.length > 0) {
-          setSelectedCat(fetchedCats[0]);
+        const catProfiles = response.data.profiles;
+        setCats(catProfiles);
+
+        if (catProfiles.length > 0) {
+          setSelectedCat(catProfiles[0]);
         }
       } catch (error) {
-        console.error("Error fetching cat data:", error);
+        console.error("Error loading cat profiles:", error);
         showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
         setCats([]);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    fetchCats();
+    const fetchAndSetCatsWithLoading = async () => {
+      await isLoadingWrapper(loadUserCats, setIsLoading);
+    };
+
+    fetchAndSetCatsWithLoading();
   }, []);
 
   const renderContent = () => {
@@ -104,26 +123,27 @@ const CatProfile: React.FC = () => {
     }
 
     return (
-      <>
-        {isLoading ? (
-          <CircularProgress />
-        ) : (
-          <CatDetails selectedCat={selectedCat} setIsEditMode={setIsEditMode} />
-        )}
-      </>
+      <CatDetails selectedCat={selectedCat} setIsEditMode={setIsEditMode} />
     );
   };
 
   return (
-    <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
-      <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
-        <CatProfileHeader isMobile={isMobile} />
-        <CatSelection cats={cats} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat}/>
-        <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
-         {renderContent()}
+    <IsLoadingContext.Provider value={{isLoading, setIsLoading}} >
+      <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
+        <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
+          <CatProfileHeader cats={cats}/>
+          {isLoading && (<CircularProgress />)}
+          {cats.length !== 0  && (
+            <>
+              <CatSelection cats={cats} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat}/>
+              <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
+                {renderContent()}
+              </div>
+            </>
+          )}
         </div>
       </div>
-    </div>
+    </IsLoadingContext.Provider>
   );
 };
 

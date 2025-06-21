@@ -21,11 +21,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm install
 
-      - name: 🏗️ Build frontend & backend
-        run: npm run build
-        
       - name: 🏗️ Primsa generate
         run: npm run copy:prisma
+
+      - name: 🏗️ Build frontend & backend
+        run: npm run build
 
       - name: 📁 Prepare release archive
         run: |

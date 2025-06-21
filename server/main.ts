@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 import 'express-async-errors';
+import {initializeRedis, cache} from "./middleware/caching-middleware.ts";
 
 import * as animalController from "./controllers/animal-controller";
 import * as dashboardController from "./controllers/dashboard-controller";

@@ -30,7 +30,5 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
 
 volumes:
-  db-data:
-  redis-data:
-#volumes:
-#  db-data:
+  #db-data:
+  #redis-data:

@@ -90,6 +90,7 @@ const CatProfile: React.FC = () => {
           },
         });
 
+
         const catProfiles = response.data.profiles;
         setCats(catProfiles);
 

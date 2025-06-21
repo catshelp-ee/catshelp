@@ -45,6 +45,10 @@ class AnimalService {
 
     const cats = await getUserCats(owner.email);
 
+    if (cats.length === 0){
+      return [];
+    }
+
     // Sheets
     for (const grid of rows) {
       for (const row of grid.rowData || []) {
@@ -254,7 +258,7 @@ class AnimalService {
     );
 
     let age = "";
-    if (birthDate){
+    if (birthDate.isValid()){
       const years = this.now.diff(birthDate, "years");
       const months = this.now.diff(
         birthDate.clone().add(years, "years"),
@@ -263,9 +267,12 @@ class AnimalService {
 
       if (years === 0) {
         age = `${months} kuud`;
+      } else if(months === 0) {
+        age = `${years} aastat`;
       } else {
         age = `${years} aastat ja ${months} kuud`;
       }
+
     }
     const catProfile: Cat = {
       ...defaultCat,

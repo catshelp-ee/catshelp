@@ -61,7 +61,7 @@ jobs:
             ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }} ${{ env.APP_ROOT }}/current
 
             # Restart via PM2 (expects ecosystem config in release)
-            cd ${{ env.APP_ROOT }}/current
+            cd ${{ env.APP_ROOT }}/current/dist
             pm2 startOrRestart pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

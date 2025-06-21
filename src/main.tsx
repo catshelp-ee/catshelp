@@ -7,10 +7,10 @@ import App from "./App.tsx";
 import { AuthProvider } from "@context/AuthContext";
 import { AlertProvider } from "@context/AlertContext.tsx";
 import { PostHogProviderWrapper } from "./analytics/PostHogProviderWrapper.tsx";
-
+console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 createRoot(document.getElementById("root")!).render(
   <PostHogProviderWrapper>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={"683064775627-ijeh78do11kijfs9rinnmbaraocgoc7i.apps.googleusercontent.com"}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
         <BrowserRouter>
           <AlertProvider>

@@ -4,7 +4,6 @@ import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsi
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
 import PoleKassiNotification from "@notifications/PoleKassiNotification";
 import GoogleService from "./google-service";
-
 type Result = {
     assignee: string;
     urgent: boolean;

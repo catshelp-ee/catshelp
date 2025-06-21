@@ -24,7 +24,6 @@ on:
         type: environment
         required: true
 
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -50,7 +49,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
           source: "${{ env.RELEASE_NAME }}.tar.gz"
           target: "/data01/virt133730/domeenid/www.catshelp.ee/releases"
@@ -60,7 +59,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
           script: |
             cd /data01/virt133730/domeenid/www.catshelp.ee/releases

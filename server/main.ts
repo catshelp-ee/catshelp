@@ -10,9 +10,9 @@ import * as userController from "./controllers/user-controller.ts";
 import { authenticate } from "./middleware/authorization-middleware.ts";
 import cookieParser from "cookie-parser";
 import db from "@models/index.cjs";
-import multer from "multer";
 import CronRunner from "./cron/cron-runner.ts";
 import errorMiddleware from "./middleware/error-middleware.ts";
+import uploadImages from "./middleware/storage-middleware.ts";
 import 'express-async-errors';
 import {initializeRedis, cache} from "./middleware/caching-middleware.ts";
 
@@ -29,35 +29,13 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.static("dist"));
+
 startCronRunner();
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
-app.use(express.static("dist"));
-
-// Configure Multer storage options
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(rootDir, "public", "Temp")); // Specify the folder to save the uploaded files
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Set the filename
-  },
-});
-
-// Set file upload limits and filter (optional)
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Max file size: 10MB
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true); // Accept image files
-    } else {
-      cb(new Error("Invalid file type"), false); // Reject non-image files
-    }
-  },
-});
 
 //Public endpoints
 app.post("/api/login-google", loginController.googleLogin);
@@ -67,7 +45,7 @@ app.post("/api/logout", loginController.logout);
 
 //Secure endpoints
 app.post("/api/animals", authenticate, animalController.postAnimal);
-app.post("/api/pilt/lisa", authenticate, upload.array("images"), animalController.addPicture);
+app.post("/api/pilt/lisa", authenticate, uploadImages, animalController.addPicture);
 app.get("/api/user", authenticate, userController.getUserData);
 app.get("/api/animals/dashboard", authenticate, cache, dashboardController.getDashboard);
 app.get("/api/animals/cat-profile", authenticate, cache, animalController.getProfile);

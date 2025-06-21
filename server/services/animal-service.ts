@@ -1,7 +1,6 @@
 import GoogleService from "./google-service.ts";
 import db from "@models/index.cjs";
 import moment from "moment";
-import { getUserCats } from "./user-service.ts";
 import { Cat, defaultCat, descriptors } from "@customTypes/Cat.ts";
 import process from "node:process";
 
@@ -18,6 +17,40 @@ class AnimalService {
     if(!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) 
       throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env")
   }
+
+  public static async getUserCats(email: string) {
+    if (!email) {
+      return null;
+    }
+
+    const user = await db.User.findOne({
+      where: { email },
+      include: {
+        model: db.FosterHome,
+        as: 'foster_home',
+        include: {
+          model: db.AnimalToFosterHome,
+          as: 'animal_links',
+          include: {
+            model: db.Animal,
+            as: 'animal',
+          },
+        },
+      },
+    });
+
+    const fosterHome = user?.foster_home;
+    if (!fosterHome || !fosterHome.animal_links) {
+      return [];
+    }
+
+    const cats = fosterHome.animal_links
+      .map(link => link.animal)
+      .filter(Boolean); // in case any links are broken
+
+    return cats;
+  }
+
 
   public async getCatProfilesByOwner(owner: any) {
     if (!owner) {
@@ -43,7 +76,7 @@ class AnimalService {
 
     const catProfiles: Cat[] = [];
 
-    const cats = await getUserCats(owner.email);
+    const cats = await AnimalService.getUserCats(owner.email);
 
     if (cats.length === 0){
       return [];

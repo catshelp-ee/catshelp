@@ -58,10 +58,10 @@ jobs:
             rm ${{ env.RELEASE_NAME }}.tar.gz
 
             # Symlink new release to current
-            ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }} ${{ env.APP_ROOT }}/current
+            ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }} ${{ env.APP_ROOT }}/liides
 
             # Restart via PM2 (expects ecosystem config in release)
-            cd ${{ env.APP_ROOT }}/current/dist
+            cd ${{ env.APP_ROOT }}/liides/dist
             pm2 startOrRestart pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

@@ -24,6 +24,7 @@ on:
         type: environment
         required: true
 
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -32,28 +33,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
-
       - name: Install dependencies
         run: npm install
 
-      - name: Build frontend and compile  backend
-        run: npm run deploy
+      - name: Build frontend and backend
+        run: npm run build
 
-      - name: Upload to server
+      - name: Create release tarball
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          echo "RELEASE_NAME=build-$TIMESTAMP" >> $GITHUB_ENV
+          tar -czf $RELEASE_NAME.tar.gz dist
+
+      - name: Upload release to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "dist/*"
-          target: "/data01/virt133730/domeenid/www.catshelp.ee/test"
+          source: "${{ env.RELEASE_NAME }}.tar.gz"
+          target: "/data01/virt133730/domeenid/www.catshelp.ee/releases"
 
-      - name: Restart Deno backend
+      - name: Deploy release on server
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -61,6 +63,10 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            pkill -f "./server" || true
-            cd /data01/virt133730/domeenid/www.catshelp.ee/test
-            nohup ./server > deno.log 2>&1 &
+            cd /data01/virt133730/domeenid/www.catshelp.ee/releases
+            mkdir ${{ env.RELEASE_NAME }}
+            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz -C ${{ env.RELEASE_NAME }}
+            rm ${{ env.RELEASE_NAME }}.tar.gz
+            ln -sfn /data01/virt133730/domeenid/www.catshelp.ee/releases/${{ env.RELEASE_NAME }} /data01/virt133730/domeenid/www.catshelp.ee/current
+            cd /data01/virt133730/domeenid/www.catshelp.ee
+            pm2 startOrRestart pm2.config.js

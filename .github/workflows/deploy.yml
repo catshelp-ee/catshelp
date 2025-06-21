@@ -23,8 +23,9 @@ jobs:
 
       - name: 🏗️ Build frontend & backend
         env:
-          VITE_API_KEY: ${{ vars.VITE_API_KEY }}       # notice 'vars' keyword here
-          VITE_OTHER_SECRET: ${{ vars.VITE_OTHER_SECRET }}
+          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}       # notice 'vars' keyword here
+          VITE_FRONTEND_URL: ${{ vars.VITE_FRONTEND_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
       - name: 🏗️ Primsa generate

@@ -1,5 +1,5 @@
-import { getUserById } from "@services/user-service.ts";
-import * as jwt from "jsonwebtoken";
+import { getUserById } from "@services/user-service";
+import jwt from "jsonwebtoken";
 
 export async function getUserData (req: any, res: any) {
     const token = req.cookies.jwt;

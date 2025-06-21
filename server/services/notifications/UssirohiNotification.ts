@@ -1,8 +1,10 @@
-import { DashboardNotification } from "./DasboardNotification.ts";
+import { DashboardNotification } from "./DasboardNotification";
 import moment from "moment";
 
 export default class UssirohiNotification implements DashboardNotification {
   getText(): string {
+    if (this.cellIsEmpty)
+      return "Kompleksvaktsiini info puudub";
     return "Anna vähemalt 2 kuud enne vaktsineerimist ussirohi";
   }
 
@@ -25,4 +27,5 @@ export default class UssirohiNotification implements DashboardNotification {
   dbColumnName = "USSIROHU/ TURJATILGA KP";
   buttonText = "Vaata juhendit";
   redirectURL = process.env.WORD_MED_REDIRECT!;
+  cellIsEmpty = false;
 }

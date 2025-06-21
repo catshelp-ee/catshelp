@@ -1,9 +1,8 @@
-import GoogleService from "./google-service.ts";
-import db from "@models/index.cjs";
+import GoogleService from "./google-service";
 import moment from "moment";
-import { getUserCats } from "./user-service.ts";
-import { Cat, defaultCat, descriptors } from "@customTypes/Cat.ts";
+import { Cat, defaultCat, descriptors } from "@types/Cat";
 import process from "node:process";
+import { prisma } from "server/prisma";
 
 class AnimalService {
   private googleService: GoogleService;
@@ -18,6 +17,40 @@ class AnimalService {
     if(!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) 
       throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env")
   }
+
+  public static async getUserCats(email: string) {
+    if (!email) {
+      return null;
+    }
+
+    const user = await db.User.findOne({
+      where: { email },
+      include: {
+        model: db.FosterHome,
+        as: 'foster_home',
+        include: {
+          model: db.AnimalToFosterHome,
+          as: 'animal_links',
+          include: {
+            model: db.Animal,
+            as: 'animal',
+          },
+        },
+      },
+    });
+
+    const fosterHome = user?.foster_home;
+    if (!fosterHome || !fosterHome.animal_links) {
+      return [];
+    }
+
+    const cats = fosterHome.animal_links
+      .map(link => link.animal)
+      .filter(Boolean); // in case any links are broken
+
+    return cats;
+  }
+
 
   public async getCatProfilesByOwner(owner: any) {
     if (!owner) {
@@ -43,7 +76,11 @@ class AnimalService {
 
     const catProfiles: Cat[] = [];
 
-    const cats = await getUserCats(owner.email);
+    const cats = await AnimalService.getUserCats(owner.email);
+
+    if (cats.length === 0){
+      return [];
+    }
 
     // Sheets
     for (const grid of rows) {
@@ -75,6 +112,84 @@ class AnimalService {
 
     return catProfiles;
   }
+  private async updateCharacteristics(
+    tx,
+    animalId: number,
+    catData: any,
+    descriptors: Record<string, any>
+  ) {
+    for (const characteristic of Object.keys(descriptors)) {
+      const existing = await tx.animalCharacteristic.findMany({
+        where: {
+          animalId,
+          type: characteristic,
+        },
+      });
+
+      const values = catData[characteristic];
+
+      if (["characteristics", "cat", "likes"].includes(characteristic)) {
+        await tx.animalCharacteristic.deleteMany({
+          where: {
+            animalId,
+            type: characteristic,
+          },
+        });
+
+        const insertData = values.split(",").map((val: string) => ({
+          animalId,
+          type: characteristic,
+          name: val.trim(),
+        }));
+
+        await tx.animalCharacteristic.createMany({ data: insertData });
+      } else {
+        if (existing.length === 0) {
+          await tx.animalCharacteristic.create({
+            data: {
+              animalId,
+              type: characteristic,
+              name: values,
+            },
+          });
+        } else {
+          await tx.animalCharacteristic.update({
+            where: { id: existing[0].id },
+            data: { name: values },
+          });
+        }
+      }
+    }
+  }
+
+  private async updateRescueInfo(tx, animalId: number, catData: any) {
+    const relation = await tx.animalToAnimalRescue.findFirst({
+      where: { animalId },
+    });
+
+    if (!relation) {
+      throw new Error(`AnimalRescue relation missing for cat ID: ${animalId}`);
+    }
+
+    const rescue = await tx.animalRescue.findUnique({
+      where: { id: relation.animalRescueId },
+    });
+
+    if (!rescue) {
+      throw new Error(`AnimalRescue with ID ${relation.animalRescueId} not found`);
+    }
+
+    await tx.animalRescue.update({
+      where: { id: rescue.id },
+      data: {
+        rescueDate: moment(catData.foundDate, "DD.MM.YYYY").toDate(),
+        address: catData.foundLoc,
+      },
+    });
+  }
+
+
+
 
   public async updateCatProfile(catData: any, cat: any) {
     const mappedColumnNames = {
@@ -96,89 +211,11 @@ class AnimalService {
     };
 
     this.processGenderData(catData);
-    const t = await db.sequelize.transaction();
 
-    try {
-      await db.Animal.update(
-        { /* fields */ },
-        { where: { id: cat.id }, transaction: t }
-      );
-
-      await Promise.all(
-        Object.keys(descriptors).map(async (characteristic) => {
-          const characteristics = await db.AnimalCharacteristic.findAll({
-            where: { animalId: cat.id, type: characteristic },
-            transaction: t,
-          });
-
-          if (["characteristics", "cat", "likes"].includes(characteristic)) {
-            for (const row of characteristics) {
-              await row.destroy({ transaction: t });
-            }
-            for (const val of catData[characteristic].split(",")) {
-              await db.AnimalCharacteristic.create(
-                {
-                  animalId: cat.id,
-                  type: characteristic,
-                  name: val.trim(),
-                },
-                { transaction: t }
-              );
-            }
-          } else {
-            if (characteristics.length === 0) {
-              await db.AnimalCharacteristic.create(
-                {
-                  animalId: cat.id,
-                  type: characteristic,
-                  name: catData[characteristic],
-                },
-                { transaction: t }
-              );
-            } else {
-              await characteristics[0].update(
-                { name: catData[characteristic] },
-                { transaction: t }
-              );
-            }
-          }
-        })
-      );
-
-      const AnimalToAnimalRescue = await db.AnimalToAnimalRescue.findOne({
-        where: { animalId: cat.id },
-        transaction: t,
-      });
-
-      if (!AnimalToAnimalRescue) {
-        throw new Error(`AnimalRescue relation missing for cat ID: ${cat.id}`);
-      }
-
-      const AnimalRescue = await db.AnimalRescue.findByPk(
-        AnimalToAnimalRescue.animalRescueId,
-        { transaction: t }
-      );
-
-      if (!AnimalRescue) {
-        throw new Error(
-          `AnimalRescue with ID ${AnimalToAnimalRescue.animalRescueId} not found`
-        );
-      }
-
-      await AnimalRescue.update(
-        {
-          rescueDate: moment(catData.foundDate, "DD.MM.YYYY").toDate(),
-          address: catData.foundLoc,
-        },
-        { transaction: t }
-      );
-
-      await t.commit();
-    } catch (err) {
-      await t.rollback();
-      console.error("Failed to update cat:", err);
-      throw err; // or throw a custom error
-    }
+    await prisma.$transaction(async (tx) => {
+      await this.updateCharacteristics(tx, cat.id, catData, descriptors);
+      await this.updateRescueInfo(tx, cat.id, catData);
+    });
 
     this.checkSheets();
 
@@ -254,7 +291,7 @@ class AnimalService {
     );
 
     let age = "";
-    if (birthDate){
+    if (birthDate.isValid()){
       const years = this.now.diff(birthDate, "years");
       const months = this.now.diff(
         birthDate.clone().add(years, "years"),
@@ -263,9 +300,12 @@ class AnimalService {
 
       if (years === 0) {
         age = `${months} kuud`;
+      } else if(months === 0) {
+        age = `${years} aastat`;
       } else {
         age = `${years} aastat ja ${months} kuud`;
       }
+
     }
     const catProfile: Cat = {
       ...defaultCat,
@@ -408,8 +448,10 @@ class AnimalService {
   }
 
   private async getCharacteristics(animalId: number) {
-    const characteristics = await db.AnimalCharacteristic.findAll({
-      where: { animalId },
+    const characteristics = await prisma.animalCharacteristic.findMany({
+      where: {
+         id: animalId
+        },
     });
 
     const character: string[] = [];

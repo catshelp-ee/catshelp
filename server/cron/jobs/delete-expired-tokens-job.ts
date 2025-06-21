@@ -1,13 +1,11 @@
-
-import db from "../../../models/index.cjs";
-import { Op } from "sequelize";
+import { prisma } from "server/prisma";
 
 export function deleteExpiredRevokedTokens() {
-    db.RevokedToken.destroy({
+    prisma.revokedToken.deleteMany({
         where: {
-            expiresAt : {
-                [Op.lt] : new Date()
-            }
-        }
+            expiresAt: {
+                lt: new Date(),
+            },
+        },
     });
 }

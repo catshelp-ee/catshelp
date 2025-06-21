@@ -2,6 +2,7 @@ import { google } from "googleapis";
 import fs from "node:fs";
 import moment from "moment";
 import path from "node:path";
+import { OAuth2Client } from "google-auth-library";
 
 export default class GoogleService {
   private auth;
@@ -29,11 +30,8 @@ export default class GoogleService {
     const auth = new google.auth.GoogleAuth({
       keyFile: "credentials.json",
       scopes: ["https://www.googleapis.com/auth/drive"],
-      clientOptions: {
-        subject: "markopeedosk@catshelp.ee",
-      },
     });
-    const client = await auth.getClient();
+    const client = await auth.getClient() as OAuth2Client;
 
     const drive = google.drive({
       version: "v3",

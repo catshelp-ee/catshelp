@@ -1,4 +1,4 @@
-import { DashboardNotification } from "./DasboardNotification.ts";
+import { DashboardNotification } from "./DasboardNotification";
 import moment from "moment";
 
 export default class PoleKassiNotification implements DashboardNotification {
@@ -21,4 +21,5 @@ export default class PoleKassiNotification implements DashboardNotification {
   dbColumnName = "";
   buttonText = "Võtke kass";
   redirectURL = process.env.NO_CAT_REDIRECT!;
+  cellIsEmpty = false;
 }

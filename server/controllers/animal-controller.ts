@@ -1,11 +1,10 @@
 // controllers/animal-controller.ts
-import GoogleService from "@services/google-service.ts";
-import AnimalService from "@services/animal-service.ts";
+import GoogleService from "@services/google-service";
+import AnimalService from "@services/animal-service";
 import fs from "node:fs";
-import db from "@models/index.cjs";
-import { generateCatDescription } from "@services/ai-service.ts";
+import { prisma } from "server/prisma";
+import { generateCatDescription } from "@services/ai-service";
 import { Request, Response } from "express";
-import { getUserCats } from "@services/user-service.ts";
 
 // Initialize services once
 let googleService: GoogleService;
@@ -28,17 +27,22 @@ export async function postAnimal(req: Request, res: Response) {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
 
-    const animal = await db.Animal.create(process.env.CATS_SHEETS_ID);
-    const animalRescue = await db.AnimalRescue.create({
-      rescueDate: formattedDate,
-      state: formData.state,
-      address: formData.location,
-      locationNotes: formData.notes,
+    const animal = await prisma.animal.create();
+
+    const animalRescue = await prisma.animalRescue.create({
+      data: {
+        rescueDate: formattedDate,
+        state: formData.state,
+        address: formData.location,
+        locationNotes: formData.notes,
+      }
     });
 
-    await db.AnimalToAnimalRescue.create({
-      animalId: animal.id,
-      animalRescueId: animalRescue.id,
+    await prisma.animalToAnimalRescue.create({
+      data: {
+        animalId: animal.id,
+        animalRescueId: animalRescue.id,
+      }
     });
 
     delete formData.pildid;
@@ -50,9 +54,15 @@ export async function postAnimal(req: Request, res: Response) {
       row
     );
 
-    const folderId = await createFolder(animalRescue.rankNr);
-    animal.update({
-      driveId: folderId,
+    const folderId = await createFolder(animalRescue.rankNr.toString());
+
+    await prisma.animal.update({
+      where: {
+        id: animal.id
+      },
+      data:{
+        driveId: folderId,
+      }
     });
     res.json(folderId);
   } catch (error) {
@@ -110,7 +120,7 @@ export async function updatePet(req: Request, res: Response) {
   try {
     await initializeServices();
     const catData = req.body;
-    const cats = await getUserCats(catData.owner.email);
+    const cats = await AnimalService.getUserCats(catData.owner.email);
     await catProfileService.updateCatProfile(
       catData,
       cats?.find((cat) => cat.name === catData.name)

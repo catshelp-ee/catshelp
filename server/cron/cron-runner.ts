@@ -1,5 +1,5 @@
 import * as cron from 'node-cron';
-import { deleteExpiredRevokedTokens } from './jobs/delete-expired-tokens-job.ts';
+import { deleteExpiredRevokedTokens } from './jobs/delete-expired-tokens-job';
 
 export default class CronRunner {
 

@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "catshelp-api",
-      script: "./bundle.js", // or "./main.js" if not bundling
+      script: "./bundle.cjs", // or "./main.js" if not bundling
       instances: 1,
       exec_mode: "fork", // or "cluster" for multi-core
       watch: false,

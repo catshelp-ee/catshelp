@@ -22,6 +22,7 @@ import CronRunner from "./cron/cron-runner";
 dotenv.config();
 //initializeRedis();
 
+const rootDir = path.join(__dirname, '..');
 const app = express();
 app.use(cors({
   origin: process.env.VITE_FRONTEND_URL,
@@ -31,11 +32,9 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
-app.use(express.static("dist"));
+app.use(express.static(path.join(rootDir, "dist")));
 
 startCronRunner();
-
-const rootDir = path.join(__dirname, '..');
 
 //Public endpoints
 app.post("/api/login-google", loginController.googleLogin);

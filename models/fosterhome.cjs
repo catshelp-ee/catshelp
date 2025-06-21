@@ -10,11 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      FosterHome.belongsTo(models.User);
+      FosterHome.belongsTo(models.User, {
+        as: "user",
+      });
       FosterHome.hasMany(models.AnimalToFosterHome, {
         sourceKey: "id",
         foreignKey: "foster_home_id",
-        as: "foster_homes",
+        as: "animal_links",
       });
     }
   }

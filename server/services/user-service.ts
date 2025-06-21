@@ -26,37 +26,6 @@ export async function getUserById(id) {
   return user;
 }
 
-export async function getUserCats(email) {
-  if (!email) {
-    return null;
-  }
-
-  const user = await getUserByEmail(email);
-  const fosterhome = await db.FosterHome.findOne({
-    where: {
-      user_id: user.id,
-    },
-  });
-
-  if (!fosterhome) {
-    return [];
-  }
-  
-  const fosterhomeCats = await db.AnimalToFosterHome.findAll({
-    where: {
-      foster_home_id: fosterhome.id,
-    },
-  });
-
-  const cats = await Promise.all(
-    fosterhomeCats.map(async (fosterhomeCat) => {
-      return await db.Animal.findByPk(fosterhomeCat.animalId);
-    })
-  );
-
-  return cats;
-}
-
 export async function setTokenInvalid(token, decodedToken) {
   if (!token) {
     return null;

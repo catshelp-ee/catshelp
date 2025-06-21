@@ -13,10 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       AnimalToFosterHome.belongsTo(models.Animal, {
         foreignKey: "animal_id",
         onDelete: "CASCADE",
+        as: "animal",
       });
       AnimalToFosterHome.belongsTo(models.FosterHome, {
         foreignKey: "foster_home_id",
         onDelete: "CASCADE",
+        as: "foster_home",
       });
     }
   }

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.FosterHome, {
         foreignKey: "user_id",
         onDelete: "CASCADE",
+        as: "foster_home",
       })
       User.hasOne(models.FosterHome, {
         foreignKey: "catshelp_mentor_id",

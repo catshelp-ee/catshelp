@@ -1,4 +1,3 @@
-import express from "express";
 import path from "node:path";
 import multer from "multer";
 import fs from "node:fs";
@@ -11,8 +10,6 @@ const tempDir = path.join(rootDir, "public", "Temp");
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
 }
-
-const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

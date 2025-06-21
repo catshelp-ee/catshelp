@@ -2,15 +2,22 @@ const path = require("path");
 const esbuild = require("esbuild");
 const alias = require("esbuild-plugin-alias");
 
+const viteEnv = Object.entries(process.env)
+  .filter(([key]) => key.startsWith("VITE_"))
+  .reduce((acc, [key, val]) => {
+    acc[`process.env.${key}`] = JSON.stringify(val);
+    return acc;
+  }, {});
+
 esbuild.build({
-  entryPoints: ["server/main.ts"], // <-- Use source, not dist
+  entryPoints: ["server/main.ts"],
   bundle: true,
   platform: "node",
   format: "cjs",
   target: "node20",
   outfile: "../dist/bundle.cjs",
   external: [
-    "@prisma/client",  // Prisma should not be bundled
+    "@prisma/client",
     "*.node",
     "pg-hstore",
     "path",
@@ -24,7 +31,8 @@ esbuild.build({
   ],
   plugins: [
     alias({
-      "@": path.resolve(__dirname, "server") // or "src" if that's your base
+      "@": path.resolve(__dirname, "server")
     })
-  ]
+  ],
+  define: viteEnv,   // <--- Inject env vars here
 }).catch(() => process.exit(1));

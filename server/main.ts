@@ -1,26 +1,26 @@
+import path from 'node:path';
+
 import express from "express";
 import cors from "cors";
-import * as dotenv from "dotenv";
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import * as animalController from "./controllers/animal-controller";
-import * as loginController from "./controllers/login-controller";
-import * as dashboardController from "./controllers/dashboard-controller";
-import * as userController from "./controllers/user-controller";
-import { authenticate } from "./middleware/authorization-middleware";
 import cookieParser from "cookie-parser";
-import db from "@models/index.cjs";
-import CronRunner from "./cron/cron-runner";
+import * as dotenv from "dotenv";
+import 'express-async-errors';
+
+import * as animalController from "./controllers/animal-controller";
+import * as dashboardController from "./controllers/dashboard-controller";
+import * as loginController from "./controllers/login-controller";
+import * as userController from "./controllers/user-controller";
+
+import { authenticate } from "./middleware/authorization-middleware";
 import errorMiddleware from "./middleware/error-middleware";
 import uploadImages from "./middleware/storage-middleware";
-import multer from "multer";
+import { initializeRedis, cache } from "./middleware/caching-middleware";
+
 import CronRunner from "./cron/cron-runner";
-import errorMiddleware from "./middleware/error-middleware";
-import 'express-async-errors';
-import {initializeRedis, cache} from "./middleware/caching-middleware";
+
 
 dotenv.config();
-await initializeRedis();
+initializeRedis();
 
 const app = express();
 app.use(cors({

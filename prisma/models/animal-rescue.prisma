@@ -1,0 +1,11 @@
+model AnimalRescue {
+  id                 Int                       @id @default(autoincrement())
+  rescueDate         DateTime?                 @map("rescue_date")
+  state              String?
+  address            String?
+  locationNotes      String?                   @map("location_notes")
+  rankNr             Int?                      @map("rank_nr")
+  animalsToRescue    AnimalToAnimalRescue[]
+  
+  @@map("animal_rescues")
+}

@@ -1,0 +1,12 @@
+model FosterHome{
+    id               Int                  @id @default(autoincrement())
+    fosterAnimals    AnimalToFosterHome[] 
+    location         String?
+    userId           Int                  @unique @map("user_id")
+    user             User                 @relation(fields: [userId], references: [id])
+    startDate        DateTime?            @map("start_date")
+    endDate          DateTime?            @map("end_date")
+    catshelpMentorId Int?                 @map("catshelp_mentor_id")
+
+    @@map("foster_homes")
+}

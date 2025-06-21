@@ -1,12 +1,12 @@
 # How to run
 
-1. Install deno (https://docs.deno.com/runtime/getting_started/installation/)
-2. Run the command ```deno install``` to install node dependencies
-3. Create the .env file based on the example
-4. You need to manually create the DB at the moment. (Use mariaDb)
-5. Create the config/config.json based on the example
-6. ```npx sequelize-cli db:migrate ``` to create the database tables;
-7. ```deno task dev``` to run the app
+1. Run the command ```npm install``` to install node dependencies
+2. Create the .env file based on the example
+3. You need to manually create the DB at the moment. (Use mariaDb)
+    - a docker compose script has been provided in /scripts as well
+4. Create the config/config.json based on the example
+5. ```npx sequelize-cli db:migrate ``` to create the database tables;
+6. ```deno task dev``` to run the app
 
 # Deploying in zone
 1. ssh onto server 
@@ -20,10 +20,9 @@
 
 # Debugging
 
-1. Install the VS Code extension: https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno
-2. Create the debug configuration. Example in project root
-3. Run frontend through commandline with ```deno task dev:vite```
-4. Run the debugger
+1. Create the debug configuration. Example in project root
+2. Run frontend through commandline with ```deno task dev:vite```
+3. Run the debugger
 
 # React + TypeScript + Vite
 

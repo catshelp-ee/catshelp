@@ -1,8 +1,9 @@
-import jwt from "jsonwebtoken";
-import { getUserById, isTokenInvalid } from "@services/user-service";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { getUser, isTokenInvalid } from "@services/user-service";
+
 
 async function canViewPage(token) {
-  const user = await getUserById(token.id);
+  const user = await getUser(token.id);
   if (!user) {
     return false;
   }
@@ -61,6 +62,6 @@ export async function authenticate(req, res, next) {
 }
 
 export async function getCurrentUser(req) {
-  var decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
-  return await getUserById(decodedToken.id);
+  var decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET) as JwtPayload;
+  return await getUser(decodedToken.id);
 }

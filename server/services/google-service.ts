@@ -104,7 +104,7 @@ export default class GoogleService {
     });
     return rows;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new Error("Error getting data from sheets");
     }
   }
@@ -265,7 +265,7 @@ export default class GoogleService {
 
       return true;
     } catch (error) {
-      console.error(`failed to download image with ID ${fileId}:`, error);
+      console.error(`failed to download image with ID ${fileId}:`);
       return false;
     }
   }

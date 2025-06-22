@@ -1,4 +1,15 @@
+import { cacheUser, getCachedUser } from "@middleware/caching-middleware";
 import { prisma } from "../prisma";
+
+export async function getUser(id: number) {
+  let user = await getCachedUser(id);
+  if (!user){
+    user = await getUserById(id);
+    await cacheUser(id, user);
+    return user;
+  }
+  return user;
+}
 
 export async function getUserByEmail(email) {
   if (!email) {
@@ -13,25 +24,10 @@ export async function getUserByEmail(email) {
     return null;
   }
 
-  try {
-
-    await prisma.user.create({
-      data: {
-        fullName: "test",
-        email: "markopeedosk@gmail.com",
-        identityCode: "123",
-        citizenship: "a",
-        blacklisted: false,
-        blacklistedReason: "none"
-      }
-    })
-  } catch(e){
-    console.log(e);
-  }
-
   return user;
 }
-export async function getUserById(id) {
+
+async function getUserById(id) {
   if (!id) {
     return null;
   }

@@ -106,7 +106,6 @@ class AnimalService {
           cat,
           owner.name
         );
-        console.log(catProfile);
         catProfiles.push(catProfile);
       }
     }

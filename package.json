@@ -9,7 +9,7 @@
     "dev:vite": "vite",
     "copy:pm2": "cp server/pm2.config.js dist/",
     "copy:prisma": "npx prisma generate && cp -r prisma dist/prisma && cp -r generated dist/generated && cp -r node_modules/.prisma/client dist/generated/prisma",
-    "build": "vite build && npm run bundle --prefix ./server && npm run copy:pm2",
+    "build": "vite build && npm run bundle --prefix ./server",
     "start": "node dist/bundle.cjs"
   },
   "prisma": {

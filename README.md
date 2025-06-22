@@ -4,9 +4,10 @@
 2. Create the .env file based on the example
 3. You need to manually create the DB at the moment. (Use mariaDb)
     - a docker compose script has been provided in /scripts as well
-4. Create the config/config.json based on the example
-5. ```npx sequelize-cli db:migrate ``` to create the database tables;
-6. ```deno task dev``` to run the app
+4. To create the database tables first go to the prisma/ directory and run ```npx prisma generate``` and for:
+    - Developer mode ```npx prisma migrate dev``` or ```npx prisma db push```;
+    - Production mode ```npx prisma db push```.
+5. ```npm run dev``` to run the app; ```npm run build``` to bundle the app.
 
 # Deploying in zone
 1. ssh onto server 

@@ -28,7 +28,7 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      - name: 🏗️ Primsa generate
+      - name: 🛠️ Primsa generate
         run: npm run copy:prisma
 
       - name: 📁 Prepare release archive
@@ -69,6 +69,6 @@ jobs:
 
             # Restart via PM2 (expects ecosystem config in release)
             cd ${{ env.APP_ROOT }}/liides/dist
-            pm2 startOrRestart pm2.config.js
+            pm2 startOrRestart ../pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

@@ -30,8 +30,8 @@ export default class GoogleService {
     const isProd = process.env.NODE_ENV === "production";
 
     const keyFilePath = isProd
-      ? path.resolve(__dirname, "../credentials.json")
-      : path.resolve(__dirname, "credentials.json");
+      ? "../credentials.json"
+      : "credentials.json";
       
     const auth = new google.auth.GoogleAuth({
       keyFile: keyFilePath,

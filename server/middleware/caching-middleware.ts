@@ -1,6 +1,7 @@
 import NodeCache from "node-cache";
 import { prisma } from "server/prisma";
 import { User } from "generated/prisma";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const TTLInSeconds = 1200; // Time to live 20 minutes
 const cacheStore = new NodeCache({ stdTTL: TTLInSeconds }); 
@@ -34,7 +35,8 @@ export const getCachedUser = async (id: number): Promise<User> => {
 }
 
 export const cache = async (req, res, next) => {
-  const key = req.originalUrl.split("/").filter(Boolean).pop();
+  const decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET) as JwtPayload;
+  const key = `${decodedToken.id}-${req.originalUrl.split("/").filter(Boolean).pop()}`;
 
   try {
     // 1. Try in-memory cache first

@@ -68,7 +68,10 @@ jobs:
             ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }}/dist ${{ env.APP_ROOT }}/liides
 
             # Restart via PM2 (expects ecosystem config in release)
-            cd ${{ env.APP_ROOT }}/liides/dist
-            pm2 startOrRestart ../pm2.config.js
+            cd ${{ env.APP_ROOT }}/liides
+            source load-env.sh
+            cp credentials.json oauth.json dist/
+            cd dist/
+            pm2 startOrRestart ${{ env.APP_ROOT }}/liides/pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

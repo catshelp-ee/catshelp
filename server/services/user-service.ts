@@ -1,11 +1,19 @@
 import { cacheUser, getCachedUser } from "@middleware/caching-middleware";
 import { prisma } from "../prisma";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-export async function getUser(id: number) {
-  let user = await getCachedUser(id);
+export async function getUser(id: number | string) {
+  let ID ;
+  if (typeof id === "string"){
+    var decodedToken = jwt.verify(id, process.env.JWT_SECRET) as JwtPayload;
+    ID = decodedToken.id
+  } else {
+    ID = id;
+  }
+  let user = await getCachedUser(ID);
   if (!user){
-    user = await getUserById(id);
-    await cacheUser(id, user);
+    user = await getUserById(ID);
+    await cacheUser(ID, user);
     return user;
   }
   return user;

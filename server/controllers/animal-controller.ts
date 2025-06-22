@@ -5,6 +5,7 @@ import fs from "node:fs";
 import { prisma } from "server/prisma";
 import { generateCatDescription } from "@services/ai-service";
 import { Request, Response } from "express";
+import { getUser, getUserJWT } from "@services/user-service";
 
 // Initialize services once
 let googleService: GoogleService;
@@ -107,8 +108,8 @@ export async function addPicture(req: Request, res: Response) {
 export async function getProfile(req: Request, res: Response) {
   try {
     await initializeServices();
-    const owner = req.query.owner;
-    const catProfiles = await catProfileService.getCatProfilesByOwner(owner);
+    const user = await getUser(req.cookies.jwt);
+    const catProfiles = await catProfileService.getCatProfilesByOwner(user);
     res.json({ profiles: catProfiles });
   } catch (error) {
     console.error("Error fetching profile:", error);

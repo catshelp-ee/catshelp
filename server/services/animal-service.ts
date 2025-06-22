@@ -3,6 +3,7 @@ import moment from "moment";
 import { Cat, defaultCat, descriptors } from "@types/Cat";
 import process from "node:process";
 import { prisma } from "server/prisma";
+import { User } from "generated/prisma";
 
 class AnimalService {
   private googleService: GoogleService;
@@ -52,7 +53,7 @@ class AnimalService {
   }
 
 
-  public async getCatProfilesByOwner(owner: any) {
+  public async getCatProfilesByOwner(owner: User) {
     if (!owner) {
       throw new Error("Owner is undefined or null");
     }
@@ -91,7 +92,7 @@ class AnimalService {
         }
 
         const fosterhome = values[columnMap["_HOIUKODU/ KLIINIKU NIMI"]];
-        if (!fosterhome || fosterhome.formattedValue !== owner.name) {
+        if (!fosterhome || fosterhome.formattedValue !== owner.fullName) {
           continue;
         }
 
@@ -104,7 +105,7 @@ class AnimalService {
           values,
           columnMap,
           cat,
-          owner.name
+          owner.fullName
         );
         catProfiles.push(catProfile);
       }

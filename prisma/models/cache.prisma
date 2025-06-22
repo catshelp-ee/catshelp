@@ -1,0 +1,7 @@
+model Cache {
+  keyName   String   @id @map("key_name")
+  value     String   @db.Text
+  expiresAt DateTime @map("expires_at")
+
+  @@map("cache")
+}

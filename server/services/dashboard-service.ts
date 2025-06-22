@@ -64,16 +64,17 @@ export default class DashboardService {
                 imageUrls.push({image: `missingCat.png`, name: this.cats[index]});
                 return;
             };
-
-
-            const imagePath = `Temp/${this.username}/${this.cats[index]}.png`
-
-            this.googleService!.downloadImage(
-                imageUrl.match(regex)[1],
-                `./public/Temp/${this.username}/${this.cats[index]}.png`
-            )
             
-            imageUrls.push({image: `Temp/${this.username}/${this.cats[index]}.png`, name: this.cats[index]});
+            try{
+                this.googleService!.downloadImage(
+                    imageUrl.match(regex)[1],
+                    `./images/${this.username}/${this.cats[index]}.png`
+                )
+                imageUrls.push({image: `images/${this.username}/${this.cats[index]}.png`, name: this.cats[index]});
+            } catch(e){
+            }
+
+            
         })
 
         return imageUrls;

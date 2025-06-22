@@ -27,8 +27,14 @@ export default class GoogleService {
   }
 
   static async create() {
+    const isProd = process.env.NODE_ENV === "production";
+
+    const keyFilePath = isProd
+      ? path.resolve(__dirname, "../credentials.json")
+      : path.resolve(__dirname, "credentials.json");
+      
     const auth = new google.auth.GoogleAuth({
-      keyFile: "credentials.json",
+      keyFile: keyFilePath,
       scopes: ["https://www.googleapis.com/auth/drive"],
     });
     const client = await auth.getClient() as OAuth2Client;

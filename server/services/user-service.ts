@@ -1,4 +1,23 @@
+import { cacheUser, getCachedUser } from "@middleware/caching-middleware";
 import { prisma } from "../prisma";
+import jwt, { JwtPayload } from "jsonwebtoken";
+
+export async function getUser(id: number | string) {
+  let ID ;
+  if (typeof id === "string"){
+    var decodedToken = jwt.verify(id, process.env.JWT_SECRET) as JwtPayload;
+    ID = decodedToken.id
+  } else {
+    ID = id;
+  }
+  let user = await getCachedUser(ID);
+  if (!user){
+    user = await getUserById(ID);
+    await cacheUser(ID, user);
+    return user;
+  }
+  return user;
+}
 
 export async function getUserByEmail(email) {
   if (!email) {
@@ -13,25 +32,10 @@ export async function getUserByEmail(email) {
     return null;
   }
 
-  try {
-
-    await prisma.user.create({
-      data: {
-        fullName: "test",
-        email: "markopeedosk@gmail.com",
-        identityCode: "123",
-        citizenship: "a",
-        blacklisted: false,
-        blacklistedReason: "none"
-      }
-    })
-  } catch(e){
-    console.log(e);
-  }
-
   return user;
 }
-export async function getUserById(id) {
+
+async function getUserById(id) {
   if (!id) {
     return null;
   }

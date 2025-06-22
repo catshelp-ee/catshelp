@@ -68,7 +68,6 @@ const IsLoadingContext = createContext<LoadingContextType | undefined>(undefined
 export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
 const CatProfile: React.FC = () => {
-  const { getUser } = useAuth();
   const { showAlert } = useAlert();
   const [cats, setCats] = useState<Cat[]>([]);
   const [selectedCat, setSelectedCat] = useState<Cat>(defaultCat);
@@ -79,17 +78,9 @@ const CatProfile: React.FC = () => {
   useEffect(() => {
     const loadUserCats = async () => {
       try {
-        const user = await getUser();
-
         const response = await axios.get("/api/animals/cat-profile", {
-          params: {
-            owner: {
-              name: user.fullName,
-              email: user.email,
-            },
-          },
+          withCredentials: true
         });
-
 
         const catProfiles = response.data.profiles;
         setCats(catProfiles);

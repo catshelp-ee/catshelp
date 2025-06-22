@@ -106,6 +106,7 @@ class AnimalService {
           cat,
           owner.name
         );
+        console.log(catProfile);
         catProfiles.push(catProfile);
       }
     }
@@ -543,9 +544,9 @@ class AnimalService {
       return;
     }
 
-    const destinationPath = `./public/Temp/${ownerName}/${catProfile.name}.png`;
+    const destinationPath = `./images/${ownerName}/${catProfile.name}.png`;
     await this.googleService.downloadImage(fileId, destinationPath);
-    catProfile.images.push(`Temp/${ownerName}/${catProfile.name}.png`);
+    catProfile.images.push(`images/${ownerName}/${catProfile.name}.png`);
     await this.googleService.downloadImages(
       catProfile.driveId,
       ownerName,

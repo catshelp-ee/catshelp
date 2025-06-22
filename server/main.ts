@@ -33,6 +33,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static(path.join(rootDir, "dist")));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 startCronRunner();
 

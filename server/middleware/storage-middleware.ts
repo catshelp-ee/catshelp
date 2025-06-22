@@ -2,7 +2,7 @@ import path from "node:path";
 import multer from "multer";
 import fs from "node:fs";
 
-const tempDir = path.join(process.cwd(), "public", "Temp");
+const tempDir = path.join(process.cwd(), "images");
 
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });

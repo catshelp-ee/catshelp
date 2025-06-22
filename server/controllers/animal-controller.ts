@@ -5,7 +5,7 @@ import fs from "node:fs";
 import { prisma } from "server/prisma";
 import { generateCatDescription } from "@services/ai-service";
 import { Request, Response } from "express";
-import { getUser, getUserJWT } from "@services/user-service";
+import { getUser } from "@services/user-service";
 
 // Initialize services once
 let googleService: GoogleService;

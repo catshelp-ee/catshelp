@@ -12,6 +12,7 @@ jobs:
 
     env:
       APP_ROOT: /data01/virt133730/domeenid/www.catshelp.ee
+      RELEASES_DIR: /data01/virt133730/domeenid/www.catshelp.ee/liides/releases
 
     steps:
       - name: 🧾 Checkout repository
@@ -25,7 +26,6 @@ jobs:
           VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}       # notice 'vars' keyword here
           VITE_FRONTEND_URL: ${{ vars.VITE_FRONTEND_URL }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
-          NODE_ENV: "production"
         run: npm run build
 
       - name: 🛠️ Primsa generate
@@ -33,7 +33,9 @@ jobs:
 
       - name: 📁 Prepare release archive
         run: |
-          RELEASE_NAME=catshelp
+          TIMESTAMP=$(date +%Y.%m.%d-%H.%M.%S)
+          GIT_SHA=$(git rev-parse --short HEAD)
+          RELEASE_NAME=$TIMESTAMP-$GIT_SHA
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
           tar -czf $RELEASE_NAME.tar.gz dist
 
@@ -45,7 +47,7 @@ jobs:
           key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
           source: "${{ env.RELEASE_NAME }}.tar.gz"
-          target: "${{ env.APP_ROOT }}/liides"
+          target: "${{ env.RELEASES_DIR }}"
 
       - name: 🚀 Deploy and restart via PM2
         uses: appleboy/ssh-action@v0.1.7
@@ -57,12 +59,16 @@ jobs:
           script: |
             set -e
 
-            cd ${{ env.APP_ROOT }}/liides
-            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz
+            cd ${{ env.RELEASES_DIR }}
+            mkdir ${{ env.RELEASE_NAME }}
+            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz -C ${{ env.RELEASE_NAME }}
             rm ${{ env.RELEASE_NAME }}.tar.gz
 
-            source load-env.sh
-            cd dist/
-            pm2 startOrRestart ${{ env.APP_ROOT }}/liides/pm2.config.js
+            # Symlink new release to current
+            ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }}/dist ${{ env.APP_ROOT }}/liides
+
+            # Restart via PM2 (expects ecosystem config in release)
+            cd ${{ env.APP_ROOT }}/liides/dist
+            pm2 startOrRestart ../pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

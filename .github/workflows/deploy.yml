@@ -12,7 +12,6 @@ jobs:
 
     env:
       APP_ROOT: /data01/virt133730/domeenid/www.catshelp.ee
-      RELEASES_DIR: /data01/virt133730/domeenid/www.catshelp.ee/releases
 
     steps:
       - name: 🧾 Checkout repository
@@ -26,6 +25,7 @@ jobs:
           VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}       # notice 'vars' keyword here
           VITE_FRONTEND_URL: ${{ vars.VITE_FRONTEND_URL }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+          NODE_ENV: "production"
         run: npm run build
 
       - name: 🛠️ Primsa generate
@@ -33,9 +33,7 @@ jobs:
 
       - name: 📁 Prepare release archive
         run: |
-          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-          GIT_SHA=$(git rev-parse --short HEAD)
-          RELEASE_NAME=release-$TIMESTAMP-$GIT_SHA
+          RELEASE_NAME=catshelp
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
           tar -czf $RELEASE_NAME.tar.gz dist
 
@@ -47,7 +45,7 @@ jobs:
           key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
           source: "${{ env.RELEASE_NAME }}.tar.gz"
-          target: "${{ env.RELEASES_DIR }}"
+          target: "${{ env.RELEASES_DIR }}/liides"
 
       - name: 🚀 Deploy and restart via PM2
         uses: appleboy/ssh-action@v0.1.7
@@ -59,18 +57,11 @@ jobs:
           script: |
             set -e
 
-            cd ${{ env.RELEASES_DIR }}
-            mkdir ${{ env.RELEASE_NAME }}
-            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz -C ${{ env.RELEASE_NAME }}
+            cd ${{ env.APP_ROOT }}/liides
+            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz
             rm ${{ env.RELEASE_NAME }}.tar.gz
 
-            # Symlink new release to current
-            ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }}/dist ${{ env.APP_ROOT }}/liides
-
-            # Restart via PM2 (expects ecosystem config in release)
-            cd ${{ env.APP_ROOT }}/liides
             source load-env.sh
-            cp credentials.json oauth.json dist/
             cd dist/
             pm2 startOrRestart ${{ env.APP_ROOT }}/liides/pm2.config.js
 

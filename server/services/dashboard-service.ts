@@ -54,29 +54,34 @@ export default class DashboardService {
     }
     notifications: DashboardNotification[] = [new UssirohiNotification(), new KompleksVaktsiiniKinnitusNotification(), new MarutaudVaktsiiniKinnitusNotification()];
 
-    downloadImages(){
-        let regex = /\/d\/(.*)\//;  // Capturing group has the id from the url in it
-        const imageUrls: {image: string, name: string}[] = [];
-        this.rows.forEach((row, index) => {
+    async downloadImages() {
+        const regex = /\/d\/(.*)\//;  // Capturing group has the id from the URL in it
+
+        const downloadPromises = this.rows.map(async (row, index) => {
             const image = row[this.sheetColumnNamesWithIndex["PILT"]];
-            const imageUrl = image.hyperlink;
-            if (imageUrl === undefined){
-                imageUrls.push({image: `missingCat.png`, name: this.cats[index]});
-                return;
-            };
-            
-            try{
-                this.googleService!.downloadImage(
-                    imageUrl.match(regex)[1],
-                    `./images/${this.username}/${this.cats[index]}.png`
-                )
-                imageUrls.push({image: `images/${this.username}/${this.cats[index]}.png`, name: this.cats[index]});
-            } catch(e){
+            const imageUrl = image?.hyperlink;
+
+            if (!imageUrl) {
+                return { image: `missingCat.png`, name: this.cats[index] };
             }
 
-            
-        })
+            const match = imageUrl.match(regex);
+            if (!match || !match[1]) {
+                return { image: `public/missing64x64.png`, name: this.cats[index] };
+            }
 
+            const destination = `./images/${this.username}/${this.cats[index]}.png`;
+
+            try {
+                await this.googleService!.downloadImage(match[1], destination);
+                return { image: `images/${this.username}/${this.cats[index]}.png`, name: this.cats[index] };
+            } catch (e) {
+                console.error(e);
+                return { image: `missing64x64.png`, name: this.cats[index] };
+            }
+        });
+
+        const imageUrls = await Promise.all(downloadPromises);
         return imageUrls;
     }
 

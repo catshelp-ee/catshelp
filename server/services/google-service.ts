@@ -248,7 +248,7 @@ export default class GoogleService {
   ): Promise<boolean> {
     try {
       if (fs.existsSync(destinationPath)) {
-        return false; // Return false because the image already exists
+        return;
       }
 
       // Ensure the destination folder exists
@@ -269,10 +269,8 @@ export default class GoogleService {
           .on("error", reject);
       });
 
-      return true;
     } catch (error) {
-      console.error(`failed to download image with ID ${fileId}:`);
-      return false;
+      throw new Error(`failed to download image with ID ${fileId}`)
     }
   }
 }

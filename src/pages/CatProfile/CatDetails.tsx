@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { IconButton, TextField, Typography } from "@mui/material";
-import { Cat } from "../../types/Cat.ts";
+import { Cat }  from "types/Cat";
 import ImageGallery from "./ImageGallery.tsx";
 import { useIsMobile } from "@hooks/isMobile";
 import EditIcon from '@mui/icons-material/Edit';

@@ -234,8 +234,12 @@ export default class GoogleService {
     await Promise.all(
       res.data.files.map(async (file) => {
         const filePath = `./images/${ownerName}/${file.name}`;
-        await this.downloadImage(file.id, filePath);
-        catProfile.images.push(`images/${ownerName}/${file.name}`);
+        try{
+          await this.downloadImage(file.id, filePath);
+          catProfile.images.push(`images/${ownerName}/${file.name}`);
+        } catch (e){
+          console.error(e);
+        }
       })
     );
 

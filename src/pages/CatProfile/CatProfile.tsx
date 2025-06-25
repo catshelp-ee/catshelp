@@ -8,7 +8,7 @@ import CatSelection from "./CatSelection.tsx";
 import CatDetails from "./CatDetails.tsx";
 import EditProfile from "./EditProfile.tsx";
 import { Cat, defaultCat } from "types/Cat";
-import { useIsMobile } from "@hooks/isMobile";
+import { useIsMobile } from "@context/IsMobileContext";
 import { createContextHook } from "@hooks/createContextHook.tsx";
 import { isLoadingWrapper } from "@hooks/isLoading.tsx";
 

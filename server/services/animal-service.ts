@@ -544,9 +544,13 @@ class AnimalService {
       return;
     }
 
-    const destinationPath = `./images/${ownerName}/${catProfile.name}.png`;
-    await this.googleService.downloadImage(fileId, destinationPath);
-    catProfile.images.push(`images/${ownerName}/${catProfile.name}.png`);
+    const destinationPath = `./images/${ownerName}/${catProfile.name}.png`
+    try {
+      await this.googleService.downloadImage(fileId, destinationPath);
+      catProfile.images.push(`images/${ownerName}/${catProfile.name}.png`);
+    } catch (e){
+      catProfile.images.push(`missing256x256.png`);
+    }
     await this.googleService.downloadImages(
       catProfile.driveId,
       ownerName,

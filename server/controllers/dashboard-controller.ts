@@ -28,7 +28,7 @@ export async function getDashboard(req: any, res: any) {
 
   const response = {
     todos: dashboardService.displayNotifications(),
-    pets: dashboardService.downloadImages(),
+    pets: await dashboardService.downloadImages(),
   };
 
   return res.json(response);

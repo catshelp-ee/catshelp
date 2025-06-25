@@ -234,8 +234,12 @@ export default class GoogleService {
     await Promise.all(
       res.data.files.map(async (file) => {
         const filePath = `./images/${ownerName}/${file.name}`;
-        await this.downloadImage(file.id, filePath);
-        catProfile.images.push(`images/${ownerName}/${file.name}`);
+        try{
+          await this.downloadImage(file.id, filePath);
+          catProfile.images.push(`images/${ownerName}/${file.name}`);
+        } catch (e){
+          console.error(e);
+        }
       })
     );
 
@@ -248,7 +252,7 @@ export default class GoogleService {
   ): Promise<boolean> {
     try {
       if (fs.existsSync(destinationPath)) {
-        return false; // Return false because the image already exists
+        return;
       }
 
       // Ensure the destination folder exists
@@ -269,10 +273,8 @@ export default class GoogleService {
           .on("error", reject);
       });
 
-      return true;
     } catch (error) {
-      console.error(`failed to download image with ID ${fileId}:`);
-      return false;
+      throw new Error(`failed to download image with ID ${fileId}`)
     }
   }
 }

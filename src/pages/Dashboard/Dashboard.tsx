@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "@context/AuthContext";
 import DesktopView from "@pages/Dashboard/DesktopView/DesktopView";
 import MobileView from "@pages/Dashboard/MobileView/MobileView";
-import { useIsMobile } from "@hooks/isMobile";
+import { useIsMobile } from "@context/IsMobileContext";
 import { isLoadingWrapper } from "@hooks/isLoading.tsx";
 
 interface DashboardProps {}

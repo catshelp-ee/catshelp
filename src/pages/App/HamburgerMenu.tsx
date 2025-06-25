@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
-import SidebarMobile from "@pages/App/MobileView/SidebarMobile";
+import Sidebar from "./Sidebar";
 
-const HamburgerMenu = () => {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+interface HamburgerMenuProps {
+  sidebarIsOpen: boolean;
+  setSidebarIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const HamburgerMenu: React.FC<HamburgerMenuProps> = ({sidebarIsOpen, setSidebarIsOpen}) => {
   return (
     <>
       <IconButton
@@ -16,12 +20,14 @@ const HamburgerMenu = () => {
           color: "#374151", // Tailwind gray-700
           "&:hover": { backgroundColor: "#D1D5DB" }, // Hover effect
         }}
-        onClick={() => setIsSidebarVisible(true)}
+        onClick={() => {
+          setSidebarIsOpen(true);
+        }}
       >
         <MenuIcon />
       </IconButton>
-      {isSidebarVisible && (
-        <SidebarMobile setView={setIsSidebarVisible} view={isSidebarVisible} />
+      {sidebarIsOpen && (
+        <Sidebar setView={setSidebarIsOpen} />
       )}
     </>
   );

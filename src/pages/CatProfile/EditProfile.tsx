@@ -12,7 +12,7 @@ import { VaccinationFields } from "./Form/VaccinationFields";
 import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
 import { Section } from "./Form/Section";
-import { useIsMobile } from "@hooks/isMobile";
+import { useIsMobile } from "@context/IsMobileContext";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { preview } from "vite";
 

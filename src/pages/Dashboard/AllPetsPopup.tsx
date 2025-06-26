@@ -1,13 +1,7 @@
 import React, { forwardRef } from "react";
 import { Avatar, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
-
-// Types
-interface Pet {
-  id: string | number;
-  name: string;
-  image: string;
-}
+import { Pet } from "./Dashboard";
 
 interface AllPetsPopupProps {
   pets: Pet[];
@@ -93,8 +87,8 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
         <PopupHeader totalCount={pets.length} />
         
         <div className="flex-1 overflow-y-scroll">
-          {pets.map((pet) => (
-            <PetItem key={pet.id} pet={pet} />
+          {pets.map((pet, id) => (
+            <PetItem key={id} pet={pet} />
           ))}
         </div>
         

@@ -8,12 +8,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import AllPetsPopup from "@pages/Dashboard/AllPetsPopup";
-
-interface Pet {
-  id: string | number;
-  name: string;
-  image: string;
-}
+import { Pet } from "./Dashboard";
 
 interface FosterPetsProps {
   pets: Pet[];
@@ -93,8 +88,8 @@ const PetsGrid: React.FC<{
   onShowMore: () => void;
 }> = ({ displayPets, hasMorePets, hiddenCount, onShowMore }) => (
   <div className="flex items-center justify-around space-x-3 px-8 relative">
-    {displayPets.map((pet) => (
-      <PetAvatar key={pet.id} pet={pet} />
+    {displayPets.map((pet, id) => (
+      <PetAvatar key={id} pet={pet} />
     ))}
 
     {hasMorePets && <ShowMoreButton count={hiddenCount} onClick={onShowMore} />}

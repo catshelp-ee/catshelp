@@ -1,30 +1,52 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@context/AuthContext";
-import { useIsMobile } from "@hooks/isMobile";
+import { useAlert } from "@context/AlertContext";
 import { isLoadingWrapper } from "@hooks/isLoading";
 import Notifications from "./Notifications";
 import FosterPets from "./FosterPets";
 import TodoList from "./TodoList";
 import { CircularProgress } from "@mui/material";
 
+export interface Pet {
+  name: string;
+  image: string;
+}
+
+export interface Todo {
+  label: string;
+  assignee: string;
+  due: string;
+  catColour: string;
+  urgent: boolean;
+  action: {
+    label: string;
+    redirect?: string;
+  };
+}
+
 interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const [pets, setPets] = useState([]);
-  const [todos, setTodos] = useState([]);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { getUser } = useAuth();
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     const loadDashboardData = async () => {
       const user = await getUser();
       setName(user.fullName);
 
-      const response = await axios.get(`/api/animals/dashboard`);
-      setPets(response.data.pets);
-      setTodos(response.data.todos);
+      try {
+        const response = await axios.get(`/api/animals/dashboard`);
+        setPets(response.data.pets);
+        setTodos(response.data.todos);
+      } catch (e) {
+        showAlert('Error', "Tekkis probleem kasside laadimisega");
+      }
     };
 
     const fetchDashboardWithLoading = async () => {
@@ -54,7 +76,9 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   return (
     <div className="md:mx-12 flex-1">
-      <h1 className="text-2xl text-center md:text-left">Tere tulemast {name}! 😺</h1>
+      <h1 className="text-2xl text-center md:text-left">
+        Tere tulemast {name}! 😺
+      </h1>
       {renderContent()}
     </div>
   );

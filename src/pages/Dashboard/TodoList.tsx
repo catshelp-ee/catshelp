@@ -1,8 +1,9 @@
 import React from "react";
 import TodoItem from "./TodoItem";
+import { Todo } from "./Dashboard";
 
 interface TodoListProps {
-  todos: any;
+  todos: Todo[];
 }
 
 const TodoList: React.FC<TodoListProps> = ({ todos }) => {

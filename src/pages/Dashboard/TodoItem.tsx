@@ -2,20 +2,9 @@ import React, { useEffect, useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import MyButton from "src/Components/Button";
 import CatSvg from "@assets/CatSvg";
+import { Todo } from "./Dashboard";
 
-interface TodoItemProps {
-  label: string;
-  assignee: string;
-  due: string;
-  action: {
-    label: string;
-    redirect: string;
-  };
-  urgent: boolean;
-  catColour: string;
-}
-
-const TodoItem: React.FC<TodoItemProps> = ({
+const TodoItem: React.FC<Todo> = ({
   label,
   due,
   assignee,

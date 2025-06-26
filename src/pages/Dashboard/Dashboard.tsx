@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@context/AuthContext";
-import DesktopView from "@pages/Dashboard/DesktopView/DesktopView";
-import MobileView from "@pages/Dashboard/MobileView/MobileView";
 import { useIsMobile } from "@hooks/isMobile";
-import { isLoadingWrapper } from "@hooks/isLoading.tsx";
+import { isLoadingWrapper } from "@hooks/isLoading";
+import Notifications from "./Notifications";
+import FosterPets from "./FosterPets";
+import TodoList from "./TodoList";
+import { CircularProgress } from "@mui/material";
 
 interface DashboardProps {}
 
@@ -13,7 +15,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
   const [todos, setTodos] = useState([]);
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const isMobile = useIsMobile();
   const { getUser } = useAuth();
 
   useEffect(() => {
@@ -35,10 +36,27 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
     return () => {};
   }, []);
-  return isMobile ? (
-    <MobileView isLoading={isLoading} name={name} pets={pets} todos={todos} />
-  ) : (
-    <DesktopView isLoading={isLoading} name={name} pets={pets} todos={todos} />
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <CircularProgress />;
+    }
+    return (
+      <div className="m-4 md:m-0">
+        <span className="md:flex md:mb-8">
+          <Notifications />
+          <FosterPets pets={pets} />
+        </span>
+        <TodoList todos={todos} />
+      </div>
+    );
+  };
+
+  return (
+    <div className="md:mx-12 flex-1">
+      <h1 className="text-2xl text-center md:text-left">Tere tulemast {name}! 😺</h1>
+      {renderContent()}
+    </div>
   );
 };
 

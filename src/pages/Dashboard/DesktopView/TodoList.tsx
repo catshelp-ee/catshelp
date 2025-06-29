@@ -13,9 +13,11 @@ const TodoList: React.FC<TodoListProps> = ({ todos }) => {
       </h2>
 
       <table className="w-full border-separate border-spacing-y-4">
-        {todos.map((item, index) => {
-          return <TodoItem key={index} {...item} />;
-        })}
+        <tbody>
+          {todos.map((item, index) => {
+            return <TodoItem key={index} {...item} />;
+          })}
+        </tbody>
       </table>
     </section>
   );

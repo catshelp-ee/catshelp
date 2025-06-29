@@ -8,15 +8,17 @@ import { cacheUser } from "@middleware/caching-middleware";
 const client = new OAuth2Client();
 
 function setLoginCookies(res, token) {
+    const cookieLength = 24 * 60 * 60 * 1000;
     res.cookie("catshelp", 'true', {
-        httpOnly: false
+        maxAge: cookieLength,
+        httpOnly: false,
     });
 
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: process.env.VITE_ENVIRONMENT !== 'TEST',
         sameSite: "Strict",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: cookieLength,
     });
 }
 

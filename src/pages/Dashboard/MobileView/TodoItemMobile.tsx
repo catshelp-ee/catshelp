@@ -26,8 +26,6 @@ const TodoItemMobile: React.FC<TodoItemProps> = ({
   const [checked, setChecked] = useState(false);
   const dateColor = urgent ? "text-red-400" : "text-slate-500";
 
-  console.log(catColour)
-
   return (
     <tr className="flex flex-col mb-8">
       <td className="text-sm">

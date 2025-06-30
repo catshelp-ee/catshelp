@@ -3,7 +3,7 @@ import UssirohiNotification from "@notifications/UssirohiNotification";
 import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
 import PoleKassiNotification from "@notifications/PoleKassiNotification";
-import GoogleService from "./google-service";
+import { googleService } from "server/controllers/initializer";
 type Result = {
     assignee: string;
     urgent: boolean;
@@ -23,9 +23,7 @@ export default class DashboardService {
     userHasContract = false;
     username = "";
     colours = ["#b24747", "#b28747", "#8eb200", "#23b200", "#00b247", "#47b2b2", "#0047b2", "#2300b2", "#8e00b2", "#b24787"];
-    googleService?: GoogleService = undefined;
-    constructor(sheetsData: any, username: string, googleService: GoogleService) {
-        this.googleService = googleService;
+    constructor(sheetsData: any, username: string) {
         this.username = username;
 
         sheetsData.cats![0].rowData![0].values!.forEach((col: any, idx: number) => {
@@ -73,7 +71,7 @@ export default class DashboardService {
             const destination = `./images/${this.username}/${this.cats[index]}.png`;
 
             try {
-                await this.googleService!.downloadImage(match[1], destination);
+                await googleService.downloadImage(match[1], destination);
                 return { image: `images/${this.username}/${this.cats[index]}.png`, name: this.cats[index] };
             } catch (e) {
                 console.error(e);

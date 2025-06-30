@@ -4,6 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user-service"
 import { sendRequest } from "@services/email-service";
 import { cacheUser } from "@middleware/caching-middleware";
+import { initializeServices } from "./initializer";
 
 const client = new OAuth2Client();
 
@@ -48,6 +49,7 @@ export async function googleLogin(req: any, res: any) {
     }
 
     cacheUser(user.id, user);
+    initializeServices(req);
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
         expiresIn: process.env.TOKEN_LENGTH,

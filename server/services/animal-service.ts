@@ -1,16 +1,14 @@
-import GoogleService from "./google-service";
 import moment from "moment";
 import { Cat, defaultCat, descriptors } from "@types/Cat";
 import process from "node:process";
 import { prisma } from "server/prisma";
 import { User } from "generated/prisma";
+import { googleService } from "server/controllers/initializer";
 
-class AnimalService {
-  private googleService: GoogleService;
+export default class AnimalService {
   private now;
 
-  constructor(googleService: GoogleService) {
-    this.googleService = googleService;
+  constructor() {
     this.now = moment();
   }
 
@@ -60,7 +58,7 @@ class AnimalService {
 
     this.checkSheets();
 
-    const sheetData = await this.googleService.getSheetData(
+    const sheetData = await googleService.getSheetData(
       process.env.CATS_SHEETS_ID!,
       process.env.CATS_TABLE_NAME!
     );
@@ -220,7 +218,7 @@ class AnimalService {
 
     this.checkSheets();
 
-    await this.googleService.updateSheetCells(
+    await googleService.updateSheetCells(
       process.env.CATS_SHEETS_ID!,
       process.env.CATS_TABLE_NAME!,
       mappedColumnNames,
@@ -546,12 +544,12 @@ class AnimalService {
 
     const destinationPath = `./images/${ownerName}/${catProfile.name}.png`
     try {
-      await this.googleService.downloadImage(fileId, destinationPath);
+      await googleService.downloadImage(fileId, destinationPath);
       catProfile.images.push(`images/${ownerName}/${catProfile.name}.png`);
     } catch (e){
       catProfile.images.push(`missing256x256.png`);
     }
-    await this.googleService.downloadImages(
+    await googleService.downloadImages(
       catProfile.driveId,
       ownerName,
       catProfile
@@ -573,5 +571,3 @@ class AnimalService {
     return match ? match[1] : null;
   }
 }
-
-export default AnimalService;

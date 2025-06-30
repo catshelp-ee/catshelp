@@ -10,19 +10,13 @@
 5. ```npm run dev``` to run the app; ```npm run build``` to bundle the app.
 
 # Deploying in zone
-1. ssh onto server 
-2. Run command ```pm2 list``` to see what id the current deployment has
-3. Stop pm2 deployment ```pm2 stop <id>```
-4. Update the code with ```git pull```
-5. Run ```deno install```
-6. Run ```deno task build```
-7. Start pm2 process again ```pm2 start <id>```
+Github automatically deploys it to zone via a pipeline.
 
 
 # Debugging
 
 1. Create the debug configuration. Example in project root
-2. Run frontend through commandline with ```deno task dev:vite```
+2. Run frontend through commandline with ```npm run dev:vite```
 3. Run the debugger
 
 # React + TypeScript + Vite

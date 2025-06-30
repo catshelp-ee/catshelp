@@ -1,29 +1,14 @@
 // controllers/animal-controller.ts
-import GoogleService from "@services/google-service";
 import AnimalService from "@services/animal-service";
 import fs from "node:fs";
 import { prisma } from "server/prisma";
 import { generateCatDescription } from "@services/ai-service";
 import { Request, Response } from "express";
 import { getUser } from "@services/user-service";
-
-// Initialize services once
-let googleService: GoogleService;
-let catProfileService: AnimalService;
-
-async function initializeServices() {
-  if (!googleService) {
-    googleService = await GoogleService.create();
-    catProfileService = new AnimalService(googleService);
-  }
-}
-
-// Initialize services when this module loads
-initializeServices().catch(console.error);
+import { animalService, googleService } from "./initializer";
 
 export async function postAnimal(req: Request, res: Response) {
   try {
-    await initializeServices(); // Ensure services are ready
     const formData = req.body;
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
@@ -79,7 +64,6 @@ async function createFolder(catId: string) {
 
 export async function addPicture(req: Request, res: Response) {
   try {
-    await initializeServices();
     let uploadedFiles = req.files;
     const folderID = req.body.driveId;
 
@@ -107,9 +91,8 @@ export async function addPicture(req: Request, res: Response) {
 
 export async function getProfile(req: Request, res: Response) {
   try {
-    await initializeServices();
     const user = await getUser(req.cookies.jwt);
-    const catProfiles = await catProfileService.getCatProfilesByOwner(user);
+    const catProfiles = await animalService.getCatProfilesByOwner(user);
     res.json({ profiles: catProfiles });
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -119,10 +102,9 @@ export async function getProfile(req: Request, res: Response) {
 
 export async function updatePet(req: Request, res: Response) {
   try {
-    await initializeServices();
     const catData = req.body;
     const cats = await AnimalService.getUserCats(catData.owner.email);
-    await catProfileService.updateCatProfile(
+    await animalService.updateCatProfile(
       catData,
       cats?.find((cat) => cat.name === catData.name)
     );

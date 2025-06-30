@@ -17,6 +17,7 @@ import errorMiddleware from "./middleware/error-middleware";
 import uploadImages from "./middleware/storage-middleware";
 
 import CronRunner from "./cron/cron-runner";
+import { initializeServices } from './controllers/initializer';
 
 
 dotenv.config();

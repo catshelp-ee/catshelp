@@ -7,7 +7,6 @@ interface SVGProps {
   }
 
 const CatSvg: React.FC<SVGProps> = ({colour, width, height}) => {
-	console.log(colour)
   return (
     <svg width={width} height={height} viewBox='0 0 512 512' style={{ fill: colour}}>
         <path d="M504.302,195.59c-10.618-6.362-29.71-43.514-33.959-47.755c-4.249-4.256-28.662-13.81-28.662-13.81

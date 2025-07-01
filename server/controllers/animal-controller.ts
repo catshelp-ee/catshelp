@@ -1,134 +1,40 @@
-// controllers/animal-controller.ts
-import AnimalService from "@services/animal-service";
-import fs from "node:fs";
-import { prisma } from "server/prisma";
-import { generateCatDescription } from "@services/ai-service";
 import { Request, Response } from "express";
-import { getUser } from "@services/user-service";
-import { animalService, googleService } from "./initializer";
+import { animalService } from "@services/animal/animal-service";
+import { validateCreateAnimal, validateUpdatePet } from "@validators/animal-validators";
+import { handleControllerError } from "@utils/error-handler";
 
-export async function postAnimal(req: Request, res: Response) {
+export async function postAnimal(req: Request, res: Response): Promise<void> {
   try {
-    const formData = req.body;
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split("T")[0];
-
-    const animal = await prisma.animal.create();
-
-    const animalRescue = await prisma.animalRescue.create({
-      data: {
-        rescueDate: formattedDate,
-        state: formData.state,
-        address: formData.location,
-        locationNotes: formData.notes,
-      }
-    });
-
-    await prisma.animalToAnimalRescue.create({
-      data: {
-        animalId: animal.id,
-        animalRescueId: animalRescue.id,
-      }
-    });
-
-    delete formData.pildid;
-    const row = { id: animalRescue.rankNr, ...formData };
-
-    await googleService.addDataToSheet(
-      process.env.CATS_SHEETS_ID,
-      process.env.CATS_TABLE_NAME,
-      row
-    );
-
-    const folderId = await createFolder(animalRescue.rankNr.toString());
-
-    await prisma.animal.update({
-      where: {
-        id: animal.id
-      },
-      data:{
-        driveId: folderId,
-      }
-    });
-    res.json(folderId);
-  } catch (error) {
-    console.error("Error creating animal:", error);
-    res.status(500).json({ error: "Failed to create animal record" });
-  }
-}
-
-async function createFolder(catId: string) {
-  const driveFolder = await googleService.createDriveFolder(catId);
-  return driveFolder.data.id;
-}
-
-export async function addPicture(req: Request, res: Response) {
-  try {
-    let uploadedFiles = req.files;
-    const folderID = req.body.driveId;
-
-    uploadedFiles = Array.isArray(uploadedFiles)
-      ? uploadedFiles
-      : [uploadedFiles];
-    const uploadPromises = uploadedFiles.map((file) => {
-      const tempPath = file.path;
-      return googleService.uploadToDrive(
-        file.originalname,
-        fs.createReadStream(tempPath),
-        folderID!
-      );
-    });
-
-    await Promise.all(uploadPromises);
-    res.json("Pildid laeti üles edukalt");
-  } catch (error) {
-    console.error("Error uploading pictures:", error);
-    res.status(500).json({
-      error: "Tekkis tõrge piltide üles laadimisega: " + error.message,
-    });
-  }
-}
-
-export async function getProfile(req: Request, res: Response) {
-  try {
-    const user = await getUser(req.cookies.jwt);
-    const catProfiles = await animalService.getCatProfilesByOwner(user);
-    res.json({ profiles: catProfiles });
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    res.status(500).json({ error: "Failed to fetch profile data", debugMessage: error });
-  }
-}
-
-export async function updatePet(req: Request, res: Response) {
-  try {
-    const catData = req.body;
-    const cats = await AnimalService.getUserCats(catData.owner.email);
-    await animalService.updateCatProfile(
-      catData,
-      cats?.find((cat) => cat.name === catData.name)
-    );
-    res.json("uuendatud edukalt");
-  } catch (error) {
-    console.error("Error updating pet:", error);
-    res.status(500).json({ error: "Failed to update pet data" });
-  }
-}
-
-export async function genText(req: Request, res: Response) {
-  try {
-    const catInfo = req.body.formData;
-    const description = await generateCatDescription(catInfo);
-
-    if (!description || description.trim() === "") {
-      return res
-        .status(503)
-        .json({ error: "AI tekstiloome pole hetkel saadaval" });
+    const validationResult = validateCreateAnimal(req.body);
+    if (!validationResult.success) {
+      res.status(400).json({ 
+        error: "Invalid input data", 
+        details: validationResult.errors 
+      });
+      return;
     }
 
-    res.json({ description });
+    const result = await animalService.createAnimal(validationResult.data);
+    res.status(201).json({ success: true, data: result });
   } catch (error) {
-    console.error("Error generating AI text:", error);
-    res.status(500).json({ error: "Probleemid AI tekstiga" });
+    handleControllerError(error, res, "Failed to create animal");
+  }
+}
+
+export async function updatePet(req: Request, res: Response): Promise<void> {
+  try {
+    const validationResult = validateUpdatePet(req.body);
+    if (!validationResult.success) {
+      res.status(400).json({ 
+        error: "Invalid input data", 
+        details: validationResult.errors 
+      });
+      return;
+    }
+
+    await animalService.updatePet(validationResult.data);
+    res.status(200).json({ success: true, message: "uuendatud edukalt" });
+  } catch (error) {
+    handleControllerError(error, res, "Failed to update pet");
   }
 }

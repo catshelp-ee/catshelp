@@ -1,110 +1,137 @@
-import jwt from "jsonwebtoken";
-import { jwtDecode } from "jwt-decode";
-import { OAuth2Client } from 'google-auth-library';
-import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user-service"
-import { sendRequest } from "@services/email-service";
+import { Request, Response } from 'express';
+import AuthService from '@services/auth/auth-service';
+import CookieService  from '@services/auth/cookie-service';
+import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user/user-service";
+import { DashboardService } from '@services/dashboard/dashboard-service';
+import EmailService from '@services/auth/email-service';
 import { cacheUser } from "@middleware/caching-middleware";
-import { initializeServices } from "./initializer";
+import { GoogleLoginRequest, EmailLoginRequest, VerifyRequest } from '@types/auth-types';
+import { User } from 'generated/prisma';
+import { inject, injectable } from 'inversify';
+import TYPES from '@types/inversify-types';
 
-const client = new OAuth2Client();
+@injectable()
+export default class LoginController {
+    emailService: EmailService;
 
-function setLoginCookies(res, token) {
-    const cookieLength = 24 * 60 * 60 * 1000;
-    res.cookie("catshelp", 'true', {
-        maxAge: cookieLength,
-        httpOnly: false,
-    });
+    constructor(
+        @inject(TYPES.DashboardService) private dashboardService: DashboardService,
+        @inject(TYPES.AuthService) private authService: AuthService,
+    ){
+        this.emailService = new EmailService();
+    }
 
-    res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.VITE_ENVIRONMENT !== 'TEST',
-        sameSite: "Strict",
-        maxAge: cookieLength,
-    });
+    async googleLogin(req: Request<{}, {}, GoogleLoginRequest>, res: Response): Promise<Response> {
+        try {
+            const { credential, clientId } = req.body;
+
+            if (!credential || !clientId) {
+                return res.status(400).json({ error: 'Missing credential or clientId' });
+            }
+
+            const email = await this.authService.verifyGoogleToken(credential, clientId);
+            if (!email) {
+                return res.status(400).json({ error: 'Invalid Google token' });
+            }
+
+            const user = await this.authenticateUser(email, res);
+            if (!user) {
+                return res.sendStatus(401);
+            }
+            
+            this.dashboardService.addUser(user.fullName);
+            return res.sendStatus(200);
+        } catch (error) {
+            console.error('Google login error:', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    async emailLogin(req: Request<{}, {}, EmailLoginRequest>, res: Response): Promise<Response> {
+        try {
+            const { email } = req.body;
+
+            if (!email) {
+                return res.status(400).json({ error: 'Email is required' });
+            }
+
+            const user = await getUserByEmail(email);
+            if (!user) {
+                return res.sendStatus(401);
+            }
+
+            await this.emailService.sendRequest(user.id, user.email);
+            return res.sendStatus(200);
+        } catch (error) {
+            console.error('Email login error:', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    async logout(req: Request, res: Response): Promise<Response> {
+        try {
+            const token = req.cookies?.jwt;
+
+            if (!token) {
+                return res.sendStatus(200);
+            }
+
+            const decoded = this.authService.decodeJWT(token);
+            if (decoded) {
+                await setTokenInvalid(token, decoded);
+            }
+
+            CookieService.clearAuthCookies(res);
+            return res.sendStatus(200);
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Still clear cookies even if token invalidation fails
+            CookieService.clearAuthCookies(res);
+            return res.sendStatus(200);
+        }
+    }
+
+    async verify(req: Request<{}, {}, {}, VerifyRequest>, res: Response): Promise<Response> {
+        try {
+            const { token } = req.query;
+
+            if (!token || typeof token !== 'string') {
+                return res.sendStatus(401);
+            }
+
+            const decodedToken = this.authService.verifyJWT(token);
+            if (!decodedToken) {
+                return res.sendStatus(401);
+            }
+
+            if (await isTokenInvalid(token)) {
+                return res.sendStatus(401);
+            }
+
+            // Invalidate the old token
+            await setTokenInvalid(token, decodedToken);
+
+            // Generate new token
+            const newToken = this.authService.generateJWT(decodedToken.id);
+            CookieService.setAuthCookies(res, newToken);
+
+            return res.redirect("/dashboard");
+        } catch (error) {
+            console.error('Token verification error:', error);
+            return res.sendStatus(401);
+        }
+    }
+
+    private async authenticateUser(email: string, res: Response): Promise<User | null> {
+        const user = await getUserByEmail(email);
+        if (!user) {
+            return null;
+        }
+
+        cacheUser(user.id, user);
+        const token = this.authService.generateJWT(user.id.toString());
+        CookieService.setAuthCookies(res, token);
+
+        return user;
+    }
 }
-
-function resetLoginCookies(res) {
-    res.cookie("jwt", "");
-    res.cookie("catshelp", "");
-}
-
-export async function googleLogin(req: any, res: any) {
-    const { credential, clientId } = req.body;
-    var email = null;
-    try {
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: clientId,
-        });
-        const payload = ticket.getPayload();
-        email = payload['email'];
-    } catch (err) {
-        res.status(400).json({ err });
-    }
-    
-    const user = await getUserByEmail(email);
-    if (!user) {
-        res.sendStatus(401);
-        return;
-    }
-
-    cacheUser(user.id, user);
-    initializeServices(req);
-
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.TOKEN_LENGTH,
-    });
-
-    setLoginCookies(res, token);
-    return res.sendStatus(200);
-    
-};
-
-export async function emailLogin(req: any, res: any) {
-    const { email } = req.body;
-    const user = await getUserByEmail(email);
-    if (!user) {
-        return res.sendStatus(401);
-    }
-    await sendRequest(user.id, user.email);
-    return res.sendStatus(200);
-};
-
-export async function logout(req: any, res: any) {
-    const cookie = req.cookies.jwt;
-    if (!cookie) {
-        return res.sendStatus(200);
-    }
-    const decoded = jwtDecode(cookie);
-    await setTokenInvalid(cookie, decoded);
-
-    resetLoginCookies(res);
-    return res.sendStatus(200);
-};
-
-export async function verify(req: any, res: any) {
-    let token = req.query.token;
-    if (token == null) {
-        return res.sendStatus(401);
-    }
-    
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (e) {
-        return res.sendStatus(401);
-    }
-
-    if (await isTokenInvalid(token)) {
-        return res.sendStatus(401);
-    }
-
-    await setTokenInvalid(token, decodedToken);
-        
-    const newToken = jwt.sign({ id: decodedToken.id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.TOKEN_LENGTH,
-    });
-
-    setLoginCookies(res, newToken);
-    return res.redirect("/dashboard");
-};

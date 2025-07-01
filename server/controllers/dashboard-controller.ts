@@ -1,10 +1,21 @@
-import { dashboardService } from "./initializer";
+// controllers/dashboard-controller.ts
+import { inject, injectable } from "inversify";
+import TYPES  from "@types/inversify-types";
+import { DashboardService } from "@services/dashboard/dashboard-service";
+import { Request, Response } from "express";
 
-export async function getDashboard(req: any, res: any) {
-  const response = {
-    todos: dashboardService.displayNotifications(),
-    pets: await dashboardService.downloadImages(),
-  };
+@injectable()
+export default class DashboardController {
+  constructor(
+    @inject(TYPES.DashboardService)
+    private dashboardService: DashboardService
+  ) {}
 
-  return res.json(response);
+  public async getDashboard(req: Request, res: Response): Promise<Response> {
+    const response = {
+      todos: await this.dashboardService.displayNotifications(),
+      pets: await this.dashboardService.getPets(),
+    };
+    return res.json(response);
+  }
 }

@@ -81,9 +81,11 @@ const CatProfile: React.FC = () => {
         const response = await axios.get("/api/animals/cat-profile", {
           withCredentials: true
         });
-
+        
+        console.log(response);
         const catProfiles = response.data.profiles;
         setCats(catProfiles);
+        console.log(catProfiles);
 
         if (catProfiles.length > 0) {
           setSelectedCat(catProfiles[0]);

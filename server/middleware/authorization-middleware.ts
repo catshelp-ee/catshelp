@@ -1,9 +1,9 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { getUser, isTokenInvalid } from "@services/user-service";
+import { getUser, isTokenInvalid } from "@services/user/user-service";
 
 
 async function canViewPage(token) {
-  const user = await getUser(token.id);
+  const user = await getUser(Number(token.id));
   if (!user) {
     return false;
   }

@@ -35,12 +35,10 @@ async function init() {
 
   const googleAuthService = await GoogleAuthService.create();
 
-  // Use inRequestScope to create a new instance per HTTP request for services handling user-specific data.
   container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inSingletonScope();
   container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inSingletonScope();
   container.bind<GoogleAuthService>(TYPES.GoogleAuthService).toConstantValue(googleAuthService);
 
-  // Use inSingletonScope for services that should have a single instance across the application.
   container.bind<NodeCacheService>(TYPES.NodeCacheService).to(NodeCacheService).inSingletonScope();
 
   container.bind<ImageService>(TYPES.ImageService).to(ImageService).inSingletonScope();
@@ -48,17 +46,16 @@ async function init() {
   container.bind<CharacteristicsService>(TYPES.CharacteristicsService).to(CharacteristicsService).inSingletonScope();
   container.bind<AuthService>(TYPES.AuthService).to(AuthService).inSingletonScope();
   
-  container.bind<DashboardService>(TYPES.DashboardService).to(DashboardService).inRequestScope();
-  container.bind<ProfileService>(TYPES.ProfileService).to(ProfileService).inRequestScope();
-  container.bind<AnimalService>(TYPES.AnimalService).to(AnimalService).inRequestScope();
-  container.bind<UserService>(TYPES.UserService).to(UserService).inRequestScope();
+  container.bind<DashboardService>(TYPES.DashboardService).to(DashboardService).inSingletonScope();
+  container.bind<ProfileService>(TYPES.ProfileService).to(ProfileService).inSingletonScope();
+  container.bind<AnimalService>(TYPES.AnimalService).to(AnimalService).inSingletonScope();
+  container.bind<UserService>(TYPES.UserService).to(UserService).inSingletonScope();
   
-
   container.bind<CatProfileBuilder>(TYPES.CatProfileBuilder).to(CatProfileBuilder).inSingletonScope();
 
-  container.bind<DashboardController>(TYPES.DashboardController).to(DashboardController).inRequestScope();
-  container.bind<ProfileController>(TYPES.ProfileController).to(ProfileController).inRequestScope();
-  container.bind<UserController>(TYPES.UserController).to(UserController).inRequestScope();
+  container.bind<DashboardController>(TYPES.DashboardController).to(DashboardController).inSingletonScope();
+  container.bind<ProfileController>(TYPES.ProfileController).to(ProfileController).inSingletonScope();
+  container.bind<UserController>(TYPES.UserController).to(UserController).inSingletonScope();
   container.bind<LoginController>(TYPES.LoginController).to(LoginController).inSingletonScope();
 
   container.bind<AnimalRepository>(TYPES.AnimalRepository).to(AnimalRepository).inSingletonScope();

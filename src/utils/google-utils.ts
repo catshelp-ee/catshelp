@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const uploadImages = async (files: File[], driveId: string) => {
   const formData = new FormData();
 

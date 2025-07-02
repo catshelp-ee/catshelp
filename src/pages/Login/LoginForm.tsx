@@ -4,7 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { Button, InputAdornment, TextField } from "@mui/material";
 import { useAlert } from "@context/AlertContext";
-import { useIsMobile } from "@hooks/isMobile"
+import { useIsMobile } from "@context/IsMobileContext"
 import EmailIcon from '@mui/icons-material/Email';
 
 const LoginForm: React.FC = () => {

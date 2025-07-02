@@ -10,7 +10,7 @@ import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { submitNewCatProfile } from "@utils/cat-profile-utils";
 import Header from "@components/header";
-import Popup from "@pages/add-cat/Popup.js";
+import Popup from "@components/popup";
 import States from "./states.json";
 
 const VisuallyHiddenInput = styled("input")({

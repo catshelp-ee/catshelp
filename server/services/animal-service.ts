@@ -1,6 +1,6 @@
 import GoogleService from "./google-service";
 import moment from "moment";
-import { Cat, defaultCat, descriptors } from "@types/Cat";
+import { Cat, defaultCat, descriptors } from "types/Cat";
 import process from "node:process";
 import { prisma } from "server/prisma";
 import { User } from "generated/prisma";

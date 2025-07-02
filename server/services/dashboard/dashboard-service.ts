@@ -11,7 +11,7 @@ import UserService from '@services/user/user-service';
 import NodeCacheService from '@services/cache/cache-service';
 import { User } from 'generated/prisma';
 
-interface Avatar{
+interface Pet{
     name: string;
     pathToImage: string;
 }
@@ -29,9 +29,9 @@ export class DashboardService {
         await this.googleSheetsService.getSheetData();
     }
 
-    async getPets(userID: number): Promise<Avatar[]> {
-        let avatars = await this.nodeCacheService.get<Avatar[]>(`avatars:${userID}`);
-        if (!avatars){
+    async getPets(userID: number): Promise<Pet[]> {
+        let pets = await this.nodeCacheService.get<Pet[]>(`pets:${userID}`);
+        if (!pets){
             const petPromises = this.googleSheetsService.rows.map(async (row) => {
                 const catName = row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue;
                 const imageLink = row[this.googleSheetsService.headers['PILT']].hyperlink;
@@ -43,16 +43,16 @@ export class DashboardService {
                 return { name: catName, image: profilePicture };
             });
 
-            avatars = await Promise.all(petPromises);
-            this.nodeCacheService.set(`avatars:${userID}`, avatars);
+            pets = await Promise.all(petPromises);
+            this.nodeCacheService.set(`pets:${userID}`, pets);
         }
 
-        return avatars;
+        return pets;
     }
 
     async displayNotifications(userID: number): Promise<Result[]> {
         let todos = await this.nodeCacheService.get<Result[]>(`todos:${userID}`)
-        if (todos) {
+        if (!todos) {
             todos = this.notificationService.processNotifications(
                 this.googleSheetsService.rows,
                 this.googleSheetsService.headers

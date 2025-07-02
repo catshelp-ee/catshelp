@@ -22,6 +22,7 @@ const TYPES = {
   UserController: Symbol.for("UserController"),
   ProfileController: Symbol.for("ProfileController"),
 
+  AuthorizationMiddleware: Symbol.for("AuthorizationMiddleware"),
   AnimalRepository: Symbol.for("AnimalRepository"),
 };
 

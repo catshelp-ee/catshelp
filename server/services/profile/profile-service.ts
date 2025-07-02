@@ -8,34 +8,38 @@ import { prisma } from "server/prisma";
 import { User, Animal } from "generated/prisma";
 import { Cat } from "types/cat";
 import AnimalService from "@services/animal/animal-service";
+import NodeCacheService from "@services/cache/cache-service";
 
 @injectable()
 export default class ProfileService{
-    private profiles: any;
-
     constructor(
     @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
     @inject(TYPES.CharacteristicsService) private characteristicsService: CharacteristicsService,
     @inject(TYPES.CatProfileBuilder) private catProfileBuilder: CatProfileBuilder,
     @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
     @inject(TYPES.AnimalService) private animalService: AnimalService,
+    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
+
     ){}
     
   async getCatProfilesByOwner(owner: User): Promise<Cat[]> {
-    if (!this.profiles) {
-      if (!owner) {
-        throw new Error("Owner is required");
-      }
+    if (!owner) {
+      throw new Error("Owner is required");
+    }
 
+    let profiles = await this.nodeCacheService.get<Cat[]>(`profiles:${owner.id}`);
+
+    if (!profiles) {
       const cats = await this.animalService.getUserCats(owner.email);
       if (cats.length === 0) return [];
 
-      this.profiles = await this.catProfileBuilder.buildProfilesFromSheet(
+      profiles = await this.catProfileBuilder.buildProfilesFromSheet(
         owner,
         cats,
       );
+      this.nodeCacheService.set(`profiles:${owner.id}`, profiles);
     }
-    return this.profiles;
+    return profiles;
   }
 
   async updateCatProfile(catData: any, cat: Animal): Promise<void> {
@@ -46,6 +50,4 @@ export default class ProfileService{
 
     await this.googleSheetsService.updateCatInSheet(catData);
   }
-
-
 }

@@ -26,7 +26,7 @@ import UserController from "./controllers/user-controller";
 //import * as profileController from "./controllers/profile-controller"
 import LoginController from "./controllers/login-controller";
 
-import { authenticate } from "./middleware/authorization-middleware";
+import AuthorizationMiddleware from "./middleware/authorization-middleware";
 import { cache } from "@middleware/caching-middleware";
 import errorMiddleware from "./middleware/error-middleware";
 import uploadImages from "./middleware/storage-middleware";
@@ -59,6 +59,7 @@ async function bootstrap() {
   await dashboardService.init();
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);
+  const auth = container.get<AuthorizationMiddleware>(TYPES.AuthorizationMiddleware);
 
   const rootDir = path.join(__dirname, "..");
   const app = express();
@@ -101,14 +102,14 @@ async function bootstrap() {
   // Secure endpoints requiring authentication
   //app.post("/api/animals", authenticate, animalController.postAnimal); // Commented out for future implementation or deprecated
   //app.post("/api/images", authenticate, uploadImages, fileController.addPicture); // Commented out for future implementation or deprecated
-  app.get("/api/user", authenticate, (req, res) => {
+  app.get("/api/user", auth.authenticate, (req, res) => {
     userController.getUserData(req, res);
   });
-  app.get("/api/animals/dashboard", authenticate, async (req, res) => {
+  app.get("/api/animals/dashboard", auth.authenticate, async (req, res) => {
     const controller = req.container.get<DashboardController>(TYPES.DashboardController);
     await controller.getDashboard(req, res);
   });
-  app.get("/api/animals/cat-profile", authenticate, async (req, res) => {
+  app.get("/api/animals/cat-profile", auth.authenticate, async (req, res) => {
     const controller = req.container.get<ProfileController>(TYPES.ProfileController);
     await controller.getProfile(req, res);
   });

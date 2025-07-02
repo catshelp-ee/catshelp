@@ -30,7 +30,7 @@ export default class UserController {
         return res.status(401).json({ error: "Invalid or expired token" });
       }
 
-      const user = await this.userService.getUser();
+      const user = await this.userService.getUser(decodedToken.id);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }

@@ -9,6 +9,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@analytics/*": ["src/analytics/*"],
@@ -23,6 +24,7 @@
       "@services/*": ["server/services/*"],
       "@middleware/*": ["server/middleware/*"],
       "@models/*": ["models/*"],
+      "@components/*": ["src/components/*"]
     },
   },
   "include": ["server/**/*", "models/**/*", "src"],

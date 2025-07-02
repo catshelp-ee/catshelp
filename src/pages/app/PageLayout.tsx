@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Header from "@pages/App/Header";
+import Header from "@pages/app/Header";
 import Sidebar from "./Sidebar";
-import HamburgerMenu from "@pages/App/HamburgerMenu";
+import HamburgerMenu from "@pages/app/HamburgerMenu";
 import { useIsMobile } from "src/context/IsMobileContext";
 
 interface LayoutProps {}

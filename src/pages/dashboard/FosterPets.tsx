@@ -4,7 +4,7 @@ import {
   Tooltip,
   useTheme,
 } from "@mui/material";
-import AllPetsPopup from "@pages/Dashboard/AllPetsPopup";
+import AllPetsPopup from "@pages/dashboard/AllPetsPopup";
 import { Pet } from "./Dashboard";
 import { PetAvatar } from "src/Components/PetAvatar";
 

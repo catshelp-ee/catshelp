@@ -9,8 +9,8 @@ import {
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { submitNewCatProfile } from "@utils/cat-profile-utils.ts";
-import Header from "../App/Header.tsx";
-import Popup from "@pages/AddCat/Popup.tsx";
+import Header from "../app/Header.js";
+import Popup from "@pages/add-cat/Popup.js";
 import States from "@pages/AddCat/States.json";
 
 const VisuallyHiddenInput = styled("input")({

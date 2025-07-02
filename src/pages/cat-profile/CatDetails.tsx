@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { IconButton, TextField, Typography } from "@mui/material";
 import { Cat }  from "types/Cat";
-import ImageGallery from "./ImageGallery.tsx";
+import ImageGallery from "./ImageGallery.js";
 import { useIsMobile } from "@context/IsMobileContext";
 import EditIcon from '@mui/icons-material/Edit';
 

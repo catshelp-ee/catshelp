@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button, IconButton } from "@mui/material";
-import { useAuth } from "@context/AuthContext";
+import { useAuth } from "@context/auth-context";
 import CloseIcon from "@mui/icons-material/Close";
-import { useIsMobile } from "@context/IsMobileContext";
-import { menuItems } from "./MenuItems";
+import { useIsMobile } from "@context/is-mobile-context";
+import menuItems from "./menu-items.json";
 
 interface SidebarProps {
   setView?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
   const content = (
     <>
       <div>
-        {menuItems.map((item, index) => (
+        {menuItems["menu-items"].map((item, index) => (
           <Link
             to={item.path}
             key={index}

@@ -6,14 +6,13 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Select,
   MenuItem,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { Cat } from "@models/Cat.ts";
-import { COAT_COLOURS, COAT_LENGTHS } from "./FormData";
-import ResponsiveMultiSelect from "./ResponsiveMultiSelect";
+import { Cat } from "types/cat";
+import { COAT_COLOURS, COAT_LENGTHS } from "./form-data";
+import ResponsiveMultiSelect from "./responsive-multi-select";
 
 interface BasicInfoFieldsProps {
   tempSelectedCat: Cat;

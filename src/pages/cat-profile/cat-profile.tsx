@@ -1,16 +1,14 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useMediaQuery } from "@mui/material";
-import { useAlert } from "@context/AlertContext";
-import { useAuth } from "@context/AuthContext.tsx";
-import CatSelection from "./CatSelection.js";
-import CatDetails from "./CatDetails.js";
-import EditProfile from "./EditProfile.js";
-import { Cat, defaultCat } from "types/Cat";
-import { useIsMobile } from "@context/IsMobileContext";
-import { createContextHook } from "@hooks/createContextHook.tsx";
-import { isLoadingWrapper } from "@hooks/isLoading.tsx";
+import { useAlert } from "@context/alert-context";
+import CatSelection from "./cat-selection";
+import CatDetails from "./cat-details";
+import EditProfile from "./edit-profile";
+import { Cat, defaultCat } from "types/cat";
+import { useIsMobile } from "@context/is-mobile-context";
+import { createContextHook } from "@hooks/create-context-hook";
+import { isLoadingWrapper } from "@hooks/is-loading";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
   const {isLoading, setIsLoading} = useLoading();

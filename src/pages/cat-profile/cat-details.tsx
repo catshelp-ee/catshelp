@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { IconButton, TextField, Typography } from "@mui/material";
-import { Cat }  from "types/Cat";
-import ImageGallery from "./ImageGallery.js";
-import { useIsMobile } from "@context/IsMobileContext";
+import React from "react";
+import { IconButton, Typography } from "@mui/material";
+import { Cat }  from "types/cat";
+import ImageGallery from "./image-gallery";
+import { useIsMobile } from "@context/is-mobile-context";
 import EditIcon from '@mui/icons-material/Edit';
 
 interface CatDetailsProps {

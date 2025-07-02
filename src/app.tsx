@@ -1,16 +1,15 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import PageLayout from "@pages/app/PageLayout";
-import Dashboard from "@pages/dashboard/Dashboard";
+import PageLayout from "@pages/app/page-layout";
+import Dashboard from "@pages/dashboard/dashboard";
 import AddCatForm from "@pages/add-cat/AddCatForm";
-import CatProfile from "@pages/cat-profile/CatProfile";
+import CatProfile from "@pages/cat-profile/cat-profile";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
 import "@style/App.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
-import EditCat from "@pages/EditCat/EditCat.tsx";
-import ProtectedRoute from "@pages/ProtectedRoute.tsx";
-import LoginForm from "@pages/login/LoginForm";
+import ProtectedRoute from "@pages/protected-route";
+import LoginForm from "@pages/login/login-form";
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -27,7 +26,6 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<PageLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/edit-cat" element={<EditCat />} />
           <Route path="/cat-profile" element={<CatProfile />} />
         </Route>
         <Route path="/add-cat" element={<AddCatForm />} />

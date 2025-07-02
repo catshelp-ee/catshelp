@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/material";
-import Sidebar from "./Sidebar";
+import Sidebar from "./sidebar";
 
 interface HamburgerMenuProps {
   sidebarIsOpen: boolean;

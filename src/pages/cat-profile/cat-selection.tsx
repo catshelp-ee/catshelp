@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Cat } from "types/Cat";
+import { Cat } from "types/cat";
 import { Avatar, Stack, IconButton } from "@mui/material";
 
 interface CatSelectionProps {

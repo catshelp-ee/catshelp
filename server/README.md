@@ -45,16 +45,19 @@ Scheduled tasks are managed by `CronRunner` in `cron/cron-runner.ts`, handling b
 The current organization of the server directory is as follows:
 ```
 server/
+├── main.ts
 ├── container.ts
+├── express-async-errors.ts
 ├── controllers/
+│   ├── animal-controller.ts
 │   ├── dashboard-controller.ts
+│   ├── file-controller.ts
 │   ├── login-controller.ts
 │   ├── profile-controller.ts
 │   └── user-controller.ts
 ├── cron/
+|   ├── jobs/
 │   └── cron-runner.ts
-├── express-async-errors.ts
-├── main.ts
 ├── middleware/
 │   ├── authorization-middleware.ts
 │   ├── caching-middleware.ts
@@ -68,11 +71,16 @@ server/
 └── services/
     ├── animal/
     ├── auth/
+    ├── cache/
     ├── dashboard/
-    └── profile/
+    ├── files/
+    ├── google/
+    ├── notifications/
+    ├── profile/
+    └── user/
 ```
 
-### Proposed Structure
+### Proposed Structure (**IGNORE**)
 To improve clarity and scalability, a restructured directory is proposed:
 ```
 server/

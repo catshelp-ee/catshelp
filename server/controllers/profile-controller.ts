@@ -11,12 +11,15 @@ export default class ProfileController{
 
   constructor(
     @inject(TYPES.ProfileService) private profileService: ProfileService,
-    @inject(TYPES.UserService) private userService: UserService
+    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.AuthService) private authService: AuthService
+
   ){}
 
   async getProfile(req: Request, res: Response): Promise<Response> {
     try {
-      const user = await this.userService.getUser();
+      const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
+      const user = await this.userService.getUser(decodedToken.id);
       if (!user) {
         res.status(401).json({ error: "Invalid authentication" });
         return;

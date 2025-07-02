@@ -18,6 +18,7 @@ import CatProfileBuilder from "@services/animal/cat-profile-builder";
 import ProfileService from "@services/profile/profile-service";
 import UserService from "@services/user/user-service";
 import NodeCacheService from "@services/cache/cache-service";
+import AuthorizationMiddleware from "@middleware/authorization-middleware";
 
 /**
  * Dependency Injection Container Setup
@@ -36,7 +37,7 @@ async function init() {
 
   // Use inRequestScope to create a new instance per HTTP request for services handling user-specific data.
   container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inSingletonScope();
-  container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inRequestScope();
+  container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inSingletonScope();
   container.bind<GoogleAuthService>(TYPES.GoogleAuthService).toConstantValue(googleAuthService);
 
   // Use inSingletonScope for services that should have a single instance across the application.
@@ -61,6 +62,7 @@ async function init() {
   container.bind<LoginController>(TYPES.LoginController).to(LoginController).inSingletonScope();
 
   container.bind<AnimalRepository>(TYPES.AnimalRepository).to(AnimalRepository).inSingletonScope();
+  container.bind<AuthorizationMiddleware>(TYPES.AuthorizationMiddleware).to(AuthorizationMiddleware).inSingletonScope();
 
   return container;
 }

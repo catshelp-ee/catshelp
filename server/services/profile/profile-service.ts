@@ -1,0 +1,51 @@
+import CatProfileBuilder from "@services/animal/cat-profile-builder";
+import CharacteristicsService from "@services/animal/characteristics-service";
+import GoogleSheetsService from "@services/google/google-sheets-service";
+import { inject, injectable } from "inversify";
+import AnimalRepository from "server/repositories/animal-repository";
+import TYPES from "types/inversify-types";
+import { prisma } from "server/prisma";
+import { User, Animal } from "generated/prisma";
+import { Cat } from "types/cat";
+import AnimalService from "@services/animal/animal-service";
+
+@injectable()
+export default class ProfileService{
+    private profiles: any;
+
+    constructor(
+    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
+    @inject(TYPES.CharacteristicsService) private characteristicsService: CharacteristicsService,
+    @inject(TYPES.CatProfileBuilder) private catProfileBuilder: CatProfileBuilder,
+    @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
+    @inject(TYPES.AnimalService) private animalService: AnimalService,
+    ){}
+    
+  async getCatProfilesByOwner(owner: User): Promise<Cat[]> {
+    if (!this.profiles) {
+      if (!owner) {
+        throw new Error("Owner is required");
+      }
+
+      const cats = await this.animalService.getUserCats(owner.email);
+      if (cats.length === 0) return [];
+
+      this.profiles = await this.catProfileBuilder.buildProfilesFromSheet(
+        owner,
+        cats,
+      );
+    }
+    return this.profiles;
+  }
+
+  async updateCatProfile(catData: any, cat: Animal): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      await this.characteristicsService.updateCharacteristics(tx, cat.id, catData);
+      await this.animalRepository.updateRescueInfo(tx, cat.id, catData);
+    });
+
+    await this.googleSheetsService.updateCatInSheet(catData);
+  }
+
+
+}

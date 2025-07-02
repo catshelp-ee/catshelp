@@ -1,8 +1,8 @@
 import moment from "moment";
 import { prisma } from "server/prisma";
 import { Animal } from "generated/prisma";
-import { CreateAnimalData, CreateAnimalResult } from "@types/animal";
-import { PrismaTransactionClient } from "@types/prisma";
+import { CreateAnimalData, CreateAnimalResult } from "types/animal";
+import { PrismaTransactionClient } from "types/prisma";
 import { injectable } from "inversify";
 
 @injectable()

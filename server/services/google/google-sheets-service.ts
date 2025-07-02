@@ -1,6 +1,5 @@
-import { SheetData } from "@types/google-sheets";
-import TYPES from "@types/inversify-types";
-import { UpdateSheetCellsParams, RowLocation } from "@types/google-sheets";
+import TYPES from "types/inversify-types";
+import { UpdateSheetCellsParams, RowLocation } from "types/google-sheets";
 import { injectable, inject } from "inversify";
 import moment from "moment";``
 import GoogleAuthService from "./google-auth-service";

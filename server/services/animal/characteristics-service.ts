@@ -1,5 +1,5 @@
-import { descriptors } from "@types/Cat";
-import { PrismaTransactionClient } from "@types/prisma";
+import { descriptors } from "types/cat";
+import { PrismaTransactionClient } from "types/prisma";
 import { injectable } from "inversify";
 import { prisma } from "server/prisma";
 

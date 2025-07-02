@@ -1,12 +1,12 @@
 import moment from "moment";
-import { Cat, defaultCat } from "@types/Cat";
+import { Cat, defaultCat } from "types/cat";
+import { SheetData, SheetRow } from "types/google-sheets";
+import TYPES from "types/inversify-types";
 import { Animal, User } from "generated/prisma";
-import { SheetData, SheetRow } from "@types/google-sheets";
 import CharacteristicsService  from "./characteristics-service";
 import ImageService from "@services/files/image-service";
 import {calculateAge, parseDate, isFutureDate} from "@utils/date-utils";
 import { inject, injectable } from "inversify";
-import TYPES from "@types/inversify-types";
 import GoogleSheetsService from "@services/google/google-sheets-service";
 
 @injectable()

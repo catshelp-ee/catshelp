@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
-import { getUser } from "@services/user/user-service";
 import AuthService from "@services/auth/auth-service";
-import { User } from "@types/auth-types";
+import { User } from "types/auth-types";
 import { inject, injectable } from "inversify";
-import TYPES from "@types/inversify-types";
+import TYPES from "types/inversify-types";
+import UserService from "@services/user/user-service";
 
 @injectable()
 export default class UserController {
 
   constructor(
-    @inject(TYPES.AuthService) private authService: AuthService
+    @inject(TYPES.AuthService) private authService: AuthService,
+    @inject(TYPES.UserService) private userService: UserService
   ){
 
   }
@@ -29,7 +30,7 @@ export default class UserController {
         return res.status(401).json({ error: "Invalid or expired token" });
       }
 
-      const user = await getUser(Number(decodedToken.id));
+      const user = await this.userService.getUser();
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }

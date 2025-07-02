@@ -1,22 +1,20 @@
 import { Request, Response } from 'express';
 import AuthService from '@services/auth/auth-service';
 import CookieService  from '@services/auth/cookie-service';
-import { getUserByEmail, setTokenInvalid, isTokenInvalid } from "@services/user/user-service";
-import { DashboardService } from '@services/dashboard/dashboard-service';
+import UserService from "@services/user/user-service";
 import EmailService from '@services/auth/email-service';
-import { cacheUser } from "@middleware/caching-middleware";
-import { GoogleLoginRequest, EmailLoginRequest, VerifyRequest } from '@types/auth-types';
+import { GoogleLoginRequest, EmailLoginRequest, VerifyRequest } from 'types/auth-types';
 import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
-import TYPES from '@types/inversify-types';
+import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class LoginController {
     emailService: EmailService;
 
     constructor(
-        @inject(TYPES.DashboardService) private dashboardService: DashboardService,
         @inject(TYPES.AuthService) private authService: AuthService,
+        @inject(TYPES.UserService) private userService: UserService,
     ){
         this.emailService = new EmailService();
     }
@@ -39,7 +37,7 @@ export default class LoginController {
                 return res.sendStatus(401);
             }
             
-            this.dashboardService.addUser(user.fullName);
+            this.userService.setUser(user);
             return res.sendStatus(200);
         } catch (error) {
             console.error('Google login error:', error);
@@ -55,7 +53,7 @@ export default class LoginController {
                 return res.status(400).json({ error: 'Email is required' });
             }
 
-            const user = await getUserByEmail(email);
+            const user = await UserService.getUserByEmail(email);
             if (!user) {
                 return res.sendStatus(401);
             }
@@ -78,7 +76,7 @@ export default class LoginController {
 
             const decoded = this.authService.decodeJWT(token);
             if (decoded) {
-                await setTokenInvalid(token, decoded);
+                await UserService.setTokenInvalid(token, decoded);
             }
 
             CookieService.clearAuthCookies(res);
@@ -104,12 +102,12 @@ export default class LoginController {
                 return res.sendStatus(401);
             }
 
-            if (await isTokenInvalid(token)) {
+            if (await UserService.isTokenInvalid(token)) {
                 return res.sendStatus(401);
             }
 
             // Invalidate the old token
-            await setTokenInvalid(token, decodedToken);
+            await UserService.setTokenInvalid(token, decodedToken);
 
             // Generate new token
             const newToken = this.authService.generateJWT(decodedToken.id);
@@ -123,12 +121,11 @@ export default class LoginController {
     }
 
     private async authenticateUser(email: string, res: Response): Promise<User | null> {
-        const user = await getUserByEmail(email);
+        const user = await UserService.getUserByEmail(email);
         if (!user) {
             return null;
         }
 
-        cacheUser(user.id, user);
         const token = this.authService.generateJWT(user.id.toString());
         CookieService.setAuthCookies(res, token);
 

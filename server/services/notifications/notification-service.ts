@@ -3,7 +3,7 @@ import UssirohiNotification from "@notifications/UssirohiNotification";
 import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
 import PoleKassiNotification from "@notifications/PoleKassiNotification";
-import { SheetCell, Result } from '@types/dashboard';
+import { SheetCell, Result } from 'types/dashboard';
 import { parseEstonianDate, formatEstonianDate } from '@utils/date-utils';
 import { DEFAULT_COLORS } from '../dashboard/constants';
 import { injectable } from "inversify";

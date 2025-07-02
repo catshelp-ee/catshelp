@@ -1,6 +1,6 @@
 // controllers/dashboard-controller.ts
 import { inject, injectable } from "inversify";
-import TYPES  from "@types/inversify-types";
+import TYPES  from "types/inversify-types";
 import { DashboardService } from "@services/dashboard/dashboard-service";
 import { Request, Response } from "express";
 

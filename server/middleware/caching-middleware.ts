@@ -10,7 +10,9 @@ async function getPersistentCache(key: string) {
     where: { keyName: key },
   });
 
-  if (!cacheEntry) return null;
+  if (!cacheEntry){  
+    return null;
+  } 
   return JSON.parse(cacheEntry.value);
 }
 

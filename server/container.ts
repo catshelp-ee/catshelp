@@ -1,5 +1,5 @@
 import { Container } from "inversify";
-import TYPES from "@types/inversify-types";
+import TYPES from "types/inversify-types";
 import { DashboardService } from "@services/dashboard/dashboard-service";
 import DashboardController from "./controllers/dashboard-controller";
 import LoginController from "./controllers/login-controller";
@@ -17,6 +17,7 @@ import CharacteristicsService from "@services/animal/characteristics-service";
 import CatProfileBuilder from "@services/animal/cat-profile-builder";
 import ProfileService from "@services/profile/profile-service";
 import UserService from "@services/user/user-service";
+import NodeCacheService from "@services/cache/cache-service";
 
 /**
  * Dependency Injection Container Setup
@@ -34,11 +35,13 @@ async function init() {
   const googleAuthService = await GoogleAuthService.create();
 
   // Use inRequestScope to create a new instance per HTTP request for services handling user-specific data.
-  container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inRequestScope();
-  container.bind<GoogleAuthService>(TYPES.GoogleAuthService).toConstantValue(googleAuthService);
+  container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inSingletonScope();
   container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inRequestScope();
+  container.bind<GoogleAuthService>(TYPES.GoogleAuthService).toConstantValue(googleAuthService);
 
   // Use inSingletonScope for services that should have a single instance across the application.
+  container.bind<NodeCacheService>(TYPES.NodeCacheService).to(NodeCacheService).inSingletonScope();
+
   container.bind<ImageService>(TYPES.ImageService).to(ImageService).inSingletonScope();
   container.bind<NotificationService>(TYPES.NotificationService).to(NotificationService).inSingletonScope();
   container.bind<CharacteristicsService>(TYPES.CharacteristicsService).to(CharacteristicsService).inSingletonScope();

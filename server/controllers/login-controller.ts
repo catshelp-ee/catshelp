@@ -7,6 +7,7 @@ import { GoogleLoginRequest, EmailLoginRequest, VerifyRequest } from 'types/auth
 import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import TYPES from 'types/inversify-types';
+import NodeCacheService from '@services/cache/cache-service';
 
 @injectable()
 export default class LoginController {
@@ -14,7 +15,7 @@ export default class LoginController {
 
     constructor(
         @inject(TYPES.AuthService) private authService: AuthService,
-        @inject(TYPES.UserService) private userService: UserService,
+        @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
     ){
         this.emailService = new EmailService();
     }
@@ -37,7 +38,7 @@ export default class LoginController {
                 return res.sendStatus(401);
             }
             
-            this.userService.setUser(user);
+            this.nodeCacheService.set(`user:${user.id}`, user);
             return res.sendStatus(200);
         } catch (error) {
             console.error('Google login error:', error);

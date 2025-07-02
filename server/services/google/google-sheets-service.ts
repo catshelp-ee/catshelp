@@ -5,6 +5,7 @@ import moment from "moment";``
 import GoogleAuthService from "./google-auth-service";
 import { google, sheets_v4 } from "googleapis";
 import { GaxiosResponse } from 'gaxios';
+import NodeCacheService from "@services/cache/cache-service";
 
 const SHEETS_COLUMNS = {
   name: "KIISU NIMI",
@@ -32,7 +33,7 @@ export default class GoogleSheetsService {
   rows: any;
 
   constructor(
-    @inject(TYPES.GoogleAuthService) private googleAuthService: GoogleAuthService
+    @inject(TYPES.GoogleAuthService) private googleAuthService: GoogleAuthService,
   ) {
       this.sheets = google.sheets({
       version: "v4",

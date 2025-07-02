@@ -3,18 +3,17 @@ import {
   TextField,
   FormControl,
   FormLabel,
-  Select,
   MenuItem,
   Checkbox,
   ListItemText,
 } from "@mui/material";
-import { Cat } from "@models/Cat.ts";
+import { Cat } from "types/cat";
 import {
   FORM_FIELDS,
   MULTISELECT_FIELD_VALUES,
   FIELD_VALUES,
-} from "./FormData";
-import ResponsiveMultiSelect from "./ResponsiveMultiSelect";
+} from "./form-data";
+import ResponsiveMultiSelect from "./responsive-multi-select";
 
 interface DynamicFormFieldsProps {
   tempSelectedCat: Cat;

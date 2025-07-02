@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cat } from "@models/Cat.ts";
+import { Cat } from "types/cat";
 
 export const useCatForm = (selectedCat: Cat) => {
   const [tempSelectedCat, setTempSelectedCat] = useState<Cat>({

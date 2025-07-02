@@ -2,7 +2,7 @@ import React from "react";
 import { TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { Cat } from "@models/Cat.ts";
+import { Cat } from "types/cat";
 
 interface VaccinationFieldsProps {
   tempSelectedCat: Cat;

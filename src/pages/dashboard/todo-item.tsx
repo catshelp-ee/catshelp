@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
-import MyButton from "src/Components/Button";
-import CatSvg from "@assets/CatSvg";
-import { Todo } from "./Dashboard";
+import MyButton from "src/components/button";
+import CatSvg from "@assets/cat-svg";
+import { Todo } from "./dashboard";
 
 const TodoItem: React.FC<Todo> = ({
   label,

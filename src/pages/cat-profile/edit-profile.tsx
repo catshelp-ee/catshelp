@@ -1,20 +1,17 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { TextField, Button, IconButton } from "@mui/material";
-import { uploadImages } from "@utils/google-utils.ts";
-import ImageGallery from "@pages/cat-profile/ImageGallery";
-import { useAuth } from "@context/AuthContext";
+import { uploadImages } from "@utils/google-utils";
+import ImageGallery from "@pages/cat-profile/image-gallery";
+import { useAuth } from "@context/auth-context";
 import Popup from "@pages/add-cat/Popup";
-import { Cat } from "@models/Cat";
-import { useCatForm } from "@hooks/useCatForm";
-import { BasicInfoFields } from "./form/BasicInfoFields";
-import { VaccinationFields } from "./form/VaccinationFields";
-import { DynamicFormFields } from "./form/DynamicFormFields";
-import { ActionButtons } from "./form/ActionButtons";
-import { Section } from "./form/Section";
-import { useIsMobile } from "@context/IsMobileContext";
+import { Cat } from "types/cat";
+import { useCatForm } from "@hooks/use-cat-form";
+import { BasicInfoFields } from "./form/basic-info-fields";
+import { VaccinationFields } from "./form/vaccination-fields";
+import { DynamicFormFields } from "./form/dynamic-form-fields";
+import { useIsMobile } from "@context/is-mobile-context";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { preview } from "vite";
 
 interface CatDetailsProps {
   selectedCat: Cat;

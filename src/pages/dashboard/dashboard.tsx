@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "@context/AuthContext";
-import { useAlert } from "@context/AlertContext";
-import { isLoadingWrapper } from "@hooks/isLoading";
-import Notifications from "./Notifications";
-import FosterPets from "./FosterPets";
-import TodoList from "./TodoList";
+import { useAuth } from "@context/auth-context";
+import { useAlert } from "@context/alert-context";
+import { isLoadingWrapper } from "@hooks/is-loading";
+import Notifications from "./notifications";
+import FosterPets from "./foster-pets";
+import TodoList from "./todo-list";
 import { CircularProgress } from "@mui/material";
 
 export interface Pet {
@@ -24,10 +24,6 @@ export interface Todo {
     redirect?: string;
   };
 }
-import DesktopView from "@pages/Dashboard/DesktopView/DesktopView";
-import MobileView from "@pages/Dashboard/MobileView/MobileView";
-import { useIsMobile } from "@context/IsMobileContext";
-import { isLoadingWrapper } from "@hooks/isLoading.tsx";
 
 interface DashboardProps {}
 

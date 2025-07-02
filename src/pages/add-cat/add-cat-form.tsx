@@ -8,10 +8,10 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { submitNewCatProfile } from "@utils/cat-profile-utils.ts";
-import Header from "../app/Header.js";
+import { submitNewCatProfile } from "@utils/cat-profile-utils";
+import Header from "@components/header";
 import Popup from "@pages/add-cat/Popup.js";
-import States from "@pages/AddCat/States.json";
+import States from "./states.json";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

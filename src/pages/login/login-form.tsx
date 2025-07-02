@@ -3,8 +3,8 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { Button, InputAdornment, TextField } from "@mui/material";
-import { useAlert } from "@context/AlertContext";
-import { useIsMobile } from "@context/IsMobileContext"
+import { useAlert } from "@context/alert-context";
+import { useIsMobile } from "@context/is-mobile-context";
 import EmailIcon from '@mui/icons-material/Email';
 
 const LoginForm: React.FC = () => {

@@ -1,5 +1,4 @@
-import { createContextHook } from "@hooks/createContextHook.js";
-import { useMediaQuery } from "@hooks/useMediaQuery";
+import { useMediaQuery } from "@hooks/use-media-query";
 import { createContext, useContext } from "react";
 
 const IsMobileContext = createContext<boolean>(false);

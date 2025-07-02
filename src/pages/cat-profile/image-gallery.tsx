@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useIsMobile } from "@context/IsMobileContext";
+import { useIsMobile } from "@context/is-mobile-context";
 
 interface ImageGalleryProps {
   name?: string;

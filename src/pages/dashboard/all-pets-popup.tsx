@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { Avatar, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Pet } from "./Dashboard";
+import { Pet } from "./dashboard";
 
 interface AllPetsPopupProps {
   pets: Pet[];

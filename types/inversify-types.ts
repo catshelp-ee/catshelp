@@ -8,6 +8,7 @@ const TYPES = {
   FileService: Symbol.for("FileService"),
   ProfileService: Symbol.for("ProfileService"),
   UserService: Symbol.for("UserService"),
+  NodeCacheService: Symbol.for("NodeCacheService"),
 
   CatProfileBuilder: Symbol.for("CatProfileBuilder"),
 

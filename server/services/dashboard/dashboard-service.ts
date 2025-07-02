@@ -8,48 +8,57 @@ import NotificationService from '../notifications/notification-service';
 import { injectable, inject } from 'inversify';
 import { extractFileId } from '@utils/image-utils';
 import UserService from '@services/user/user-service';
+import NodeCacheService from '@services/cache/cache-service';
+import { User } from 'generated/prisma';
+
+interface Avatar{
+    name: string;
+    pathToImage: string;
+}
 
 @injectable()
 export class DashboardService {
-    private todos: any;
-    notifications: Result[];
-
     constructor(
         @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
         @inject(TYPES.ImageService) private imageService: ImageService,
         @inject(TYPES.NotificationService) private notificationService: NotificationService,
-        @inject(TYPES.UserService) private userService: UserService,
+        @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService,
     ) { }
 
     public async init() {
         await this.googleSheetsService.getSheetData();
     }
 
-    async getPets() {
-        if(!this.todos){
+    async getPets(userID: number): Promise<Avatar[]> {
+        let avatars = await this.nodeCacheService.get<Avatar[]>(`avatars:${userID}`);
+        if (!avatars){
             const petPromises = this.googleSheetsService.rows.map(async (row) => {
                 const catName = row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue;
                 const imageLink = row[this.googleSheetsService.headers['PILT']].hyperlink;
 
                 const fileDriveID = extractFileId(imageLink);
-                const profilePicture = await this.imageService.downloadProfileImage(catName, fileDriveID, this.userService.getUser().fullName);
+                const username = (await this.nodeCacheService.get<User>(`user:${userID}`)).fullName;
+                const profilePicture = await this.imageService.downloadProfileImage(catName, fileDriveID, username);
 
                 return { name: catName, image: profilePicture };
             });
 
-            this.todos = await Promise.all(petPromises);
+            avatars = await Promise.all(petPromises);
+            this.nodeCacheService.set(`avatars:${userID}`, avatars);
         }
 
-        return this.todos;
+        return avatars;
     }
 
-    async displayNotifications(): Promise<Result[]> {
-        if (!this.notifications) {
-            this.notifications = this.notificationService.processNotifications(
+    async displayNotifications(userID: number): Promise<Result[]> {
+        let todos = await this.nodeCacheService.get<Result[]>(`todos:${userID}`)
+        if (todos) {
+            todos = this.notificationService.processNotifications(
                 this.googleSheetsService.rows,
                 this.googleSheetsService.headers
             );
+            this.nodeCacheService.set(`todos:${userID}`, todos);
         }
-        return this.notifications;
+        return todos;
     }
 }

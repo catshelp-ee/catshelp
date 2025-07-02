@@ -1,87 +1,76 @@
-import { cacheUser, getCachedUser } from "@middleware/caching-middleware";
 import { prisma } from "../../prisma";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { injectable } from "inversify";
+import { User } from "generated/prisma";
 
-export async function getUser(id: number) {
-  let user = await getCachedUser(id);
-  if (!user){
-    user = await getUserById(id);
-    await cacheUser(id, user);
+@injectable()
+export default class UserService{
+  private user: User;
+
+  getUser(){
+    return this.user;
+  }
+
+  setUser(user: User){
+    this.user = user;
+  }
+
+  static async getUserByEmail(email) {
+    if (!email) {
+      return null;
+    }
+    
+    const user = await prisma.user.findFirst({
+      where: {email: email},
+    });
+
+    if (user == null) {
+      return null;
+    }
+
     return user;
   }
-  return user;
-}
 
-export async function getUserByEmail(email) {
-  if (!email) {
-    return null;
-  }
-  
-  const user = await prisma.user.findFirst({
-    where: {email: email},
-  });
+  static async setTokenInvalid(token, decodedToken) {
+    if (!token) {
+      return null;
+    }
+    const date = new Date(0);
+    date.setUTCSeconds(decodedToken.exp);
 
-  if (user == null) {
-    return null;
-  }
-
-  return user;
-}
-
-async function getUserById(id: number) {
-  if (!id) {
-    return null;
-  }
-  const user = await prisma.user.findUnique({
-    where: {id: id}
-  });
-
-  if (user == null) {
-    return null;
-  }
-  return user;
-}
-
-export async function setTokenInvalid(token, decodedToken) {
-  if (!token) {
-    return null;
-  }
-  const date = new Date(0);
-  date.setUTCSeconds(decodedToken.exp);
-
-  const existing = await prisma.revokedToken.findFirst({
-    where: {
-      token: token,
-      expiresAt: date,
-    },
-  });
-
-  const result = existing ?? await prisma.revokedToken.create({
-    data: {
-      token: token,
-      expiresAt: date,
-    },
-  });
-
-}
-
-export async function isTokenInvalid(token) {
-  if (!token) {
-    return true;
-  }
-
-  const [items, count] = await prisma.$transaction([
-    prisma.revokedToken.findMany({
+    const existing = await prisma.revokedToken.findFirst({
       where: {
         token: token,
+        expiresAt: date,
       },
-    }),
-    prisma.revokedToken.count({
-      where: {
-        token: token,
-      },
-    }),
-  ]);
+    });
 
-  return count > 0;
+    const result = existing ?? await prisma.revokedToken.create({
+      data: {
+        token: token,
+        expiresAt: date,
+      },
+    });
+
+  }
+
+  static async isTokenInvalid(token) {
+    if (!token) {
+      return true;
+    }
+
+    const [items, count] = await prisma.$transaction([
+      prisma.revokedToken.findMany({
+        where: {
+          token: token,
+        },
+      }),
+      prisma.revokedToken.count({
+        where: {
+          token: token,
+        },
+      }),
+    ]);
+
+    return count > 0;
+  }
 }

@@ -1,5 +1,4 @@
 import { Response } from 'express';
-import { injectable } from 'inversify';
 
 const COOKIE_SETTINGS = {
     MAX_AGE: 24 * 60 * 60 * 1000, // 24 hours

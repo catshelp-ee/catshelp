@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import fs from "node:fs";
 import path from "node:path";
-import TYPES from "@types/inversify-types";
+import TYPES from "types/inversify-types";
 import GoogleAuthService from "./google-auth-service";
 import { google } from "googleapis";
 

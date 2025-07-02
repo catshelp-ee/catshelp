@@ -1,9 +1,7 @@
-import { getUser } from "@services/user/user-service";
-
 import jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import { OAuth2Client } from "google-auth-library";
-import { JWTPayload } from "@types/auth-types";
+import { JWTPayload } from "types/auth-types";
 import { injectable } from "inversify";
 
 @injectable()
@@ -12,7 +10,8 @@ export default class AuthService {
   private readonly jwtSecret: string;
   private readonly tokenLength: string;
 
-  constructor() {
+  constructor(
+  ) {
     this.client = new OAuth2Client();
     this.jwtSecret = process.env.JWT_SECRET!;
     this.tokenLength = process.env.TOKEN_LENGTH!;
@@ -64,11 +63,5 @@ export default class AuthService {
       console.error("JWT decode failed:", error);
       return null;
     }
-  }
-
-  async getUserFromToken(token: string) {
-    if (!token) return null;
-    const decodedToken = this.decodeJWT(token);
-    return await getUser(Number(decodedToken.id));
   }
 }

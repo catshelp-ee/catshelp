@@ -15,6 +15,15 @@ import AnimalService from "@services/animal/animal-service";
 import AnimalRepository from "./repositories/animal-repository";
 import CharacteristicsService from "@services/animal/characteristics-service";
 import CatProfileBuilder from "@services/animal/cat-profile-builder";
+import ProfileService from "@services/profile/profile-service";
+import UserService from "@services/user/user-service";
+
+/**
+ * Dependency Injection Container Setup
+ * This file configures the Inversify container for dependency injection,
+ * binding services, controllers, and repositories to their respective types.
+ * The container manages the lifecycle of these components based on defined scopes.
+ */
 
 // Create the container
 let container: Container;
@@ -24,24 +33,30 @@ async function init() {
 
   const googleAuthService = await GoogleAuthService.create();
 
-  container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inSingletonScope();
+  // Use inRequestScope to create a new instance per HTTP request for services handling user-specific data.
+  container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inRequestScope();
   container.bind<GoogleAuthService>(TYPES.GoogleAuthService).toConstantValue(googleAuthService);
+  container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inRequestScope();
+
+  // Use inSingletonScope for services that should have a single instance across the application.
   container.bind<ImageService>(TYPES.ImageService).to(ImageService).inSingletonScope();
-  container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inSingletonScope();
   container.bind<NotificationService>(TYPES.NotificationService).to(NotificationService).inSingletonScope();
   container.bind<CharacteristicsService>(TYPES.CharacteristicsService).to(CharacteristicsService).inSingletonScope();
   container.bind<AuthService>(TYPES.AuthService).to(AuthService).inSingletonScope();
   
   container.bind<DashboardService>(TYPES.DashboardService).to(DashboardService).inRequestScope();
+  container.bind<ProfileService>(TYPES.ProfileService).to(ProfileService).inRequestScope();
   container.bind<AnimalService>(TYPES.AnimalService).to(AnimalService).inRequestScope();
+  container.bind<UserService>(TYPES.UserService).to(UserService).inRequestScope();
   
+
   container.bind<CatProfileBuilder>(TYPES.CatProfileBuilder).to(CatProfileBuilder).inSingletonScope();
-  
+
+  container.bind<DashboardController>(TYPES.DashboardController).to(DashboardController).inRequestScope();
+  container.bind<ProfileController>(TYPES.ProfileController).to(ProfileController).inRequestScope();
+  container.bind<UserController>(TYPES.UserController).to(UserController).inRequestScope();
   container.bind<LoginController>(TYPES.LoginController).to(LoginController).inSingletonScope();
-  container.bind<DashboardController>(TYPES.DashboardController).to(DashboardController).inSingletonScope();
-  container.bind<UserController>(TYPES.UserController).to(UserController).inSingletonScope();
-  container.bind<ProfileController>(TYPES.ProfileController).to(ProfileController).inSingletonScope();
-  
+
   container.bind<AnimalRepository>(TYPES.AnimalRepository).to(AnimalRepository).inSingletonScope();
 
   return container;

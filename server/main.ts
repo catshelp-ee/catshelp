@@ -9,6 +9,14 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import "express-async-errors";
 
+/**
+ * Application Bootstrap and Server Setup
+ * This file initializes the Express server for the CatsHelp backend,
+ * setting up middleware, routes, and dependency injection.
+ * It also starts cron jobs for background tasks.
+ */
+
+// Commented-out imports for potential future use or deprecated functionality
 //import * as animalController from "./controllers/animal-controller";
 import DashboardController from "./controllers/dashboard-controller";
 import UserController from "./controllers/user-controller";
@@ -26,7 +34,7 @@ import uploadImages from "./middleware/storage-middleware";
 import CronRunner from "./cron/cron-runner";
 
 import { init } from "./container";
-import TYPES from "@types/inversify-types";
+import TYPES from "types/inversify-types";
 import { DashboardService } from "@services/dashboard/dashboard-service";
 import ProfileController from "./controllers/profile-controller";
 
@@ -43,22 +51,19 @@ declare global {
 }
 //initializeRedis();
 async function bootstrap() {
+  // Initialize dependency injection container
   const container = await init();
   const dashboardService = container.get<DashboardService>(
     TYPES.DashboardService
   );
   await dashboardService.init();
-  const dashboardController = container.get<DashboardController>(
-    TYPES.DashboardController
-  );
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);
-  const profileController = container.get<ProfileController>(
-    TYPES.ProfileController
-  );
 
   const rootDir = path.join(__dirname, "..");
   const app = express();
+
+  // Middleware setup
   app.use(
     cors({
       origin: process.env.VITE_FRONTEND_URL,
@@ -71,6 +76,7 @@ async function bootstrap() {
   app.use(express.json());
   app.use(express.static(path.join(rootDir, "dist")));
   app.use("/images", express.static(path.join(__dirname, "images")));
+  // Custom middleware to inject a request-scoped container for dependency injection
   app.use((req: Request, res: Response, next: NextFunction) => {
     req.container = new Container({ defaultScope: 'Request', parent: container });
     next();
@@ -78,7 +84,7 @@ async function bootstrap() {
 
   startCronRunner();
 
-  //Public endpoints
+  // Public endpoints for authentication
   app.post("/api/login-google", (req, res) => {
     loginController.googleLogin(req, res);
   });
@@ -92,9 +98,9 @@ async function bootstrap() {
     loginController.logout(req, res);
   });
 
-  //Secure endpoints
-  //app.post("/api/animals", authenticate, animalController.postAnimal);
-  //app.post("/api/images", authenticate, uploadImages, fileController.addPicture);
+  // Secure endpoints requiring authentication
+  //app.post("/api/animals", authenticate, animalController.postAnimal); // Commented out for future implementation or deprecated
+  //app.post("/api/images", authenticate, uploadImages, fileController.addPicture); // Commented out for future implementation or deprecated
   app.get("/api/user", authenticate, (req, res) => {
     userController.getUserData(req, res);
   });
@@ -106,7 +112,7 @@ async function bootstrap() {
     const controller = req.container.get<ProfileController>(TYPES.ProfileController);
     await controller.getProfile(req, res);
   });
-  //app.put("/api/animals/cat-profile", authenticate, animalController.updatePet);
+  //app.put("/api/animals/cat-profile", authenticate, animalController.updatePet); // Commented out for future implementation or deprecated
   // Fallback for client-side routes (React Router)
   app.get("*", (req, res) => {
     res.sendFile(path.join(rootDir, "dist", "index.html"));
@@ -117,6 +123,7 @@ async function bootstrap() {
   app.listen(process.env.BACKEND_PORT, () => {
     console.log(`connected to backend on port ${process.env.BACKEND_PORT}!`);
   });
+
 
   function startCronRunner() {
     const runner = new CronRunner();

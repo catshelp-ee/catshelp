@@ -1,6 +1,6 @@
 import GoogleDriveService from "@services/google/google-drive-service";
-import { Cat } from "@types/Cat";
-import TYPES from "@types/inversify-types"
+import { Cat } from "types/cat";
+import TYPES from "types/inversify-types"
 import { extractFileId, isValidHyperlink } from "@utils/image-utils";
 import { inject, injectable } from "inversify";
 

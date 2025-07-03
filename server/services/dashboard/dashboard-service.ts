@@ -25,7 +25,7 @@ export default class DashboardService {
   }
 
   private getPets(userID: number | string) {
-    return this.nodeCacheService.get<Pet[]>(`pets:$${userID}`);
+    return this.nodeCacheService.get<Pet[]>(`pets:${userID}`);
   }
 
   private setPets(userID: number | string, pets) {
@@ -62,7 +62,7 @@ export default class DashboardService {
   }
 
   private getNotifications(userID: number | string) {
-    return this.nodeCacheService.get<Result[]>(`notifications:$${userID}`);
+    return this.nodeCacheService.get<Result[]>(`notifications:${userID}`);
   }
 
   private setNotifications(userID: number | string, pets) {

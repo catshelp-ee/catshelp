@@ -1,11 +1,15 @@
+import AuthService from '@services/auth/auth-service';
+import CookieService from '@services/auth/cookie-service';
 import UserService from '@services/user/user-service';
 import { inject, injectable } from 'inversify';
-import jwt from 'jsonwebtoken';
 import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class AuthorizationMiddleware {
-  constructor(@inject(TYPES.UserService) private userService: UserService) {
+  constructor(
+    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.AuthService) private authService: AuthService
+  ) {
     this.authenticate = this.authenticate.bind(this);
   }
 
@@ -23,23 +27,9 @@ export default class AuthorizationMiddleware {
     delete decodedToken.nbf;
     delete decodedToken.jti;
 
-    const token = jwt.sign(decodedToken, process.env.JWT_SECRET, {
-      expiresIn: process.env.TOKEN_LENGTH,
-    });
+    const newToken = this.authService.generateJWT(decodedToken.id);
 
-    const cookieLength = 24 * 60 * 60 * 1000;
-
-    res.cookie('catshelp', 'true', {
-      maxAge: cookieLength,
-      httpOnly: false,
-    });
-
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: process.env.VITE_ENVIRONMENT !== 'TEST',
-      sameSite: 'Strict',
-      maxAge: cookieLength,
-    });
+    CookieService.setAuthCookies(res, newToken);
   }
 
   tokenNeedsRefresh(decodedToken) {
@@ -52,7 +42,7 @@ export default class AuthorizationMiddleware {
   async authenticate(req, res, next) {
     let decodedToken;
     try {
-      decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+      decodedToken = this.authService.decodeJWT(req.cookies.jwt);
     } catch (e) {
       res.cookie('jwt', '');
       res.cookie('catshelp', '');

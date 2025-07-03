@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from '../generated/prisma';
 
 /**
  * Prisma Client Extension for Custom Logic
@@ -9,7 +9,7 @@ import { PrismaClient } from "../generated/prisma";
 const basePrisma = new PrismaClient();
 
 export const prisma = basePrisma.$extends({
-  name: "animalRescueRankNrExtension",
+  name: 'animalRescueRankNrExtension',
   query: {
     animalRescue: {
       async create({ args, query }) {
@@ -18,7 +18,7 @@ export const prisma = basePrisma.$extends({
         const currentYear = currentDate.getFullYear();
 
         const lastRescue = await basePrisma.animalRescue.findFirst({
-          orderBy: { id: "desc" },
+          orderBy: { id: 'desc' },
         });
 
         let newRankNr: number;
@@ -29,7 +29,10 @@ export const prisma = basePrisma.$extends({
           new Date(lastRescue.rescueDate).getFullYear() !== currentYear
         ) {
           const yearPart = currentYear % 1000;
-          const monthPart = currentMonth + 1 < 10 ? `0${currentMonth + 1}` : `${currentMonth + 1}`;
+          const monthPart =
+            currentMonth + 1 < 10
+              ? `0${currentMonth + 1}`
+              : `${currentMonth + 1}`;
           newRankNr = Number(`${yearPart}${monthPart}1`);
         } else {
           newRankNr = lastRescue.rankNr + 1;

@@ -1,28 +1,28 @@
-import NodeCacheService from "@services/cache/cache-service";
-import { User } from "generated/prisma";
-import { inject, injectable } from "inversify";
-import TYPES from "types/inversify-types";
-import { prisma } from "../../prisma";
+import NodeCacheService from '@services/cache/cache-service';
+import { User } from 'generated/prisma';
+import { inject, injectable } from 'inversify';
+import TYPES from 'types/inversify-types';
+import { prisma } from '../../prisma';
 
 @injectable()
-export default class UserService{
+export default class UserService {
   constructor(
     @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
-  ){}
+  ) {}
 
-  getUser(userID: number | string){
-    try{
+  getUser(userID: number | string) {
+    try {
       return this.nodeCacheService.get<User>(`user:${userID}`);
     } catch {
-      throw new Error("Error fetching user from cache");
+      throw new Error('Error fetching user from cache');
     }
   }
 
-  setUser(user: User){
-    try{
+  setUser(user: User) {
+    try {
       this.nodeCacheService.set(`user:${user.id}`, user);
     } catch {
-      throw new Error("Error caching user")
+      throw new Error('Error caching user');
     }
   }
 
@@ -30,9 +30,9 @@ export default class UserService{
     if (!email) {
       return null;
     }
-    
+
     const user = await prisma.user.findFirst({
-      where: {email: email},
+      where: { email: email },
     });
 
     if (user == null) {
@@ -56,7 +56,7 @@ export default class UserService{
       },
     });
 
-    if (!existing){
+    if (!existing) {
       return;
     }
 
@@ -66,7 +66,6 @@ export default class UserService{
         expiresAt: date,
       },
     });
-
   }
 
   static async isTokenInvalid(token) {

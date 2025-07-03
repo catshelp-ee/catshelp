@@ -1,25 +1,24 @@
-import ImageService from "@services/files/image-service";
-import GoogleSheetsService from "@services/google/google-sheets-service";
-import { calculateAge, isFutureDate, parseDate } from "@utils/date-utils";
-import { Animal, User } from "generated/prisma";
-import { inject, injectable } from "inversify";
-import { Cat, CharacteristicsResult, defaultCat } from "types/cat";
-import { Row, SheetRow } from "types/google-sheets";
-import TYPES from "types/inversify-types";
-import CharacteristicsService from "./characteristics-service";
+import ImageService from '@services/files/image-service';
+import GoogleSheetsService from '@services/google/google-sheets-service';
+import { calculateAge, isFutureDate, parseDate } from '@utils/date-utils';
+import { Animal, User } from 'generated/prisma';
+import { inject, injectable } from 'inversify';
+import { Cat, CharacteristicsResult, defaultCat } from 'types/cat';
+import { Row, SheetRow } from 'types/google-sheets';
+import TYPES from 'types/inversify-types';
+import CharacteristicsService from './characteristics-service';
 
 @injectable()
 export default class CatProfileBuilder {
   constructor(
-    @inject(TYPES.CharacteristicsService) private characteristicsService: CharacteristicsService,
+    @inject(TYPES.CharacteristicsService)
+    private characteristicsService: CharacteristicsService,
     @inject(TYPES.ImageService) private imageService: ImageService,
-    @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
+    @inject(TYPES.GoogleSheetsService)
+    private googleSheetsService: GoogleSheetsService
   ) {}
 
-  async buildProfilesFromSheet(
-    owner: User,
-    animals: Animal[]
-  ): Promise<Cat[]> {
+  async buildProfilesFromSheet(owner: User, animals: Animal[]): Promise<Cat[]> {
     const profilePromises = this.googleSheetsService.rows.map(row => {
       return this.buildSingleProfile(row, animals, owner);
     });
@@ -28,23 +27,25 @@ export default class CatProfileBuilder {
   }
 
   private async buildSingleProfile(
-    row: Row, 
+    row: Row,
     animals: Animal[],
     owner: User
   ): Promise<Cat | null> {
-    const catName = row[this.googleSheetsService.headers["KASSI NIMI"]]?.formattedValue;
+    const catName =
+      row[this.googleSheetsService.headers['KASSI NIMI']]?.formattedValue;
     const cat = animals.find(animal => animal.name === catName);
     if (!cat) return null;
 
-    const characteristics = await this.characteristicsService.getCharacteristics(cat.id);
-    const baseData = this.extractBaseData(row, this.googleSheetsService.headers, cat);
-    const appearance = this.extractAppearance(row, this.googleSheetsService.headers);
-    const procedures = this.extractProcedures(row, this.googleSheetsService.headers);
-    
+    const characteristics =
+      await this.characteristicsService.getCharacteristics(cat.id);
+    const baseData = this.extractBaseData(row, cat);
+    const appearance = this.extractAppearance(row);
+    const procedures = this.extractProcedures(row);
+
     const profile = this.buildCatProfile(
-      baseData, 
-      characteristics, 
-      appearance, 
+      baseData,
+      characteristics,
+      appearance,
       procedures
     );
 
@@ -60,57 +61,109 @@ export default class CatProfileBuilder {
       chipNr: cat.chipNumber,
       driveId: cat.driveId,
       llr: cat.chipRegisteredWithUs,
-      name: values[this.googleSheetsService.headers["KASSI NIMI"]]?.formattedValue || cat.name,
-      birthDate: parseDate(values[this.googleSheetsService.headers["SÜNNIAEG"]]?.formattedValue) || cat.birthday,
-      currentLoc: values[this.googleSheetsService.headers["ASUKOHT"]]?.formattedValue,
-      foundLoc: values[this.googleSheetsService.headers["LEIDMISKOHT"]]?.formattedValue,
-      rescueDate: parseDate(values[this.googleSheetsService.headers["PÄÄSTMISKP/ SÜNNIKP"]]?.formattedValue),
-      wormMedName: values[this.googleSheetsService.headers["Ussirohu/ turjatilga nimi"]]?.formattedValue,
-      wormMedDate: parseDate(values[this.googleSheetsService.headers["USSIROHU/ TURJATILGA KP"]]?.formattedValue),
-      vaccDate: parseDate(values[this.googleSheetsService.headers["KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)"]]?.formattedValue),
-      vaccEndDate: parseDate(values[this.googleSheetsService.headers["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue),
-      rabiesVaccDate: parseDate(values[this.googleSheetsService.headers["MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)"]]?.formattedValue),
-      rabiesVaccEndDate: parseDate(values[this.googleSheetsService.headers["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue),
+      name:
+        values[this.googleSheetsService.headers['KASSI NIMI']]
+          ?.formattedValue || cat.name,
+      birthDate:
+        parseDate(
+          values[this.googleSheetsService.headers['SÜNNIAEG']]?.formattedValue
+        ) || cat.birthday,
+      currentLoc:
+        values[this.googleSheetsService.headers['ASUKOHT']]?.formattedValue,
+      foundLoc:
+        values[this.googleSheetsService.headers['LEIDMISKOHT']]?.formattedValue,
+      rescueDate: parseDate(
+        values[this.googleSheetsService.headers['PÄÄSTMISKP/ SÜNNIKP']]
+          ?.formattedValue
+      ),
+      wormMedName:
+        values[this.googleSheetsService.headers['Ussirohu/ turjatilga nimi']]
+          ?.formattedValue,
+      wormMedDate: parseDate(
+        values[this.googleSheetsService.headers['USSIROHU/ TURJATILGA KP']]
+          ?.formattedValue
+      ),
+      vaccDate: parseDate(
+        values[
+          this.googleSheetsService.headers[
+            'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)'
+          ]
+        ]?.formattedValue
+      ),
+      vaccEndDate: parseDate(
+        values[this.googleSheetsService.headers['JÄRGMISE VAKTSIINI AEG']]
+          ?.formattedValue
+      ),
+      rabiesVaccDate: parseDate(
+        values[
+          this.googleSheetsService.headers[
+            'MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)'
+          ]
+        ]?.formattedValue
+      ),
+      rabiesVaccEndDate: parseDate(
+        values[this.googleSheetsService.headers['JÄRGMINE MARUTAUDI AEG']]
+          ?.formattedValue
+      ),
     };
   }
 
-  private extractAppearance(values: Row, columnMap: Record<string, number>): string[] {
+  private extractAppearance(values: Row): string[] {
     const appearance = [];
-    const coatColor = values[columnMap["KASSI VÄRV"]]?.formattedValue;
-    const coatLength = values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue;
-    
+    const coatColor =
+      values[this.googleSheetsService.headers['KASSI VÄRV']]?.formattedValue;
+    const coatLength =
+      values[this.googleSheetsService.headers['KASSI KARVA PIKKUS']]
+        ?.formattedValue;
+
     if (coatColor) appearance.push(coatColor);
     if (coatLength) appearance.push(coatLength);
-    
+
     return appearance;
   }
 
-  private extractProcedures(values: Row, columnMap: Record<string, number>): string[] {
+  private extractProcedures(values: Row): string[] {
     const procedures = [];
-    
-    if (values[columnMap["ASUKOHT"]]?.formattedValue === "JAH") {
-      procedures.push("Lõigatud");
+
+    if (
+      values[this.googleSheetsService.headers['ASUKOHT']]?.formattedValue ===
+      'JAH'
+    ) {
+      procedures.push('Lõigatud');
     }
-    
-    if (this.isFutureDate(values[columnMap["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue)) {
-      procedures.push("Kompleksvaktsiin");
+
+    if (
+      this.isFutureDate(
+        values[this.googleSheetsService.headers['JÄRGMISE VAKTSIINI AEG']]
+          ?.formattedValue
+      )
+    ) {
+      procedures.push('Kompleksvaktsiin');
     }
-    
-    if (this.isFutureDate(values[columnMap["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue)) {
-      procedures.push("Marutaudi vaktsiin");
+
+    if (
+      this.isFutureDate(
+        values[this.googleSheetsService.headers['JÄRGMINE MARUTAUDI AEG']]
+          ?.formattedValue
+      )
+    ) {
+      procedures.push('Marutaudi vaktsiin');
     }
-    
-    if (values[columnMap["USSIROHU/ TURJATILGA KP"]]?.formattedValue) {
-      procedures.push("Ussirohi");
+
+    if (
+      values[this.googleSheetsService.headers['USSIROHU/ TURJATILGA KP']]
+        ?.formattedValue
+    ) {
+      procedures.push('Ussirohi');
     }
-    
+
     return procedures;
   }
 
   private buildCatProfile(
-    baseData: Cat, 
+    baseData: Cat,
     characteristics: CharacteristicsResult,
-    appearance: string[], 
+    appearance: string[],
     procedures: string[]
   ): Cat {
     const genderLabel = this.buildGenderLabel(characteristics);
@@ -120,8 +173,8 @@ export default class CatProfileBuilder {
       ...baseData,
       gender: characteristics.others.gender || defaultCat.gender,
       genderLabel: genderLabel || defaultCat.genderLabel,
-      appearance: appearance.join(", ") || defaultCat.appearance,
-      procedures: procedures.join(", ") || defaultCat.procedures,
+      appearance: appearance.join(', ') || defaultCat.appearance,
+      procedures: procedures.join(', ') || defaultCat.procedures,
       age: age || defaultCat.age,
 
       // Characteristics
@@ -136,26 +189,31 @@ export default class CatProfileBuilder {
       characteristics: characteristics.character || defaultCat.characteristics,
       likes: characteristics.likes || defaultCat.likes,
       cat: characteristics.cat || defaultCat.cat,
-      descriptionOfCharacter: characteristics.others.descriptionOfCharacter || defaultCat.descriptionOfCharacter,
-      treatOtherCats: characteristics.others.treatOtherCats || defaultCat.treatOtherCats,
+      descriptionOfCharacter:
+        characteristics.others.descriptionOfCharacter ||
+        defaultCat.descriptionOfCharacter,
+      treatOtherCats:
+        characteristics.others.treatOtherCats || defaultCat.treatOtherCats,
       treatDogs: characteristics.others.treatDogs || defaultCat.treatDogs,
-      treatChildren: characteristics.others.treatChildren || defaultCat.treatChildren,
-      outdoorsIndoors: characteristics.others.outdoorsIndoors || defaultCat.outdoorsIndoors,
-      images: []
+      treatChildren:
+        characteristics.others.treatChildren || defaultCat.treatChildren,
+      outdoorsIndoors:
+        characteristics.others.outdoorsIndoors || defaultCat.outdoorsIndoors,
+      images: [],
     };
   }
 
   private buildGenderLabel(characteristics: CharacteristicsResult): string {
     const { cut, gender } = characteristics.others;
-    
-    if (gender === "emane") {
-      return cut ? "Steriliseeritud emane" : "Steriliseerimata emane";
+
+    if (gender === 'emane') {
+      return cut ? 'Steriliseeritud emane' : 'Steriliseerimata emane';
     }
-    if (gender === "isane") {
-      return cut ? "Kastreeritud isane" : "Kastreerimata isane";
+    if (gender === 'isane') {
+      return cut ? 'Kastreeritud isane' : 'Kastreerimata isane';
     }
-    
-    return "";
+
+    return '';
   }
 
   private createColumnMap(headerRow: SheetRow): Record<string, number> {

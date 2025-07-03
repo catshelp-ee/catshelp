@@ -1,9 +1,9 @@
 import { GaxiosResponse } from 'gaxios';
-import { google, sheets_v4 } from "googleapis";
-import { inject, injectable } from "inversify";
-import { Headers, Rows } from "types/google-sheets";
-import TYPES from "types/inversify-types";
-import GoogleAuthService from "./google-auth-service";
+import { google, sheets_v4 } from 'googleapis';
+import { inject, injectable } from 'inversify';
+import { Headers, Rows } from 'types/google-sheets';
+import TYPES from 'types/inversify-types';
+import GoogleAuthService from './google-auth-service';
 
 /*const SHEETS_COLUMNS = {
   name: "KIISU NIMI",
@@ -31,16 +31,16 @@ export default class GoogleSheetsService {
   rows: Rows;
 
   constructor(
-    @inject(TYPES.GoogleAuthService) private googleAuthService: GoogleAuthService,
+    @inject(TYPES.GoogleAuthService)
+    private googleAuthService: GoogleAuthService
   ) {
     this.sheets = google.sheets({
-      version: "v4",
+      version: 'v4',
       auth: this.googleAuthService.getAuth(),
-    })
-      ;
+    });
 
     if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
-      throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env");
+      throw new Error('Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env');
     }
 
     this.sheetID = process.env.CATS_SHEETS_ID!;
@@ -49,7 +49,7 @@ export default class GoogleSheetsService {
 
   async init() {
     if (this.headers) {
-      throw new Error("Google Auth Service already initialized");
+      throw new Error('Google Auth Service already initialized');
     }
 
     let sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet>;
@@ -61,37 +61,35 @@ export default class GoogleSheetsService {
         includeGridData: true,
       });
     } catch (e) {
-      throw new Error("Error fetching sheet: ", e);
+      throw new Error('Error fetching sheet: ', e);
     }
 
-
     if (!sheetData.data.sheets || sheetData.data.sheets.length === 0) {
-      throw new Error("No sheet found");
+      throw new Error('No sheet found');
     }
 
     const rows = sheetData.data.sheets[0].data;
     if (!rows || rows.length === 0) {
-      throw new Error("No rows in sheet");
+      throw new Error('No rows in sheet');
     }
 
     this.headers = this.extractColumnMapping(rows);
 
     const fosterhomeColumn = this.headers['_HOIUKODU/ KLIINIKU NIMI'];
 
-    const rowData = rows[0].rowData
+    const rowData = rows[0].rowData;
     const filteredRows: sheets_v4.Schema$CellData[][] = [];
     for (let i = 0; i < rowData.length; i++) {
       const row = rowData[i];
       const values = row.values;
 
       const fosterhome = values[fosterhomeColumn].formattedValue;
-      if (fosterhome === "Marko Peedosk") {
+      if (fosterhome === 'Marko Peedosk') {
         filteredRows.push(values);
       }
     }
 
     this.rows = filteredRows;
-
   }
 
   /*
@@ -257,5 +255,4 @@ export default class GoogleSheetsService {
     }
   }
     */
-
 }

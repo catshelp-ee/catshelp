@@ -26,7 +26,6 @@ const CatSelection: React.FC<CatSelectionProps> = ({
     setSelectedCat(cat);
     setIsEditMode(false);
   };
-  console.log(cats[0].images);
   return (
     <Stack direction="row" spacing={2}>
       {cats.map((cat, index) => (

@@ -1,13 +1,13 @@
+import AnimalService from "@services/animal/animal-service";
 import CatProfileBuilder from "@services/animal/cat-profile-builder";
 import CharacteristicsService from "@services/animal/characteristics-service";
+import NodeCacheService from "@services/cache/cache-service";
 import GoogleSheetsService from "@services/google/google-sheets-service";
+import { User } from "generated/prisma";
 import { inject, injectable } from "inversify";
 import AnimalRepository from "server/repositories/animal-repository";
-import TYPES from "types/inversify-types";
-import { User } from "generated/prisma";
 import { Cat } from "types/cat";
-import AnimalService from "@services/animal/animal-service";
-import NodeCacheService from "@services/cache/cache-service";
+import TYPES from "types/inversify-types";
 
 @injectable()
 export default class ProfileService{

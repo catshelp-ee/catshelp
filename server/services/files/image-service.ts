@@ -1,10 +1,10 @@
 import GoogleDriveService from "@services/google/google-drive-service";
-import { Cat } from "types/cat";
-import TYPES from "types/inversify-types"
+import GoogleSheetsService from "@services/google/google-sheets-service";
 import { extractFileId, isValidHyperlink } from "@utils/image-utils";
 import { inject, injectable } from "inversify";
+import { Cat } from "types/cat";
 import { Row } from "types/google-sheets";
-import GoogleSheetsService from "@services/google/google-sheets-service";
+import TYPES from "types/inversify-types";
 
 @injectable()
 export default class ImageService {

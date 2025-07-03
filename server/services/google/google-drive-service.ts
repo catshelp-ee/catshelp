@@ -1,10 +1,10 @@
+import { drive_v3, google } from "googleapis";
 import { inject, injectable } from "inversify";
 import fs from "node:fs";
 import path from "node:path";
+import { Cat } from "types/cat";
 import TYPES from "types/inversify-types";
 import GoogleAuthService from "./google-auth-service";
-import { drive_v3, google } from "googleapis";
-import { Cat } from "types/cat";
 
 const ALLOWED_DRIVE_MIME_TYPES = {
   jpg: "image/jpeg",

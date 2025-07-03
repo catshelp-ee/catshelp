@@ -1,16 +1,16 @@
-import { DashboardNotification } from "./DasboardNotification";
-import moment from "moment";
+import moment from 'moment';
+
+import { DashboardNotification } from './DasboardNotification';
 
 export default class UssirohiNotification implements DashboardNotification {
   getText(): string {
-    if (this.cellIsEmpty)
-      return "Kompleksvaktsiini info puudub";
-    return "Anna vähemalt 2 kuud enne vaktsineerimist ussirohi";
+    if (this.cellIsEmpty) return 'Kompleksvaktsiini info puudub';
+    return 'Anna vähemalt 2 kuud enne vaktsineerimist ussirohi';
   }
 
   shouldShow(triggerDate: Date): boolean {
     const currentDate = moment(new Date());
-    currentDate.subtract(10, "M");
+    currentDate.subtract(10, 'M');
 
     return currentDate.toDate() > triggerDate;
   }
@@ -21,11 +21,11 @@ export default class UssirohiNotification implements DashboardNotification {
   }
 
   getDueDate(currentDate: Date): Date {
-    return moment(currentDate).add(1, "y").toDate();
+    return moment(currentDate).add(1, 'y').toDate();
   }
 
-  dbColumnName = "USSIROHU/ TURJATILGA KP";
-  buttonText = "Vaata juhendit";
+  dbColumnName = 'USSIROHU/ TURJATILGA KP';
+  buttonText = 'Vaata juhendit';
   redirectURL = process.env.WORD_MED_REDIRECT!;
   cellIsEmpty = false;
 }

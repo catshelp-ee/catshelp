@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import { handleControllerError } from "@utils/error-handler";
-import { inject, injectable } from "inversify";
-import TYPES from "types/inversify-types";
 import AuthService from "@services/auth/auth-service";
 import ProfileService from "@services/profile/profile-service";
 import UserService from "@services/user/user-service";
+import { handleControllerError } from "@utils/error-handler";
+import { Request, Response } from "express";
+import { inject, injectable } from "inversify";
+import TYPES from "types/inversify-types";
 
 @injectable()
 export default class ProfileController{

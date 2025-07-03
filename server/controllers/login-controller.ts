@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
 import AuthService from '@services/auth/auth-service';
-import CookieService  from '@services/auth/cookie-service';
-import UserService from "@services/user/user-service";
+import CookieService from '@services/auth/cookie-service';
 import EmailService from '@services/auth/email-service';
-import { GoogleLoginRequest, EmailLoginRequest, VerifyRequest } from 'types/auth-types';
+import NodeCacheService from '@services/cache/cache-service';
+import UserService from "@services/user/user-service";
+import { Request, Response } from 'express';
 import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
+import { EmailLoginRequest, GoogleLoginRequest, VerifyRequest } from 'types/auth-types';
 import TYPES from 'types/inversify-types';
-import NodeCacheService from '@services/cache/cache-service';
 
 @injectable()
 export default class LoginController {

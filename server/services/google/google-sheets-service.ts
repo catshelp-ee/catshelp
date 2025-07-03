@@ -1,9 +1,9 @@
-import TYPES from "types/inversify-types";
-import { Headers, Rows } from "types/google-sheets";
-import { injectable, inject } from "inversify";
-import GoogleAuthService from "./google-auth-service";
-import { google, sheets_v4 } from "googleapis";
 import { GaxiosResponse } from 'gaxios';
+import { google, sheets_v4 } from "googleapis";
+import { inject, injectable } from "inversify";
+import { Headers, Rows } from "types/google-sheets";
+import TYPES from "types/inversify-types";
+import GoogleAuthService from "./google-auth-service";
 
 /*const SHEETS_COLUMNS = {
   name: "KIISU NIMI",

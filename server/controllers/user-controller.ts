@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
 import AuthService from "@services/auth/auth-service";
-import { User } from "types/auth-types";
-import { inject, injectable } from "inversify";
-import TYPES from "types/inversify-types";
 import UserService from "@services/user/user-service";
+import { Request, Response } from "express";
+import { inject, injectable } from "inversify";
+import { User } from "types/auth-types";
+import TYPES from "types/inversify-types";
 
 @injectable()
 export default class UserController {

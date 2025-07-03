@@ -4,9 +4,9 @@ import { injectable } from "inversify";
 
 @injectable()
 export default class GoogleAuthService {
-    private client: any;
+    private client: OAuth2Client;
 
-    constructor(client: any){
+    constructor(client: OAuth2Client){
         this.client = client;
     }
 
@@ -14,12 +14,12 @@ export default class GoogleAuthService {
         const isProd = process.env.NODE_ENV === "production";
 
         const keyFilePath = isProd
-        ? "../credentials.json"
+        ? process.env.CREDENTIALS_PATH
         : "credentials.json";
         
         const auth = new google.auth.GoogleAuth({
-        keyFile: keyFilePath,
-        scopes: ["https://www.googleapis.com/auth/drive"],
+            keyFile: keyFilePath,
+            scopes: ["https://www.googleapis.com/auth/drive"],
         });
         
         const client = await auth.getClient() as OAuth2Client;

@@ -1,43 +1,47 @@
-import { descriptors } from "types/cat";
-import { PrismaTransactionClient } from "types/prisma";
+//import { descriptors } from "types/cat";
+//import { PrismaTransactionClient } from "types/prisma";
 import { injectable } from "inversify";
 import { prisma } from "server/prisma";
+import { CharacteristicsResult } from "types/cat";
+
 
 @injectable()
 export default class CharacteristicsService {
-  async getCharacteristics(animalId: number): Promise<Record<string, string | string[]>> {
+  async getCharacteristics(animalId: number): Promise<CharacteristicsResult> {
     const characteristics = await prisma.animalCharacteristic.findMany({
-      where: { animalId }, // Fixed: was using 'id' instead of 'animalId'
+      where: { animalId },
     });
 
     const character: string[] = [];
     const likes: string[] = [];
     const cat: string[] = [];
-    const result: Record<string, string | string[]> = {};
+    const others: Record<string, string> = {};
 
-    characteristics.forEach((characteristic) => {
-      switch (characteristic.type) {
+    characteristics.forEach(({ type, name }) => {
+      switch (type) {
         case "characteristics":
-          character.push(characteristic.name);
+          character.push(name);
           break;
         case "likes":
-          likes.push(characteristic.name);
+          likes.push(name);
           break;
         case "cat":
-          cat.push(characteristic.name);
+          cat.push(name);
           break;
         default:
-          result[characteristic.type] = characteristic.name;
+          others[type] = name;
       }
     });
 
-    result.character = character;
-    result.likes = likes;
-    result.cat = cat;
-    
-    return result;
+    return {
+      character,
+      likes,
+      cat,
+      others,
+    };
   }
 
+  /*
   async updateCharacteristics(
     tx: PrismaTransactionClient,
     animalId: number,
@@ -103,4 +107,5 @@ export default class CharacteristicsService {
       });
     }
   }
+    */
 }

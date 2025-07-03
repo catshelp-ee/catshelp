@@ -1,3 +1,5 @@
+import { sheets_v4 } from 'googleapis';
+
 export interface SheetData {
   rows: SheetRow[];
 }
@@ -23,3 +25,10 @@ export interface RowLocation {
   row: any;
   rowIndex: number;
 }
+
+export interface Headers{
+  [key: string]: number;
+}
+
+export type Row = sheets_v4.Schema$CellData[];
+export type Rows = Row[];

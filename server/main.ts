@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import "reflect-metadata";
 import path from "node:path";
+import "reflect-metadata";
 
-import express from "express";
-import cors from "cors";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
 import "express-async-errors";
 
 /**
@@ -19,7 +19,6 @@ import "express-async-errors";
 // Commented-out imports for potential future use or deprecated functionality
 //import * as animalController from "./controllers/animal-controller";
 import DashboardController from "./controllers/dashboard-controller";
-import UserController from "./controllers/user-controller";
 //import * as loginController from "./controllers/login-controller";
 //import * as userController from "./controllers/user-controller";
 //import * as fileController from "./controllers/file-controller";
@@ -27,38 +26,25 @@ import UserController from "./controllers/user-controller";
 import LoginController from "./controllers/login-controller";
 
 import AuthorizationMiddleware from "./middleware/authorization-middleware";
-import { cache } from "@middleware/caching-middleware";
 import errorMiddleware from "./middleware/error-middleware";
-import uploadImages from "./middleware/storage-middleware";
 
 import CronRunner from "./cron/cron-runner";
 
-import { init } from "./container";
+import DashboardService from "@services/dashboard/dashboard-service";
 import TYPES from "types/inversify-types";
-import { DashboardService } from "@services/dashboard/dashboard-service";
+import { init } from "./container";
 import ProfileController from "./controllers/profile-controller";
 
-import { Request, Response, NextFunction } from 'express';
-import { Container } from 'inversify';
 
-
-declare global {
-  namespace Express {
-    interface Request {
-      container: Container;
-    }
-  }
-}
 //initializeRedis();
 async function bootstrap() {
   // Initialize dependency injection container
   const container = await init();
-  const dashboardService = container.get<DashboardService>(
-    TYPES.DashboardService
-  );
+  const dashboardService = container.get<DashboardService>(TYPES.DashboardService);
   await dashboardService.init();
   const loginController = container.get<LoginController>(TYPES.LoginController);
-  const userController = container.get<UserController>(TYPES.UserController);
+  const dashboardController = container.get<DashboardController>(TYPES.DashboardController);
+  const profileController = container.get<ProfileController>(TYPES.ProfileController);
   const auth = container.get<AuthorizationMiddleware>(TYPES.AuthorizationMiddleware);
 
   const rootDir = path.join(__dirname, "..");
@@ -78,11 +64,6 @@ async function bootstrap() {
   app.use(express.static(path.join(rootDir, "dist")));
   app.use("/images", express.static(path.join(__dirname, "images")));
   // Custom middleware to inject a request-scoped container for dependency injection
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    req.container = new Container({ defaultScope: 'Request', parent: container });
-    next();
-  });
-
   startCronRunner();
 
   // Public endpoints for authentication
@@ -102,17 +83,10 @@ async function bootstrap() {
   // Secure endpoints requiring authentication
   //app.post("/api/animals", authenticate, animalController.postAnimal); // Commented out for future implementation or deprecated
   //app.post("/api/images", authenticate, uploadImages, fileController.addPicture); // Commented out for future implementation or deprecated
-  app.get("/api/user", auth.authenticate, (req, res) => {
-    userController.getUserData(req, res);
-  });
-  app.get("/api/animals/dashboard", auth.authenticate, async (req, res) => {
-    const controller = req.container.get<DashboardController>(TYPES.DashboardController);
-    await controller.getDashboard(req, res);
-  });
-  app.get("/api/animals/cat-profile", auth.authenticate, async (req, res) => {
-    const controller = req.container.get<ProfileController>(TYPES.ProfileController);
-    await controller.getProfile(req, res);
-  });
+  
+  app.get("/api/user", auth.authenticate, loginController.googleLogin.bind(loginController));
+  app.get("/api/animals/dashboard", auth.authenticate, dashboardController.getDashboard.bind(dashboardController));
+  app.get("/api/animals/cat-profile", auth.authenticate, profileController.getProfile.bind(profileController));
   //app.put("/api/animals/cat-profile", authenticate, animalController.updatePet); // Commented out for future implementation or deprecated
   // Fallback for client-side routes (React Router)
   app.get("*", (req, res) => {

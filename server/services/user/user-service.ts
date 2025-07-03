@@ -56,7 +56,11 @@ export default class UserService{
       },
     });
 
-    const result = existing ?? await prisma.revokedToken.create({
+    if (!existing){
+      return;
+    }
+
+    await prisma.revokedToken.create({
       data: {
         token: token,
         expiresAt: date,
@@ -70,7 +74,7 @@ export default class UserService{
       return true;
     }
 
-    const [items, count] = await prisma.$transaction([
+    const [, count] = await prisma.$transaction([
       prisma.revokedToken.findMany({
         where: {
           token: token,

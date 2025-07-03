@@ -1,13 +1,10 @@
-import { SheetsData, SheetData, Result, SheetCell } from 'types/dashboard';
+import { Result } from 'types/dashboard';
 import TYPES from 'types/inversify-types';
-import { extractColumnMapping, findUserRows, extractCatNames } from '@utils/sheet-utils';
-import { SHEET_COLUMNS } from './constants';
 import GoogleSheetsService from '@services/google/google-sheets-service';
 import ImageService from '@services/files/image-service';
 import NotificationService from '../notifications/notification-service';
 import { injectable, inject } from 'inversify';
 import { extractFileId } from '@utils/image-utils';
-import UserService from '@services/user/user-service';
 import NodeCacheService from '@services/cache/cache-service';
 import { User } from 'generated/prisma';
 
@@ -17,7 +14,7 @@ interface Pet{
 }
 
 @injectable()
-export class DashboardService {
+export default class DashboardService {
     constructor(
         @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
         @inject(TYPES.ImageService) private imageService: ImageService,
@@ -26,11 +23,20 @@ export class DashboardService {
     ) { }
 
     public async init() {
-        await this.googleSheetsService.getSheetData();
+        await this.googleSheetsService.init();
     }
 
-    async getPets(userID: number): Promise<Pet[]> {
-        let pets = await this.nodeCacheService.get<Pet[]>(`pets:${userID}`);
+    private getPets(userID: number | string) { 
+        return this.nodeCacheService.get<Pet[]>(`pets:$${userID}`);
+    }
+
+    private setPets(userID: number | string, pets) {
+        this.nodeCacheService.set(`pets:${userID}`, pets);
+
+    }
+
+    async getPetAvatars(userID: number | string): Promise<Pet[]> {
+        let pets = await this.getPets(userID);
         if (!pets){
             const petPromises = this.googleSheetsService.rows.map(async (row) => {
                 const catName = row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue;
@@ -40,24 +46,30 @@ export class DashboardService {
                 const username = (await this.nodeCacheService.get<User>(`user:${userID}`)).fullName;
                 const profilePicture = await this.imageService.downloadProfileImage(catName, fileDriveID, username);
 
-                return { name: catName, image: profilePicture };
+                return { name: catName, pathToImage: profilePicture };
             });
 
             pets = await Promise.all(petPromises);
-            this.nodeCacheService.set(`pets:${userID}`, pets);
+            this.setPets(userID, pets);
         }
 
         return pets;
     }
 
-    async displayNotifications(userID: number): Promise<Result[]> {
-        let todos = await this.nodeCacheService.get<Result[]>(`todos:${userID}`)
+    private getNotifications(userID: number | string) { 
+        return this.nodeCacheService.get<Result[]>(`notifications:$${userID}`);
+    }
+
+    private setNotifications(userID: number | string, pets) {
+        this.nodeCacheService.set(`notifications:${userID}`, pets);
+
+    }
+
+    async displayNotifications(userID: number | string): Promise<Result[]> {
+        let todos = await this.getNotifications(userID);
         if (!todos) {
-            todos = this.notificationService.processNotifications(
-                this.googleSheetsService.rows,
-                this.googleSheetsService.headers
-            );
-            this.nodeCacheService.set(`todos:${userID}`, todos);
+            todos = this.notificationService.processNotifications();
+            this.setNotifications(userID, todos);
         }
         return todos;
     }

@@ -1,11 +1,8 @@
-import NodeCache from "node-cache";
-import { prisma } from "server/prisma";
-import { User } from "generated/prisma";
-import jwt, { JwtPayload } from "jsonwebtoken";
+//import NodeCache from "node-cache";
 
-const cacheStore = new NodeCache();
+//const cacheStore = new NodeCache();
 
-async function getPersistentCache(key: string) {
+/*async function getPersistentCache(key: string) {
   const cacheEntry = await prisma.cache.findUnique({
     where: { keyName: key },
   });
@@ -14,24 +11,17 @@ async function getPersistentCache(key: string) {
     return null;
   } 
   return JSON.parse(cacheEntry.value);
-}
+}*/
 
-async function setPersistentCache(key: string, data: any) {
+/*async function setPersistentCache(key: string, data: any) {
   await prisma.cache.upsert({
     where: { keyName: key },
     update: { value: JSON.stringify(data) },
     create: { keyName: key, value: JSON.stringify(data) },
   });
-}
+}*/
 
-export const cacheUser = async (id: number, user: User) => {
-  cacheStore.set(id, user);
-};
-
-export const getCachedUser = async (id: number): Promise<User> => {
-  return cacheStore.get(id);
-};
-
+/*
 export const cache = async (req, res, next) => {
   const decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET) as JwtPayload;
   const key = `${decodedToken.id}-${req.originalUrl.split("/").filter(Boolean).pop()}`;
@@ -71,3 +61,4 @@ export const cache = async (req, res, next) => {
     next();
   }
 };
+*/

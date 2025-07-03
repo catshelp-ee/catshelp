@@ -20,7 +20,7 @@ export default class LoginController {
         this.emailService = new EmailService();
     }
 
-    async googleLogin(req: Request<{}, {}, GoogleLoginRequest>, res: Response): Promise<Response> {
+    async googleLogin(req: Request<object, object, GoogleLoginRequest>, res: Response): Promise<Response> {
         try {
             const { credential, clientId } = req.body;
 
@@ -46,7 +46,7 @@ export default class LoginController {
         }
     }
 
-    async emailLogin(req: Request<{}, {}, EmailLoginRequest>, res: Response): Promise<Response> {
+    async emailLogin(req: Request<object, object, EmailLoginRequest>, res: Response): Promise<Response> {
         try {
             const { email } = req.body;
 
@@ -90,7 +90,7 @@ export default class LoginController {
         }
     }
 
-    async verify(req: Request<{}, {}, {}, VerifyRequest>, res: Response): Promise<Response> {
+    async verify(req: Request<object, object, object, VerifyRequest>, res: Response): Promise<Response> {
         try {
             const { token } = req.query;
 

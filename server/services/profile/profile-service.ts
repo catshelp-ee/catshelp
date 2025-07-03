@@ -4,8 +4,7 @@ import GoogleSheetsService from "@services/google/google-sheets-service";
 import { inject, injectable } from "inversify";
 import AnimalRepository from "server/repositories/animal-repository";
 import TYPES from "types/inversify-types";
-import { prisma } from "server/prisma";
-import { User, Animal } from "generated/prisma";
+import { User } from "generated/prisma";
 import { Cat } from "types/cat";
 import AnimalService from "@services/animal/animal-service";
 import NodeCacheService from "@services/cache/cache-service";
@@ -42,7 +41,7 @@ export default class ProfileService{
     return profiles;
   }
 
-  async updateCatProfile(catData: any, cat: Animal): Promise<void> {
+  /*async updateCatProfile(catData: any, cat: Animal): Promise<void> {
     await prisma.$transaction(async (tx) => {
       await this.characteristicsService.updateCharacteristics(tx, cat.id, catData);
       await this.animalRepository.updateRescueInfo(tx, cat.id, catData);
@@ -50,4 +49,5 @@ export default class ProfileService{
 
     await this.googleSheetsService.updateCatInSheet(catData);
   }
+    -*/
 }

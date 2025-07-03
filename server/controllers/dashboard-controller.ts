@@ -1,8 +1,8 @@
-// controllers/dashboard-controller.ts
-import { inject, injectable } from "inversify";
-import TYPES  from "types/inversify-types";
-import { DashboardService } from "@services/dashboard/dashboard-service";
 import { Request, Response } from "express";
+import { inject, injectable } from "inversify";
+
+import DashboardService from "@services/dashboard/dashboard-service";
+import TYPES  from "types/inversify-types";
 import AuthService from "@services/auth/auth-service";
 
 @injectable()
@@ -14,10 +14,10 @@ export default class DashboardController {
 
   public async getDashboard(req: Request, res: Response): Promise<Response> {
     const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
-    const userID = Number(decodedToken.id);
+    const userID = decodedToken.id;
     const response = {
       todos: await this.dashboardService.displayNotifications(userID),
-      pets: await this.dashboardService.getPets(userID),
+      pets: await this.dashboardService.getPetAvatars(userID),
     };
     return res.json(response);
   }

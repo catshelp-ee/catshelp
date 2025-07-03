@@ -1,15 +1,15 @@
 import { DashboardNotification } from "@notifications/DasboardNotification";
-import UssirohiNotification from "@notifications/UssirohiNotification";
 import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
 import PoleKassiNotification from "@notifications/PoleKassiNotification";
-import { Result } from 'types/dashboard';
-import { parseEstonianDate, formatEstonianDate } from '@utils/date-utils';
-import { DEFAULT_COLORS } from '../dashboard/constants';
+import UssirohiNotification from "@notifications/UssirohiNotification";
+import GoogleSheetsService from "@services/google/google-sheets-service";
+import { formatEstonianDate, parseEstonianDate } from '@utils/date-utils';
 import { inject, injectable } from "inversify";
+import { Result } from 'types/dashboard';
 import { Row } from "types/google-sheets";
 import TYPES from "types/inversify-types";
-import GoogleSheetsService from "@services/google/google-sheets-service";
+import { DEFAULT_COLORS } from '../dashboard/constants';
 
 @injectable()
 export default class NotificationService {

@@ -1,6 +1,6 @@
 import GoogleDriveService from "@services/google/google-drive-service";
-import TYPES from "types/inversify-types";
 import { inject, injectable } from "inversify";
+import TYPES from "types/inversify-types";
 //import fs from "node:fs";
 
 @injectable()

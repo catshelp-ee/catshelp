@@ -1,12 +1,12 @@
+import ImageService from "@services/files/image-service";
+import GoogleSheetsService from "@services/google/google-sheets-service";
+import { calculateAge, isFutureDate, parseDate } from "@utils/date-utils";
+import { Animal, User } from "generated/prisma";
+import { inject, injectable } from "inversify";
 import { Cat, CharacteristicsResult, defaultCat } from "types/cat";
 import { Row, SheetRow } from "types/google-sheets";
 import TYPES from "types/inversify-types";
-import { Animal, User } from "generated/prisma";
-import CharacteristicsService  from "./characteristics-service";
-import ImageService from "@services/files/image-service";
-import {calculateAge, parseDate, isFutureDate} from "@utils/date-utils";
-import { inject, injectable } from "inversify";
-import GoogleSheetsService from "@services/google/google-sheets-service";
+import CharacteristicsService from "./characteristics-service";
 
 @injectable()
 export default class CatProfileBuilder {

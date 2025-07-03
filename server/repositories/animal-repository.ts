@@ -1,7 +1,7 @@
-import { prisma } from "server/prisma";
 import { Animal } from "generated/prisma";
-import { CreateAnimalData, CreateAnimalResult } from "types/animal";
 import { injectable } from "inversify";
+import { prisma } from "server/prisma";
+import { CreateAnimalData, CreateAnimalResult } from "types/animal";
 
 @injectable()
 export default class AnimalRepository {

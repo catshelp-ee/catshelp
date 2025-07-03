@@ -1,8 +1,8 @@
+import { OAuth2Client } from "google-auth-library";
+import { injectable } from "inversify";
 import jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
-import { OAuth2Client } from "google-auth-library";
 import { JWTPayload } from "types/auth-types";
-import { injectable } from "inversify";
 
 @injectable()
 export default class AuthService {

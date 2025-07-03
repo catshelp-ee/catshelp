@@ -1,8 +1,8 @@
-import { prisma } from "../../prisma";
-import { inject, injectable } from "inversify";
-import { User } from "generated/prisma";
-import TYPES from "types/inversify-types";
 import NodeCacheService from "@services/cache/cache-service";
+import { User } from "generated/prisma";
+import { inject, injectable } from "inversify";
+import TYPES from "types/inversify-types";
+import { prisma } from "../../prisma";
 
 @injectable()
 export default class UserService{

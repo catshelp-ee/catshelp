@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 
-import DashboardService from "@services/dashboard/dashboard-service";
-import TYPES  from "types/inversify-types";
 import AuthService from "@services/auth/auth-service";
+import DashboardService from "@services/dashboard/dashboard-service";
+import TYPES from "types/inversify-types";
 
 @injectable()
 export default class DashboardController {

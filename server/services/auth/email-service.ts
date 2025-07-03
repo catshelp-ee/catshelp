@@ -1,12 +1,12 @@
-import { createTransport } from "nodemailer";
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+import { createTransport } from 'nodemailer';
 
 export default class EmailService {
   transporter;
 
   constructor() {
     this.transporter = createTransport({
-      host: "smtp.gmail.com",
+      host: 'smtp.gmail.com',
       port: 465,
       secure: true, // true for port 465, false for other ports
       auth: {
@@ -18,7 +18,7 @@ export default class EmailService {
 
   async sendRequest(id: number, email: string) {
     const token = jwt.sign({ id }, process.env.JWT_SECRET as string, {
-      expiresIn: "10m",
+      expiresIn: '10m',
     });
     await this.sendMagicLink(email, token);
   }
@@ -27,7 +27,7 @@ export default class EmailService {
     return this.transporter.sendMail({
       from: process.env.MAGIC_LINK_SENDER,
       to: email,
-      subject: "🐈 Cats Help Sisselogimine",
+      subject: '🐈 Cats Help Sisselogimine',
       html: `<a href="${process.env.VITE_FRONTEND_URL}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,
     });
   }

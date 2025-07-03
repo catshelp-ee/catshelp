@@ -1,13 +1,11 @@
 import TYPES from "types/inversify-types";
-import { UpdateSheetCellsParams, RowLocation } from "types/google-sheets";
+import { Headers, Rows } from "types/google-sheets";
 import { injectable, inject } from "inversify";
-import moment from "moment";``
 import GoogleAuthService from "./google-auth-service";
 import { google, sheets_v4 } from "googleapis";
 import { GaxiosResponse } from 'gaxios';
-import NodeCacheService from "@services/cache/cache-service";
 
-const SHEETS_COLUMNS = {
+/*const SHEETS_COLUMNS = {
   name: "KIISU NIMI",
   chipNr: "KIIP",
   llr: "KIIP LLR-is MTÜ nimel- täidab registreerija",
@@ -22,24 +20,24 @@ const SHEETS_COLUMNS = {
   rabiesVaccEnd: "JÄRGMINE MARUTAUDI AEG",
   wormMedName: "Ussirohu/ turjatilga nimi",
   cut: "LÕIGATUD",
-};
+};*/
 
 @injectable()
 export default class GoogleSheetsService {
   sheets: sheets_v4.Sheets;
   sheetID: string;
   sheetTable: string;
-  headers: any;
-  rows: any;
+  headers: Headers;
+  rows: Rows;
 
   constructor(
     @inject(TYPES.GoogleAuthService) private googleAuthService: GoogleAuthService,
   ) {
-      this.sheets = google.sheets({
+    this.sheets = google.sheets({
       version: "v4",
       auth: this.googleAuthService.getAuth(),
     })
-    ;
+      ;
 
     if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
       throw new Error("Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env");
@@ -49,7 +47,11 @@ export default class GoogleSheetsService {
     this.sheetTable = process.env.CATS_TABLE_NAME!;
   }
 
-  async getSheetData(): Promise<any> {
+  async init() {
+    if (this.headers) {
+      throw new Error("Google Auth Service already initialized");
+    }
+
     let sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet>;
     try {
       sheetData = await this.sheets.spreadsheets.get({
@@ -59,7 +61,7 @@ export default class GoogleSheetsService {
         includeGridData: true,
       });
     } catch (e) {
-
+      throw new Error("Error fetching sheet: ", e);
     }
 
 
@@ -72,27 +74,27 @@ export default class GoogleSheetsService {
       throw new Error("No rows in sheet");
     }
 
-    if (!this.headers){
-      this.headers = this.extractColumnMapping(rows);
-    }
+    this.headers = this.extractColumnMapping(rows);
 
     const fosterhomeColumn = this.headers['_HOIUKODU/ KLIINIKU NIMI'];
 
     const rowData = rows[0].rowData
-    const filteredRows = [];
-    for(let i = 0; i < rowData.length; i++){
+    const filteredRows: sheets_v4.Schema$CellData[][] = [];
+    for (let i = 0; i < rowData.length; i++) {
       const row = rowData[i];
       const values = row.values;
 
       const fosterhome = values[fosterhomeColumn].formattedValue;
-      if (fosterhome === "Marko Peedosk"){
+      if (fosterhome === "Marko Peedosk") {
         filteredRows.push(values);
       }
     }
 
     this.rows = filteredRows;
+
   }
 
+  /*
   async addDataToSheet(sheetId: string, tabName: string, data: any) {
     const row = new Array(30).fill("");
 
@@ -112,7 +114,7 @@ export default class GoogleSheetsService {
       },
     });
   }
-
+  
   async updateSheetCells({
     sheetId,
     tabName,
@@ -150,27 +152,17 @@ export default class GoogleSheetsService {
       throw new Error(`Failed to update sheet cells: ${error.message}`);
     }
   }
-
-  private validateSheetData(sheetData: any): void {
-    if (!sheetData?.data?.sheets?.length) {
-      throw new Error('No sheet found');
-    }
-
-    const rows = sheetData.data.sheets[0].data;
-    if (!rows?.length) {
-      throw new Error('No rows found in sheet');
-    }
-  }
-
-  private extractColumnMapping(rows: any[]) {
-    const columnMapping = {};
+  
+*/
+  private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
+    const columnMapping: Headers = {};
     const headerRow = rows[0]?.rowData?.[0]?.values;
 
     if (!headerRow) {
       throw new Error('No header row found');
     }
 
-    headerRow.forEach((col: any, index: number) => {
+    headerRow.forEach((col, index: number) => {
       if (col?.formattedValue) {
         columnMapping[col.formattedValue] = index;
       }
@@ -178,41 +170,7 @@ export default class GoogleSheetsService {
 
     return columnMapping;
   }
-
-  private findTargetRow(
-    rows: any[],
-    columnMapping: any,
-    data: any
-  ): RowLocation {
-    const fosterhomeColumn = columnMapping['_HOIUKODU/ KLIINIKU NIMI'];
-    const catNameColumn = columnMapping['KASSI NIMI'];
-
-    if (fosterhomeColumn === undefined || catNameColumn === undefined) {
-      throw new Error('Required columns not found in sheet');
-    }
-
-    let currentRowIndex = 0;
-
-    for (const grid of rows) {
-      for (const row of grid.rowData || []) {
-        currentRowIndex++;
-        const values = row.values;
-
-        if (!values) continue;
-
-        const fosterhome = values[fosterhomeColumn]?.formattedValue;
-        const catName = values[catNameColumn]?.formattedValue;
-
-        if (fosterhome === data.owner.name && catName === data.name) {
-          return { row, rowIndex: currentRowIndex };
-        }
-      }
-    }
-
-    throw new Error(
-      `No matching row found for fosterhome: "${data.owner.name}" and cat: "${data.name}"`
-    );
-  }
+  /*
 
   private buildUpdateRequests(
     find: Record<string, string>,
@@ -298,4 +256,6 @@ export default class GoogleSheetsService {
       catData.cut = "true";
     }
   }
+    */
+
 }

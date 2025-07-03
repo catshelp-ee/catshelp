@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import TYPES from "types/inversify-types";
 import GoogleAuthService from "./google-auth-service";
-import { google } from "googleapis";
+import { drive_v3, google } from "googleapis";
+import { Cat } from "types/cat";
 
 const ALLOWED_DRIVE_MIME_TYPES = {
   jpg: "image/jpeg",
@@ -18,7 +19,7 @@ const ALLOWED_DRIVE_MIME_TYPES = {
 
 @injectable()
 export default class GoogleDriveService {
-  drive: any;
+  drive: drive_v3.Drive;
   constructor(
     @inject(TYPES.GoogleAuthService)
     private googleAuthService: GoogleAuthService
@@ -55,15 +56,15 @@ export default class GoogleDriveService {
           .on("finish", () => resolve(true))
           .on("error", reject);
       });
-    } catch (error) {
-      throw new Error(`failed to download image with ID ${fileId}`);
+    } catch (e) {
+      console.error(`failed to download image with ID ${fileId}\n`, e);
     }
   }
 
   async downloadImages(
     folderId: string,
     ownerName: string,
-    catProfile: any
+    catProfile: Cat
   ): Promise<boolean> {
     const res = await this.drive.files.list({
       q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
@@ -90,7 +91,7 @@ export default class GoogleDriveService {
   }
 
   createDriveFolder(name: string) {
-    var fileMetadata = {
+    const fileMetadata = {
       name: name,
       mimeType: "application/vnd.google-apps.folder",
       parents: ["1_WfzFwV0623sWtsYwkp8RiYnCb2_igFd"],
@@ -131,9 +132,8 @@ export default class GoogleDriveService {
         fields: "id",
       });
       return file.data.id;
-    } catch (err) {
-      // TODO(developer) - Handle error
-      throw err;
+    } catch (e) {
+      throw new Error("Error uploading file to drive: ", e);
     }
   }
 }

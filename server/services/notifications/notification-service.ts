@@ -3,17 +3,22 @@ import UssirohiNotification from "@notifications/UssirohiNotification";
 import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
 import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
 import PoleKassiNotification from "@notifications/PoleKassiNotification";
-import { SheetCell, Result } from 'types/dashboard';
+import { Result } from 'types/dashboard';
 import { parseEstonianDate, formatEstonianDate } from '@utils/date-utils';
 import { DEFAULT_COLORS } from '../dashboard/constants';
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
+import { Row } from "types/google-sheets";
+import TYPES from "types/inversify-types";
+import GoogleSheetsService from "@services/google/google-sheets-service";
 
 @injectable()
 export default class NotificationService {
     private readonly notifications: DashboardNotification[];
     private readonly colours: string[];
 
-    constructor() {
+    constructor(
+        @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
+    ) {
         this.notifications = [
             new UssirohiNotification(),
             new KompleksVaktsiiniKinnitusNotification(),
@@ -22,10 +27,8 @@ export default class NotificationService {
         this.colours = DEFAULT_COLORS;
     }
 
-    processNotifications(
-        rows: any,
-        columnMapping: Record<string, number>
-    ): Result[] {
+    processNotifications(): Result[] {  
+        const rows = this.googleSheetsService.rows;
 
         if (rows.length === 0) {
             return this.createEmptyStateNotification();
@@ -35,7 +38,7 @@ export default class NotificationService {
 
         rows.forEach((row, index) => {
             this.notifications.forEach(notification => {
-                const result = this.processNotification(notification, row, index, columnMapping);
+                const result = this.processNotification(notification, row, index);
                 if (result) {
                     results.push(result);
                 }
@@ -47,16 +50,15 @@ export default class NotificationService {
 
     private processNotification(
         notification: DashboardNotification,
-        row: any,
+        row: Row,
         catIndex: number,
-        columnMapping: Record<string, number>
     ): Result | null {
-        const columnIndex = columnMapping[notification.dbColumnName];
+        const columnIndex = this.googleSheetsService.headers[notification.dbColumnName];
         if (columnIndex === undefined) return null;
 
         const dateCell = row[columnIndex];
         const sheetsDate = dateCell?.formattedValue;
-        const catName = row[columnMapping['KASSI NIMI']].formattedValue
+        const catName = row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue
 
         const result: Result = {
             label: notification.getText(),

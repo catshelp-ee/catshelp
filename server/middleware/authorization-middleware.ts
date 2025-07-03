@@ -1,8 +1,6 @@
-import NodeCacheService from "@services/cache/cache-service";
 import UserService from "@services/user/user-service";
-import { User } from "generated/prisma";
 import { inject, injectable } from "inversify";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import TYPES from "types/inversify-types";
 
 @injectable()
@@ -54,13 +52,13 @@ export default class AuthorizationMiddleware {
   }
 
   async authenticate(req, res, next) {
-    try{
-
+    let decodedToken;
     try {
-      var decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
-    } catch (err) {
+      decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+    } catch (e) {
       res.cookie("jwt", "");
       res.cookie("catshelp", "");
+      console.error(e);
       return res.sendStatus(401);
     }
 
@@ -77,9 +75,6 @@ export default class AuthorizationMiddleware {
 
     if (this.tokenNeedsRefresh(decodedToken)) {
       this.refreshToken(decodedToken, res);
-    }
-    } catch( e){
-      console.log(e)
     }
 
     next();

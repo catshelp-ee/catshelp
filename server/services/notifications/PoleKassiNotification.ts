@@ -1,16 +1,15 @@
 import { DashboardNotification } from "./DasboardNotification";
-import moment from "moment";
 
 export default class PoleKassiNotification implements DashboardNotification {
   getText(): string {
     return "Teil pole kassi. Võta üks palun 🙏";
   }
 
-  shouldShow(triggerDate: Date): boolean {
+  shouldShow(_triggerDate: Date): boolean {
     return true;
   }
 
-  isUrgent(compareDate: Date): boolean {
+  isUrgent(_compareDate: Date): boolean {
     return true;
   }
 

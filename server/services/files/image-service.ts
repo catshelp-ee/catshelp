@@ -3,21 +3,23 @@ import { Cat } from "types/cat";
 import TYPES from "types/inversify-types"
 import { extractFileId, isValidHyperlink } from "@utils/image-utils";
 import { inject, injectable } from "inversify";
+import { Row } from "types/google-sheets";
+import GoogleSheetsService from "@services/google/google-sheets-service";
 
 @injectable()
 export default class ImageService {
 
   constructor(
-    @inject(TYPES.GoogleDriveService) private googleDriveService: GoogleDriveService
+    @inject(TYPES.GoogleDriveService) private googleDriveService: GoogleDriveService,
+    @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService
   ) {}
 
   async processImages(
     profile: Cat, 
-    values: any[], 
-    columnMap: Record<string, number>, 
+    values: Row, 
     ownerName: string
   ): Promise<void> {
-    const imageLink = values[columnMap["PILT"]]?.hyperlink || "";
+    const imageLink = values[this.googleSheetsService.headers["PILT"]]?.hyperlink || "";
     
     if (!isValidHyperlink(imageLink)) {
       console.warn(`Skipping image for ${profile.name} due to invalid image link.`);
@@ -30,7 +32,7 @@ export default class ImageService {
       return;
     }
 
-    await this.downloadProfileImage(profile, fileId, ownerName);
+    await this.downloadProfileImage(profile.name, fileId, ownerName);
     await this.downloadAdditionalImages(profile, ownerName);
   }
 
@@ -41,6 +43,7 @@ export default class ImageService {
       await this.googleDriveService.downloadImage(fileId, destinationPath);
       return `images/${ownerName}/${catName}.png`;
     } catch (e) {
+      console.error("Failed to download image: ", e);
       return "missing256x256.png";
     }
   }

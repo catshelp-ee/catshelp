@@ -1,6 +1,5 @@
-import moment from "moment";
-import { Cat, defaultCat } from "types/cat";
-import { SheetData, SheetRow } from "types/google-sheets";
+import { Cat, CharacteristicsResult, defaultCat } from "types/cat";
+import { Row, SheetRow } from "types/google-sheets";
 import TYPES from "types/inversify-types";
 import { Animal, User } from "generated/prisma";
 import CharacteristicsService  from "./characteristics-service";
@@ -29,7 +28,7 @@ export default class CatProfileBuilder {
   }
 
   private async buildSingleProfile(
-    row: any, 
+    row: Row, 
     animals: Animal[],
     owner: User
   ): Promise<Cat | null> {
@@ -49,29 +48,33 @@ export default class CatProfileBuilder {
       procedures
     );
 
-    await this.imageService.processImages(profile, row, this.googleSheetsService.headers, owner.fullName);
+    await this.imageService.processImages(profile, row, owner.fullName);
 
     return profile;
   }
 
-  private extractBaseData(values: any[], columnMap: Record<string, number>, cat: Animal) {
+  private extractBaseData(values: Row, cat: Animal): Cat {
     return {
-      name: values[columnMap["KASSI NIMI"]]?.formattedValue || "",
-      birthDate: values[columnMap["SÜNNIAEG"]]?.formattedValue,
-      currentLoc: values[columnMap["ASUKOHT"]]?.formattedValue,
-      foundLoc: values[columnMap["LEIDMISKOHT"]]?.formattedValue,
-      rescueDate: values[columnMap["PÄÄSTMISKP/ SÜNNIKP"]]?.formattedValue,
-      wormMedName: values[columnMap["Ussirohu/ turjatilga nimi"]]?.formattedValue,
-      wormMedDate: values[columnMap["USSIROHU/ TURJATILGA KP"]]?.formattedValue,
-      vaccDate: values[columnMap["KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)"]]?.formattedValue,
-      vaccEndDate: values[columnMap["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue,
-      rabiesVaccDate: values[columnMap["MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)"]]?.formattedValue,
-      rabiesVaccEndDate: values[columnMap["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue,
-      cat
+      ...defaultCat,
+      title: cat.profileTitle,
+      chipNr: cat.chipNumber,
+      driveId: cat.driveId,
+      llr: cat.chipRegisteredWithUs,
+      name: values[this.googleSheetsService.headers["KASSI NIMI"]]?.formattedValue || cat.name,
+      birthDate: parseDate(values[this.googleSheetsService.headers["SÜNNIAEG"]]?.formattedValue) || cat.birthday,
+      currentLoc: values[this.googleSheetsService.headers["ASUKOHT"]]?.formattedValue,
+      foundLoc: values[this.googleSheetsService.headers["LEIDMISKOHT"]]?.formattedValue,
+      rescueDate: parseDate(values[this.googleSheetsService.headers["PÄÄSTMISKP/ SÜNNIKP"]]?.formattedValue),
+      wormMedName: values[this.googleSheetsService.headers["Ussirohu/ turjatilga nimi"]]?.formattedValue,
+      wormMedDate: parseDate(values[this.googleSheetsService.headers["USSIROHU/ TURJATILGA KP"]]?.formattedValue),
+      vaccDate: parseDate(values[this.googleSheetsService.headers["KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)"]]?.formattedValue),
+      vaccEndDate: parseDate(values[this.googleSheetsService.headers["JÄRGMISE VAKTSIINI AEG"]]?.formattedValue),
+      rabiesVaccDate: parseDate(values[this.googleSheetsService.headers["MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)"]]?.formattedValue),
+      rabiesVaccEndDate: parseDate(values[this.googleSheetsService.headers["JÄRGMINE MARUTAUDI AEG"]]?.formattedValue),
     };
   }
 
-  private extractAppearance(values: any[], columnMap: Record<string, number>): string[] {
+  private extractAppearance(values: Row, columnMap: Record<string, number>): string[] {
     const appearance = [];
     const coatColor = values[columnMap["KASSI VÄRV"]]?.formattedValue;
     const coatLength = values[columnMap["KASSI KARVA PIKKUS"]]?.formattedValue;
@@ -82,7 +85,7 @@ export default class CatProfileBuilder {
     return appearance;
   }
 
-  private extractProcedures(values: any[], columnMap: Record<string, number>): string[] {
+  private extractProcedures(values: Row, columnMap: Record<string, number>): string[] {
     const procedures = [];
     
     if (values[columnMap["ASUKOHT"]]?.formattedValue === "JAH") {
@@ -105,8 +108,8 @@ export default class CatProfileBuilder {
   }
 
   private buildCatProfile(
-    baseData: any, 
-    characteristics: any, 
+    baseData: Cat, 
+    characteristics: CharacteristicsResult,
     appearance: string[], 
     procedures: string[]
   ): Cat {
@@ -114,51 +117,36 @@ export default class CatProfileBuilder {
     const age = calculateAge(baseData.birthDate);
 
     return {
-      ...defaultCat,
-      title: baseData.cat.profileTitle || defaultCat.title,
-      description: baseData.cat.description || defaultCat.description,
-      name: baseData.name || defaultCat.name,
-      birthDate: parseDate(baseData.birthDate) || defaultCat.birthDate,
-      chipNr: baseData.cat.chipNumber || defaultCat.chipNr,
-      llr: baseData.cat.chipRegisteredWithUs || defaultCat.llr,
-      gender: characteristics.gender || defaultCat.gender,
+      ...baseData,
+      gender: characteristics.others.gender || defaultCat.gender,
       genderLabel: genderLabel || defaultCat.genderLabel,
-      appearance: appearance.length > 0 ? appearance : defaultCat.appearance,
-      currentLoc: baseData.currentLoc || defaultCat.currentLoc,
-      age: age || defaultCat.age,
+      appearance: appearance.join(", ") || defaultCat.appearance,
       procedures: procedures.join(", ") || defaultCat.procedures,
-      foundLoc: baseData.foundLoc || defaultCat.foundLoc,
-      rescueDate: parseDate(baseData.rescueDate) || defaultCat.rescueDate,
-      wormMedName: baseData.wormMedName || defaultCat.wormMedName,
-      wormMedDate: parseDate(baseData.wormMedDate) || defaultCat.wormMedDate,
-      vacc: parseDate(baseData.vaccDate) || defaultCat.vacc,
-      vaccEnd: parseDate(baseData.vaccEndDate) || defaultCat.vaccEnd,
-      rabiesVacc: parseDate(baseData.rabiesVaccDate) || defaultCat.rabiesVacc,
-      rabiesVaccEnd: parseDate(baseData.rabiesVaccEndDate) || defaultCat.rabiesVaccEnd,
-      driveId: baseData.cat.driveId || defaultCat.driveId,
+      age: age || defaultCat.age,
+
       // Characteristics
-      coatColour: characteristics.coatColour || defaultCat.coatColour,
-      duration: characteristics.duration || defaultCat.duration,
-      coatLength: characteristics.coatLength || defaultCat.coatLength,
-      wishes: characteristics.wishes || defaultCat.wishes,
-      other: characteristics.other || defaultCat.other,
-      cut: characteristics.cut || defaultCat.cut,
-      issues: characteristics.issues || defaultCat.issues,
-      history: characteristics.history || defaultCat.history,
+      coatColour: characteristics.others.coatColour || defaultCat.coatColour,
+      duration: characteristics.others.duration || defaultCat.duration,
+      coatLength: characteristics.others.coatLength || defaultCat.coatLength,
+      wishes: characteristics.others.wishes || defaultCat.wishes,
+      other: characteristics.others.other || defaultCat.other,
+      cut: characteristics.others.cut || defaultCat.cut,
+      issues: characteristics.others.issues || defaultCat.issues,
+      history: characteristics.others.history || defaultCat.history,
       characteristics: characteristics.character || defaultCat.characteristics,
       likes: characteristics.likes || defaultCat.likes,
       cat: characteristics.cat || defaultCat.cat,
-      descriptionOfCharacter: characteristics.descriptionOfCharacter || defaultCat.descriptionOfCharacter,
-      treatOtherCats: characteristics.treatOtherCats || defaultCat.treatOtherCats,
-      treatDogs: characteristics.treatDogs || defaultCat.treatDogs,
-      treatChildren: characteristics.treatChildren || defaultCat.treatChildren,
-      outdoorsIndoors: characteristics.outdoorsIndoors || defaultCat.outdoorsIndoors,
+      descriptionOfCharacter: characteristics.others.descriptionOfCharacter || defaultCat.descriptionOfCharacter,
+      treatOtherCats: characteristics.others.treatOtherCats || defaultCat.treatOtherCats,
+      treatDogs: characteristics.others.treatDogs || defaultCat.treatDogs,
+      treatChildren: characteristics.others.treatChildren || defaultCat.treatChildren,
+      outdoorsIndoors: characteristics.others.outdoorsIndoors || defaultCat.outdoorsIndoors,
       images: []
     };
   }
 
-  private buildGenderLabel(characteristics: any): string {
-    const { cut, gender } = characteristics;
+  private buildGenderLabel(characteristics: CharacteristicsResult): string {
+    const { cut, gender } = characteristics.others;
     
     if (gender === "emane") {
       return cut ? "Steriliseeritud emane" : "Steriliseerimata emane";

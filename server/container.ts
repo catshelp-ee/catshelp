@@ -1,6 +1,6 @@
 import { Container } from "inversify";
 import TYPES from "types/inversify-types";
-import { DashboardService } from "@services/dashboard/dashboard-service";
+import DashboardService from "@services/dashboard/dashboard-service";
 import DashboardController from "./controllers/dashboard-controller";
 import LoginController from "./controllers/login-controller";
 import GoogleSheetsService from "@services/google/google-sheets-service";
@@ -33,35 +33,42 @@ let container: Container;
 async function init() {
   container = new Container();
 
+  // ─── External Auth Provider ─────────────────────────────────────
   const googleAuthService = await GoogleAuthService.create();
-
-  container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inSingletonScope();
-  container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inSingletonScope();
   container.bind<GoogleAuthService>(TYPES.GoogleAuthService).toConstantValue(googleAuthService);
 
+  // ─── Core/Infrastructure Services ───────────────────────────────
   container.bind<NodeCacheService>(TYPES.NodeCacheService).to(NodeCacheService).inSingletonScope();
 
-  container.bind<ImageService>(TYPES.ImageService).to(ImageService).inSingletonScope();
-  container.bind<NotificationService>(TYPES.NotificationService).to(NotificationService).inSingletonScope();
-  container.bind<CharacteristicsService>(TYPES.CharacteristicsService).to(CharacteristicsService).inSingletonScope();
+  // ─── External Google Services ───────────────────────────────────
+  container.bind<GoogleSheetsService>(TYPES.GoogleSheetsService).to(GoogleSheetsService).inSingletonScope();
+  container.bind<GoogleDriveService>(TYPES.GoogleDriveService).to(GoogleDriveService).inSingletonScope();
+
+  // ─── Application Services ───────────────────────────────────────
   container.bind<AuthService>(TYPES.AuthService).to(AuthService).inSingletonScope();
-  
+  container.bind<UserService>(TYPES.UserService).to(UserService).inSingletonScope();
+  container.bind<AnimalService>(TYPES.AnimalService).to(AnimalService).inSingletonScope();
   container.bind<DashboardService>(TYPES.DashboardService).to(DashboardService).inSingletonScope();
   container.bind<ProfileService>(TYPES.ProfileService).to(ProfileService).inSingletonScope();
-  container.bind<AnimalService>(TYPES.AnimalService).to(AnimalService).inSingletonScope();
-  container.bind<UserService>(TYPES.UserService).to(UserService).inSingletonScope();
-  
+  container.bind<NotificationService>(TYPES.NotificationService).to(NotificationService).inSingletonScope();
+  container.bind<ImageService>(TYPES.ImageService).to(ImageService).inSingletonScope();
+  container.bind<CharacteristicsService>(TYPES.CharacteristicsService).to(CharacteristicsService).inSingletonScope();
   container.bind<CatProfileBuilder>(TYPES.CatProfileBuilder).to(CatProfileBuilder).inSingletonScope();
 
+  // ─── Repositories ───────────────────────────────────────────────
+  container.bind<AnimalRepository>(TYPES.AnimalRepository).to(AnimalRepository).inSingletonScope();
+
+  // ─── Controllers ────────────────────────────────────────────────
   container.bind<DashboardController>(TYPES.DashboardController).to(DashboardController).inSingletonScope();
   container.bind<ProfileController>(TYPES.ProfileController).to(ProfileController).inSingletonScope();
   container.bind<UserController>(TYPES.UserController).to(UserController).inSingletonScope();
   container.bind<LoginController>(TYPES.LoginController).to(LoginController).inSingletonScope();
 
-  container.bind<AnimalRepository>(TYPES.AnimalRepository).to(AnimalRepository).inSingletonScope();
+  // ─── Middleware ─────────────────────────────────────────────────
   container.bind<AuthorizationMiddleware>(TYPES.AuthorizationMiddleware).to(AuthorizationMiddleware).inSingletonScope();
 
   return container;
 }
 
 export { init };
+

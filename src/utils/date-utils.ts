@@ -7,15 +7,15 @@ export const parseDate = (dateString: string): Date | null => {
   return parsed.isValid() ? parsed.toDate() : null;
 }
 
-export const calculateAge = (birthDateString: string): string => {
-  if (!birthDateString) return "";
+export const calculateAge = (birthDate: Date): string => {
+  if (!birthDate) return "";
   
-  const birthDate = moment(birthDateString, "DD.MM.YYYY");
-  if (!birthDate.isValid()) return "";
+  const birthDateMoment = moment(birthDate, "DD.MM.YYYY");
+  if (!birthDateMoment.isValid()) return "";
   
   const now = moment();
-  const years = now.diff(birthDate, "years");
-  const months = now.diff(birthDate.clone().add(years, "years"), "months");
+  const years = now.diff(birthDateMoment, "years");
+  const months = now.diff(birthDateMoment.clone().add(years, "years"), "months");
 
   if (years === 0) return `${months} kuud`;
   if (months === 0) return `${years} aastat`;

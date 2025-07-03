@@ -1,7 +1,7 @@
 import GoogleDriveService from "@services/google/google-drive-service";
 import TYPES from "types/inversify-types";
 import { inject, injectable } from "inversify";
-import fs from "node:fs";
+//import fs from "node:fs";
 
 @injectable()
 export default class FileService {
@@ -9,7 +9,7 @@ export default class FileService {
     @inject(TYPES.GoogleDriveService) private googleDriveService: GoogleDriveService
   ){}
 
-  async uploadFiles(files: any[], folderId: string): Promise<void> {
+  /*async uploadFiles(files: any[], folderId: string): Promise<void> {
     const fileArray = Array.isArray(files) ? files : [files];
     
     const uploadPromises = fileArray.map(async (file) => {
@@ -22,5 +22,5 @@ export default class FileService {
     });
 
     await Promise.all(uploadPromises);
-  }
+  }*/
 }

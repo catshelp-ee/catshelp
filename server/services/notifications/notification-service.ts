@@ -1,114 +1,118 @@
-import { DashboardNotification } from "@notifications/DasboardNotification";
-import KompleksVaktsiiniKinnitusNotification from "@notifications/KompleksVaktsiiniKinnitusNotification";
-import MarutaudVaktsiiniKinnitusNotification from "@notifications/MarutaudVaktsiiniKinnitusNotification";
-import PoleKassiNotification from "@notifications/PoleKassiNotification";
-import UssirohiNotification from "@notifications/UssirohiNotification";
-import GoogleSheetsService from "@services/google/google-sheets-service";
+import { DashboardNotification } from '@notifications/DasboardNotification';
+import KompleksVaktsiiniKinnitusNotification from '@notifications/KompleksVaktsiiniKinnitusNotification';
+import MarutaudVaktsiiniKinnitusNotification from '@notifications/MarutaudVaktsiiniKinnitusNotification';
+import PoleKassiNotification from '@notifications/PoleKassiNotification';
+import UssirohiNotification from '@notifications/UssirohiNotification';
+import GoogleSheetsService from '@services/google/google-sheets-service';
 import { formatEstonianDate, parseEstonianDate } from '@utils/date-utils';
-import { inject, injectable } from "inversify";
+import { inject, injectable } from 'inversify';
 import { Result } from 'types/dashboard';
-import { Row } from "types/google-sheets";
-import TYPES from "types/inversify-types";
+import { Row } from 'types/google-sheets';
+import TYPES from 'types/inversify-types';
 import { DEFAULT_COLORS } from '../dashboard/constants';
 
 @injectable()
 export default class NotificationService {
-    private readonly notifications: DashboardNotification[];
-    private readonly colours: string[];
+  private readonly notifications: DashboardNotification[];
+  private readonly colours: string[];
 
-    constructor(
-        @inject(TYPES.GoogleSheetsService) private googleSheetsService: GoogleSheetsService,
-    ) {
-        this.notifications = [
-            new UssirohiNotification(),
-            new KompleksVaktsiiniKinnitusNotification(),
-            new MarutaudVaktsiiniKinnitusNotification()
-        ];
-        this.colours = DEFAULT_COLORS;
+  constructor(
+    @inject(TYPES.GoogleSheetsService)
+    private googleSheetsService: GoogleSheetsService
+  ) {
+    this.notifications = [
+      new UssirohiNotification(),
+      new KompleksVaktsiiniKinnitusNotification(),
+      new MarutaudVaktsiiniKinnitusNotification(),
+    ];
+    this.colours = DEFAULT_COLORS;
+  }
+
+  processNotifications(): Result[] {
+    const rows = this.googleSheetsService.rows;
+
+    if (rows.length === 0) {
+      return this.createEmptyStateNotification();
     }
 
-    processNotifications(): Result[] {  
-        const rows = this.googleSheetsService.rows;
+    const results: Result[] = [];
 
-        if (rows.length === 0) {
-            return this.createEmptyStateNotification();
+    rows.forEach((row, index) => {
+      this.notifications.forEach(notification => {
+        const result = this.processNotification(notification, row, index);
+        if (result) {
+          results.push(result);
         }
+      });
+    });
 
-        const results: Result[] = [];
+    return results;
+  }
 
-        rows.forEach((row, index) => {
-            this.notifications.forEach(notification => {
-                const result = this.processNotification(notification, row, index);
-                if (result) {
-                    results.push(result);
-                }
-            });
-        });
+  private processNotification(
+    notification: DashboardNotification,
+    row: Row,
+    catIndex: number
+  ): Result | null {
+    const columnIndex =
+      this.googleSheetsService.headers[notification.dbColumnName];
+    if (columnIndex === undefined) return null;
 
-        return results;
+    const dateCell = row[columnIndex];
+    const sheetsDate = dateCell?.formattedValue;
+    const catName =
+      row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue;
+
+    const result: Result = {
+      label: notification.getText(),
+      assignee: catName,
+      due: formatEstonianDate(new Date()),
+      action: {
+        label: notification.buttonText,
+        redirect: notification.redirectURL,
+      },
+      urgent: true,
+      catColour: this.colours[catIndex % this.colours.length],
+    };
+
+    // Handle empty cell
+    if (!sheetsDate) {
+      notification.cellIsEmpty = true;
+      return result;
     }
 
-    private processNotification(
-        notification: DashboardNotification,
-        row: Row,
-        catIndex: number,
-    ): Result | null {
-        const columnIndex = this.googleSheetsService.headers[notification.dbColumnName];
-        if (columnIndex === undefined) return null;
+    // Parse and validate date
+    const triggerDate = parseEstonianDate(sheetsDate);
+    if (!triggerDate) return null;
 
-        const dateCell = row[columnIndex];
-        const sheetsDate = dateCell?.formattedValue;
-        const catName = row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue
+    // Check if notification should be shown
+    if (!notification.shouldShow(triggerDate)) return null;
 
-        const result: Result = {
-            label: notification.getText(),
-            assignee: catName,
-            due: formatEstonianDate(new Date()),
-            action: {
-                label: notification.buttonText,
-                redirect: notification.redirectURL,
-            },
-            urgent: true,
-            catColour: this.colours[catIndex % this.colours.length],
-        };
+    const dueDate = notification.getDueDate(triggerDate);
+    const isUrgent = notification.isUrgent(dueDate);
 
-        // Handle empty cell
-        if (!sheetsDate) {
-            notification.cellIsEmpty = true;
-            return result;
-        }
+    result.urgent = isUrgent;
+    result.due = formatEstonianDate(dueDate);
 
-        // Parse and validate date
-        const triggerDate = parseEstonianDate(sheetsDate);
-        if (!triggerDate) return null;
+    return result;
+  }
 
-        // Check if notification should be shown
-        if (!notification.shouldShow(triggerDate)) return null;
+  private createEmptyStateNotification(): Result[] {
+    const notification = new PoleKassiNotification();
+    const dueDate = new Date();
 
-        const dueDate = notification.getDueDate(triggerDate);
-        const isUrgent = notification.isUrgent(dueDate);
-
-        result.urgent = isUrgent;
-        result.due = formatEstonianDate(dueDate);
-
-        return result;
-
-    }
-
-    private createEmptyStateNotification(): Result[] {
-        const notification = new PoleKassiNotification();
-        const dueDate = new Date();
-
-        return [{
-            label: notification.getText(),
-            assignee: "Sina ise",
-            due: formatEstonianDate(dueDate),
-            action: {
-                label: notification.buttonText,
-                redirect: notification.redirectURL,
-            },
-            urgent: false,
-            catColour: "#000",
-        }];
-    }
+    return [
+      {
+        label: notification.getText(),
+        assignee: 'Sina ise',
+        due: formatEstonianDate(dueDate),
+        action: {
+          label: notification.buttonText,
+          redirect: notification.redirectURL,
+        },
+        urgent: false,
+        catColour: '#000',
+      },
+    ];
+  }
 }

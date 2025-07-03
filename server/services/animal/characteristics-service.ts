@@ -1,9 +1,8 @@
 //import { descriptors } from "types/cat";
 //import { PrismaTransactionClient } from "types/prisma";
-import { injectable } from "inversify";
-import { prisma } from "server/prisma";
-import { CharacteristicsResult } from "types/cat";
-
+import { injectable } from 'inversify';
+import { prisma } from 'server/prisma';
+import { CharacteristicsResult } from 'types/cat';
 
 @injectable()
 export default class CharacteristicsService {
@@ -19,13 +18,13 @@ export default class CharacteristicsService {
 
     characteristics.forEach(({ type, name }) => {
       switch (type) {
-        case "characteristics":
+        case 'characteristics':
           character.push(name);
           break;
-        case "likes":
+        case 'likes':
           likes.push(name);
           break;
-        case "cat":
+        case 'cat':
           cat.push(name);
           break;
         default:

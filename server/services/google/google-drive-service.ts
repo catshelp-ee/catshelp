@@ -1,20 +1,20 @@
-import { drive_v3, google } from "googleapis";
-import { inject, injectable } from "inversify";
-import fs from "node:fs";
-import path from "node:path";
-import { Cat } from "types/cat";
-import TYPES from "types/inversify-types";
-import GoogleAuthService from "./google-auth-service";
+import { drive_v3, google } from 'googleapis';
+import { inject, injectable } from 'inversify';
+import fs from 'node:fs';
+import path from 'node:path';
+import { Cat } from 'types/cat';
+import TYPES from 'types/inversify-types';
+import GoogleAuthService from './google-auth-service';
 
 const ALLOWED_DRIVE_MIME_TYPES = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  gif: "image/gif",
-  webp: "image/webp",
-  bmp: "image/bmp",
-  tiff: "image/tiff",
-  svg: "image/svg+xml",
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  bmp: 'image/bmp',
+  tiff: 'image/tiff',
+  svg: 'image/svg+xml',
 };
 
 @injectable()
@@ -25,7 +25,7 @@ export default class GoogleDriveService {
     private googleAuthService: GoogleAuthService
   ) {
     this.drive = google.drive({
-      version: "v3",
+      version: 'v3',
       auth: this.googleAuthService.getAuth(),
     });
   }
@@ -45,19 +45,19 @@ export default class GoogleDriveService {
         fs.mkdirSync(folderPath, { recursive: true }); // Creates all missing folders
       }
       const response = await this.drive.files.get(
-        { fileId, alt: "media" },
-        { responseType: "stream" }
+        { fileId, alt: 'media' },
+        { responseType: 'stream' }
       );
 
       const writeStream = fs.createWriteStream(destinationPath);
       await new Promise((resolve, reject) => {
         response.data
           .pipe(writeStream)
-          .on("finish", () => resolve(true))
-          .on("error", reject);
+          .on('finish', () => resolve(true))
+          .on('error', reject);
       });
     } catch (e) {
-      console.error(`failed to download image with ID ${fileId}\n`, e);
+      throw new Error(`failed to download image with ID ${fileId}\n`, e);
     }
   }
 
@@ -68,15 +68,15 @@ export default class GoogleDriveService {
   ): Promise<boolean> {
     const res = await this.drive.files.list({
       q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
-      fields: "files(id, name, mimeType)",
+      fields: 'files(id, name, mimeType)',
       supportsAllDrives: true, // ✅ Key for shared drives!
       includeItemsFromAllDrives: true, // ✅ Also needed
-      corpora: "drive", // Use 'drive' instead of 'user'
-      driveId: "0AAcl4FOHQ4b9Uk9PVA", // 🔑 Required for shared drives
+      corpora: 'drive', // Use 'drive' instead of 'user'
+      driveId: '0AAcl4FOHQ4b9Uk9PVA', // 🔑 Required for shared drives
     });
 
     await Promise.all(
-      res.data.files.map(async (file) => {
+      res.data.files.map(async file => {
         const filePath = `./images/${ownerName}/${file.name}`;
         try {
           await this.downloadImage(file.id, filePath);
@@ -87,20 +87,21 @@ export default class GoogleDriveService {
       })
     );
 
+    console.log(catProfile);
     return true;
   }
 
   createDriveFolder(name: string) {
     const fileMetadata = {
       name: name,
-      mimeType: "application/vnd.google-apps.folder",
-      parents: ["1_WfzFwV0623sWtsYwkp8RiYnCb2_igFd"],
-      driveId: "0AAcl4FOHQ4b9Uk9PVA",
+      mimeType: 'application/vnd.google-apps.folder',
+      parents: ['1_WfzFwV0623sWtsYwkp8RiYnCb2_igFd'],
+      driveId: '0AAcl4FOHQ4b9Uk9PVA',
     };
     return this.drive.files.create({
       supportsAllDrives: true,
       requestBody: fileMetadata,
-      fields: "id",
+      fields: 'id',
     });
   }
 
@@ -109,12 +110,12 @@ export default class GoogleDriveService {
     filestream: fs.ReadStream,
     driveId: string
   ) {
-    const lastDotIndex = filename.lastIndexOf(".");
+    const lastDotIndex = filename.lastIndexOf('.');
     const ext = filename.slice(lastDotIndex + 1).toLowerCase();
 
     const requestBody = {
       name: filename,
-      fields: "id",
+      fields: 'id',
       parents: [driveId],
     };
 
@@ -128,12 +129,12 @@ export default class GoogleDriveService {
         supportsAllDrives: true,
         requestBody,
         media: media,
-        uploadType: "resumable",
-        fields: "id",
+        uploadType: 'resumable',
+        fields: 'id',
       });
       return file.data.id;
     } catch (e) {
-      throw new Error("Error uploading file to drive: ", e);
+      throw new Error('Error uploading file to drive: ', e);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Animal, AnimalRescue } from "generated/prisma";
+import { Animal, AnimalRescue } from 'generated/prisma';
 
 export interface CreateAnimalData {
   state: string;
@@ -9,4 +9,9 @@ export interface CreateAnimalData {
 export interface CreateAnimalResult {
   animal: Animal;
   animalRescue: AnimalRescue;
+}
+
+export interface Pet {
+  name: string;
+  pathToImage: string;
 }

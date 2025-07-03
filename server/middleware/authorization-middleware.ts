@@ -1,13 +1,11 @@
-import UserService from "@services/user/user-service";
-import { inject, injectable } from "inversify";
-import jwt from "jsonwebtoken";
-import TYPES from "types/inversify-types";
+import UserService from '@services/user/user-service';
+import { inject, injectable } from 'inversify';
+import jwt from 'jsonwebtoken';
+import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class AuthorizationMiddleware {
-  constructor(
-    @inject(TYPES.UserService) private userService: UserService
-  ){
+  constructor(@inject(TYPES.UserService) private userService: UserService) {
     this.authenticate = this.authenticate.bind(this);
   }
 
@@ -31,15 +29,15 @@ export default class AuthorizationMiddleware {
 
     const cookieLength = 24 * 60 * 60 * 1000;
 
-    res.cookie("catshelp", 'true', {
+    res.cookie('catshelp', 'true', {
       maxAge: cookieLength,
       httpOnly: false,
     });
 
-    res.cookie("jwt", token, {
+    res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.VITE_ENVIRONMENT !== 'TEST',
-      sameSite: "Strict",
+      sameSite: 'Strict',
       maxAge: cookieLength,
     });
   }
@@ -56,22 +54,21 @@ export default class AuthorizationMiddleware {
     try {
       decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
     } catch (e) {
-      res.cookie("jwt", "");
-      res.cookie("catshelp", "");
+      res.cookie('jwt', '');
+      res.cookie('catshelp', '');
       console.error(e);
       return res.sendStatus(401);
     }
 
-    if (!decodedToken || await UserService.isTokenInvalid(req.cookies.jwt)) {
-      res.cookie("jwt", "");
-      res.cookie("catshelp", "");
+    if (!decodedToken || (await UserService.isTokenInvalid(req.cookies.jwt))) {
+      res.cookie('jwt', '');
+      res.cookie('catshelp', '');
       return res.sendStatus(401);
     }
 
-    if (!await this.canViewPage(decodedToken)) {
+    if (!(await this.canViewPage(decodedToken))) {
       return res.sendStatus(401);
     }
-
 
     if (this.tokenNeedsRefresh(decodedToken)) {
       this.refreshToken(decodedToken, res);

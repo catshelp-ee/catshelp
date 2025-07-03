@@ -1,7 +1,7 @@
-import { Animal } from "generated/prisma";
-import { injectable } from "inversify";
-import { prisma } from "server/prisma";
-import { CreateAnimalData, CreateAnimalResult } from "types/animal";
+import { Animal } from 'generated/prisma';
+import { injectable } from 'inversify';
+import { prisma } from 'server/prisma';
+import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 
 @injectable()
 export default class AnimalRepository {
@@ -28,13 +28,15 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
-  async createAnimalWithRescue(data: CreateAnimalData): Promise<CreateAnimalResult> {
-    return await prisma.$transaction(async (tx) => {
+  async createAnimalWithRescue(
+    data: CreateAnimalData
+  ): Promise<CreateAnimalResult> {
+    return await prisma.$transaction(async tx => {
       const animal = await tx.animal.create({ data: {} });
-      
+
       const animalRescue = await tx.animalRescue.create({
         data: {
-          rescueDate: new Date().toISOString().split("T")[0],
+          rescueDate: new Date().toISOString().split('T')[0],
           state: data.state,
           address: data.location,
           locationNotes: data.notes,

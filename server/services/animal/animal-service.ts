@@ -1,15 +1,14 @@
-import { Animal } from "generated/prisma";
-import { inject, injectable } from "inversify";
-import TYPES from "types/inversify-types";
-import AnimalRepository from "../../repositories/animal-repository";
+import { Animal } from 'generated/prisma';
+import { inject, injectable } from 'inversify';
+import TYPES from 'types/inversify-types';
+import AnimalRepository from '../../repositories/animal-repository';
 
 @injectable()
 export default class AnimalService {
   private animals: Animal[];
   constructor(
-    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
-  ) {
-  }
+    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository
+  ) {}
 
   async getUserCats(email: string): Promise<Animal[]> {
     if (!email) return [];

@@ -26,6 +26,7 @@ import DashboardController from './controllers/dashboard-controller';
 //import * as profileController from "./controllers/profile-controller"
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
+import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import AuthorizationMiddleware from './middleware/authorization-middleware';
 import errorMiddleware from './middleware/error-middleware';
@@ -41,6 +42,7 @@ async function bootstrap() {
   );
   await dashboardService.init();
   const loginController = container.get<LoginController>(TYPES.LoginController);
+  const userController = container.get<UserController>(TYPES.UserController);
   const dashboardController = container.get<DashboardController>(
     TYPES.DashboardController
   );
@@ -67,7 +69,7 @@ async function bootstrap() {
   app.use(express.json());
   app.use(express.static(path.join(rootDir, 'dist')));
   app.use('/images', express.static(path.join(__dirname, 'images')));
-  // Custom middleware to inject a request-scoped container for dependency injection
+
   startCronRunner();
 
   // Public endpoints for authentication
@@ -91,7 +93,7 @@ async function bootstrap() {
   app.get(
     '/api/user',
     auth.authenticate,
-    loginController.googleLogin.bind(loginController)
+    userController.getUserData.bind(userController)
   );
   app.get(
     '/api/animals/dashboard',

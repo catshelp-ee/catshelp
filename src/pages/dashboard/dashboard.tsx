@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useAuth } from "@context/auth-context";
 import { useAlert } from "@context/alert-context";
+import { useAuth } from "@context/auth-context";
 import { isLoadingWrapper } from "@hooks/is-loading";
-import Notifications from "./notifications";
-import FosterPets from "./foster-pets";
-import TodoList from "./todo-list";
 import { CircularProgress } from "@mui/material";
-
-export interface Pet {
-  name: string;
-  image: string;
-}
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Pet } from "types/animal";
+import FosterPets from "./foster-pets";
+import Notifications from "./notifications";
+import TodoList from "./todo-list";
 
 export interface Todo {
   label: string;
@@ -25,7 +21,7 @@ export interface Todo {
   };
 }
 
-interface DashboardProps {}
+interface DashboardProps { }
 
 const Dashboard: React.FC<DashboardProps> = () => {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -34,6 +30,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { getUser } = useAuth();
   const { showAlert } = useAlert();
+
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -56,7 +53,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     // Usage
     fetchDashboardWithLoading();
 
-    return () => {};
+    return () => { };
   }, []);
 
   const renderContent = () => {

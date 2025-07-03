@@ -61,7 +61,6 @@ export default class ImageService {
     ownerName: string
   ): Promise<void> {
     try {
-      console.log(profile);
       await this.googleDriveService.downloadImages(
         profile.driveId,
         ownerName,

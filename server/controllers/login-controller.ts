@@ -1,7 +1,6 @@
 import AuthService from '@services/auth/auth-service';
 import CookieService from '@services/auth/cookie-service';
 import EmailService from '@services/auth/email-service';
-import NodeCacheService from '@services/cache/cache-service';
 import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
 import { User } from 'generated/prisma';
@@ -19,7 +18,7 @@ export default class LoginController {
 
   constructor(
     @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
+    @inject(TYPES.UserService) private userService: UserService
   ) {
     this.emailService = new EmailService();
   }
@@ -50,7 +49,11 @@ export default class LoginController {
         return res.sendStatus(401);
       }
 
-      this.nodeCacheService.set(`user:${user.id}`, user);
+      this.userService.setUser(user);
+
+      const newToken = this.authService.generateJWT(user.id);
+      CookieService.setAuthCookies(res, newToken);
+
       return res.sendStatus(200);
     } catch (error) {
       console.error('Google login error:', error);
@@ -148,7 +151,7 @@ export default class LoginController {
       return null;
     }
 
-    const token = this.authService.generateJWT(user.id.toString());
+    const token = this.authService.generateJWT(user.id);
     CookieService.setAuthCookies(res, token);
 
     return user;

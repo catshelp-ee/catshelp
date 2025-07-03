@@ -86,8 +86,6 @@ export default class GoogleDriveService {
         }
       })
     );
-
-    console.log(catProfile);
     return true;
   }
 

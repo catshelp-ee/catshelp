@@ -9,6 +9,7 @@ export default class AuthService {
   private readonly client: OAuth2Client;
   private readonly jwtSecret: string;
   private readonly tokenLength: string;
+  private readonly cookieLength = 24 * 60 * 60 * 1000;
 
   constructor() {
     this.client = new OAuth2Client();
@@ -20,6 +21,10 @@ export default class AuthService {
         'Missing required environment variables: JWT_SECRET or TOKEN_LENGTH'
       );
     }
+  }
+
+  getCookieLength() {
+    return this.cookieLength;
   }
 
   async verifyGoogleToken(
@@ -40,7 +45,7 @@ export default class AuthService {
     }
   }
 
-  generateJWT(userId: string): string {
+  generateJWT(userId: string | number): string {
     return jwt.sign({ id: userId }, this.jwtSecret, {
       expiresIn: this.tokenLength,
     });

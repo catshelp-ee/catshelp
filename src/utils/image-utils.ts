@@ -70,3 +70,18 @@ export const resizeImages = (images: File[]): Promise<File[]> => {
   ]);
   return Promise.all(allResizePromises);
 };
+
+
+export const isValidHyperlink = (link: string): boolean => {
+  try {
+    new URL(link);
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
+
+export const extractFileId = (link: string): string | null => {
+  const match = link.match(/\/file\/d\/(.+?)\//);
+  return match ? match[1] : null;
+}

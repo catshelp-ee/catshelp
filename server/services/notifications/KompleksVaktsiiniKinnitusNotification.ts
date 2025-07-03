@@ -1,31 +1,34 @@
-import { DashboardNotification } from "./DasboardNotification";
-import moment from "moment";
+import moment from 'moment';
 
-export default class KompleksVaktsiiniKinnitusNotification implements DashboardNotification {
-    getText(): string {
-        if (this.cellIsEmpty)
-            return "Kompleksvaktsiini info puudub";
-        return "Broneeri veterinaari juures vaktsineerimise aeg";
-    }
+import { DashboardNotification } from './DasboardNotification';
 
-    shouldShow(triggerDate: Date): boolean {
-        const currentDate = moment(new Date());
-        currentDate.subtract(1, "y");
+export default class KompleksVaktsiiniKinnitusNotification
+  implements DashboardNotification
+{
+  getText(): string {
+    if (this.cellIsEmpty) return 'Kompleksvaktsiini info puudub';
+    return 'Broneeri veterinaari juures vaktsineerimise aeg';
+  }
 
-        return currentDate.toDate() > triggerDate;
-    }
+  shouldShow(triggerDate: Date): boolean {
+    const currentDate = moment(new Date());
+    currentDate.subtract(1, 'y');
 
-    isUrgent(compareDate: Date): boolean {
-        const currentDate = moment(new Date());
-        return currentDate.toDate() > compareDate;
-    }
+    return currentDate.toDate() > triggerDate;
+  }
 
-    getDueDate(currentDate: Date): Date {
-        return moment(currentDate).add(1, 'y').add(7, 'd').toDate();
-    }
+  isUrgent(compareDate: Date): boolean {
+    const currentDate = moment(new Date());
+    return currentDate.toDate() > compareDate;
+  }
 
-    dbColumnName = "KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)";
-    buttonText = "Broneeri aeg";
-    redirectURL = process.env.VACCINE_REDIRECT!;
-    cellIsEmpty = false;
+  getDueDate(currentDate: Date): Date {
+    return moment(currentDate).add(1, 'y').add(7, 'd').toDate();
+  }
+
+  dbColumnName =
+    'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)';
+  buttonText = 'Broneeri aeg';
+  redirectURL = process.env.VACCINE_REDIRECT!;
+  cellIsEmpty = false;
 }

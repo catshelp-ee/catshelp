@@ -46,21 +46,21 @@ export interface Cat extends Descriptors {
   title: string;
   description: string;
   name: string;
-  birthDate: Date | null;
+  birthDate: Date | null ;
   chipNr: string;
-  llr: string;
+  llr: boolean;
   genderLabel: string;
   wormMedName: string;
-  wormMedDate: Date | null;
-  rescueDate: Date | null;
+  wormMedDate: Date | null ;
+  rescueDate: Date | null ;
   foundLoc: string;
   age: string;
   currentLoc: string;
-  vacc: Date | null;
-  vaccEnd: Date | null;
-  rabiesVacc: Date | null;
-  rabiesVaccEnd: Date | null;
-  images: [];
+  vaccDate: Date | null ;
+  vaccEndDate: Date | null ;
+  rabiesVaccDate: Date | null ;
+  rabiesVaccEndDate: Date | null ;
+  images: string[];
   driveId: string;
 }
 
@@ -73,18 +73,25 @@ export const defaultCat: Cat = {
   currentLoc: "",
   age: "",
   chipNr: "",
-  llr: "false",
+  llr: false,
   genderLabel: "",
   wormMedName: "",
   wormMedDate: null,
   rescueDate: null,
   foundLoc: "",
-  vacc: null,
-  vaccEnd: null,
-  rabiesVacc: null,
-  rabiesVaccEnd: null,
+  vaccDate: null,
+  vaccEndDate: null,
+  rabiesVaccDate: null,
+  rabiesVaccEndDate: null,
   images: [],
   other: "",
   wishes: "",
   driveId: "",
 };
+
+export interface CharacteristicsResult {
+  character: string[];
+  likes: string[];
+  cat: string[];
+  others: Record<string, string>;
+}

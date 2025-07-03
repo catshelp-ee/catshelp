@@ -1,16 +1,15 @@
-import { DashboardNotification } from "./DasboardNotification";
-import moment from "moment";
+import { DashboardNotification } from './DasboardNotification';
 
 export default class PoleKassiNotification implements DashboardNotification {
   getText(): string {
-    return "Teil pole kassi. Võta üks palun 🙏";
+    return 'Teil pole kassi. Võta üks palun 🙏';
   }
 
-  shouldShow(triggerDate: Date): boolean {
+  shouldShow(_triggerDate: Date): boolean {
     return true;
   }
 
-  isUrgent(compareDate: Date): boolean {
+  isUrgent(_compareDate: Date): boolean {
     return true;
   }
 
@@ -18,8 +17,8 @@ export default class PoleKassiNotification implements DashboardNotification {
     return currentDate;
   }
 
-  dbColumnName = "";
-  buttonText = "Võtke kass";
+  dbColumnName = '';
+  buttonText = 'Võtke kass';
   redirectURL = process.env.NO_CAT_REDIRECT!;
   cellIsEmpty = false;
 }

@@ -1,35 +1,24 @@
-import DashboardService from "@services/dashboard-service";
-import { getCurrentUser } from "@middleware/authorization-middleware";
-import GoogleService from "@services/google-service";
+import { Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 
-export async function getDashboard(req: any, res: any) {
-  const user = await getCurrentUser(req);
-  const googleService = await GoogleService.create();
+import AuthService from '@services/auth/auth-service';
+import DashboardService from '@services/dashboard/dashboard-service';
+import TYPES from 'types/inversify-types';
 
-  const sheetsDataFosterHomes = await googleService.getSheetData(
-    process.env.CATS_SHEETS_ID!,
-    process.env.CATS_TABLE_NAME!
-  );
-  const sheetsDataContracts = await googleService.getSheetData(
-    process.env.CONTRACTS_SHEETS_ID!,
-    "Hoiukodude lepingud"
-  );
+@injectable()
+export default class DashboardController {
+  constructor(
+    @inject(TYPES.DashboardService) private dashboardService: DashboardService,
+    @inject(TYPES.AuthService) private authService: AuthService
+  ) {}
 
-  const sheetsData = {
-    cats: sheetsDataFosterHomes.data.sheets![0].data,
-    contracts: sheetsDataContracts.data.sheets![0].data,
-  };
-
-  const dashboardService = new DashboardService(
-    sheetsData,
-    user.fullName,
-    googleService
-  );
-
-  const response = {
-    todos: dashboardService.displayNotifications(),
-    pets: await dashboardService.downloadImages(),
-  };
-
-  return res.json(response);
+  public async getDashboard(req: Request, res: Response): Promise<Response> {
+    const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
+    const userID = decodedToken.id;
+    const response = {
+      todos: await this.dashboardService.displayNotifications(userID),
+      pets: await this.dashboardService.getPetAvatars(userID),
+    };
+    return res.json(response);
+  }
 }

@@ -4,7 +4,7 @@ import { TextField, Button, IconButton } from "@mui/material";
 import { uploadImages } from "@utils/google-utils";
 import ImageGallery from "@pages/cat-profile/image-gallery";
 import { useAuth } from "@context/auth-context";
-import Popup from "@pages/add-cat/Popup";
+import Popup from "@components/popup";
 import { Cat } from "types/cat";
 import { useCatForm } from "@hooks/use-cat-form";
 import { BasicInfoFields } from "./form/basic-info-fields";

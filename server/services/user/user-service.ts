@@ -43,29 +43,24 @@ export default class UserService {
   }
 
   static async setTokenInvalid(token, decodedToken) {
-    if (!token) {
-      return null;
-    }
     const date = new Date(0);
     date.setUTCSeconds(decodedToken.exp);
 
-    const existing = await prisma.revokedToken.findFirst({
-      where: {
-        token: token,
-        expiresAt: date,
-      },
-    });
-
-    if (!existing) {
-      return;
+    try {
+      await prisma.revokedToken.upsert({
+        where: {
+          token: token,
+          expiresAt: date,
+        },
+        update: {},
+        create: {
+          token: token,
+          expiresAt: date,
+        },
+      });
+    } catch (e) {
+      console.error(e);
     }
-
-    await prisma.revokedToken.create({
-      data: {
-        token: token,
-        expiresAt: date,
-      },
-    });
   }
 
   static async isTokenInvalid(token) {

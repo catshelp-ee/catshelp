@@ -3,12 +3,14 @@ const createImageCanvas = (
   width: number,
   height: number
 ): HTMLCanvasElement => {
-  const canvas = document.createElement("canvas");
+  const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
 
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Unable to get 2D canvas context");
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Unable to get 2D canvas context');
+  }
 
   ctx.drawImage(img, 0, 0, width, height);
   return canvas;
@@ -17,11 +19,11 @@ const createImageCanvas = (
 const canvasToBlob = (
   canvas: HTMLCanvasElement,
   quality = 0.8,
-  type = "image/jpeg"
+  type = 'image/jpeg'
 ): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("Canvas is empty"))),
+      blob => (blob ? resolve(blob) : reject(new Error('Canvas is empty'))),
       type,
       quality
     );
@@ -54,11 +56,12 @@ const resizeImage = async (
   const canvas = createImageCanvas(img, width, height);
   const blob = await canvasToBlob(canvas);
 
-  const baseName = file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
+  const baseName =
+    file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
   const newFileName = `${baseName}_${width}x${height}.jpg`;
 
   return new File([blob], newFileName, {
-    type: "image/jpeg",
+    type: 'image/jpeg',
     lastModified: Date.now(),
   });
 };
@@ -71,7 +74,6 @@ export const resizeImages = (images: File[]): Promise<File[]> => {
   return Promise.all(allResizePromises);
 };
 
-
 export const isValidHyperlink = (link: string): boolean => {
   try {
     new URL(link);
@@ -79,9 +81,9 @@ export const isValidHyperlink = (link: string): boolean => {
   } catch (_error) {
     return false;
   }
-}
+};
 
 export const extractFileId = (link: string): string | null => {
   const match = link.match(/\/file\/d\/(.+?)\//);
   return match ? match[1] : null;
-}
+};

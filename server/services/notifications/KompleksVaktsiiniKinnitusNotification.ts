@@ -6,7 +6,9 @@ export default class KompleksVaktsiiniKinnitusNotification
   implements DashboardNotification
 {
   getText(): string {
-    if (this.cellIsEmpty) return 'Kompleksvaktsiini info puudub';
+    if (this.cellIsEmpty) {
+      return 'Kompleksvaktsiini info puudub';
+    }
     return 'Broneeri veterinaari juures vaktsineerimise aeg';
   }
 

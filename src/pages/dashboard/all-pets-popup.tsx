@@ -71,7 +71,9 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
   ({ pets, onClose, isOpen }, ref) => {
     const theme = useTheme();
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+      return null;
+    }
 
     return (
       <div

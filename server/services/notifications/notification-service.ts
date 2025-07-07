@@ -56,7 +56,9 @@ export default class NotificationService {
   ): Result | null {
     const columnIndex =
       this.googleSheetsService.headers[notification.dbColumnName];
-    if (columnIndex === undefined) return null;
+    if (columnIndex === undefined) {
+      return null;
+    }
 
     const dateCell = row[columnIndex];
     const sheetsDate = dateCell?.formattedValue;
@@ -83,10 +85,14 @@ export default class NotificationService {
 
     // Parse and validate date
     const triggerDate = parseEstonianDate(sheetsDate);
-    if (!triggerDate) return null;
+    if (!triggerDate) {
+      return null;
+    }
 
     // Check if notification should be shown
-    if (!notification.shouldShow(triggerDate)) return null;
+    if (!notification.shouldShow(triggerDate)) {
+      return null;
+    }
 
     const dueDate = notification.getDueDate(triggerDate);
     const isUrgent = notification.isUrgent(dueDate);

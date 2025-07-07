@@ -69,10 +69,10 @@ export default class GoogleDriveService {
     const res = await this.drive.files.list({
       q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
       fields: 'files(id, name, mimeType)',
-      supportsAllDrives: true, // ✅ Key for shared drives!
-      includeItemsFromAllDrives: true, // ✅ Also needed
-      corpora: 'drive', // Use 'drive' instead of 'user'
-      driveId: '0AAcl4FOHQ4b9Uk9PVA', // 🔑 Required for shared drives
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      corpora: 'drive',
+      driveId: process.env.DRIVE_ID,
     });
 
     await Promise.all(
@@ -93,8 +93,8 @@ export default class GoogleDriveService {
     const fileMetadata = {
       name: name,
       mimeType: 'application/vnd.google-apps.folder',
-      parents: ['1_WfzFwV0623sWtsYwkp8RiYnCb2_igFd'],
-      driveId: '0AAcl4FOHQ4b9Uk9PVA',
+      parents: [process.env.PARENT],
+      driveId: process.env.DRIVE_ID,
     };
     return this.drive.files.create({
       supportsAllDrives: true,

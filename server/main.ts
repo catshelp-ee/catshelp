@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-import DashboardService from '@services/dashboard/dashboard-service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
@@ -37,10 +36,6 @@ dotenv.config();
 async function bootstrap() {
   // Initialize dependency injection container
   const container = await init();
-  const dashboardService = container.get<DashboardService>(
-    TYPES.DashboardService
-  );
-  await dashboardService.init();
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);
   const dashboardController = container.get<DashboardController>(

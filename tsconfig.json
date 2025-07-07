@@ -18,7 +18,7 @@
       "@pages/*": ["src/pages/*"],
       "@style/*": ["src/style/*"],
       "@types/*": ["src/types/*"],
-      "@utils/*": ["src/utils/*"],
+      "@utils/*": ["utils/*"],
       "@hooks/*": ["src/hooks/*"],
       "@notifications/*": ["server/services/notifications/*"],
       "@services/*": ["server/services/*"],

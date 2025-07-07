@@ -16,13 +16,10 @@ import { init } from './container';
  * It also starts cron jobs for background tasks.
  */
 
-// Commented-out imports for potential future use or deprecated functionality
-//import * as animalController from "./controllers/animal-controller";
+import uploadImages from '@middleware/storage-middleware';
+import AddRescueController from './controllers/add-rescue-controller';
 import DashboardController from './controllers/dashboard-controller';
-//import * as loginController from "./controllers/login-controller";
-//import * as userController from "./controllers/user-controller";
-//import * as fileController from "./controllers/file-controller";
-//import * as profileController from "./controllers/profile-controller"
+import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
 import UserController from './controllers/user-controller';
@@ -32,12 +29,15 @@ import errorMiddleware from './middleware/error-middleware';
 
 dotenv.config();
 
-//initializeRedis();
 async function bootstrap() {
   // Initialize dependency injection container
   const container = await init();
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);
+  const fileController = container.get<FileController>(TYPES.FileController);
+  const addRescueController = container.get<AddRescueController>(
+    TYPES.AddRescueController
+  );
   const dashboardController = container.get<DashboardController>(
     TYPES.DashboardController
   );
@@ -82,8 +82,17 @@ async function bootstrap() {
   });
 
   // Secure endpoints requiring authentication
-  //app.post("/api/animals", authenticate, animalController.postAnimal); // Commented out for future implementation or deprecated
-  //app.post("/api/images", authenticate, uploadImages, fileController.addPicture); // Commented out for future implementation or deprecated
+  app.post(
+    '/api/animals',
+    auth.authenticate,
+    addRescueController.postAnimal.bind(addRescueController)
+  );
+  app.post(
+    '/api/images',
+    auth.authenticate,
+    uploadImages,
+    fileController.addPicture.bind(fileController)
+  );
 
   app.get(
     '/api/user',

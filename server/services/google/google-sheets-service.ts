@@ -1,7 +1,9 @@
 import UserService from '@services/user/user-service';
+import { formatEstonianDate } from '@utils/date-utils';
 import { GaxiosResponse } from 'gaxios';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
+import { CreateAnimalData } from 'types/animal';
 import { Headers, Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import GoogleAuthService from './google-auth-service';
@@ -96,26 +98,25 @@ export default class GoogleSheetsService {
     this.rows = filteredRows;
   }
 
-  /*
-  async addDataToSheet(sheetId: string, tabName: string, data: any) {
-    const row = new Array(30).fill("");
-
-    row[0] = data.id;
-    row[1] = data.id;
-    row[17] = moment(new Date(), "DD.MM.YYYY").toDate().toString();
+  async addDataToSheet(data: CreateAnimalData) {
+    const row = new Array(30).fill('');
+    row[0] = data.rankNr!;
+    row[1] = data.rankNr!;
+    row[17] = formatEstonianDate(new Date());
     row[20] = `${data.state}, ${data.location}`;
     row[30] = data.notes;
 
     await this.sheets.spreadsheets.values.append({
       auth: this.googleAuthService.getAuth(),
-      spreadsheetId: sheetId,
-      range: tabName,
-      valueInputOption: "RAW",
-      resource: {
+      spreadsheetId: process.env.CATS_SHEETS_ID,
+      range: process.env.CATS_TABLE_NAME,
+      valueInputOption: 'RAW',
+      requestBody: {
         values: [row],
       },
     });
   }
+  /*
   
   async updateSheetCells({
     sheetId,

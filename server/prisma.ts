@@ -28,12 +28,7 @@ export const prisma = basePrisma.$extends({
           new Date(lastRescue.rescueDate).getMonth() !== currentMonth ||
           new Date(lastRescue.rescueDate).getFullYear() !== currentYear
         ) {
-          const yearPart = currentYear % 1000;
-          const monthPart =
-            currentMonth + 1 < 10
-              ? `0${currentMonth + 1}`
-              : `${currentMonth + 1}`;
-          newRankNr = Number(`${yearPart}${monthPart}1`);
+          newRankNr = 1;
         } else {
           newRankNr = lastRescue.rankNr + 1;
         }

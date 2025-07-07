@@ -2,6 +2,7 @@ import GoogleDriveService from '@services/google/google-drive-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
 import { extractFileId, isValidHyperlink } from '@utils/image-utils';
 import { inject, injectable } from 'inversify';
+import fs from 'node:fs';
 import { Cat } from 'types/cat';
 import { Row } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
@@ -72,5 +73,20 @@ export default class ImageService {
         error
       );
     }
+  }
+
+  async uploadFiles(files: any, folderId: string): Promise<void> {
+    const fileArray = Array.isArray(files) ? files : [files];
+
+    const uploadPromises = fileArray.map(async file => {
+      const tempPath = file.path;
+      return await this.googleDriveService.uploadToDrive(
+        file.originalname,
+        fs.createReadStream(tempPath),
+        folderId
+      );
+    });
+
+    await Promise.all(uploadPromises);
   }
 }

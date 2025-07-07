@@ -11,7 +11,9 @@ export default class AnimalService {
   ) {}
 
   async getUserCats(email: string): Promise<Animal[]> {
-    if (!email) return [];
+    if (!email) {
+      return [];
+    }
     if (!this.animals) {
       this.animals = await this.animalRepository.getCatsByUserEmail(email);
     }

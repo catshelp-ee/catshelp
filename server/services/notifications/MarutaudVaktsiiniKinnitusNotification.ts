@@ -6,7 +6,9 @@ export default class MarutaudVaktsiiniKinnitusNotification
   implements DashboardNotification
 {
   getText(): string {
-    if (this.cellIsEmpty) return 'Marutaudi vaktsiini info puudub';
+    if (this.cellIsEmpty) {
+      return 'Marutaudi vaktsiini info puudub';
+    }
     return 'Broneeri veterinaari juures marutatudi vaktsineerimise aeg';
   }
 

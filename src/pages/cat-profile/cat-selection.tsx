@@ -20,7 +20,9 @@ const CatSelection: React.FC<CatSelectionProps> = ({
   const [selectedCatIndex, setSelectedCatIndex] = useState(0);
 
   const handleCatSelect = (index: number, cat: Cat) => {
-    if (selectedCatIndex === index) return;
+    if (selectedCatIndex === index) {
+      return;
+    }
 
     setSelectedCatIndex(index);
     setSelectedCat(cat);

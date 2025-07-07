@@ -34,7 +34,9 @@ export default class CatProfileBuilder {
     const catName =
       row[this.googleSheetsService.headers['KASSI NIMI']]?.formattedValue;
     const cat = animals.find(animal => animal.name === catName);
-    if (!cat) return null;
+    if (!cat) {
+      return null;
+    }
 
     const characteristics =
       await this.characteristicsService.getCharacteristics(cat.id);
@@ -116,8 +118,13 @@ export default class CatProfileBuilder {
       values[this.googleSheetsService.headers['KASSI KARVA PIKKUS']]
         ?.formattedValue;
 
-    if (coatColor) appearance.push(coatColor);
-    if (coatLength) appearance.push(coatLength);
+    if (coatColor) {
+      appearance.push(coatColor);
+    }
+
+    if (coatLength) {
+      appearance.push(coatLength);
+    }
 
     return appearance;
   }
@@ -227,7 +234,9 @@ export default class CatProfileBuilder {
   }
 
   private isFutureDate(dateString: string): boolean {
-    if (!dateString) return false;
+    if (!dateString) {
+      return false;
+    }
     return isFutureDate(dateString);
   }
 }

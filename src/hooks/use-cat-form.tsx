@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Cat } from "types/cat";
 
 export const useCatForm = (selectedCat: Cat) => {
@@ -19,7 +19,10 @@ export const useCatForm = (selectedCat: Cat) => {
 
   const updateFieldMultiselect = (e: any, key: string) => {
     let value = e.target.value;
-    if (key !== "Other" && value[0] === "Other") value = [value[1]];
+    if (key !== "Other" && value[0] === "Other") {
+      value = [value[1]];
+    }
+
     setTempSelectedCat((prev: any) => {
       if (value[value.length - 1] === "Other")
         return { ...prev, [key]: ["Other"] };

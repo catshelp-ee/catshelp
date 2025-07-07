@@ -1,17 +1,17 @@
+import Popup from "@components/popup";
+import { useAuth } from "@context/auth-context";
+import { useIsMobile } from "@context/is-mobile-context";
+import { useCatForm } from "@hooks/use-cat-form";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { Button, IconButton, TextField } from "@mui/material";
+import ImageGallery from "@pages/cat-profile/image-gallery";
+import { uploadImages } from "@utils/google-utils";
 import axios from "axios";
 import React, { useState } from "react";
-import { TextField, Button, IconButton } from "@mui/material";
-import { uploadImages } from "@utils/google-utils";
-import ImageGallery from "@pages/cat-profile/image-gallery";
-import { useAuth } from "@context/auth-context";
-import Popup from "@components/popup";
 import { Cat } from "types/cat";
-import { useCatForm } from "@hooks/use-cat-form";
 import { BasicInfoFields } from "./form/basic-info-fields";
-import { VaccinationFields } from "./form/vaccination-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";
-import { useIsMobile } from "@context/is-mobile-context";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { VaccinationFields } from "./form/vaccination-fields";
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -47,15 +47,17 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isPopupVisible) return;
+    if (isPopupVisible) {
+      return;
+    }
 
     const formData = new FormData(e.target as HTMLFormElement);
     const payload = Object.fromEntries(formData);
 
-    if(!payload["gender"])
+    if (!payload["gender"])
       payload["gender"] = "";
 
-    if(!payload["llr"])
+    if (!payload["llr"])
       payload["llr"] = "";
 
     const user = await getUser();
@@ -117,7 +119,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
                   name="title"
                   value={tempSelectedCat.title}
                   onChange={(e) => updateField(e, "title")}
-                  sx={{ "& .MuiInputBase-input": { fontWeight: "bold", fontSize: "24px", padding: 0  } }}
+                  sx={{ "& .MuiInputBase-input": { fontWeight: "bold", fontSize: "24px", padding: 0 } }}
                 />
                 <IconButton
                   onClick={() => setIsEditMode(false)}
@@ -129,7 +131,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
                     "&:hover": {
                       backgroundColor: "#3696ff",
                     },
-                    
+
                   }}
                 >
                   <KeyboardBackspaceIcon /> {/* default is 24 */}
@@ -143,7 +145,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
                 name="title"
                 value={tempSelectedCat.description}
                 onChange={(e) => updateField(e, "description")}
-                sx={{width: "100%"}}
+                sx={{ width: "100%" }}
                 multiline
               />
             </div>
@@ -180,7 +182,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
           )}
         </div>
 
-        <Button sx={{width: "50%", margin: "2rem auto"}} variant="contained" type="submit">
+        <Button sx={{ width: "50%", margin: "2rem auto" }} variant="contained" type="submit">
           Salvesta
         </Button>
       </form>

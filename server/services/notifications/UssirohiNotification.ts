@@ -4,7 +4,9 @@ import { DashboardNotification } from './DasboardNotification';
 
 export default class UssirohiNotification implements DashboardNotification {
   getText(): string {
-    if (this.cellIsEmpty) return 'Kompleksvaktsiini info puudub';
+    if (this.cellIsEmpty) {
+      return 'Kompleksvaktsiini info puudub';
+    }
     return 'Anna vähemalt 2 kuud enne vaktsineerimist ussirohi';
   }
 

@@ -32,7 +32,9 @@ export default class ProfileService {
 
     if (!profiles) {
       const cats = await this.animalService.getUserCats(owner.email);
-      if (cats.length === 0) return [];
+      if (cats.length === 0) {
+        return [];
+      }
 
       profiles = await this.catProfileBuilder.buildProfilesFromSheet(
         owner,

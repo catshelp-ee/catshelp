@@ -21,7 +21,6 @@ const Popup: React.FC<PopupProps> = ({
     return null;
   }
 
-  //className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg w-96 p-6 animate-slide-down cursor-pointer"
   return (
     <div
       onClick={onClose}

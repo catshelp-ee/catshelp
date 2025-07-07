@@ -1,3 +1,4 @@
+import UserService from '@services/user/user-service';
 import { GaxiosResponse } from 'gaxios';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
@@ -32,7 +33,8 @@ export default class GoogleSheetsService {
 
   constructor(
     @inject(TYPES.GoogleAuthService)
-    private googleAuthService: GoogleAuthService
+    private googleAuthService: GoogleAuthService,
+    @inject(TYPES.UserService) private userService: UserService
   ) {
     this.sheets = google.sheets({
       version: 'v4',
@@ -47,7 +49,7 @@ export default class GoogleSheetsService {
     this.sheetTable = process.env.CATS_TABLE_NAME!;
   }
 
-  async init() {
+  async init(userID: number) {
     if (this.headers) {
       throw new Error('Google Auth Service already initialized');
     }
@@ -79,12 +81,14 @@ export default class GoogleSheetsService {
 
     const rowData = rows[0].rowData;
     const filteredRows: sheets_v4.Schema$CellData[][] = [];
+
+    const username = (await this.userService.getUser(userID)).fullName;
     for (let i = 0; i < rowData.length; i++) {
       const row = rowData[i];
       const values = row.values;
 
       const fosterhome = values[fosterhomeColumn].formattedValue;
-      if (fosterhome === 'Marko Peedosk') {
+      if (fosterhome === username) {
         filteredRows.push(values);
       }
     }

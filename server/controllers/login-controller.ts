@@ -1,6 +1,7 @@
 import AuthService from '@services/auth/auth-service';
 import CookieService from '@services/auth/cookie-service';
 import EmailService from '@services/auth/email-service';
+import DashboardService from '@services/dashboard/dashboard-service';
 import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
 import { User } from 'generated/prisma';
@@ -18,7 +19,8 @@ export default class LoginController {
 
   constructor(
     @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.UserService) private userService: UserService
+    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.DashboardService) private dashboardService: DashboardService
   ) {
     this.emailService = new EmailService();
   }
@@ -50,6 +52,7 @@ export default class LoginController {
       }
 
       this.userService.setUser(user);
+      await this.dashboardService.init(user.id);
 
       const newToken = this.authService.generateJWT(user.id);
       CookieService.setAuthCookies(res, newToken);

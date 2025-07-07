@@ -20,8 +20,8 @@ export default class DashboardService {
     @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
   ) {}
 
-  public async init() {
-    await this.googleSheetsService.init();
+  public async init(userID: number) {
+    await this.googleSheetsService.init(userID);
   }
 
   private getPets(userID: number | string) {

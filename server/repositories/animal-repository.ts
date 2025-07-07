@@ -36,7 +36,7 @@ export default class AnimalRepository {
 
       const animalRescue = await tx.animalRescue.create({
         data: {
-          rescueDate: new Date().toISOString().split('T')[0],
+          rescueDate: new Date(),
           state: data.state,
           address: data.location,
           locationNotes: data.notes,

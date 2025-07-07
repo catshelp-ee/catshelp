@@ -20,6 +20,8 @@ const TYPES = {
   LoginController: Symbol.for('LoginController'),
   UserController: Symbol.for('UserController'),
   ProfileController: Symbol.for('ProfileController'),
+  AddRescueController: Symbol.for('AddRescueController'),
+  FileController: Symbol.for('FileController'),
 
   AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
   AnimalRepository: Symbol.for('AnimalRepository'),

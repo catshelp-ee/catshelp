@@ -4,6 +4,7 @@ export interface CreateAnimalData {
   state: string;
   location: string;
   notes?: string;
+  rankNr?: string;
 }
 
 export interface CreateAnimalResult {

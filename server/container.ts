@@ -15,7 +15,9 @@ import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
+import AddRescueController from './controllers/add-rescue-controller';
 import DashboardController from './controllers/dashboard-controller';
+import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
 import UserController from './controllers/user-controller';
@@ -116,6 +118,14 @@ async function init() {
   container
     .bind<LoginController>(TYPES.LoginController)
     .to(LoginController)
+    .inSingletonScope();
+  container
+    .bind<AddRescueController>(TYPES.AddRescueController)
+    .to(AddRescueController)
+    .inSingletonScope();
+  container
+    .bind<FileController>(TYPES.FileController)
+    .to(FileController)
     .inSingletonScope();
 
   // ─── Middleware ─────────────────────────────────────────────────

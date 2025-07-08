@@ -4,7 +4,7 @@ import { calculateAge, isFutureDate, parseDate } from '@utils/date-utils';
 import { Animal, User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { Cat, CharacteristicsResult, defaultCat } from 'types/cat';
-import { Row, SheetRow } from 'types/google-sheets';
+import { CatSheetsHeaders, SheetRow } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import CharacteristicsService from './characteristics-service';
 
@@ -19,21 +19,21 @@ export default class CatProfileBuilder {
   ) {}
 
   async buildProfilesFromSheet(owner: User, animals: Animal[]): Promise<Cat[]> {
-    const profilePromises = this.googleSheetsService.rows.map(row => {
-      return this.buildSingleProfile(row, animals, owner);
+    const profilePromises = (
+      await this.googleSheetsService.getRows(owner.id)
+    ).map(row => {
+      return this.buildSingleProfile(row.row, animals, owner);
     });
 
     return Promise.all(profilePromises);
   }
 
   private async buildSingleProfile(
-    row: Row,
+    row: CatSheetsHeaders,
     animals: Animal[],
     owner: User
   ): Promise<Cat | null> {
-    const catName =
-      row[this.googleSheetsService.headers['KASSI NIMI']]?.formattedValue;
-    const cat = animals.find(animal => animal.name === catName);
+    const cat = animals.find(animal => animal.name === row.catName);
     if (!cat) {
       return null;
     }
@@ -56,67 +56,31 @@ export default class CatProfileBuilder {
     return profile;
   }
 
-  private extractBaseData(values: Row, cat: Animal): Cat {
+  private extractBaseData(values: CatSheetsHeaders, cat: Animal): Cat {
     return {
       ...defaultCat,
       title: cat.profileTitle,
       chipNr: cat.chipNumber,
       driveId: cat.driveId,
       llr: cat.chipRegisteredWithUs,
-      name:
-        values[this.googleSheetsService.headers['KASSI NIMI']]
-          ?.formattedValue || cat.name,
-      birthDate:
-        parseDate(
-          values[this.googleSheetsService.headers['SÜNNIAEG']]?.formattedValue
-        ) || cat.birthday,
-      currentLoc:
-        values[this.googleSheetsService.headers['ASUKOHT']]?.formattedValue,
-      foundLoc:
-        values[this.googleSheetsService.headers['LEIDMISKOHT']]?.formattedValue,
-      rescueDate: parseDate(
-        values[this.googleSheetsService.headers['PÄÄSTMISKP/ SÜNNIKP']]
-          ?.formattedValue
-      ),
-      wormMedName:
-        values[this.googleSheetsService.headers['Ussirohu/ turjatilga nimi']]
-          ?.formattedValue,
-      wormMedDate: parseDate(
-        values[this.googleSheetsService.headers['USSIROHU/ TURJATILGA KP']]
-          ?.formattedValue
-      ),
-      vaccDate: parseDate(
-        values[
-          this.googleSheetsService.headers[
-            'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)'
-          ]
-        ]?.formattedValue
-      ),
-      vaccEndDate: parseDate(
-        values[this.googleSheetsService.headers['JÄRGMISE VAKTSIINI AEG']]
-          ?.formattedValue
-      ),
-      rabiesVaccDate: parseDate(
-        values[
-          this.googleSheetsService.headers[
-            'MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)'
-          ]
-        ]?.formattedValue
-      ),
-      rabiesVaccEndDate: parseDate(
-        values[this.googleSheetsService.headers['JÄRGMINE MARUTAUDI AEG']]
-          ?.formattedValue
-      ),
+      name: values.catName || cat.name,
+      birthDate: parseDate(values.birthDate) || cat.birthday,
+      currentLoc: values.location,
+      foundLoc: values.findingLocation,
+      rescueDate: parseDate(values.rescueOrBirthDate),
+      wormMedName: values.dewormingOrFleaTreatmentName,
+      wormMedDate: parseDate(values.dewormingOrFleaTreatmentDate),
+      vaccDate: parseDate(values.complexVaccine),
+      vaccEndDate: parseDate(values.nextVaccineDate),
+      rabiesVaccDate: parseDate(values.rabiesVaccine),
+      rabiesVaccEndDate: parseDate(values.nextRabiesDate),
     };
   }
 
-  private extractAppearance(values: Row): string[] {
+  private extractAppearance(values: CatSheetsHeaders): string[] {
     const appearance = [];
-    const coatColor =
-      values[this.googleSheetsService.headers['KASSI VÄRV']]?.formattedValue;
-    const coatLength =
-      values[this.googleSheetsService.headers['KASSI KARVA PIKKUS']]
-        ?.formattedValue;
+    const coatColor = values.catColor;
+    const coatLength = values.furLength;
 
     if (coatColor) {
       appearance.push(coatColor);
@@ -129,38 +93,22 @@ export default class CatProfileBuilder {
     return appearance;
   }
 
-  private extractProcedures(values: Row): string[] {
+  private extractProcedures(values: CatSheetsHeaders): string[] {
     const procedures = [];
 
-    if (
-      values[this.googleSheetsService.headers['ASUKOHT']]?.formattedValue ===
-      'JAH'
-    ) {
+    if (values.spayedOrNeutered === 'JAH') {
       procedures.push('Lõigatud');
     }
 
-    if (
-      this.isFutureDate(
-        values[this.googleSheetsService.headers['JÄRGMISE VAKTSIINI AEG']]
-          ?.formattedValue
-      )
-    ) {
+    if (this.isFutureDate(values.nextVaccineDate)) {
       procedures.push('Kompleksvaktsiin');
     }
 
-    if (
-      this.isFutureDate(
-        values[this.googleSheetsService.headers['JÄRGMINE MARUTAUDI AEG']]
-          ?.formattedValue
-      )
-    ) {
+    if (this.isFutureDate(values.nextRabiesDate)) {
       procedures.push('Marutaudi vaktsiin');
     }
 
-    if (
-      values[this.googleSheetsService.headers['USSIROHU/ TURJATILGA KP']]
-        ?.formattedValue
-    ) {
+    if (values.dewormingOrFleaTreatmentDate) {
       procedures.push('Ussirohi');
     }
 

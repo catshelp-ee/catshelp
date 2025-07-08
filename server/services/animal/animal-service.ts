@@ -1,27 +1,33 @@
+import NodeCacheService from '@services/cache/cache-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import { Animal } from 'generated/prisma';
+import { Animal, User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
+import { formFields } from 'types/cat';
 import TYPES from 'types/inversify-types';
 import AnimalRepository from '../../repositories/animal-repository';
 
 @injectable()
 export default class AnimalService {
-  private animals: Animal[];
   constructor(
     @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
     @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
+    private googleSheetsService: GoogleSheetsService,
+    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
   ) {}
 
-  async getUserCats(email: string): Promise<Animal[]> {
-    if (!email) {
+  getAnimals(userID: number | string): Promise<Animal[]> {
+    return this.nodeCacheService.get(`animals:${userID}`);
+  }
+
+  async setAnimals(user: User): Promise<Animal[]> {
+    if (!user) {
       return [];
     }
-    if (!this.animals) {
-      this.animals = await this.animalRepository.getCatsByUserEmail(email);
-    }
-    return this.animals;
+    this.nodeCacheService.set(
+      `animals:${user.id}`,
+      this.animalRepository.getCatsByUserEmail(user.email)
+    );
   }
 
   async createAnimal(data: CreateAnimalData): Promise<CreateAnimalResult> {
@@ -35,5 +41,14 @@ export default class AnimalService {
     return animal;
   }
 
-  async updatePet(updatedCats: any) {}
+  async updateAnimal(updateAnimalData: formFields, userID: number | string) {
+    const animalRows = await this.googleSheetsService.getRows(userID);
+    const animal = animalRows.find(
+      animalRow => animalRow.row.catName === updateAnimalData.name
+    );
+    await this.googleSheetsService.updateSheetCells(
+      updateAnimalData,
+      animal.index
+    );
+  }
 }

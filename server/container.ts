@@ -16,6 +16,7 @@ import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
 import AddRescueController from './controllers/add-rescue-controller';
+import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
 import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
@@ -126,6 +127,10 @@ async function init() {
   container
     .bind<FileController>(TYPES.FileController)
     .to(FileController)
+    .inSingletonScope();
+  container
+    .bind<AnimalController>(TYPES.AnimalController)
+    .to(AnimalController)
     .inSingletonScope();
 
   // ─── Middleware ─────────────────────────────────────────────────

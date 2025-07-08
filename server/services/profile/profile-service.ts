@@ -31,7 +31,7 @@ export default class ProfileService {
     let profiles = await this.getProfiles(owner.id);
 
     if (!profiles) {
-      const cats = await this.animalService.getUserCats(owner.email);
+      const cats = await this.animalService.getAnimals(owner.id);
       if (cats.length === 0) {
         return [];
       }

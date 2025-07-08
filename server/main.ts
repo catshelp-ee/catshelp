@@ -18,6 +18,7 @@ import { init } from './container';
 
 import uploadImages from '@middleware/storage-middleware';
 import AddRescueController from './controllers/add-rescue-controller';
+import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
 import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
@@ -35,6 +36,9 @@ async function bootstrap() {
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);
   const fileController = container.get<FileController>(TYPES.FileController);
+  const animalController = container.get<AnimalController>(
+    TYPES.AnimalController
+  );
   const addRescueController = container.get<AddRescueController>(
     TYPES.AddRescueController
   );
@@ -109,7 +113,11 @@ async function bootstrap() {
     auth.authenticate,
     profileController.getProfile.bind(profileController)
   );
-  //app.put("/api/animals/cat-profile", authenticate, animalController.updatePet); // Commented out for future implementation or deprecated
+  app.put(
+    '/api/animals/cat-profile',
+    auth.authenticate,
+    animalController.updateAnimal.bind(animalController)
+  ); // Commented out for future implementation or deprecated
   // Fallback for client-side routes (React Router)
   app.get('*', (req, res) => {
     res.sendFile(path.join(rootDir, 'dist', 'index.html'));

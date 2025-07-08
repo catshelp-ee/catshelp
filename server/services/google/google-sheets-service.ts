@@ -1,42 +1,47 @@
+import NodeCacheService from '@services/cache/cache-service';
 import UserService from '@services/user/user-service';
 import { formatEstonianDate } from '@utils/date-utils';
 import { GaxiosResponse } from 'gaxios';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
 import { CreateAnimalData } from 'types/animal';
-import { Headers, Rows } from 'types/google-sheets';
+import { formFields } from 'types/cat';
+import { Headers, RowLocation, Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
+import { rowToObjectFixed } from 'utils/sheet-utils';
 import GoogleAuthService from './google-auth-service';
 
-/*const SHEETS_COLUMNS = {
-  name: "KIISU NIMI",
-  chipNr: "KIIP",
-  llr: "KIIP LLR-is MTÜ nimel- täidab registreerija",
-  birthData: "SÜNNIAEG",
-  gender: "SUGU",
-  coatColour: "KASSI VÄRV",
-  coatLength: "KASSI KARVA PIKKUS",
-  foundLoc: "LEIDMISKOHT",
-  vacc: "KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)",
-  vaccEnd: "JÄRGMISE VAKTSIINI AEG",
-  rabiesVacc: "MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)",
-  rabiesVaccEnd: "JÄRGMINE MARUTAUDI AEG",
-  wormMedName: "Ussirohu/ turjatilga nimi",
-  cut: "LÕIGATUD",
-};*/
+const SHEETS_COLUMNS = {
+  name: 'KASSI NIMI',
+  chipNr: 'KIIP',
+  llr: 'KIIP LLR-is MTÜ nimel- täidab registreerija',
+  birthData: 'SÜNNIAEG',
+  gender: 'SUGU',
+  coatColour: 'KASSI VÄRV',
+  coatLength: 'KASSI KARVA PIKKUS',
+  foundLoc: 'LEIDMISKOHT',
+  vacc: 'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)',
+  vaccEnd: 'JÄRGMISE VAKTSIINI AEG',
+  rabiesVacc:
+    'MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)',
+  rabiesVaccEnd: 'JÄRGMINE MARUTAUDI AEG',
+  wormMedName: 'Ussirohu/ turjatilga nimi',
+  cut: 'LÕIGATUD',
+};
 
 @injectable()
 export default class GoogleSheetsService {
   sheets: sheets_v4.Sheets;
   sheetID: string;
+  sheetIDNum: number;
   sheetTable: string;
   headers: Headers;
-  rows: Rows;
 
   constructor(
     @inject(TYPES.GoogleAuthService)
     private googleAuthService: GoogleAuthService,
-    @inject(TYPES.UserService) private userService: UserService
+    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
   ) {
     this.sheets = google.sheets({
       version: 'v4',
@@ -51,7 +56,15 @@ export default class GoogleSheetsService {
     this.sheetTable = process.env.CATS_TABLE_NAME!;
   }
 
-  async init(userID: number) {
+  getRows(userID: number | string) {
+    return this.nodeCacheService.get<Rows>(`rows:${userID}`);
+  }
+
+  setRows(userID: number | string, rows: Rows) {
+    this.nodeCacheService.set(`rows:${userID}`, rows);
+  }
+
+  async init(userID: number | string) {
     if (this.headers) {
       throw new Error('Google Auth Service already initialized');
     }
@@ -72,6 +85,7 @@ export default class GoogleSheetsService {
       throw new Error('No sheet found');
     }
 
+    this.sheetIDNum = sheetData.data.sheets[0].properties.sheetId;
     const rows = sheetData.data.sheets[0].data;
     if (!rows || rows.length === 0) {
       throw new Error('No rows in sheet');
@@ -82,7 +96,7 @@ export default class GoogleSheetsService {
     const fosterhomeColumn = this.headers['_HOIUKODU/ KLIINIKU NIMI'];
 
     const rowData = rows[0].rowData;
-    const filteredRows: sheets_v4.Schema$CellData[][] = [];
+    const filteredRows: RowLocation[] = [];
 
     const username = (await this.userService.getUser(userID)).fullName;
     for (let i = 0; i < rowData.length; i++) {
@@ -91,11 +105,14 @@ export default class GoogleSheetsService {
 
       const fosterhome = values[fosterhomeColumn].formattedValue;
       if (fosterhome === username) {
-        filteredRows.push(values);
+        filteredRows.push({
+          row: rowToObjectFixed({ row: values }),
+          index: i,
+        });
       }
     }
 
-    this.rows = filteredRows;
+    this.setRows(userID, filteredRows);
   }
 
   async addDataToSheet(data: CreateAnimalData) {
@@ -116,47 +133,23 @@ export default class GoogleSheetsService {
       },
     });
   }
-  /*
-  
-  async updateSheetCells({
-    sheetId,
-    tabName,
-    find,
-    data
-  }: UpdateSheetCellsParams): Promise<void> {
+
+  async updateSheetCells(
+    animal: formFields,
+    animalRowIndex: number
+  ): Promise<void> {
     try {
-      // Get sheet data with validation
-      const sheetData = await this.getSheetData();
-      this.validateSheetData(sheetData);
-
-      const sheet = sheetData.data.sheets[0];
-      const rows = sheet.data;
-      const pageId = sheet.properties.sheetId;
-
-      // Extract column mappings
-      const columnMapping = this.extractColumnMapping(rows);
-
-      // Find the target row
-      const targetRow = this.findTargetRow(rows, columnMapping, data);
-
       // Build and execute update requests
-      const updateRequests = this.buildUpdateRequests(
-        find,
-        data,
-        columnMapping,
-        pageId,
-        targetRow.rowIndex
-      );
+      this.processGenderData(animal);
+      const updateRequests = this.buildUpdateRequests(animal, animalRowIndex);
 
-      await this.executeSheetUpdate(sheetId, updateRequests);
-
+      await this.executeSheetUpdate(updateRequests);
     } catch (error) {
       console.error('Error updating sheet cells:', error);
       throw new Error(`Failed to update sheet cells: ${error.message}`);
     }
   }
-  
-*/
+
   private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
     const columnMapping: Headers = {};
     const headerRow = rows[0]?.rowData?.[0]?.values;
@@ -173,43 +166,40 @@ export default class GoogleSheetsService {
 
     return columnMapping;
   }
-  /*
 
-  private buildUpdateRequests(
-    find: Record<string, string>,
-    data: Record<string, any>,
-    columnMapping: any,
-    pageId: number,
-    rowIndex: number
-  ): any[] {
+  private buildUpdateRequests(data: formFields, animalRowIndex: number): any[] {
     const updateRequests: any[] = [];
 
-    Object.entries(data).forEach(([dataKey, value]) => {
-      // Skip if this data key is not in the find mapping
-      if (!(dataKey in find)) return;
+    Object.entries(data).forEach(([key, value]) => {
+      if (!(key in SHEETS_COLUMNS)) {
+        return;
+      }
 
-      const columnName = find[dataKey];
-      const columnIndex = columnMapping[columnName];
+      const columnIndex = this.headers[SHEETS_COLUMNS[key]];
 
       if (columnIndex === undefined) {
-        console.warn(`Column "${columnName}" not found in sheet`);
+        console.warn(`Column "${key}" not found in sheet`);
         return;
       }
 
       updateRequests.push({
         updateCells: {
           start: {
-            sheetId: pageId,
-            rowIndex: rowIndex - 1, // Convert to 0-based index
+            sheetId: this.sheetIDNum,
+            rowIndex: animalRowIndex, // Convert to 0-based index
             columnIndex,
           },
-          rows: [{
-            values: [{
-              userEnteredValue: {
-                stringValue: String(value) // Ensure string conversion
-              },
-            }],
-          }],
+          rows: [
+            {
+              values: [
+                {
+                  userEnteredValue: {
+                    stringValue: String(value), // Ensure string conversion
+                  },
+                },
+              ],
+            },
+          ],
           fields: 'userEnteredValue',
         },
       });
@@ -222,42 +212,26 @@ export default class GoogleSheetsService {
     return updateRequests;
   }
 
-  private async executeSheetUpdate(
-    sheetId: string,
-    updateRequests: any[]
-  ): Promise<void> {
+  private async executeSheetUpdate(updateRequests: any[]): Promise<void> {
     try {
       await this.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: sheetId,
+        spreadsheetId: process.env.CATS_SHEETS_ID,
         requestBody: { requests: updateRequests },
       });
     } catch (error) {
-      console.error('Failed to execute sheet update:', error);
       throw new Error(`Sheet update failed: ${error.message}`);
     }
   }
 
-  async updateCatInSheet(catData: any): Promise<void> {
-    this.processGenderData(catData);
-
-    await this.googleService.updateSheetCells(
-      process.env.CATS_SHEETS_ID!,
-      process.env.CATS_TABLE_NAME!,
-      SHEETS_COLUMNS,
-      catData
-    );
-  }
-
-  private processGenderData(catData: any): void {
+  private processGenderData(catData: formFields): void {
     if (!catData.gender) return;
 
-    const [cut, gender] = catData.gender.split(" ");
+    const [cut, gender] = catData.gender.split(' ');
     catData.gender = gender;
-    catData.cut = "false";
+    catData.cut = 'false';
 
-    if (cut === "Steriliseeritud" || cut === "Kastreeritud") {
-      catData.cut = "true";
+    if (cut === 'Steriliseeritud' || cut === 'Kastreeritud') {
+      catData.cut = 'true';
     }
   }
-    */
 }

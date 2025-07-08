@@ -1,7 +1,7 @@
-import React from "react";
 import { TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import React from "react";
 import { Cat } from "types/cat";
 
 interface VaccinationFieldsProps {
@@ -17,14 +17,14 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
     <DatePicker
       label="Vaktsineerimis-kuupäev"
       name="vacc"
-      value={tempSelectedCat?.vacc ? dayjs(tempSelectedCat.vacc) : null}
+      value={tempSelectedCat?.vaccDate ? dayjs(tempSelectedCat.vaccDate) : null}
       onChange={(e) => updateField(e, "vacc")}
     />
 
     <DatePicker
       label="Vaktsiini lõppemise kuupäev"
       name="vaccEnd"
-      value={tempSelectedCat?.vaccEnd ? dayjs(tempSelectedCat.vaccEnd) : null}
+      value={tempSelectedCat?.vaccEndDate ? dayjs(tempSelectedCat.vaccEndDate) : null}
       onChange={(e) => updateField(e, "vaccEnd")}
     />
 
@@ -32,7 +32,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
       label="Marutaudi vaktsineerimis-kuupäev"
       name="rabiesVacc"
       value={
-        tempSelectedCat?.rabiesVacc ? dayjs(tempSelectedCat.rabiesVacc) : null
+        tempSelectedCat?.rabiesVaccDate ? dayjs(tempSelectedCat.rabiesVaccDate) : null
       }
       onChange={(e) => updateField(e, "rabiesVacc")}
     />
@@ -41,8 +41,8 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
       label="Marutaudi vaktsiini lõppemise kuupäev"
       name="rabiesVaccEnd"
       value={
-        tempSelectedCat?.rabiesVaccEnd
-          ? dayjs(tempSelectedCat.rabiesVaccEnd)
+        tempSelectedCat?.rabiesVaccEndDate
+          ? dayjs(tempSelectedCat.rabiesVaccEndDate)
           : null
       }
       onChange={(e) => updateField(e, "rabiesVaccEnd")}

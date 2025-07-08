@@ -41,22 +41,4 @@ export default class AddRescueController {
       handleControllerError(error, res, 'Failed to create animal');
     }
   }
-
-  async updatePet(req: Request, res: Response): Promise<void> {
-    try {
-      /*const validationResult = validateUpdatePet(req.body);
-        if (!validationResult.success) {
-        res.status(400).json({
-            error: 'Invalid input data',
-            details: validationResult.errors,
-        });
-        return;
-        }*/
-
-      await this.animalService.updatePet(req.body);
-      res.status(200).json({ success: true, message: 'uuendatud edukalt' });
-    } catch (error) {
-      handleControllerError(error, res, 'Failed to update pet');
-    }
-  }
 }

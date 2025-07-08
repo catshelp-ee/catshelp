@@ -1,28 +1,24 @@
 import GoogleDriveService from '@services/google/google-drive-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import { extractFileId, isValidHyperlink } from '@utils/image-utils';
 import { inject, injectable } from 'inversify';
 import fs from 'node:fs';
 import { Cat } from 'types/cat';
-import { Row } from 'types/google-sheets';
+import { CatSheetsHeaders } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class ImageService {
   constructor(
     @inject(TYPES.GoogleDriveService)
-    private googleDriveService: GoogleDriveService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
+    private googleDriveService: GoogleDriveService
   ) {}
 
   async processImages(
     profile: Cat,
-    values: Row,
+    values: CatSheetsHeaders,
     ownerName: string
   ): Promise<void> {
-    const imageLink =
-      values[this.googleSheetsService.headers['PILT']]?.hyperlink || '';
+    const imageLink = values.photo;
 
     if (!isValidHyperlink(imageLink)) {
       console.warn(

@@ -60,12 +60,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     if (!payload["llr"])
       payload["llr"] = "";
 
-    const user = await getUser();
-    payload.owner = {
-      name: user.fullName,
-      email: user.email,
-    };
-
     const images: File[] = previews.map((p) => p.file);
 
     if (images.length > 0) {

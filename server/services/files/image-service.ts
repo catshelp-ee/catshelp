@@ -2,7 +2,7 @@ import GoogleDriveService from '@services/google/google-drive-service';
 import { extractFileId, isValidHyperlink } from '@utils/image-utils';
 import { inject, injectable } from 'inversify';
 import fs from 'node:fs';
-import { Cat } from 'types/cat';
+import { Profile } from 'types/cat';
 import { CatSheetsHeaders } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 
@@ -14,7 +14,7 @@ export default class ImageService {
   ) {}
 
   async processImages(
-    profile: Cat,
+    profile: Profile,
     values: CatSheetsHeaders,
     ownerName: string
   ): Promise<void> {
@@ -22,7 +22,7 @@ export default class ImageService {
 
     if (!isValidHyperlink(imageLink)) {
       console.warn(
-        `Skipping image for ${profile.name} due to invalid image link.`
+        `Skipping image for ${profile.mainInfo.name} due to invalid image link.`
       );
       return;
     }
@@ -33,7 +33,7 @@ export default class ImageService {
       return;
     }
 
-    await this.downloadProfileImage(profile.name, fileId, ownerName);
+    await this.downloadProfileImage(profile.mainInfo.name, fileId, ownerName);
     await this.downloadAdditionalImages(profile, ownerName);
   }
 
@@ -54,18 +54,18 @@ export default class ImageService {
   }
 
   private async downloadAdditionalImages(
-    profile: Cat,
+    profile: Profile,
     ownerName: string
   ): Promise<void> {
     try {
       await this.googleDriveService.downloadImages(
-        profile.driveId,
+        profile.driveID,
         ownerName,
         profile
       );
     } catch (error) {
       console.error(
-        `Failed to download additional images for ${profile.name}:`,
+        `Failed to download additional images for ${profile.mainInfo.name}:`,
         error
       );
     }

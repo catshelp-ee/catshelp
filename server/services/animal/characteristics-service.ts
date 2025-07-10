@@ -1,75 +1,113 @@
-//import { descriptors } from "types/cat";
-//import { PrismaTransactionClient } from "types/prisma";
 import { injectable } from 'inversify';
 import { prisma } from 'server/prisma';
-import { CharacteristicsResult } from 'types/cat';
+import {
+  CharacteristicsInfo,
+  CharacteristicsResult,
+  createCharacteristicsInfo,
+  Profile,
+} from 'types/cat';
+import { PrismaTransactionClient } from 'types/prisma';
 
 @injectable()
 export default class CharacteristicsService {
+  characteristicsInfo: CharacteristicsInfo;
+  constructor() {
+    this.characteristicsInfo = createCharacteristicsInfo();
+  }
+
   async getCharacteristics(animalId: number): Promise<CharacteristicsResult> {
     const characteristics = await prisma.animalCharacteristic.findMany({
       where: { animalId },
     });
-
-    const character: string[] = [];
-    const likes: string[] = [];
-    const cat: string[] = [];
+    const multiSelectArrays: Record<string, string[]> = {};
     const others: Record<string, string> = {};
 
     characteristics.forEach(({ type, name }) => {
-      switch (type) {
-        case 'characteristics':
-          character.push(name);
-          break;
-        case 'likes':
-          likes.push(name);
-          break;
-        case 'cat':
-          cat.push(name);
-          break;
-        default:
-          others[type] = name;
+      if (type in this.characteristicsInfo.multiselectFields) {
+        if (!multiSelectArrays[type]) {
+          multiSelectArrays[type] = []; // initialize array if not present
+        }
+
+        multiSelectArrays[type].push(name);
+        return;
       }
+      others[type] = name;
     });
 
     return {
-      character,
-      likes,
-      cat,
+      multiSelectArrays,
       others,
     };
   }
 
-  /*
   async updateCharacteristics(
     tx: PrismaTransactionClient,
-    animalId: number,
-    catData: any
+    animalID: number,
+    updatedAnimalData: Profile
   ): Promise<void> {
-    for (const [characteristic, values] of Object.entries(descriptors)) {
+    for (const [key, value] of Object.entries(
+      updatedAnimalData.characteristics.multiselectFields
+    )) {
+      await this.updateArrayCharacteristic(tx, animalID, key, value);
+    }
+
+    for (const [key, value] of Object.entries(
+      updatedAnimalData.characteristics.selectFields
+    )) {
       const currentValues = await tx.animalCharacteristic.findMany({
-        where: { animalId, type: characteristic },
+        where: { animalId: animalID, type: key },
       });
+      await this.updateSingleCharacteristic(
+        tx,
+        animalID,
+        key,
+        value,
+        currentValues
+      );
+    }
 
-      const newValues = catData[characteristic];
+    for (const [key, value] of Object.entries(
+      updatedAnimalData.characteristics.textFields
+    )) {
+      const currentValues = await tx.animalCharacteristic.findMany({
+        where: { animalId: animalID, type: key },
+      });
+      await this.updateSingleCharacteristic(
+        tx,
+        animalID,
+        key,
+        value,
+        currentValues
+      );
 
-      if (this.isArrayCharacteristic(characteristic)) {
-        await this.updateArrayCharacteristic(tx, animalId, characteristic, newValues);
-      } else {
-        await this.updateSingleCharacteristic(tx, animalId, characteristic, newValues, currentValues);
+      if (key === 'gender') {
+        const gender = (value as string).split(' '); // Fix: should use value, not key
+
+        await this.updateSingleCharacteristic(
+          tx,
+          animalID,
+          'spayedOrNeutered',
+          gender[0],
+          currentValues
+        );
+
+        await this.updateSingleCharacteristic(
+          tx,
+          animalID,
+          'gender',
+          gender[1],
+          currentValues
+        );
+        continue;
       }
     }
-  }
-
-  private isArrayCharacteristic(characteristic: string): boolean {
-    return ["characteristics", "cat", "likes"].includes(characteristic);
   }
 
   private async updateArrayCharacteristic(
     tx: PrismaTransactionClient,
     animalId: number,
     type: string,
-    values: string
+    values: string[]
   ): Promise<void> {
     // Delete existing
     await tx.animalCharacteristic.deleteMany({
@@ -78,7 +116,7 @@ export default class CharacteristicsService {
 
     // Insert new
     if (values) {
-      const insertData = values.split(",").map(val => ({
+      const insertData = values.map(val => ({
         animalId,
         type,
         name: val.trim(),
@@ -95,6 +133,9 @@ export default class CharacteristicsService {
     value: string,
     existing: any[]
   ): Promise<void> {
+    if (!value) {
+      return;
+    }
     if (existing.length === 0) {
       await tx.animalCharacteristic.create({
         data: { animalId, type, name: value },
@@ -106,5 +147,4 @@ export default class CharacteristicsService {
       });
     }
   }
-    */
 }

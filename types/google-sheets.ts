@@ -24,6 +24,7 @@ export interface UpdateSheetCellsParams {
 export interface RowLocation {
   row: CatSheetsHeaders;
   index: number;
+  id: number;
 }
 
 export interface Row {

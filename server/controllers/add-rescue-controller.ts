@@ -15,17 +15,6 @@ export default class AddRescueController {
 
   async postAnimal(req: Request, res: Response): Promise<Response> {
     try {
-      /*const validationResult = validateCreateAnimal(req.body);
-        if (!validationResult.success) {
-        res.status(400).json({
-            error: 'Invalid input data',
-            details: validationResult.errors,
-        });
-        return;
-        }
-        */
-
-      //const result = await animalService.createAnimal(validationResult.data);
       const animal = await this.animalService.createAnimal(req.body);
 
       const date = animal.animalRescue.rescueDate;

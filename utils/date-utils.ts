@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export const parseDate = (dateString: string): Date | null => {
+export const parseDate = (dateString: string | Date): Date | null => {
   if (!dateString) {
     return null;
   }
@@ -36,13 +36,12 @@ export const calculateAge = (birthDate: Date): string => {
   return `${years} aastat ja ${months} kuud`;
 };
 
-export const isFutureDate = (dateString: string): boolean => {
-  if (!dateString) {
+export const isFutureDate = (date: Date): boolean => {
+  if (!date) {
     return false;
   }
 
-  const formattedDate = dateString.replaceAll('.', '-');
-  return moment().isBefore(moment(formattedDate, 'DD-MM-YYYY'));
+  return moment().isBefore(date);
 };
 
 export const parseEstonianDate = (dateString: string): Date | null => {

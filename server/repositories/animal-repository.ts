@@ -53,26 +53,4 @@ export default class AnimalRepository {
       return { animal, animalRescue };
     });
   }
-  /*
-  async updateRescueInfo(
-    tx: PrismaTransactionClient, 
-    animalId: number, 
-    catData: any
-  ): Promise<void> {
-    const relation = await tx.animalToAnimalRescue.findFirst({
-      where: { animalId },
-    });
-
-    if (!relation) {
-      throw new Error(`AnimalRescue relation missing for cat ID: ${animalId}`);
-    }
-
-    await tx.animalRescue.update({
-      where: { id: relation.animalRescueId },
-      data: {
-        rescueDate: moment(catData.foundDate, "DD.MM.YYYY").toDate(),
-        address: catData.foundLoc,
-      },
-    });
-  }*/
 }

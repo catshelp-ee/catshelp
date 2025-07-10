@@ -25,6 +25,7 @@ export default class GoogleSheetsService {
   sheetIDNum: number;
   sheetTable: string;
   headers: Headers;
+  rows: Rows;
 
   constructor(
     @inject(TYPES.GoogleAuthService)
@@ -43,6 +44,7 @@ export default class GoogleSheetsService {
 
     this.sheetID = process.env.CATS_SHEETS_ID!;
     this.sheetTable = process.env.CATS_TABLE_NAME!;
+    this.rows = [];
   }
 
   getRows(userID: number | string) {
@@ -50,7 +52,21 @@ export default class GoogleSheetsService {
   }
 
   setRows(userID: number | string, rows: Rows) {
-    this.nodeCacheService.set(`rows:${userID}`, rows);
+    return this.nodeCacheService.set(`rows:${userID}`, rows);
+  }
+
+  async setInitRows(userID: number | string, animals: Animal[]) {
+    const filteredRows = [] as Rows;
+    for (let i = 1; i < this.rows.length; i++) {
+      const row = this.rows[i].row;
+      const animal = animals.find(animal => animal.name === row.catName);
+      if (!animal) {
+        continue;
+      }
+      this.rows[i].id = animal.id;
+      filteredRows.push(this.rows[i]);
+    }
+    await this.setRows(userID, filteredRows);
   }
 
   private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
@@ -70,7 +86,7 @@ export default class GoogleSheetsService {
     return columnMapping;
   }
 
-  async init(userID: number | string, cats: Animal[]) {
+  async init() {
     if (this.headers) {
       throw new Error('Google Auth Service already initialized');
     }
@@ -100,24 +116,17 @@ export default class GoogleSheetsService {
     this.headers = this.extractColumnMapping(rows);
 
     const rowData = rows[0].rowData;
-    const filteredRows: RowLocation[] = [];
 
-    const username = (await this.userService.getUser(userID)).fullName;
     for (let i = 0; i < rowData.length; i++) {
       const row = rowData[i];
       const values = rowToObjectFixed({ row: row.values });
 
-      const fosterhome = values.shelterOrClinicName;
-      if (fosterhome === username) {
-        filteredRows.push({
-          row: values,
-          index: i,
-          id: cats.find(cat => cat.name === values.catName).id,
-        });
-      }
+      this.rows.push({
+        row: values,
+        index: i,
+        id: -1,
+      });
     }
-
-    this.setRows(userID, filteredRows);
   }
 
   async addDataToSheet(data: CreateAnimalData) {

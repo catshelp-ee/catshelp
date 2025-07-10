@@ -1,11 +1,10 @@
-import AnimalService from '@services/animal/animal-service';
+// Now the refactored LoginController
+// controllers/auth/login-controller.ts
 import AuthService from '@services/auth/auth-service';
 import CookieService from '@services/auth/cookie-service';
 import EmailService from '@services/auth/email-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
-import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import {
   EmailLoginRequest,
@@ -16,15 +15,9 @@ import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class LoginController {
-  emailService: EmailService;
+  private emailService: EmailService;
 
-  constructor(
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
-  ) {
+  constructor(@inject(TYPES.AuthService) private authService: AuthService) {
     this.emailService = new EmailService();
   }
 
@@ -49,19 +42,10 @@ export default class LoginController {
         return res.status(400).json({ error: 'Invalid Google token' });
       }
 
-      const user = await this.authenticateUser(email, res);
+      const user = await this.authService.authenticateAndSetupUser(email, res);
       if (!user) {
         return res.sendStatus(401);
       }
-
-      this.userService.setUser(user);
-      this.animalService.setAnimals(user);
-
-      const cats = await this.animalService.getAnimals(user.id);
-      await this.googleSheetsService.init(user.id, cats);
-
-      const newToken = this.authService.generateJWT(user.id);
-      CookieService.setAuthCookies(res, newToken);
 
       return res.sendStatus(200);
     } catch (error) {
@@ -102,11 +86,7 @@ export default class LoginController {
         return res.sendStatus(200);
       }
 
-      const decoded = this.authService.decodeJWT(token);
-      if (decoded) {
-        await UserService.setTokenInvalid(token, decoded);
-      }
-
+      await this.authService.invalidateToken(token);
       CookieService.clearAuthCookies(res);
       return res.sendStatus(200);
     } catch (error) {
@@ -128,41 +108,16 @@ export default class LoginController {
         return res.sendStatus(401);
       }
 
-      const decodedToken = this.authService.verifyJWT(token);
-      if (!decodedToken) {
+      const isValid = await this.authService.verifyAndRefreshToken(token, res);
+      if (!isValid) {
         return res.sendStatus(401);
       }
 
-      if (await UserService.isTokenInvalid(token)) {
-        return res.sendStatus(401);
-      }
-
-      // Invalidate the old token
-      await UserService.setTokenInvalid(token, decodedToken);
-
-      // Generate new token
-      const newToken = this.authService.generateJWT(decodedToken.id);
-      CookieService.setAuthCookies(res, newToken);
-
-      return res.redirect('/dashboard');
+      res.redirect('/dashboard');
+      return res;
     } catch (error) {
       console.error('Token verification error:', error);
       return res.sendStatus(401);
     }
-  }
-
-  private async authenticateUser(
-    email: string,
-    res: Response
-  ): Promise<User | null> {
-    const user = await UserService.getUserByEmail(email);
-    if (!user) {
-      return null;
-    }
-
-    const token = this.authService.generateJWT(user.id);
-    CookieService.setAuthCookies(res, token);
-
-    return user;
   }
 }

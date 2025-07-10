@@ -68,19 +68,11 @@ export default class UserService {
       return true;
     }
 
-    const [, count] = await prisma.$transaction([
-      prisma.revokedToken.findMany({
-        where: {
-          token: token,
-        },
-      }),
-      prisma.revokedToken.count({
-        where: {
-          token: token,
-        },
-      }),
-    ]);
-
+    const count = await prisma.revokedToken.count({
+      where: {
+        token: token,
+      },
+    });
     return count > 0;
   }
 }

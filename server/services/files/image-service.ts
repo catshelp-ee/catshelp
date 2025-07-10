@@ -48,7 +48,6 @@ export default class ImageService {
       await this.googleDriveService.downloadImage(fileId, destinationPath);
       return `images/${ownerName}/${catName}.png`;
     } catch (e) {
-      //console.error("Failed to download image: ", e);
       return 'missing256x256.png';
     }
   }

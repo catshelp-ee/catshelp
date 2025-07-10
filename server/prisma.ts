@@ -1,9 +1,15 @@
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from '../generated/prisma';
+
+/**
+ * Prisma Client Extension for Custom Logic
+ * This file extends the base Prisma client with custom query logic,
+ * specifically for generating unique rank numbers for animal rescues based on date.
+ */
 
 const basePrisma = new PrismaClient();
 
 export const prisma = basePrisma.$extends({
-  name: "animalRescueRankNrExtension",
+  name: 'animalRescueRankNrExtension',
   query: {
     animalRescue: {
       async create({ args, query }) {
@@ -12,7 +18,7 @@ export const prisma = basePrisma.$extends({
         const currentYear = currentDate.getFullYear();
 
         const lastRescue = await basePrisma.animalRescue.findFirst({
-          orderBy: { id: "desc" },
+          orderBy: { id: 'desc' },
         });
 
         let newRankNr: number;
@@ -22,9 +28,7 @@ export const prisma = basePrisma.$extends({
           new Date(lastRescue.rescueDate).getMonth() !== currentMonth ||
           new Date(lastRescue.rescueDate).getFullYear() !== currentYear
         ) {
-          const yearPart = currentYear % 1000;
-          const monthPart = currentMonth + 1 < 10 ? `0${currentMonth + 1}` : `${currentMonth + 1}`;
-          newRankNr = Number(`${yearPart}${monthPart}1`);
+          newRankNr = 1;
         } else {
           newRankNr = lastRescue.rankNr + 1;
         }

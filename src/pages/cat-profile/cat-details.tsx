@@ -1,35 +1,15 @@
-import React from "react";
-import { IconButton, Typography } from "@mui/material";
-import { Cat }  from "types/cat";
-import ImageGallery from "./image-gallery";
 import { useIsMobile } from "@context/is-mobile-context";
 import EditIcon from '@mui/icons-material/Edit';
+import { IconButton, Typography } from "@mui/material";
+import { calculateAge, isFutureDate } from "@utils/date-utils";
+import React from "react";
+import { Profile } from "types/cat";
+import ImageGallery from "./image-gallery";
 
 interface CatDetailsProps {
-  selectedCat: Cat;
+  selectedCat: Profile;
   setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const FIELD_LABELS = {
-  gender: "Kassi sugu",
-  age: "Kassi vanus",
-  appearance: "Kassi välimus",
-  currentLoc: "Kassi asukoht",
-  procedures: "Mis protseduurid hoiulisel tehtud on?",
-  issues:
-    "Kui kassil esineb krooniline haigus, vajab eritoitu või on vigastus palun kirjuta siia sellest",
-  duration: "Kui kaua on kass hoiukodus/kassitoas viibinud?",
-  history:
-    "Kas Sa tead, kuidas kiisu meie MTÜ hoole alla sattus? (Kirjelda tema leidmise ajalugu, mis seisundis ta oli jne)",
-  characteristics: "Iseloom",
-  likes: "Kassile meeldib",
-  descriptionOfCharacter:
-    "Kirjelda kassi mõne iseloomustava lausega (nt milline on kiisu argipäev)",
-  treatOtherCats: "Kuidas suhtub teistesse kassidesse?",
-  treatDogs: "Kuidas suhtub koertesse?",
-  treatChildren: "Kuidas suhtub lastesse?",
-  outdoorsIndoors: "Kuidas ta sobiks toa- või õuekassikas?",
-} as const;
 
 const CatDetailsHeader: React.FC<{
   title: string;
@@ -49,7 +29,7 @@ const CatDetailsHeader: React.FC<{
           "&:hover": {
             backgroundColor: "#3696ff",
           },
-          
+
         }}
       >
         <EditIcon /> {/* default is 24 */}
@@ -67,15 +47,50 @@ const CatDescription: React.FC<{ description: string }> = ({ description }) => (
 
 const CatProfileField: React.FC<{
   label: string;
-  value: string | [] | string[] | Date | null;
-}> = ({ label, value }) => (
-  <div>
-    <h2 className="font-bold">{label}</h2>
-    <Typography variant="body1">
-      {Array.isArray(value) ? value.join(", ") : value}
-    </Typography>
-  </div>
-);
+  value: string | string[] | Date | null;
+}> = ({ label, value }) => {
+
+  const renderContent = () => {
+    if (Array.isArray(value)) {
+      return value.join(", ");
+    } else if (value instanceof Date) {
+      return Date.toString()
+    }
+    return value;
+  }
+
+  return (
+    <div>
+      <h2 className="font-bold">{label}</h2>
+      <Typography variant="body1">
+        {renderContent()}
+      </Typography>
+    </div>
+  )
+}
+
+const extractProcedures = (profile: Profile): string => {
+  const procedures = [];
+
+
+  if (!profile.characteristics.textFields.gender.split(' ')[0].endsWith('mata')) {
+    procedures.push("Lõigatud");
+  }
+
+  if (isFutureDate(profile.vaccineInfo.nextComplexVaccineDate)) {
+    procedures.push('Kompleksvaktsiin');
+  }
+
+  if (isFutureDate(profile.vaccineInfo.nextRabiesVaccineDate)) {
+    procedures.push('Marutaudi vaktsiin');
+  }
+
+  if (profile.vaccineInfo.dewormingOrFleaTreatmentDate) {
+    procedures.push('Ussirohi');
+  }
+
+  return procedures.join(', ');
+}
 
 const CatDetails: React.FC<CatDetailsProps> = ({
   selectedCat,
@@ -83,6 +98,28 @@ const CatDetails: React.FC<CatDetailsProps> = ({
 }) => {
   const handleEditClick = () => setIsEditMode(true);
   const isMobile = useIsMobile();
+
+  const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+  const FIELD_LABELS = {
+    "Kassi sugu": capitalize(selectedCat.characteristics.textFields.gender.split(' ')[1]),
+    "Kassi vanus": calculateAge(selectedCat.mainInfo.birthDate),
+    "Kassi välimus": [
+      selectedCat.characteristics.selectFields.coatColour,
+      selectedCat.characteristics.selectFields.coatLength
+    ].filter(Boolean).join(' '),
+    "Kassi asukoht": selectedCat.mainInfo.location,
+    "Mis protseduurid hoiulisel tehtud on?": extractProcedures(selectedCat),
+    "Kui kassil esineb krooniline haigus, vajab eritoitu või on vigastus palun kirjuta siia sellest": selectedCat.characteristics.textFields.chronicConditions,
+    "Kui kaua on kass hoiukodus/kassitoas viibinud?": selectedCat.characteristics.textFields.fosterStayDuration,
+    "Iseloom": selectedCat.characteristics.multiselectFields.personality.join(", "),
+    "Kassile meeldib": selectedCat.characteristics.multiselectFields.likes.join(", "),
+    "Kirjelda kassi mõne iseloomustava lausega (nt milline on kiisu argipäev)": selectedCat.characteristics.textFields.description,
+    "Kuidas suhtub teistesse kassidesse?": selectedCat.characteristics.selectFields.attitudeTowardsCats,
+    "Kuidas suhtub koertesse?": selectedCat.characteristics.selectFields.attitudeTowardsDogs,
+    "Kuidas suhtub lastesse?": selectedCat.characteristics.selectFields.attitudeTowardsChildren,
+    "Kuidas ta sobiks toa- või õuekassikas?": selectedCat.characteristics.selectFields.suitabilityForIndoorOrOutdoor
+  } as const;
 
   return (
     <>
@@ -99,14 +136,14 @@ const CatDetails: React.FC<CatDetailsProps> = ({
 
         <div className="flex flex-col gap-4">
           <h1 className="text-secondary">LOOMA PROFIIL:</h1>
-          {Object.entries(FIELD_LABELS).map(([key, label]) => {
-            return(
-            <CatProfileField
-              key={key}
-              label={label}
-              value={selectedCat[key as keyof Cat]}
-            />)
-})}
+          {Object.entries(FIELD_LABELS).map(([label, value], index) => {
+            return (
+              <CatProfileField
+                key={index}
+                label={label}
+                value={value}
+              />)
+          })}
         </div>
       </div>
 

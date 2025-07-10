@@ -1,9 +1,9 @@
+import { useAuth } from "@context/auth-context";
+import { useIsMobile } from "@context/is-mobile-context";
+import CloseIcon from "@mui/icons-material/Close";
+import { Button, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, IconButton } from "@mui/material";
-import { useAuth } from "@context/auth-context";
-import CloseIcon from "@mui/icons-material/Close";
-import { useIsMobile } from "@context/is-mobile-context";
 import menuItems from "./menu-items.json";
 
 interface SidebarProps {
@@ -103,7 +103,9 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
   };
 
   useEffect(() => {
-    if (!isClosed) return;
+    if (!isClosed) {
+      return;
+    }
 
     setTimeout(() => {
       setView(false);

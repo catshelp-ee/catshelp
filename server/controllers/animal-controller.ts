@@ -1,152 +1,75 @@
-// controllers/animal-controller.ts
-import GoogleService from "@services/google-service";
-import AnimalService from "@services/animal-service";
-import fs from "node:fs";
-import { prisma } from "server/prisma";
-import { generateCatDescription } from "@services/ai-service";
-import { Request, Response } from "express";
-import { getUser } from "@services/user-service";
+import AnimalService from '@services/animal/animal-service';
+import AuthService from '@services/auth/auth-service';
+import { parseDate } from '@utils/date-utils';
+import { handleControllerError } from '@utils/error-handler';
+import { Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
+import { Profile } from 'types/cat';
+import TYPES from 'types/inversify-types';
 
-// Initialize services once
-let googleService: GoogleService;
-let catProfileService: AnimalService;
+@injectable()
+export default class AnimalController {
+  constructor(
+    @inject(TYPES.AuthService) private authService: AuthService,
+    @inject(TYPES.AnimalService) private animalService: AnimalService
+  ) {}
 
-async function initializeServices() {
-  if (!googleService) {
-    googleService = await GoogleService.create();
-    catProfileService = new AnimalService(googleService);
-  }
-}
-
-// Initialize services when this module loads
-initializeServices().catch(console.error);
-
-export async function postAnimal(req: Request, res: Response) {
-  try {
-    await initializeServices(); // Ensure services are ready
-    const formData = req.body;
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split("T")[0];
-
-    const animal = await prisma.animal.create();
-
-    const animalRescue = await prisma.animalRescue.create({
-      data: {
-        rescueDate: formattedDate,
-        state: formData.state,
-        address: formData.location,
-        locationNotes: formData.notes,
-      }
-    });
-
-    await prisma.animalToAnimalRescue.create({
-      data: {
-        animalId: animal.id,
-        animalRescueId: animalRescue.id,
-      }
-    });
-
-    delete formData.pildid;
-    const row = { id: animalRescue.rankNr, ...formData };
-
-    await googleService.addDataToSheet(
-      process.env.CATS_SHEETS_ID,
-      process.env.CATS_TABLE_NAME,
-      row
+  private stringsToDates(animal: Profile) {
+    animal.vaccineInfo.complexVaccine = parseDate(
+      animal.vaccineInfo.complexVaccine
     );
-
-    const folderId = await createFolder(animalRescue.rankNr.toString());
-
-    await prisma.animal.update({
-      where: {
-        id: animal.id
-      },
-      data:{
-        driveId: folderId,
-      }
-    });
-    res.json(folderId);
-  } catch (error) {
-    console.error("Error creating animal:", error);
-    res.status(500).json({ error: "Failed to create animal record" });
+    animal.vaccineInfo.nextComplexVaccineDate = parseDate(
+      animal.vaccineInfo.nextComplexVaccineDate
+    );
+    animal.vaccineInfo.rabiesVaccine = parseDate(
+      animal.vaccineInfo.rabiesVaccine
+    );
+    animal.vaccineInfo.nextRabiesVaccineDate = parseDate(
+      animal.vaccineInfo.nextRabiesVaccineDate
+    );
+    animal.vaccineInfo.dewormingOrFleaTreatmentDate = parseDate(
+      animal.vaccineInfo.dewormingOrFleaTreatmentDate
+    );
+    animal.mainInfo.birthDate = parseDate(animal.mainInfo.birthDate);
+    animal.animalRescueInfo.rescueDate = parseDate(
+      animal.animalRescueInfo.rescueDate
+    );
   }
-}
 
-async function createFolder(catId: string) {
-  const driveFolder = await googleService.createDriveFolder(catId);
-  return driveFolder.data.id;
-}
+  private multiSelectsToArrays(animal: Profile) {
+    Object.entries(animal.characteristics.multiselectFields).map(
+      ([label, value]) => {
+        if (value === '') {
+          animal.characteristics.multiselectFields[label] = [];
+          return;
+        }
+        animal.characteristics.multiselectFields[label] = value.split(',');
+      }
+    );
+  }
 
-export async function addPicture(req: Request, res: Response) {
-  try {
-    await initializeServices();
-    let uploadedFiles = req.files;
-    const folderID = req.body.driveId;
+  private toBoolean(value: unknown): boolean {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') return value.toLowerCase() === 'true';
+    return false;
+  }
 
-    uploadedFiles = Array.isArray(uploadedFiles)
-      ? uploadedFiles
-      : [uploadedFiles];
-    const uploadPromises = uploadedFiles.map((file) => {
-      const tempPath = file.path;
-      return googleService.uploadToDrive(
-        file.originalname,
-        fs.createReadStream(tempPath),
-        folderID!
+  async updateAnimal(
+    req: Request<object, object, Profile>,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const updateAnimalData = req.body;
+      this.stringsToDates(updateAnimalData);
+      this.multiSelectsToArrays(updateAnimalData);
+      updateAnimalData.mainInfo.microchipRegisteredInLLR = this.toBoolean(
+        updateAnimalData.mainInfo.microchipRegisteredInLLR
       );
-    });
-
-    await Promise.all(uploadPromises);
-    res.json("Pildid laeti üles edukalt");
-  } catch (error) {
-    console.error("Error uploading pictures:", error);
-    res.status(500).json({
-      error: "Tekkis tõrge piltide üles laadimisega: " + error.message,
-    });
-  }
-}
-
-export async function getProfile(req: Request, res: Response) {
-  try {
-    await initializeServices();
-    const user = await getUser(req.cookies.jwt);
-    const catProfiles = await catProfileService.getCatProfilesByOwner(user);
-    res.json({ profiles: catProfiles });
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    res.status(500).json({ error: "Failed to fetch profile data", debugMessage: error });
-  }
-}
-
-export async function updatePet(req: Request, res: Response) {
-  try {
-    await initializeServices();
-    const catData = req.body;
-    const cats = await AnimalService.getUserCats(catData.owner.email);
-    await catProfileService.updateCatProfile(
-      catData,
-      cats?.find((cat) => cat.name === catData.name)
-    );
-    res.json("uuendatud edukalt");
-  } catch (error) {
-    console.error("Error updating pet:", error);
-    res.status(500).json({ error: "Failed to update pet data" });
-  }
-}
-
-export async function genText(req: Request, res: Response) {
-  try {
-    const catInfo = req.body.formData;
-    const description = await generateCatDescription(catInfo);
-
-    if (!description || description.trim() === "") {
-      return res
-        .status(503)
-        .json({ error: "AI tekstiloome pole hetkel saadaval" });
+      const userID = this.authService.decodeJWT(req.cookies.jwt).id;
+      await this.animalService.updateAnimal(updateAnimalData, userID);
+      return res.sendStatus(204);
+    } catch (error) {
+      handleControllerError(error, res, 'Failed to update pet');
     }
-
-    res.json({ description });
-  } catch (error) {
-    console.error("Error generating AI text:", error);
-    res.status(500).json({ error: "Probleemid AI tekstiga" });
   }
 }

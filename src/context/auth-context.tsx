@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAlert } from "@context/AlertContext";
+import { useAlert } from "@context/alert-context";
 
 type AuthContext = {
     getUser: () => any;

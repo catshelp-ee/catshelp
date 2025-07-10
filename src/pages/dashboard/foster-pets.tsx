@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   IconButton,
   Tooltip,
   useTheme,
 } from "@mui/material";
 import AllPetsPopup from "@pages/dashboard/all-pets-popup";
-import { Pet } from "./dashboard";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { PetAvatar } from "src/components/pet-avatar";
+import { Pet } from "types/animal";
 
 interface FosterPetsProps {
   pets: Pet[];
@@ -53,13 +54,20 @@ const PetsGrid: React.FC<{
   hiddenCount: number;
   onShowMore: () => void;
 }> = ({ displayPets, hasMorePets, hiddenCount, onShowMore }) => (
-  <div className="flex items-center justify-around space-x-3 px-8 relative">
-    {displayPets.map((pet, id) => (
-      <PetAvatar key={id} pet={pet} />
-    ))}
+  <div className="flex items-center justify-around space-x-3 px-8 relative" >
+    {
+      displayPets.map((pet, id) => (
+        <Link
+          to={`/cat-profile`}
+          aria-label={`Vaata ${pet.name} profiili`}
+        >
+          <PetAvatar key={id} pet={pet} />
+        </Link>
+      ))
+    }
 
     {hasMorePets && <ShowMoreButton count={hiddenCount} onClick={onShowMore} />}
-  </div>
+  </div >
 );
 
 const usePopupManager = () => {

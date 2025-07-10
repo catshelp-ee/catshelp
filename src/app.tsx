@@ -1,11 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageLayout from "@pages/app/page-layout";
 import Dashboard from "@pages/dashboard/dashboard";
-import AddCatForm from "@pages/add-cat/AddCatForm";
+import AddCatForm from "@pages/add-cat/add-cat-form";
 import CatProfile from "@pages/cat-profile/cat-profile";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
-import "@style/App.css";
+import "@style/app.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
 import ProtectedRoute from "@pages/protected-route";

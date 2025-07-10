@@ -1,24 +1,22 @@
-import React from "react";
 import {
   Avatar,
   Typography,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Pet } from "types/animal";
 
-interface Pet {
-  name: string;
-  image: string;
-}
-
-export const PetAvatar: React.FC<{ pet: Pet }> = ({ pet }) => {
+export const PetAvatar: React.FC<{
+  pet: Pet;
+  isSelected?: boolean;
+  onClick?: () => void;
+}> = ({ pet, isSelected, onClick }) => {
   return (
-    <Link
-      to={`/cat-profile`}
+    <button
       className="flex flex-col transition-transform hover:scale-105 p-2"
-      aria-label={`Vaata ${pet.name} profiili`}
+      onClick={onClick}
     >
       <Avatar
-        src={`/${pet.image}`}
+        src={`/${pet.pathToImage}`}
         alt={`${pet.name} pilt`}
         sx={{
           width: 64,
@@ -34,10 +32,11 @@ export const PetAvatar: React.FC<{ pet: Pet }> = ({ pet }) => {
           fontWeight: "bold",
           textAlign: "center",
           fontSize: "0.875rem",
+          borderBottom: isSelected ? "4px solid #5DC2D8" : "none",
         }}
       >
         {pet.name}
       </Typography>
-    </Link>
+    </button>
   );
 };

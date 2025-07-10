@@ -11,9 +11,7 @@ services:
       MARIADB_PASSWORD: ch
     ports:
       - 3306:3306
-    volumes:
-      - ./init-db:/docker-entrypoint-initdb.d  # Mount the init-db directory
-      #- db-data:/var/lib/mysql
+      
   adminer:
     image: adminer
     restart: always
@@ -25,10 +23,4 @@ services:
     restart: always
     ports:
       - 6379:6379
-    volumes:
-      - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
-
-volumes:
-  #db-data:
-  #redis-data:

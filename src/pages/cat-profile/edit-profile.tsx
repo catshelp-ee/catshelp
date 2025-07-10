@@ -1,22 +1,24 @@
 import Popup from "@components/popup";
-import { useAuth } from "@context/auth-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { useCatForm } from "@hooks/use-cat-form";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { Button, IconButton, TextField } from "@mui/material";
+import { AccordionDetails, Button, IconButton, TextField, Typography } from "@mui/material";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import ImageGallery from "@pages/cat-profile/image-gallery";
-import { uploadImages } from "@utils/google-utils";
 import axios from "axios";
 import React, { useState } from "react";
-import { Cat } from "types/cat";
+import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";
 import { VaccinationFields } from "./form/vaccination-fields";
 
+
 interface CatDetailsProps {
-  selectedCat: Cat;
+  selectedCat: Profile;
   setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedCat: React.Dispatch<React.SetStateAction<Cat>>;
+  setSelectedCat: React.Dispatch<React.SetStateAction<Profile>>;
 }
 
 interface PreviewImage {
@@ -30,7 +32,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
   setIsEditMode,
   setSelectedCat,
 }) => {
-  const { getUser } = useAuth();
   const [previews, setPreviews] = useState<PreviewImage[]>([]);
   const isMobile = useIsMobile();
 
@@ -41,8 +42,31 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     setPopupVisible,
     setSlidingDown,
     updateField,
-    updateFieldMultiselect,
+    updateMultiSelectField,
+    updateDateField
   } = useCatForm(selectedCat);
+
+  function parseDotNotationFormData(formData: FormData) {
+    const obj = {} as Profile;
+
+    for (const [key, value] of formData.entries()) {
+      const keys = key.split('.'); // split by dots
+      let current = obj;
+
+      keys.forEach((part, index) => {
+        // If it's the last key, assign the value
+        if (index === keys.length - 1) {
+          current[part] = value;
+        } else {
+          // If this key doesn't exist yet, create an empty object
+          if (!current[part]) current[part] = {};
+          current = current[part];
+        }
+      });
+    }
+
+    return obj;
+  }
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,22 +76,16 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     }
 
     const formData = new FormData(e.target as HTMLFormElement);
-    const payload = Object.fromEntries(formData);
-
-    if (!payload["gender"])
-      payload["gender"] = "";
-
-    if (!payload["llr"])
-      payload["llr"] = "";
+    const updatedAnimalData = parseDotNotationFormData(formData);
 
     const images: File[] = previews.map((p) => p.file);
 
     if (images.length > 0) {
-      uploadImages(images, tempSelectedCat.driveId);
+      //uploadImages(images, tempSelectedCat.driveId);
     }
 
     try {
-      const response = await axios.put("/api/animals/cat-profile", payload, {
+      await axios.put("/api/animals/cat-profile", updatedAnimalData, {
         withCredentials: true,
       });
 
@@ -136,7 +154,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
             <div className="mb-16">
               <h1 className="text-secondary"> LOOMA KIRJELDUS: </h1>
               <TextField
-                name="title"
+                name="description"
                 value={tempSelectedCat.description}
                 onChange={(e) => updateField(e, "description")}
                 sx={{ width: "100%" }}
@@ -145,23 +163,53 @@ const EditProfile: React.FC<CatDetailsProps> = ({
             </div>
 
             <div className="flex flex-col gap-4">
-              <BasicInfoFields
-                isMobile={isMobile}
-                tempSelectedCat={tempSelectedCat}
-                updateField={updateField}
-              />
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  <Typography>Põhiandmed</Typography>
+                </AccordionSummary>
 
-              <VaccinationFields
-                tempSelectedCat={tempSelectedCat}
-                updateField={updateField}
-              />
+                <AccordionDetails sx={{ display: 'flex', flexDirection: 'column' }}>
 
-              <DynamicFormFields
-                tempSelectedCat={tempSelectedCat}
-                isMobile={isMobile}
-                updateField={updateField}
-                updateFieldMultiselect={updateFieldMultiselect}
-              />
+                  <BasicInfoFields
+                    isMobile={isMobile}
+                    tempSelectedCat={tempSelectedCat}
+                    updateField={updateField}
+                    updateDateField={updateDateField}
+                  />
+
+                  <VaccinationFields
+                    tempSelectedCat={tempSelectedCat}
+                    updateField={updateField}
+                    updateDateField={updateDateField}
+                  />
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  <Typography>Iseloom</Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ display: 'flex', flexDirection: 'column' }}>
+
+                  <DynamicFormFields
+                    tempSelectedCat={tempSelectedCat}
+                    isMobile={isMobile}
+                    updateField={updateField}
+                    updateMultiSelectField={updateMultiSelectField}
+                  />
+                </AccordionDetails>
+              </Accordion>
+              <Button sx={{ width: "50%", margin: "2rem auto" }} variant="contained" type="submit">
+                Salvesta
+              </Button>
             </div>
           </div>
 
@@ -175,10 +223,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
             />
           )}
         </div>
-
-        <Button sx={{ width: "50%", margin: "2rem auto" }} variant="contained" type="submit">
-          Salvesta
-        </Button>
       </form>
     </>
   );

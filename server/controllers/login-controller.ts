@@ -56,7 +56,9 @@ export default class LoginController {
 
       this.userService.setUser(user);
       this.animalService.setAnimals(user);
-      await this.googleSheetsService.init(user.id);
+
+      const cats = await this.animalService.getAnimals(user.id);
+      await this.googleSheetsService.init(user.id, cats);
 
       const newToken = this.authService.generateJWT(user.id);
       CookieService.setAuthCookies(res, newToken);

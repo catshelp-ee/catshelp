@@ -1,8 +1,9 @@
+import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
-import { Cat } from "types/cat";
+import { Profile } from "types/cat";
 
-export const useCatForm = (selectedCat: Cat) => {
-  const [tempSelectedCat, setTempSelectedCat] = useState<Cat>({
+export const useCatForm = (selectedCat: Profile) => {
+  const [tempSelectedCat, setTempSelectedCat] = useState<Profile>({
     ...selectedCat,
   });
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -12,23 +13,41 @@ export const useCatForm = (selectedCat: Cat) => {
     setTempSelectedCat({ ...selectedCat });
   }, [selectedCat]);
 
-  const updateField = (e: any, key: string) => {
-    const value = e.target.value;
-    setTempSelectedCat((prev: any) => ({ ...prev, [key]: value }));
-  };
-
-  const updateFieldMultiselect = (e: any, key: string) => {
-    let value = e.target.value;
-    if (key !== "Other" && value[0] === "Other") {
-      value = [value[1]];
-    }
-
+  const updateNestedField = (key: string, value: any) => {
     setTempSelectedCat((prev: any) => {
-      if (value[value.length - 1] === "Other")
-        return { ...prev, [key]: ["Other"] };
-      return { ...prev, [key]: value };
+      const keys = key.split('.');
+      const updated = { ...prev };
+      let current = updated;
+
+      for (let i = 0; i < keys.length - 1; i++) {
+        const k = keys[i];
+        current[k] = { ...current[k] }; // preserve immutability
+        current = current[k];
+      }
+
+      current[keys[keys.length - 1]] = value;
+      return updated;
     });
   };
+
+  // Generic field handler
+  const updateField = (e: any, key: string) => {
+    const value = e.target.value;
+    updateNestedField(key, value);
+  };
+
+  // For DatePicker
+  const updateDateField = (newDate: Dayjs, key: string) => {
+    updateNestedField(key, newDate.toISOString());
+  };
+
+  // For Multiselect
+  const updateMultiSelectField = (e: any, key: string) => {
+    const value = e.target.value;
+    const finalValue = value[value.length - 1] === "Other" ? ["Other"] : value;
+    updateNestedField(key, finalValue);
+  };
+
 
   return {
     tempSelectedCat,
@@ -38,6 +57,7 @@ export const useCatForm = (selectedCat: Cat) => {
     isSlidingDown,
     setSlidingDown,
     updateField,
-    updateFieldMultiselect,
+    updateMultiSelectField,
+    updateDateField,
   };
 };

@@ -7,7 +7,7 @@ import GoogleSheetsService from '@services/google/google-sheets-service';
 import { formatEstonianDate, parseEstonianDate } from '@utils/date-utils';
 import { inject, injectable } from 'inversify';
 import { Result } from 'types/dashboard';
-import { Row } from 'types/google-sheets';
+import { CatSheetsHeaders, Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import { DEFAULT_COLORS } from '../dashboard/constants';
 
@@ -28,9 +28,7 @@ export default class NotificationService {
     this.colours = DEFAULT_COLORS;
   }
 
-  processNotifications(): Result[] {
-    const rows = this.googleSheetsService.rows;
-
+  processNotifications(rows: Rows): Result[] {
     if (rows.length === 0) {
       return this.createEmptyStateNotification();
     }
@@ -39,7 +37,7 @@ export default class NotificationService {
 
     rows.forEach((row, index) => {
       this.notifications.forEach(notification => {
-        const result = this.processNotification(notification, row, index);
+        const result = this.processNotification(notification, row.row, index);
         if (result) {
           results.push(result);
         }
@@ -51,7 +49,7 @@ export default class NotificationService {
 
   private processNotification(
     notification: DashboardNotification,
-    row: Row,
+    row: CatSheetsHeaders,
     catIndex: number
   ): Result | null {
     const columnIndex =
@@ -62,12 +60,10 @@ export default class NotificationService {
 
     const dateCell = row[columnIndex];
     const sheetsDate = dateCell?.formattedValue;
-    const catName =
-      row[this.googleSheetsService.headers['KASSI NIMI']].formattedValue;
 
     const result: Result = {
       label: notification.getText(),
-      assignee: catName,
+      assignee: row.catName,
       due: formatEstonianDate(new Date()),
       action: {
         label: notification.buttonText,

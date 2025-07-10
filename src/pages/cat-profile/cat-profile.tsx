@@ -5,7 +5,7 @@ import { isLoadingWrapper } from "@hooks/is-loading";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
-import { Cat, defaultCat } from "types/cat";
+import { createProfile, Profile } from "types/cat";
 import CatDetails from "./cat-details";
 import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
@@ -67,8 +67,8 @@ export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
 const CatProfile: React.FC = () => {
   const { showAlert } = useAlert();
-  const [cats, setCats] = useState<Cat[]>([]);
-  const [selectedCat, setSelectedCat] = useState<Cat>(defaultCat);
+  const [cats, setCats] = useState<Profile[]>([]);
+  const [selectedCat, setSelectedCat] = useState<Profile>(createProfile());
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const isMobile = useIsMobile();

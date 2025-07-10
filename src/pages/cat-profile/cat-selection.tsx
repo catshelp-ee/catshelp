@@ -1,11 +1,11 @@
 import { PetAvatar } from "@components/pet-avatar";
 import { Stack } from "@mui/material";
 import React, { useState } from "react";
-import { Cat } from "types/cat";
+import { Profile } from "types/cat";
 
 interface CatSelectionProps {
-  cats: Cat[];
-  setSelectedCat: React.Dispatch<React.SetStateAction<Cat>>;
+  cats: Profile[];
+  setSelectedCat: React.Dispatch<React.SetStateAction<Profile>>;
   setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -19,7 +19,7 @@ const CatSelection: React.FC<CatSelectionProps> = ({
 }) => {
   const [selectedCatIndex, setSelectedCatIndex] = useState(0);
 
-  const handleCatSelect = (index: number, cat: Cat) => {
+  const handleCatSelect = (index: number, cat: Profile) => {
     if (selectedCatIndex === index) {
       return;
     }
@@ -35,7 +35,7 @@ const CatSelection: React.FC<CatSelectionProps> = ({
           handleCatSelect(index, cat);
         }}
           isSelected={selectedCatIndex === index}
-          pet={{ name: cat.name, pathToImage: cat.images[0] }} />
+          pet={{ name: cat.mainInfo.name, pathToImage: cat.images[0] }} />
       ))}
     </Stack>
   );

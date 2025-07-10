@@ -2,32 +2,21 @@ import NodeCacheService from '@services/cache/cache-service';
 import UserService from '@services/user/user-service';
 import { formatEstonianDate } from '@utils/date-utils';
 import { GaxiosResponse } from 'gaxios';
+import { Animal } from 'generated/prisma';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
+import moment from 'moment';
 import { CreateAnimalData } from 'types/animal';
-import { formFields } from 'types/cat';
-import { Headers, RowLocation, Rows } from 'types/google-sheets';
+import { Profile } from 'types/cat';
+import {
+  CatSheetsHeaders,
+  Headers,
+  RowLocation,
+  Rows,
+} from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import { rowToObjectFixed } from 'utils/sheet-utils';
 import GoogleAuthService from './google-auth-service';
-
-const SHEETS_COLUMNS = {
-  name: 'KASSI NIMI',
-  chipNr: 'KIIP',
-  llr: 'KIIP LLR-is MTÜ nimel- täidab registreerija',
-  birthData: 'SÜNNIAEG',
-  gender: 'SUGU',
-  coatColour: 'KASSI VÄRV',
-  coatLength: 'KASSI KARVA PIKKUS',
-  foundLoc: 'LEIDMISKOHT',
-  vacc: 'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)',
-  vaccEnd: 'JÄRGMISE VAKTSIINI AEG',
-  rabiesVacc:
-    'MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)',
-  rabiesVaccEnd: 'JÄRGMINE MARUTAUDI AEG',
-  wormMedName: 'Ussirohu/ turjatilga nimi',
-  cut: 'LÕIGATUD',
-};
 
 @injectable()
 export default class GoogleSheetsService {
@@ -64,7 +53,24 @@ export default class GoogleSheetsService {
     this.nodeCacheService.set(`rows:${userID}`, rows);
   }
 
-  async init(userID: number | string) {
+  private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
+    const columnMapping: Headers = {};
+    const headerRow = rows[0]?.rowData?.[0]?.values;
+
+    if (!headerRow) {
+      throw new Error('No header row found');
+    }
+
+    headerRow.forEach((col, index: number) => {
+      if (col?.formattedValue) {
+        columnMapping[col.formattedValue] = index;
+      }
+    });
+
+    return columnMapping;
+  }
+
+  async init(userID: number | string, cats: Animal[]) {
     if (this.headers) {
       throw new Error('Google Auth Service already initialized');
     }
@@ -93,21 +99,20 @@ export default class GoogleSheetsService {
 
     this.headers = this.extractColumnMapping(rows);
 
-    const fosterhomeColumn = this.headers['_HOIUKODU/ KLIINIKU NIMI'];
-
     const rowData = rows[0].rowData;
     const filteredRows: RowLocation[] = [];
 
     const username = (await this.userService.getUser(userID)).fullName;
     for (let i = 0; i < rowData.length; i++) {
       const row = rowData[i];
-      const values = row.values;
+      const values = rowToObjectFixed({ row: row.values });
 
-      const fosterhome = values[fosterhomeColumn].formattedValue;
+      const fosterhome = values.shelterOrClinicName;
       if (fosterhome === username) {
         filteredRows.push({
-          row: rowToObjectFixed({ row: values }),
+          row: values,
           index: i,
+          id: cats.find(cat => cat.name === values.catName).id,
         });
       }
     }
@@ -134,14 +139,101 @@ export default class GoogleSheetsService {
     });
   }
 
+  formatDate(date: Date | string | null | undefined): string {
+    if (!date) return '';
+
+    const m = moment(date);
+    return m.isValid() ? m.format('DD.MM.YYYY') : '';
+  }
+
+  updateRowValues(animalRow: RowLocation, animal: Profile) {
+    const newRow = animalRow.row;
+
+    const [spayedOrNeutered, gender] =
+      animal.characteristics.textFields.gender.split(' ');
+
+    newRow.catName = animal.mainInfo.name;
+    newRow.microchip = animal.mainInfo.microchip;
+    newRow.microchipRegisteredInLLR = animal.mainInfo.microchipRegisteredInLLR
+      ? 'Jah'
+      : 'Ei';
+    newRow.birthDate = this.formatDate(animal.mainInfo.birthDate);
+    newRow.gender = gender.toUpperCase();
+    newRow.spayedOrNeutered = spayedOrNeutered.endsWith('mata') ? 'EI' : 'JAH';
+    newRow.catColor = animal.characteristics.selectFields.coatColour;
+    newRow.furLength = animal.characteristics.selectFields.coatLength;
+    newRow.findingLocation = animal.animalRescueInfo.rescueLocation;
+    newRow.complexVaccine = this.formatDate(animal.vaccineInfo.complexVaccine);
+    newRow.nextVaccineDate = this.formatDate(
+      animal.vaccineInfo.nextComplexVaccineDate
+    );
+    newRow.rabiesVaccine = this.formatDate(animal.vaccineInfo.rabiesVaccine);
+    newRow.nextRabiesDate = this.formatDate(
+      animal.vaccineInfo.nextRabiesVaccineDate
+    );
+    newRow.dewormingOrFleaTreatmentName =
+      animal.vaccineInfo.dewormingOrFleaTreatmentName;
+    newRow.dewormingOrFleaTreatmentDate = this.formatDate(
+      animal.vaccineInfo.dewormingOrFleaTreatmentDate
+    );
+    animalRow.row = newRow;
+  }
+
+  convertAnimalToCellDataArray(
+    cat: CatSheetsHeaders
+  ): sheets_v4.Schema$CellData[] {
+    const orderedKeys: (keyof CatSheetsHeaders)[] = [
+      'catName',
+      'rescueSequenceNumber',
+      'overOneYear',
+      'underOneYear',
+      'contractNumber',
+      'status',
+      'location',
+      'shelterOrClinicName',
+      'mentor',
+      'birthDate',
+      'gender',
+      'catColor',
+      'furLength',
+      'additionalNotes',
+      'microchip',
+      'microchipRegisteredInLLR',
+      'photo',
+      'rescueOrBirthDate',
+      'arrivalAtShelterDate',
+      'adoptionDate',
+      'findingLocation',
+      'lastPostedOnFacebook',
+      'lastPostedOnWebsite',
+      'spayedOrNeutered',
+      'complexVaccine',
+      'nextVaccineDate',
+      'rabiesVaccine',
+      'nextRabiesDate',
+      'dewormingOrFleaTreatmentDate',
+      'dewormingOrFleaTreatmentName',
+      'other',
+    ];
+
+    return orderedKeys.map(key => ({
+      userEnteredValue: {
+        stringValue: String(cat[key] ?? ''),
+      },
+    }));
+  }
+
   async updateSheetCells(
-    animal: formFields,
-    animalRowIndex: number
+    animal: Profile,
+    animalRowIndex: number,
+    animalRow: RowLocation
   ): Promise<void> {
     try {
-      // Build and execute update requests
-      this.processGenderData(animal);
-      const updateRequests = this.buildUpdateRequests(animal, animalRowIndex);
+      this.updateRowValues(animalRow, animal);
+      const updateRequests = this.buildUpdateRequests(
+        animalRow,
+        animalRowIndex
+      );
 
       await this.executeSheetUpdate(updateRequests);
     } catch (error) {
@@ -150,69 +242,38 @@ export default class GoogleSheetsService {
     }
   }
 
-  private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
-    const columnMapping: Headers = {};
-    const headerRow = rows[0]?.rowData?.[0]?.values;
+  private buildUpdateRequests(
+    animalRow: RowLocation,
+    animalRowIndex: number
+  ): any[] {
+    const updateRequests: sheets_v4.Schema$Request[] = [];
 
-    if (!headerRow) {
-      throw new Error('No header row found');
-    }
-
-    headerRow.forEach((col, index: number) => {
-      if (col?.formattedValue) {
-        columnMapping[col.formattedValue] = index;
-      }
-    });
-
-    return columnMapping;
-  }
-
-  private buildUpdateRequests(data: formFields, animalRowIndex: number): any[] {
-    const updateRequests: any[] = [];
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (!(key in SHEETS_COLUMNS)) {
-        return;
-      }
-
-      const columnIndex = this.headers[SHEETS_COLUMNS[key]];
-
-      if (columnIndex === undefined) {
-        console.warn(`Column "${key}" not found in sheet`);
-        return;
-      }
-
-      updateRequests.push({
-        updateCells: {
-          start: {
-            sheetId: this.sheetIDNum,
-            rowIndex: animalRowIndex, // Convert to 0-based index
-            columnIndex,
-          },
-          rows: [
-            {
-              values: [
-                {
-                  userEnteredValue: {
-                    stringValue: String(value), // Ensure string conversion
-                  },
-                },
-              ],
-            },
-          ],
-          fields: 'userEnteredValue',
+    updateRequests.push({
+      updateCells: {
+        start: {
+          sheetId: this.sheetIDNum,
+          rowIndex: animalRowIndex, // Convert to 0-based index
+          columnIndex: 0,
         },
-      });
+        rows: [
+          {
+            values: this.convertAnimalToCellDataArray(animalRow.row),
+          },
+        ],
+        fields: 'userEnteredValue',
+      },
     });
-
-    if (updateRequests.length === 0) {
-      throw new Error('No valid update requests generated');
-    }
 
     return updateRequests;
   }
 
-  private async executeSheetUpdate(updateRequests: any[]): Promise<void> {
+  private async executeSheetUpdate(
+    updateRequests: sheets_v4.Schema$Request[]
+  ): Promise<void> {
+    if (!updateRequests.length) {
+      throw new Error('No update requests provided');
+    }
+
     try {
       await this.sheets.spreadsheets.batchUpdate({
         spreadsheetId: process.env.CATS_SHEETS_ID,
@@ -220,18 +281,6 @@ export default class GoogleSheetsService {
       });
     } catch (error) {
       throw new Error(`Sheet update failed: ${error.message}`);
-    }
-  }
-
-  private processGenderData(catData: formFields): void {
-    if (!catData.gender) return;
-
-    const [cut, gender] = catData.gender.split(' ');
-    catData.gender = gender;
-    catData.cut = 'false';
-
-    if (cut === 'Steriliseeritud' || cut === 'Kastreeritud') {
-      catData.cut = 'true';
     }
   }
 }

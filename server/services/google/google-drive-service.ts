@@ -2,7 +2,7 @@ import { drive_v3, google } from 'googleapis';
 import { inject, injectable } from 'inversify';
 import fs from 'node:fs';
 import path from 'node:path';
-import { Cat } from 'types/cat';
+import { Profile } from 'types/cat';
 import TYPES from 'types/inversify-types';
 import GoogleAuthService from './google-auth-service';
 
@@ -64,7 +64,7 @@ export default class GoogleDriveService {
   async downloadImages(
     folderId: string,
     ownerName: string,
-    catProfile: Cat
+    profile: Profile
   ): Promise<boolean> {
     const res = await this.drive.files.list({
       q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
@@ -80,7 +80,7 @@ export default class GoogleDriveService {
         const filePath = `./images/${ownerName}/${file.name}`;
         try {
           await this.downloadImage(file.id, filePath);
-          catProfile.images.push(`images/${ownerName}/${file.name}`);
+          profile.images.push(`images/${ownerName}/${file.name}`);
         } catch (e) {
           console.error(e);
         }

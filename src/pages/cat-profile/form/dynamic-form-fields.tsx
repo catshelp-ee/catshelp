@@ -1,24 +1,23 @@
-import React from "react";
 import {
-  TextField,
+  Checkbox,
   FormControl,
   FormLabel,
-  MenuItem,
-  Checkbox,
   ListItemText,
+  MenuItem,
+  TextField
 } from "@mui/material";
-import { Cat } from "types/cat";
+import React from "react";
+import { fieldLabels, Profile } from "types/cat";
 import {
-  FORM_FIELDS,
-  MULTISELECT_FIELD_VALUES,
   FIELD_VALUES,
+  MULTISELECT_FIELD_VALUES
 } from "./form-data";
 import ResponsiveMultiSelect from "./responsive-multi-select";
 
 interface DynamicFormFieldsProps {
-  tempSelectedCat: Cat;
+  tempSelectedCat: Profile;
   updateField: (e: any, key: string) => void;
-  updateFieldMultiselect: (e: any, key: string) => void;
+  updateMultiSelectField: (e: any, key: string) => void;
   isMobile: boolean;
 }
 
@@ -34,76 +33,97 @@ const wrappingStyle = {
 export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
   tempSelectedCat,
   updateField,
-  updateFieldMultiselect,
+  updateMultiSelectField,
   isMobile,
-}) => (
-  <>
-    {Object.entries(FORM_FIELDS).map(([key, label], index) => {
-      if (key in MULTISELECT_FIELD_VALUES) {
-        return (
-          <FormControl key={index}>
-            <FormLabel>{label}</FormLabel>
-            <ResponsiveMultiSelect
-              name={key}
-              multiple
-              value={tempSelectedCat[key as keyof Cat]}
-              onChange={(e) => updateFieldMultiselect(e, key)}
-              renderValue={(selected) => (
-                <div className="flex flex-wrap whitespace-normal break-words">
-                  {selected.join(', ')}
-                </div>
-              )}  
-            >
-              {MULTISELECT_FIELD_VALUES[key].map((val, idx) => (
+}) => {
+  const renderMultiselect = () => {
+    return Object.entries(tempSelectedCat.characteristics.multiselectFields).map(([label, value], index) => {
+      if (!(label in fieldLabels.et)) {
+        return;
+      }
+      return (
+        <FormControl key={index}>
+          <FormLabel>{fieldLabels.et[label]}</FormLabel>
+          <ResponsiveMultiSelect
+            name={`characteristics.multiselectFields.${label}`}
+            multiple
+            value={value}
+            onChange={(e) => updateMultiSelectField(e, `characteristics.multiselectFields.${label}`)}
+            renderValue={(selected: string[]) => (
+              <div className="flex flex-wrap whitespace-normal break-words">
+                {selected.join(', ')}
+              </div>
+            )}
+          >
+            {MULTISELECT_FIELD_VALUES[label].map((val, idx) => {
+              return (
                 <MenuItem key={idx} value={val}>
-                  {val !== "Other" ? (
-                    <>
-                      <Checkbox
-                        checked={
-                          tempSelectedCat[key as keyof Cat]!.indexOf(val) > -1
-                        }
-                      />
-                      <ListItemText primary={val} />
-                    </>
-                  ) : (
-                    <ListItemText primary="Other" />
-                  )}
+                  <Checkbox
+                    checked={
+                      tempSelectedCat.characteristics.multiselectFields[label].indexOf(val) > -1
+                    }
+                  />
+                  <ListItemText primary={val} />
                 </MenuItem>
-              ))}
-            </ResponsiveMultiSelect>
-          </FormControl>
-        );
-      } else if (key in FIELD_VALUES) {
-        return (
-          <FormControl key={index}>
-            <FormLabel>{label}</FormLabel>
-            <ResponsiveMultiSelect
-              name={key}
-              value={tempSelectedCat[key as keyof Cat]}
-              onChange={(e) => updateField(e, key)}
-            >
-              {FIELD_VALUES[key].map((val, idx) => (
-                <MenuItem key={idx} value={val}>
-                  {val}
-                </MenuItem>
-              ))}
-            </ResponsiveMultiSelect>
-          </FormControl>
-        );
+              )
+            }
+            )}
+          </ResponsiveMultiSelect>
+        </FormControl>
+      )
+    })
+  }
+
+  const renderSelectFields = () => {
+    return Object.entries(tempSelectedCat.characteristics.selectFields).map(([label, value], index) => {
+      if (!(label in fieldLabels.et)) {
+        return;
+      }
+      return (
+        <FormControl key={index}>
+          <FormLabel>{fieldLabels.et[label]}</FormLabel>
+          <ResponsiveMultiSelect
+            name={`characteristics.selectFields.${label}`}
+            value={value}
+            onChange={(e) => updateField(e, `characteristics.selectFields.${label}`)}
+          >
+            {FIELD_VALUES[label].map((val, idx) => (
+              <MenuItem key={idx} value={val}>
+                {val}
+              </MenuItem>
+            ))}
+          </ResponsiveMultiSelect>
+        </FormControl>
+      );
+    })
+  }
+
+  const renderTextFields = () => {
+    return Object.entries(tempSelectedCat.characteristics.textFields).map(([label, value], index) => {
+      if (!(label in fieldLabels.et)) {
+        return;
       }
       return (
         <div key={index}>
           <FormLabel className="block text-sm font-medium mb-1 break-words whitespace-normal">
-            {label}
+            {fieldLabels.et[label]}
           </FormLabel>
           <TextField
-            value={tempSelectedCat[key as keyof Cat]}
-            onChange={(e) => updateField(e, key)}
-            name={key}
+            value={value}
+            onChange={(e) => updateField(e, `characteristics.textFields.${label}`)}
+            name={`characteristics.textFields.${label}`}
             fullWidth
           />
         </div>
       );
-    })}
-  </>
-);
+    })
+  }
+
+  return (
+    <>
+      {renderTextFields()}
+      {renderMultiselect()}
+      {renderSelectFields()}
+    </>
+  );
+}

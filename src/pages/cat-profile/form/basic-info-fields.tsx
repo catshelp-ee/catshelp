@@ -1,75 +1,72 @@
-import React from "react";
 import {
-  TextField,
   FormControl,
-  FormLabel,
-  RadioGroup,
   FormControlLabel,
-  Radio,
+  FormLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
+  TextField,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
-import { Cat } from "types/cat";
+import dayjs, { Dayjs } from "dayjs";
+import React from "react";
+import { Profile } from "types/cat";
 import { COAT_COLOURS, COAT_LENGTHS } from "./form-data";
 import ResponsiveMultiSelect from "./responsive-multi-select";
 
 interface BasicInfoFieldsProps {
-  tempSelectedCat: Cat;
+  tempSelectedCat: Profile;
   updateField: (e: any, key: string) => void;
+  updateDateField: (newDate: Dayjs, key: string) => void;
   isMobile: boolean;
 }
 
-const labelStyles = {
-  marginLeft: "16px",
-};
 
 export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   tempSelectedCat,
   updateField,
-  isMobile,
+  updateDateField,
 }) => (
   <div className="flex flex-col gap-4">
     <TextField
       label="Nimi"
-      name="name"
-      value={tempSelectedCat?.name}
-      onChange={(e) => updateField(e, "name")}
+      name="mainInfo.name"
+      value={tempSelectedCat.mainInfo.name}
+      onChange={(e) => updateField(e, "mainInfo.name")}
     />
 
     <DatePicker
       label="Sünniaeg"
-      name="birthDate"
+      name="mainInfo.birthDate"
       value={
-        tempSelectedCat?.birthDate ? dayjs(tempSelectedCat.birthDate) : null
+        tempSelectedCat.mainInfo.birthDate ? dayjs(tempSelectedCat.mainInfo.birthDate) : null
       }
-      onChange={(e) => updateField(e, "birthDate")}
+      onChange={(e) => updateDateField(e, "mainInfo.birthDate")}
     />
 
     <TextField
       label="Leidmiskoht"
-      name="foundLoc"
-      value={tempSelectedCat?.foundLoc}
-      onChange={(e) => updateField(e, "foundLoc")}
+      name="animalRescueInfo.rescueLocation"
+      value={tempSelectedCat.animalRescueInfo.rescueLocation}
+      onChange={(e) => updateField(e, "animalRescueInfo.rescueLocation")}
     />
 
     <DatePicker
       label="Leidmiskuupäev"
-      name="foundDate"
+      name="animalRescueInfo.rescueDate"
       value={
-        tempSelectedCat?.rescueDate ? dayjs(tempSelectedCat.rescueDate) : null
+        tempSelectedCat.animalRescueInfo.rescueDate ? dayjs(tempSelectedCat.animalRescueInfo.rescueDate) : null
       }
-      onChange={(e) => updateField(e, "foundDate")}
+      onChange={(e) => updateDateField(e, "animalRescueInfo.rescueDate")}
     />
 
     <FormControl>
       <FormLabel>Sugu</FormLabel>
       <RadioGroup
-        name="gender"
-        value={tempSelectedCat?.genderLabel}
+        name="characteristics.textFields.gender"
+        value={tempSelectedCat.characteristics.textFields.gender}
         onChange={(e) => {
-          updateField(e, "gender");
-          updateField(e, "genderLabel");
+          updateField(e, "characteristics.textFields.gender");
         }}
       >
         <FormControlLabel
@@ -98,9 +95,9 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <FormControl>
       <FormLabel>Karva pikkus</FormLabel>
       <ResponsiveMultiSelect
-        name="coatLength"
-        value={tempSelectedCat?.coatLength}
-        onChange={(e) => updateField(e, "coatLength")}
+        name="characteristics.selectFields.coatLength"
+        value={tempSelectedCat.characteristics.selectFields.coatLength}
+        onChange={(e) => updateField(e, "characteristics.selectFields.coatLength")}
       >
         {COAT_LENGTHS.map((length, index) => (
           <MenuItem key={index} value={length}>
@@ -113,9 +110,9 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <FormControl>
       <FormLabel>Karva värv</FormLabel>
       <ResponsiveMultiSelect
-        name="coatColour"
-        value={tempSelectedCat?.coatColour}
-        onChange={(e) => updateField(e, "coatColour")}
+        name="characteristics.selectFields.coatColour"
+        value={tempSelectedCat.characteristics.selectFields.coatColour}
+        onChange={(e) => updateField(e, "characteristics.selectFields.coatColour")}
       >
         {COAT_COLOURS.map((colour, index) => (
           <MenuItem key={index} value={colour}>
@@ -127,17 +124,17 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
 
     <TextField
       label="Kiibi number"
-      name="chipNr"
-      value={tempSelectedCat?.chipNr}
-      onChange={(e) => updateField(e, "chipNr")}
+      name="mainInfo.microchip"
+      value={tempSelectedCat.mainInfo.microchip}
+      onChange={(e) => updateField(e, "mainInfo.microchip")}
     />
 
     <FormControl>
       <FormLabel>Kiip LLR-is MTÜ nimel</FormLabel>
       <RadioGroup
-        name="llr"
-        value={tempSelectedCat?.llr}
-        onChange={(e) => updateField(e, "llr")}
+        name="mainInfo.microchipRegisteredInLLR"
+        value={tempSelectedCat.mainInfo.microchipRegisteredInLLR}
+        onChange={(e) => updateField(e, "mainInfo.microchipRegisteredInLLR")}
       >
         <FormControlLabel value={true} control={<Radio />} label="Jah" />
         <FormControlLabel value={false} control={<Radio />} label="Ei" />

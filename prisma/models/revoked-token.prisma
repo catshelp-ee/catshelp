@@ -1,6 +1,6 @@
 model RevokedToken{
     id        Int      @id @default(autoincrement())
-    token     String
+    token     String   @unique
     expiresAt DateTime @map("expires_at")
 
     @@map("revoked_tokens")

@@ -3,6 +3,7 @@ model Animal {
     name                  String?
     birthday              DateTime?
     profileTitle          String?  @map("profile_title")
+    description           String?  @db.Text
     status                String?
     chipNumber            String?  @map("chip_number")
     chipRegisteredWithUs  Boolean  @default(false) @map("chip_registered_with_us")

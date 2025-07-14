@@ -93,7 +93,7 @@ export default class GoogleDriveService {
     const fileMetadata = {
       name: name,
       mimeType: 'application/vnd.google-apps.folder',
-      parents: [process.env.PARENT],
+      parents: [process.env.DRIVE_PARENT_ID],
       driveId: process.env.DRIVE_ID,
     };
     return this.drive.files.create({

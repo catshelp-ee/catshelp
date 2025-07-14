@@ -1,10 +1,11 @@
+import { PetAvatar } from "@components/pet-avatar";
+import { Stack } from "@mui/material";
 import React, { useState } from "react";
-import { Cat } from "types/cat";
-import { Avatar, Stack, IconButton } from "@mui/material";
+import { Profile } from "types/cat";
 
 interface CatSelectionProps {
-  cats: Cat[];
-  setSelectedCat: React.Dispatch<React.SetStateAction<Cat>>;
+  cats: Profile[];
+  setSelectedCat: React.Dispatch<React.SetStateAction<Profile>>;
   setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -18,48 +19,26 @@ const CatSelection: React.FC<CatSelectionProps> = ({
 }) => {
   const [selectedCatIndex, setSelectedCatIndex] = useState(0);
 
-  const handleCatSelect = (index: number, cat: Cat) => {
-    if (selectedCatIndex === index) return;
+  const handleCatSelect = (index: number, cat: Profile) => {
+    if (selectedCatIndex === index) {
+      return;
+    }
 
     setSelectedCatIndex(index);
     setSelectedCat(cat);
-    setIsEditMode?.(false);
+    setIsEditMode(false);
   };
-
   return (
     <Stack direction="row" spacing={2}>
       {cats.map((cat, index) => (
-        <CatAvatar
-          key={index}
-          cat={cat}
-          index={index}
+        <PetAvatar onClick={() => {
+          handleCatSelect(index, cat);
+        }}
           isSelected={selectedCatIndex === index}
-          onSelect={handleCatSelect}
-        />
+          pet={{ name: cat.mainInfo.name, pathToImage: cat.images[0] }} />
       ))}
     </Stack>
   );
 };
-
-interface CatAvatarProps {
-  cat: Cat;
-  index: number;
-  isSelected: boolean;
-  onSelect: (index: number, cat: Cat) => void;
-}
-
-const CatAvatar: React.FC<CatAvatarProps> = ({
-  cat,
-  index,
-  isSelected,
-  onSelect,
-}) => (
-  <div className="flex flex-col items-center">
-    <IconButton onClick={() => onSelect(index, cat)}>
-      <Avatar sx={AVATAR_SIZE} src={cat.images[0]} alt={`${cat.name} avatar`} />
-    </IconButton>
-    <p className={isSelected ? SELECTED_INDICATOR_STYLE : ""}>{cat.name}</p>
-  </div>
-);
 
 export default CatSelection;

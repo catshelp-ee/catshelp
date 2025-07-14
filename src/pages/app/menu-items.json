@@ -9,6 +9,11 @@
       "icon": "Document.png",
       "text": "Kiisu profiil veebis",
       "path": "/cat-profile"
+    },
+        {
+      "icon": "Document.png",
+      "text": "Lisa kiisu",
+      "path": "/add-cat"
     }
   ]
 }

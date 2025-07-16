@@ -30,13 +30,13 @@ export default class DashboardService {
     let pets = await this.getPets(userID);
     if (!pets) {
       const petPromises = rows.map(async row => {
-        const fileDriveID = extractFileId(row.row.photo);
+        const photoFileDriveID = extractFileId(row.row.photo);
         const username = (
           await this.nodeCacheService.get<User>(`user:${userID}`)
         ).fullName;
         const profilePicture = await this.imageService.downloadProfileImage(
           row.row.catName,
-          fileDriveID,
+          photoFileDriveID,
           username
         );
 

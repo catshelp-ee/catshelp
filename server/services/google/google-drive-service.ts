@@ -54,7 +54,6 @@ export default class GoogleDriveService {
           .on('error', reject);
       });
     } catch (e) {
-      console.log(e);
       throw new Error(`failed to download image with ID ${fileId}\n`, e);
     }
   }

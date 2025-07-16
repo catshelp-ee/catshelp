@@ -1,7 +1,7 @@
-import React, { forwardRef } from "react";
 import { Avatar, Typography, useTheme } from "@mui/material";
+import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
-import { Pet } from "./dashboard";
+import { Pet } from "types/animal";
 
 interface AllPetsPopupProps {
   pets: Pet[];
@@ -12,7 +12,7 @@ interface AllPetsPopupProps {
 // Individual Pet Item Component
 const PetItem: React.FC<{ pet: Pet }> = ({ pet }) => {
   const theme = useTheme();
-  
+
   return (
     <Link
       to={`/cat-profile`}
@@ -21,10 +21,10 @@ const PetItem: React.FC<{ pet: Pet }> = ({ pet }) => {
     >
       <div className="flex items-center space-x-4">
         <Avatar
-          src={`/${pet.image}`}
+          src={`/${pet.pathToImage}`}
           alt={`${pet.name} pilt`}
-          sx={{ 
-            width: 48, 
+          sx={{
+            width: 48,
             height: 48,
             transition: 'transform 0.2s ease-in-out',
             '&:hover': {
@@ -32,9 +32,9 @@ const PetItem: React.FC<{ pet: Pet }> = ({ pet }) => {
             }
           }}
         />
-        <Typography 
-          variant="body1" 
-          sx={{ 
+        <Typography
+          variant="body1"
+          sx={{
             fontWeight: 500,
             color: theme.palette.text.primary,
             fontSize: '0.95rem'
@@ -50,12 +50,12 @@ const PetItem: React.FC<{ pet: Pet }> = ({ pet }) => {
 // Popup Header Component
 const PopupHeader: React.FC<{ totalCount: number }> = ({ totalCount }) => {
   const theme = useTheme();
-  
+
   return (
     <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
-      <Typography 
-        variant="h6" 
-        sx={{ 
+      <Typography
+        variant="h6"
+        sx={{
           fontWeight: 600,
           color: theme.palette.text.primary,
           fontSize: '1.1rem'
@@ -71,7 +71,9 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
   ({ pets, onClose, isOpen }, ref) => {
     const theme = useTheme();
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+      return null;
+    }
 
     return (
       <div
@@ -85,13 +87,13 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
         }}
       >
         <PopupHeader totalCount={pets.length} />
-        
+
         <div className="flex-1 overflow-y-scroll">
           {pets.map((pet, id) => (
             <PetItem key={id} pet={pet} />
           ))}
         </div>
-        
+
         {onClose && (
           <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
             <button

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { TextField, Button, IconButton } from "@mui/material";
+import { TextField, IconButton } from "@mui/material";
 import * as Utils from "@utils/utils.ts";
 import ImageGallery from "@pages/CatProfile/ImageGallery.tsx";
 import { useAuth } from "@/context/AuthContext";
@@ -11,10 +11,9 @@ import { BasicInfoFields } from "./Form/BasicInfoFields";
 import { VaccinationFields } from "./Form/VaccinationFields";
 import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
-import { Section } from "./Form/Section";
 import { useIsMobile } from "@/hooks/isMobile";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { preview } from "vite";
+import WixService from "@/services/wixService";
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -67,7 +66,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     }
 
     try {
-      const response = await axios.put("/api/animals/cat-profile", payload, {
+      await axios.put("/api/animals/cat-profile", payload, {
         withCredentials: true,
       });
 
@@ -79,6 +78,25 @@ const EditProfile: React.FC<CatDetailsProps> = ({
       }, 1500);
     } catch (error) {
       console.error("Error updating cat profile:", error);
+    }
+  };
+
+  const handleWixUpdate = async () => {
+    try {
+      const wixService = WixService.getInstance();
+      const result = await wixService.createOrUpdateBlogPost(tempSelectedCat);
+      
+      if (result.success) {
+        setSlidingDown(true);
+        setPopupVisible(true);
+        // You might want to show a different popup message for Wix updates
+      } else {
+        console.error("Wix update failed:", result.message);
+        // Handle error - maybe show an error popup
+      }
+    } catch (error) {
+      console.error("Error updating Wix blog post:", error);
+      // Handle error - maybe show an error popup
     }
   };
 
@@ -174,7 +192,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
           />
         )}
       </form>
-      <ActionButtons />
+      <ActionButtons onWixUpdate={handleWixUpdate} />
     </>
   );
 };

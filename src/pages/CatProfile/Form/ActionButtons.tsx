@@ -3,6 +3,7 @@ import { Button } from "@mui/material";
 
 interface ActionButtonsProps {
   className?: string;
+  onWixUpdate?: () => void;
 }
 
 const buttonStyles = {
@@ -14,10 +15,18 @@ const buttonStyles = {
   marginRight: "24px",
 };
 
-export const ActionButtons: React.FC<ActionButtonsProps> = ({ className }) => (
+export const ActionButtons: React.FC<ActionButtonsProps> = ({ className, onWixUpdate }) => (
   <div className={`flex justify-center my-8 ${className? className: ""}`}>
     <Button sx={buttonStyles} variant="contained" type="submit">
       Salvesta
+    </Button>
+    <Button 
+      sx={buttonStyles} 
+      variant="contained" 
+      onClick={onWixUpdate}
+      type="button"
+    >
+      Uuenda veebi
     </Button>
   </div>
 );

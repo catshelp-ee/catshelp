@@ -30,10 +30,7 @@ export default class GoogleDriveService {
     });
   }
 
-  async downloadImage(
-    fileId: string,
-    destinationPath: string
-  ): Promise<boolean> {
+  async downloadImage(fileId: string, destinationPath: string): Promise<void> {
     try {
       if (fs.existsSync(destinationPath)) {
         return;

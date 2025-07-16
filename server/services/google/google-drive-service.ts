@@ -30,10 +30,7 @@ export default class GoogleDriveService {
     });
   }
 
-  async downloadImage(
-    fileId: string,
-    destinationPath: string
-  ): Promise<boolean> {
+  async downloadImage(fileId: string, destinationPath: string): Promise<void> {
     try {
       if (fs.existsSync(destinationPath)) {
         return;
@@ -57,6 +54,7 @@ export default class GoogleDriveService {
           .on('error', reject);
       });
     } catch (e) {
+      console.log(e);
       throw new Error(`failed to download image with ID ${fileId}\n`, e);
     }
   }

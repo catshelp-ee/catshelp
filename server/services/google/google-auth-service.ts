@@ -19,7 +19,10 @@ export default class GoogleAuthService {
 
     const auth = new google.auth.GoogleAuth({
       keyFile: keyFilePath,
-      scopes: ['https://www.googleapis.com/auth/drive'],
+      scopes: [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+      ],
     });
 
     const client = (await auth.getClient()) as OAuth2Client;

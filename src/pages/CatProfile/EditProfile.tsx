@@ -13,7 +13,6 @@ import { DynamicFormFields } from "./Form/DynamicFormFields";
 import { ActionButtons } from "./Form/ActionButtons";
 import { useIsMobile } from "@/hooks/isMobile";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import WixService from "@/services/wixService";
 
 interface CatDetailsProps {
   selectedCat: Cat;
@@ -83,15 +82,16 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
   const handleWixUpdate = async () => {
     try {
-      const wixService = WixService.getInstance();
-      const result = await wixService.createOrUpdateBlogPost(tempSelectedCat);
+      const response = await axios.post("/api/animals/publish-wix", tempSelectedCat, {
+        withCredentials: true,
+      });
       
-      if (result.success) {
+      if (response.data.success) {
         setSlidingDown(true);
         setPopupVisible(true);
-        // You might want to show a different popup message for Wix updates
+        console.log("Wix blog post updated:", response.data.message);
       } else {
-        console.error("Wix update failed:", result.message);
+        console.error("Wix update failed:", response.data.error);
         // Handle error - maybe show an error popup
       }
     } catch (error) {

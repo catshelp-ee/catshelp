@@ -70,6 +70,7 @@ app.get("/api/animals/dashboard", authenticate, dashboardController.getDashboard
 app.get("/api/animals/cat-profile", authenticate, animalController.getProfile);
 app.put("/api/animals/cat-profile", authenticate, animalController.updatePet);
 app.post("/api/animals/gen-ai-cat", authenticate, animalController.genText);
+app.post("/api/animals/publish-wix", authenticate, animalController.publishToWix);
 
 // Fallback for client-side routes (React Router)
 app.get('*', (req, res) => {

@@ -1,5 +1,3 @@
-import { Cat } from "@/types/Cat";
-
 export interface RichContentNode {
   type: string;
   id: string;
@@ -27,26 +25,40 @@ export interface WixApiResponse {
   draftPosts?: { id: string }[];
 }
 
+export interface CatData {
+  title: string;
+  description: string;
+  name: string;
+  age: string;
+  genderLabel: string;
+  coatColour: string;
+  coatLength: string;
+  chipNr: string;
+  cut: string;
+  procedures: string;
+  vacc: Date | null;
+  rabiesVacc: Date | null;
+  wormMedName: string;
+  issues: string;
+  descriptionOfCharacter: string;
+  history: string;
+  other: string;
+  wishes: string;
+  driveId: string;
+}
+
 export class WixService {
-  private static instance: WixService;
   private readonly apiKey: string;
   private readonly siteId: string;
 
-  private constructor() {
-    this.apiKey = import.meta.env.VITE_WIX_API_KEY || '';
-    this.siteId = import.meta.env.VITE_WIX_SITE_ID || '';
+  constructor() {
+    this.apiKey = process.env.WIX_API_KEY || '';
+    this.siteId = process.env.WIX_SITE_ID || '';
   }
 
-  public static getInstance(): WixService {
-    if (!WixService.instance) {
-      WixService.instance = new WixService();
-    }
-    return WixService.instance;
-  }
-
-  private formatCatAsRichContent(cat: Cat) {
+  private formatCatAsRichContent(cat: CatData): WixDraftPost {
     // Create rich content nodes for Wix blog format
-    const nodes = [
+    const nodes: RichContentNode[] = [
       {
         type: "HEADING",
         id: "heading1",
@@ -128,7 +140,7 @@ export class WixService {
     };
   }
 
-  public async createOrUpdateBlogPost(cat: Cat): Promise<{ success: boolean; message: string; postId?: string }> {
+  public async createOrUpdateBlogPost(cat: CatData): Promise<{ success: boolean; message: string; postId?: string }> {
     if (!this.apiKey || !this.siteId) {
       return {
         success: false,

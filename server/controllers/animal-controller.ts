@@ -1,6 +1,7 @@
 // controllers/animal-controller.ts
 import GoogleService from "@services/google-service.ts";
 import AnimalService from "@services/animal-service.ts";
+import WixService from "@services/wix-service.ts";
 import fs from "node:fs";
 import db from "@models/index.cjs";
 import { generateCatDescription } from "@services/ai-service.ts";
@@ -137,5 +138,40 @@ export async function genText(req: Request, res: Response) {
   } catch (error) {
     console.error("Error generating AI text:", error);
     res.status(500).json({ error: "Probleemid AI tekstiga" });
+  }
+}
+
+export async function publishToWix(req: Request, res: Response) {
+  try {
+    const catData = req.body;
+    
+    // Validate required fields
+    if (!catData.driveId || !catData.title) {
+      return res.status(400).json({ 
+        error: "Puudulikud andmed. Drive ID ja pealkiri on kohustuslikud." 
+      });
+    }
+
+    const wixService = new WixService();
+    const result = await wixService.createOrUpdateBlogPost(catData);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        postId: result.postId
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.message
+      });
+    }
+  } catch (error) {
+    console.error("Error publishing to Wix:", error);
+    res.status(500).json({ 
+      success: false,
+      error: "Viga Wix blogi avaldamisel" 
+    });
   }
 }

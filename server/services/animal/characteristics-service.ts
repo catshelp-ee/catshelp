@@ -126,7 +126,7 @@ export default class CharacteristicsService {
     }
   }
 
-  private async updateSingleCharacteristic(
+  async updateSingleCharacteristic(
     tx: PrismaTransactionClient,
     animalId: number,
     type: string,

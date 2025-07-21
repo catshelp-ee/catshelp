@@ -25,6 +25,7 @@ const TYPES = {
 
   AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
   AnimalRepository: Symbol.for('AnimalRepository'),
+  SyncSheetDataToDBJob: Symbol.for('SyncSheetDataToDBJob'),
 };
 
 export default TYPES;

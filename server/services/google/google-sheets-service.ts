@@ -69,6 +69,33 @@ export default class GoogleSheetsService {
     await this.setRows(userID, filteredRows);
   }
 
+  async getNewSheet() {
+    try {
+      const sheetData = await this.sheets.spreadsheets.get({
+        auth: this.googleAuthService.getAuth(),
+        spreadsheetId: this.sheetID,
+        ranges: [this.sheetTable],
+        includeGridData: true,
+      });
+      return sheetData;
+    } catch (e) {
+      throw new Error('Error fetching sheet: ', e);
+    }
+  }
+
+  convertRowToObject(rowData: sheets_v4.Schema$RowData[], rows: Rows) {
+    for (let i = 0; i < rowData.length; i++) {
+      const row = rowData[i];
+      const values = rowToObjectFixed({ row: row.values });
+
+      rows.push({
+        row: values,
+        index: i,
+        id: -1,
+      });
+    }
+  }
+
   private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
     const columnMapping: Headers = {};
     const headerRow = rows[0]?.rowData?.[0]?.values;
@@ -91,17 +118,8 @@ export default class GoogleSheetsService {
       throw new Error('Google Auth Service already initialized');
     }
 
-    let sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet>;
-    try {
-      sheetData = await this.sheets.spreadsheets.get({
-        auth: this.googleAuthService.getAuth(),
-        spreadsheetId: this.sheetID,
-        ranges: [this.sheetTable],
-        includeGridData: true,
-      });
-    } catch (e) {
-      throw new Error('Error fetching sheet: ', e);
-    }
+    const sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet> =
+      await this.getNewSheet();
 
     if (!sheetData.data.sheets || sheetData.data.sheets.length === 0) {
       throw new Error('No sheet found');
@@ -116,17 +134,7 @@ export default class GoogleSheetsService {
     this.headers = this.extractColumnMapping(rows);
 
     const rowData = rows[0].rowData;
-
-    for (let i = 0; i < rowData.length; i++) {
-      const row = rowData[i];
-      const values = rowToObjectFixed({ row: row.values });
-
-      this.rows.push({
-        row: values,
-        index: i,
-        id: -1,
-      });
-    }
+    this.convertRowToObject(rowData, this.rows);
   }
 
   async addDataToSheet(data: CreateAnimalData) {

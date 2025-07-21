@@ -13,28 +13,26 @@ export default class ImageService {
     private googleDriveService: GoogleDriveService
   ) {}
 
-  async fetchImages(userID: number) {
+  async fetchImages(animalID: number) {
     const files = await prisma.file.findMany({
-      where: { userId: userID },
+      where: { animalID: animalID },
     });
     return files.map(file => {
       return `./images/${file.uuid}.jpg`;
     });
   }
 
-  async insertImagesIntoDB(files: Express.Multer.File[], userID: number) {
+  async insertImagesIntoDB(files: Express.Multer.File[], animalID: number) {
     await Promise.all(
       files.map(file =>
         prisma.file.create({
           data: {
-            userId: userID,
+            animalID: animalID,
             uuid: file.filename.split('.')[0],
           },
         })
       )
     );
-
-    console.log('tehtud');
   }
 
   async processImages(

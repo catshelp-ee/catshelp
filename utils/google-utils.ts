@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { resizeImages } from './image-utils';
 
-export const uploadImages = async (files: File[], userID: string) => {
+export const uploadImages = async (
+  files: File[],
+  userEmail: string,
+  animalName: string
+) => {
   const resizedImages = await resizeImages(files);
   const formData = new FormData();
 
@@ -9,7 +13,8 @@ export const uploadImages = async (files: File[], userID: string) => {
   resizedImages.forEach((file: File) => {
     formData.append('images', file);
   });
-  formData.append('userID', userID);
+  formData.append('userEmail', userEmail);
+  formData.append('animalName', animalName);
   try {
     await axios.post('/api/images', formData, {
       headers: {

@@ -2,11 +2,15 @@ import ImageService from '@services/files/image-service';
 import { handleControllerError } from '@utils/error-handler';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import AnimalRepository from 'server/repositories/animal-repository';
 import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class FileController {
-  constructor(@inject(TYPES.ImageService) private imageService: ImageService) {}
+  constructor(
+    @inject(TYPES.ImageService) private imageService: ImageService,
+    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository
+  ) {}
 
   private normalizeFiles(
     files: Express.Request['files']
@@ -27,9 +31,17 @@ export default class FileController {
         return;
       }
 
+      const animals = await this.animalRepository.getCatsByUserEmail(
+        req.body.userEmail
+      );
+
+      const animal = animals.find(
+        animal => animal.name === req.body.animalName
+      );
+
       await this.imageService.insertImagesIntoDB(
         this.normalizeFiles(req.files),
-        Number(req.body.userID)
+        animal.id
       );
 
       res.sendStatus(200);

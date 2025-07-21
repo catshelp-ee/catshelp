@@ -47,7 +47,7 @@ export default class CatProfileBuilder {
 
     this.buildCatProfile(profile, characteristics);
 
-    await this.imageService.processImages(profile, row, owner.fullName);
+    profile.images = await this.imageService.fetchImages(owner.id);
 
     return profile;
   }

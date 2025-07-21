@@ -1,6 +1,7 @@
 model User {
   id                Int         @id @default(autoincrement())
   fosterHome        FosterHome?
+  file              File[]
   fullName          String?     @map("full_name")
   email             String?
   identityCode      String?     @map("identity_code")

@@ -2,6 +2,7 @@ import GoogleDriveService from '@services/google/google-drive-service';
 import { extractFileId, isValidHyperlink } from '@utils/image-utils';
 import { inject, injectable } from 'inversify';
 import fs from 'node:fs';
+import { prisma } from 'server/prisma';
 import { Profile } from 'types/cat';
 import { CatSheetsHeaders } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
@@ -12,6 +13,15 @@ export default class ImageService {
     @inject(TYPES.GoogleDriveService)
     private googleDriveService: GoogleDriveService
   ) {}
+
+  async fetchImages(userID: number) {
+    const files = await prisma.file.findMany({
+      where: { userId: userID },
+    });
+    return files.map(file => {
+      return `./images/${file.uuid}.jpg`;
+    });
+  }
 
   async processImages(
     profile: Profile,

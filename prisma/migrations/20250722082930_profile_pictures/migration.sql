@@ -49,7 +49,6 @@ CREATE TABLE `animals` (
     `status` VARCHAR(191) NULL,
     `chip_number` VARCHAR(191) NULL,
     `chip_registered_with_us` BOOLEAN NOT NULL DEFAULT false,
-    `drive_id` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -57,10 +56,12 @@ CREATE TABLE `animals` (
 -- CreateTable
 CREATE TABLE `files` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
+    `animal_id` INTEGER NOT NULL,
+    `profile_animal_id` INTEGER NOT NULL,
     `uuid` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `files_user_id_key`(`user_id`),
+    UNIQUE INDEX `files_animal_id_key`(`animal_id`),
+    UNIQUE INDEX `files_profile_animal_id_key`(`profile_animal_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -117,7 +118,10 @@ ALTER TABLE `animals_to_foster_homes` ADD CONSTRAINT `animals_to_foster_homes_an
 ALTER TABLE `animals_to_foster_homes` ADD CONSTRAINT `animals_to_foster_homes_foster_home_id_fkey` FOREIGN KEY (`foster_home_id`) REFERENCES `foster_homes`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `files` ADD CONSTRAINT `files_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `files` ADD CONSTRAINT `files_animal_id_fkey` FOREIGN KEY (`animal_id`) REFERENCES `animals`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `files` ADD CONSTRAINT `files_profile_animal_id_fkey` FOREIGN KEY (`profile_animal_id`) REFERENCES `animals`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `foster_homes` ADD CONSTRAINT `foster_homes_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

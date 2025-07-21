@@ -86,7 +86,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
 
     if (images.length > 0) {
-      uploadImages(images, user.id);
+      uploadImages(images, user.email, updatedAnimalData.mainInfo.name);
     }
 
     /*

@@ -1,7 +1,6 @@
 import GoogleDriveService from '@services/google/google-drive-service';
 import { extractFileId, isValidHyperlink } from '@utils/image-utils';
 import { inject, injectable } from 'inversify';
-import fs from 'node:fs';
 import { prisma } from 'server/prisma';
 import { Profile } from 'types/cat';
 import { CatSheetsHeaders } from 'types/google-sheets';
@@ -21,6 +20,21 @@ export default class ImageService {
     return files.map(file => {
       return `./images/${file.uuid}.jpg`;
     });
+  }
+
+  async insertImagesIntoDB(files: Express.Multer.File[], userID: number) {
+    await Promise.all(
+      files.map(file =>
+        prisma.file.create({
+          data: {
+            userId: userID,
+            uuid: file.filename.split('.')[0],
+          },
+        })
+      )
+    );
+
+    console.log('tehtud');
   }
 
   async processImages(
@@ -80,16 +94,18 @@ export default class ImageService {
     }
   }
 
-  async uploadFiles(files: any, folderId: string): Promise<void> {
+  async uploadFiles(files: Express.Multer.File[]): Promise<void> {
     const fileArray = Array.isArray(files) ? files : [files];
 
     const uploadPromises = fileArray.map(async file => {
+      /*
       const tempPath = file.path;
       return await this.googleDriveService.uploadToDrive(
         file.originalname,
         fs.createReadStream(tempPath),
         folderId
       );
+      */
     });
 
     await Promise.all(uploadPromises);

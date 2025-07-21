@@ -1,4 +1,5 @@
 import Popup from "@components/popup";
+import { useAuth } from "@context/auth-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { useCatForm } from "@hooks/use-cat-form";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -7,7 +8,7 @@ import { AccordionDetails, Button, IconButton, TextField, Typography } from "@mu
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ImageGallery from "@pages/cat-profile/image-gallery";
-import axios from "axios";
+import { uploadImages } from "@utils/google-utils";
 import React, { useState } from "react";
 import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
@@ -46,6 +47,8 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     updateDateField
   } = useCatForm(selectedCat);
 
+  const { getUser } = useAuth();
+
   function parseDotNotationFormData(formData: FormData) {
     const obj = {} as Profile;
 
@@ -79,11 +82,14 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     const updatedAnimalData = parseDotNotationFormData(formData);
 
     const images: File[] = previews.map((p) => p.file);
+    const user = await getUser();
+
 
     if (images.length > 0) {
-      //uploadImages(images, tempSelectedCat.driveId);
+      uploadImages(images, user.id);
     }
 
+    /*
     try {
       await axios.put("/api/animals/cat-profile", updatedAnimalData, {
         withCredentials: true,
@@ -98,6 +104,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     } catch (error) {
       console.error("Error updating cat profile:", error);
     }
+      */
   };
 
   return (

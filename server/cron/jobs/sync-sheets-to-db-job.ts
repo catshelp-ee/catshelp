@@ -1,147 +1,152 @@
-import GoogleService from "@services/google-service";
-import path from "node:path";
-import fs from "node:fs";
-import sha256 from 'crypto-js/sha256';
+import CharacteristicsService from '@services/animal/characteristics-service';
+import GoogleSheetsService from '@services/google/google-sheets-service';
+import { GaxiosResponse } from 'gaxios';
+import { Animal } from 'generated/prisma';
+import { sheets_v4 } from 'googleapis';
+import { inject, injectable } from 'inversify';
+import moment from 'moment';
+import { prisma } from 'server/prisma';
+import AnimalRepository from 'server/repositories/animal-repository';
+import UserRepository from 'server/repositories/user-repository';
+import { CatSheetsHeaders, headerMapping, Rows } from 'types/google-sheets';
+import TYPES from 'types/inversify-types';
 
-export async function syncSheetsToDb() {
-    if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
-        console.log("Google cats sheet id or table name not set. Skipping db sync");
-        return;
-    }
+@injectable()
+export default class SyncSheetDataToDBJob {
+  headers: (keyof CatSheetsHeaders)[];
+  constructor(
+    @inject(TYPES.GoogleSheetsService)
+    private googleSheetsService: GoogleSheetsService,
+    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
+    @inject(TYPES.CharacteristicsService)
+    private characteristicsService: CharacteristicsService
+  ) {
+    this.headers = Object.values(headerMapping);
+  }
 
-    const currentSheet = await getCurrentSheetData();
-    if (!currentSheet) {
-        console.log("Could not load data from google sheets. Skipping sync");
-        return;
-    }
+  async getNewSheet() {
+    const sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet> =
+      await this.googleSheetsService.getNewSheet();
 
-    const previousSheet = getPreviousSheetData();
-    const formattedSheet = formatSheetData(currentSheet);
+    const rows = sheetData.data.sheets[0].data;
 
-    syncSheetDataToDb(previousSheet, formattedSheet);
-    saveCurrentSheetAsPrevious(formattedSheet);
-}
+    const rowData = rows[0].rowData;
+    const rowObjects: Rows = [];
+    this.googleSheetsService.convertRowToObject(rowData, rowObjects);
 
-function formatSheetData(sheet) {
-    const result = [];
+    return rowObjects;
+  }
 
-    const sheetRows = sheet.data.sheets[0].data[0].rowData;
-    const headerRow = getHeaderRowsColumnNames(sheetRows[0].values);
-    for (let index = 1; index < sheetRows.length; index++) {
-        let row = sheetRows[index];
-        let newObject = {};
-        for (let j = 0; j < row.values.length; j++) {
-            let columnValue = row.values[j];
-            let headerName = headerRow[j];
-            newObject[headerName] = columnValue;
+  async run() {
+    const currentSheet = this.googleSheetsService.rows;
+    const newSheet = await this.getNewSheet();
+    const users = await UserRepository.getAllUsers();
+    const allAnimals: Record<string, Animal[]> = {};
+
+    await prisma.$transaction(async tx => {
+      let updated;
+      let animals;
+      for (let i = 1; i < newSheet.length; i++) {
+        const updatedRow = newSheet[i].row;
+        updated = false;
+        for (let j = 1; j < currentSheet.length; j++) {
+          const row = currentSheet[j].row;
+
+          if (updatedRow.rescueSequenceNumber !== row.rescueSequenceNumber) {
+            continue;
+          }
+
+          for (const key of this.headers) {
+            if (updatedRow[key] === row[key]) {
+              continue;
+            }
+
+            updated = true;
+          }
         }
-        let hash = sha256(JSON.stringify(newObject));
-        newObject['hash'] = hash.toString();
-        result.push(newObject);
-    }
 
-    //remove header row
-    return result.slice(1);
-}
+        if (!updated) {
+          continue;
+        }
 
-function getHeaderRowsColumnNames(headerValues) {
-    const result = [];
-    for (let index = 0; index < headerValues.length; index++) {
-        const headerColumnValue = headerValues[index].formattedValue ? headerValues[index].formattedValue : '';
-        if (headerColumnValue == 'PÄÄSTETUD JÄRJEKORRA NR (AA\'KK nr ..)') {
-            result.push('jarjekorraNr')
+        const user = users.find(
+          user => user.fullName === updatedRow.shelterOrClinicName
+        );
+
+        if (!user) {
+          console.error('User name in sheets and in database does not match');
+          continue;
+        }
+
+        if (allAnimals[updatedRow.shelterOrClinicName]) {
+          animals = allAnimals[updatedRow.shelterOrClinicName];
         } else {
-            result.push(headerColumnValue.replace(' ', '_'));
+          animals = await this.animalRepository.getCatsByUserEmail(user.email);
+          allAnimals[updatedRow.shelterOrClinicName] = animals;
         }
-    }
-    return result;
-}
 
-function getSheetSaveLocation() {
-    const tempDir = path.join(process.cwd(), "./files");
-    const fullPath = path.resolve(tempDir, "previous_sheets_data.txt");
-    return fullPath;
-}
+        const animal = animals.find(
+          animal => animal.name === updatedRow.catName
+        );
 
-function getPreviousSheetData() {
-    const saveLocation = getSheetSaveLocation();
-    if (!fs.existsSync(saveLocation)) {
-        return;
-    }
-    const data = fs.readFileSync(saveLocation, 'utf-8');
-    if (!data) {
-        return [];
-    }
-    return JSON.parse(data);
-}
+        // update animal
+        await tx.animal.update({
+          where: { id: animal.id },
+          data: {
+            name: updatedRow.catName,
+            birthday: moment(updatedRow.birthDate, 'YYYYMMDD').toDate() || null,
+            chipNumber: updatedRow.microchip || null,
+            chipRegisteredWithUs: updatedRow.microchipRegisteredInLLR === 'Jah',
+          },
+        });
 
-async function getCurrentSheetData() {
-    const googleService = await GoogleService.create();
-    const sheetData = await googleService.getSheetData(
-        process.env.CATS_SHEETS_ID!,
-        process.env.CATS_TABLE_NAME!
-    );
-    return sheetData;
-}
+        // update animal rescue
+        const animalToAnimalRescue = await tx.animalToAnimalRescue.findFirst({
+          where: { animalId: animal.id },
+          orderBy: { id: 'desc' },
+        });
 
-function saveCurrentSheetAsPrevious(currentSheetData) {
-    try {
-        if (!currentSheetData) {
-            return;
+        await tx.animalRescue.update({
+          where: { id: animalToAnimalRescue.animalRescueId },
+          data: {
+            rescueDate: moment(
+              updatedRow.rescueOrBirthDate,
+              'YYYYMMDD'
+            ).toDate(),
+            address: updatedRow.findingLocation,
+          },
+        });
+
+        // update characteristics
+        for (const [key, value] of Object.entries({
+          coatColour: updatedRow.catColor,
+          coatLength: updatedRow.furLength,
+          gender: updatedRow.gender,
+          spayedOrNeutered: updatedRow.spayedOrNeutered,
+        })) {
+          const currentValues = await tx.animalCharacteristic.findMany({
+            where: { animalId: animal.id, type: key },
+          });
+          await this.characteristicsService.updateSingleCharacteristic(
+            tx,
+            animal.id,
+            key,
+            value,
+            currentValues
+          );
         }
-        const data = JSON.stringify(currentSheetData);
 
-        const saveLocation = getSheetSaveLocation();
-        fs.writeFileSync(saveLocation, data);
-    } catch (err) {
-        console.error("Error writing sheets file:", err);
-    }
-}
+        // update fosterhome
+        await tx.fosterHome.update({
+          where: { userId: user.id },
+          data: {
+            location: updatedRow.location,
+          },
+        });
 
-function syncSheetDataToDb(previousSheetData, currentSheetData) {
-    const oldValues = getPaastetudKpToHash(previousSheetData);
-
-    const valuesToUpdate = getValuesToUpdate(currentSheetData, oldValues)
-    const valuesToRemove = getValuesToRemove(currentSheetData, oldValues);
-    
-    //TODO actual saving
-}
-
-function getValuesToUpdate(data, oldValues) {
-    const valuesToUpdate = [];
-    data.forEach(row => {
-        if (!oldValues['jarjekorraNr'] || !oldValues.hash != row.hash) {
-            valuesToUpdate.push(row);
-        }
+        // update vaccine info
+      }
     });
-    return valuesToUpdate;
-}
-
-function getValuesToRemove(data, oldValues) {
-    const valuesToRemove = [];
-    const valuesToKeep = {};
-
-    data.forEach(row => {
-        let paastetudKp = row['jarjekorraNr'];
-        valuesToKeep[paastetudKp] = true;
-    });
-
-    Object.keys(oldValues).forEach(key => {
-        if (!valuesToKeep[key]) {
-            valuesToRemove.push(key);
-        }
-    });
-    return valuesToRemove;
-}
-
-function getPaastetudKpToHash(data) {
-    const map = {};
-
-    if (!data) {
-        return map;
-    }
-    data.forEach(row => {
-        map[row['jarjekorraNr']] = row['hash'];
-    });
-    return map;
+    this.googleSheetsService.rows = newSheet;
+  }
 }

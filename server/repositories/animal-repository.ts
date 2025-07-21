@@ -28,6 +28,10 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
+  static async getAllAnimals(): Promise<Animal[]> {
+    return await prisma.animal.findMany();
+  }
+
   async createAnimalWithRescue(
     data: CreateAnimalData
   ): Promise<CreateAnimalResult> {

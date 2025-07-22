@@ -35,6 +35,14 @@ export default class ImageService {
     );
   }
 
+  async fetchProfilePicture(animalID: number) {
+    return prisma.file.findFirst({
+      where: {
+        profileAnimalID: animalID,
+      },
+    });
+  }
+
   async processImages(
     profile: Profile,
     values: CatSheetsHeaders,

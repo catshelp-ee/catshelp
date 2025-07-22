@@ -29,18 +29,23 @@ export default class DashboardService {
   async getPetAvatars(userID: number | string, rows: Rows): Promise<Pet[]> {
     let pets = await this.getPets(userID);
     if (!pets) {
+      const user = await this.nodeCacheService.get<User>(`user:${userID}`);
       const petPromises = rows.map(async row => {
         const fileDriveID = extractFileId(row.row.photo);
-        const username = (
-          await this.nodeCacheService.get<User>(`user:${userID}`)
-        ).fullName;
-        const profilePicture = await this.imageService.downloadProfileImage(
-          row.row.catName,
-          fileDriveID,
-          username
+
+        const profilePicture = await this.imageService.fetchProfilePicture(
+          row.id
         );
 
-        return { name: row.row.catName, pathToImage: profilePicture };
+        let pathToImage = 'missing64x64.png';
+        if (profilePicture) {
+          pathToImage = `images/${profilePicture.uuid}.jpg`;
+        }
+
+        return {
+          name: row.row.catName,
+          pathToImage: pathToImage,
+        };
       });
 
       pets = await Promise.all(petPromises);

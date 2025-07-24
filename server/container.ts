@@ -22,6 +22,7 @@ import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
 import UserController from './controllers/user-controller';
+import CronRunner from './cron/cron-runner';
 import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
 
@@ -144,6 +145,11 @@ async function init() {
   container
     .bind<SyncSheetDataToDBJob>(TYPES.SyncSheetDataToDBJob)
     .to(SyncSheetDataToDBJob)
+    .inSingletonScope();
+
+  container
+    .bind<CronRunner>(TYPES.CronRunner)
+    .to(CronRunner)
     .inSingletonScope();
 
   return container;

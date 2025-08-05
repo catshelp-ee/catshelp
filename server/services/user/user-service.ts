@@ -50,7 +50,6 @@ export default class UserService {
       await prisma.revokedToken.upsert({
         where: {
           token: token,
-          expiresAt: date,
         },
         update: {},
         create: {

@@ -96,6 +96,20 @@ export default class GoogleSheetsService {
     }
   }
 
+  async getSheetData(sheetId, sheetTable) {
+    try {
+      const sheetData = await this.sheets.spreadsheets.get({
+        auth: this.googleAuthService.getAuth(),
+        spreadsheetId: sheetId,
+        ranges: [sheetTable],
+        includeGridData: true,
+      });
+      return sheetData;
+    } catch (e) {
+      throw new Error('Error fetching sheet: ', e);
+    }
+  }
+
   private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
     const columnMapping: Headers = {};
     const headerRow = rows[0]?.rowData?.[0]?.values;

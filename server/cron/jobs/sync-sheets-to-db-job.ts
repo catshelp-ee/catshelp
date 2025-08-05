@@ -1,152 +1,236 @@
-import CharacteristicsService from '@services/animal/characteristics-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import { GaxiosResponse } from 'gaxios';
-import { Animal } from 'generated/prisma';
-import { sheets_v4 } from 'googleapis';
+import path from "node:path";
+import fs from "node:fs";
+import sha256 from 'crypto-js/sha256';
 import { inject, injectable } from 'inversify';
-import moment from 'moment';
-import { prisma } from 'server/prisma';
-import AnimalRepository from 'server/repositories/animal-repository';
-import UserRepository from 'server/repositories/user-repository';
-import { CatSheetsHeaders, headerMapping, Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import AnimalRepository from '@repositories/animal-repository';
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import moment from 'moment';
 
 @injectable()
 export default class SyncSheetDataToDBJob {
-  headers: (keyof CatSheetsHeaders)[];
-  constructor(
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService,
-    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
-    @inject(TYPES.CharacteristicsService)
-    private characteristicsService: CharacteristicsService
-  ) {
-    this.headers = Object.values(headerMapping);
-  }
+    constructor(
+        @inject(TYPES.GoogleSheetsService)
+        private googleSheetsService: GoogleSheetsService,
+        @inject(TYPES.AnimalRescueRepository)
+        private animalRescueRepository: AnimalRescueRepository,
+        @inject(TYPES.AnimalRepository)
+        private animalRepository: AnimalRepository,
+        @inject(TYPES.AnimalCharacteristicRepository)
+        private animalCharacteristicRepository: AnimalCharacteristicRepository,
+    ) {}
 
-  async getNewSheet() {
-    const sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet> =
-      await this.googleSheetsService.getNewSheet();
+    public async syncSheetsToDb() {
+        if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
+            console.log("Google cats sheet id or table name not set. Skipping db sync");
+            return;
+        }
 
-    const rows = sheetData.data.sheets[0].data;
+        const currentSheet = await this.getCurrentSheetData();
+        if (!currentSheet) {
+            console.log("Could not load data from google sheets. Skipping sync");
+            return;
+        }
 
-    const rowData = rows[0].rowData;
-    const rowObjects: Rows = [];
-    this.googleSheetsService.convertRowToObject(rowData, rowObjects);
+        const previousSheet = this.getPreviousSheetData();
+        const formattedSheet = this.formatSheetData(currentSheet);
 
-    return rowObjects;
-  }
+        this.syncSheetDataToDb(previousSheet, formattedSheet);
+        this.saveCurrentSheetAsPrevious(formattedSheet);
+    }
 
-  async run() {
-    const currentSheet = this.googleSheetsService.rows;
-    const newSheet = await this.getNewSheet();
-    const users = await UserRepository.getAllUsers();
-    const allAnimals: Record<string, Animal[]> = {};
+    private formatSheetData(sheet) {
+        const result = [];
 
-    await prisma.$transaction(async tx => {
-      let updated;
-      let animals;
-      for (let i = 1; i < newSheet.length; i++) {
-        const updatedRow = newSheet[i].row;
-        updated = false;
-        for (let j = 1; j < currentSheet.length; j++) {
-          const row = currentSheet[j].row;
-
-          if (updatedRow.rescueSequenceNumber !== row.rescueSequenceNumber) {
-            continue;
-          }
-
-          for (const key of this.headers) {
-            if (updatedRow[key] === row[key]) {
-              continue;
+        const sheetRows = sheet.data.sheets[0].data[0].rowData;
+        const headerRow = this.getHeaderRowsColumnNames(sheetRows[0].values);
+        for (let index = 1; index < sheetRows.length; index++) {
+            let row = sheetRows[index];
+            let newObject = {};
+            for (let j = 0; j < row.values.length; j++) {
+                let columnValue = row.values[j];
+                let headerName = headerRow[j];
+                newObject[headerName] = columnValue;
             }
-
-            updated = true;
-          }
+            let hash = sha256(JSON.stringify(newObject));
+            newObject['hash'] = hash.toString();
+            result.push(newObject);
         }
 
-        if (!updated) {
-          continue;
-        }
+        //remove header row
+        return result.slice(1);
+    }
 
-        const user = users.find(
-          user => user.fullName === updatedRow.shelterOrClinicName
+    private getHeaderRowsColumnNames(headerValues) {
+        const result = [];
+        for (let index = 0; index < headerValues.length; index++) {
+            const headerColumnValue = headerValues[index].formattedValue ? headerValues[index].formattedValue : '';
+            if (headerColumnValue == 'PÄÄSTETUD JÄRJEKORRA NR (AA\'KK nr ..)') {
+                result.push('jarjekorraNr')
+            } else {
+                result.push(headerColumnValue.replaceAll(' ', '_'));
+            }
+        }
+        return result;
+    }
+
+    private getSheetSaveLocation() {
+        const tempDir = path.join(process.cwd(), "./files");
+        const fullPath = path.resolve(tempDir, "previous_sheets_data.txt");
+        return fullPath;
+    }
+
+    private getPreviousSheetData() {
+        const saveLocation = this.getSheetSaveLocation();
+        if (!fs.existsSync(saveLocation)) {
+            return;
+        }
+        const data = fs.readFileSync(saveLocation, 'utf-8');
+        if (!data) {
+            return [];
+        }
+        return JSON.parse(data);
+    }
+
+    private async getCurrentSheetData() {
+        const sheetData = await this.googleSheetsService.getSheetData(
+            process.env.CATS_SHEETS_ID!,
+            process.env.CATS_TABLE_NAME!
         );
+        return sheetData;
+    }
 
-        if (!user) {
-          console.error('User name in sheets and in database does not match');
-          continue;
+    private saveCurrentSheetAsPrevious(currentSheetData) {
+        try {
+            if (!currentSheetData) {
+                return;
+            }
+            const data = JSON.stringify(currentSheetData);
+
+            const saveLocation = this.getSheetSaveLocation();
+            fs.writeFileSync(saveLocation, data);
+        } catch (err) {
+            console.error("Error writing sheets file:", err);
+        }
+    }
+
+    private async syncSheetDataToDb(previousSheetData, currentSheetData) {
+        const oldValues = this.getPaastetudKpToHash(previousSheetData);
+
+        const valuesToUpdate = this.getValuesToUpdate(currentSheetData, oldValues)
+        const valuesToRemove = this.getValuesToRemove(currentSheetData, oldValues);
+
+        for (let i = 0; i < valuesToUpdate.length; i++) {
+            await this.updateData(valuesToUpdate[i]);
         }
 
-        if (allAnimals[updatedRow.shelterOrClinicName]) {
-          animals = allAnimals[updatedRow.shelterOrClinicName];
+        for (let i = 0; i < valuesToRemove.length; i++) {
+            await this.deleteData(valuesToRemove[i]);
+        }
+    }
+
+    private async deleteData(oldData) {
+        const animalRescue = await this.animalRescueRepository.getAnimalRescueByRankNr(oldData['jarjekorraNr'].formattedValue);
+        const animal = await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id);
+
+        await this.animalCharacteristicRepository.deleteAllCharacteristicsByAnimalId(animal.id);
+        await this.animalRepository.deleteAnimalById(animal.id);
+        await this.animalRescueRepository.deleteAnimalRescueById(animalRescue.id);
+        await this.animalRescueRepository.deleteAnimalToAnimalRescueByRescueId(animalRescue.id);
+    }
+
+    private async updateData(newData) {
+        const animalRescueData = {
+            rank_nr: newData['jarjekorraNr'].formattedValue,
+            address: newData['LEIDMISKOHT'].formattedValue,
+            rescue_date: moment(newData['PÄÄSTMISKP/_SÜNNIKP'].formattedValue, 'DD.MM.YYYY').toISOString() || null
+        }
+        const animalRescue = await this.animalRescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
+
+        let animal = await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id);
+        const animalData = {
+            id: animal?.id || null,
+            name: newData['KASSI_NIMI'].formattedValue,
+            birthday: moment(newData['SÜNNIAEG'].formattedValue, 'DD.MM.YYYY').toISOString() || null,
+            chipNumber: newData['KIIP'].formattedValue || null,
+            chipRegisteredWithUs: newData['KIIP_LLR-is_MTÜ_nimel-_täidab_registreerija'].formattedValue === 'Jah',
+        };
+        animal = await this.animalRepository.saveOrUpdateAnimal(animalData);
+        
+        const animalToAnimalRescueData = {
+            animalRescueId: animalRescue.id,
+            animalId: animal.id
+        };
+        await this.animalRescueRepository.saveOrUpdateAnimalToAnimalRescue(animalToAnimalRescueData);
+
+        await this.updateCharacteristics(animal.id, newData);
+        //TODO foster homes
+    }
+
+    private async updateCharacteristics(animalId, newData) {
+        if (newData['KASSI_VÄRV'].formattedValue) {
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatColour', value: newData['KASSI_VÄRV'].formattedValue});
         } else {
-          animals = await this.animalRepository.getCatsByUserEmail(user.email);
-          allAnimals[updatedRow.shelterOrClinicName] = animals;
+            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'coatColour'});
         }
 
-        const animal = animals.find(
-          animal => animal.name === updatedRow.catName
-        );
-
-        // update animal
-        await tx.animal.update({
-          where: { id: animal.id },
-          data: {
-            name: updatedRow.catName,
-            birthday: moment(updatedRow.birthDate, 'YYYYMMDD').toDate() || null,
-            chipNumber: updatedRow.microchip || null,
-            chipRegisteredWithUs: updatedRow.microchipRegisteredInLLR === 'Jah',
-          },
-        });
-
-        // update animal rescue
-        const animalToAnimalRescue = await tx.animalToAnimalRescue.findFirst({
-          where: { animalId: animal.id },
-          orderBy: { id: 'desc' },
-        });
-
-        await tx.animalRescue.update({
-          where: { id: animalToAnimalRescue.animalRescueId },
-          data: {
-            rescueDate: moment(
-              updatedRow.rescueOrBirthDate,
-              'YYYYMMDD'
-            ).toDate(),
-            address: updatedRow.findingLocation,
-          },
-        });
-
-        // update characteristics
-        for (const [key, value] of Object.entries({
-          coatColour: updatedRow.catColor,
-          coatLength: updatedRow.furLength,
-          gender: updatedRow.gender,
-          spayedOrNeutered: updatedRow.spayedOrNeutered,
-        })) {
-          const currentValues = await tx.animalCharacteristic.findMany({
-            where: { animalId: animal.id, type: key },
-          });
-          await this.characteristicsService.updateSingleCharacteristic(
-            tx,
-            animal.id,
-            key,
-            value,
-            currentValues
-          );
+        if (newData['KASSI_KARVA_PIKKUS'].formattedValue) {
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatLength', value: newData['KASSI_KARVA_PIKKUS'].formattedValue});
+        } else {
+            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'coatLength'});
         }
 
-        // update fosterhome
-        await tx.fosterHome.update({
-          where: { userId: user.id },
-          data: {
-            location: updatedRow.location,
-          },
+        if (newData['SUGU'].formattedValue) {
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'gender', value: newData['SUGU'].formattedValue});
+        } else {
+            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'gender'});
+        }
+
+        if (newData['LÕIGATUD'].formattedValue) {
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'spayedOrNeutered', value: newData['LÕIGATUD'].formattedValue});
+        } else {
+            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'spayedOrNeutered'});
+        }
+    }
+
+    private getValuesToUpdate(data, oldValues) {
+        const valuesToUpdate = [];
+        data.forEach(row => {
+            if (!oldValues['jarjekorraNr'] || !oldValues.hash != row.hash) {
+                valuesToUpdate.push(row);
+            }
+        });
+        return valuesToUpdate;
+    }
+
+    private getValuesToRemove(data, oldValues) {
+        const valuesToRemove = [];
+        const valuesToKeep = {};
+
+        data.forEach(row => {
+            let paastetudKp = row['jarjekorraNr'];
+            valuesToKeep[paastetudKp] = true;
         });
 
-        // update vaccine info
-      }
-    });
-    this.googleSheetsService.rows = newSheet;
-  }
+        Object.keys(oldValues).forEach(key => {
+            if (!valuesToKeep[key]) {
+                valuesToRemove.push(key);
+            }
+        });
+        return valuesToRemove;
+    }
+
+    private getPaastetudKpToHash(data) {
+        const map = {};
+
+        if (!data) {
+            return map;
+        }
+        data.forEach(row => {
+            map[row['jarjekorraNr']] = row['hash'];
+        });
+        return map;
+    }
 }

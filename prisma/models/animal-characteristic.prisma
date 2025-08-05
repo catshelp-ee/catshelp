@@ -1,9 +1,10 @@
 model AnimalCharacteristic {
       id       Int     @id @default(autoincrement())
-      animalId Int    @map("animal_id")
+      animalId Int     @map("animal_id")
       animal   Animal  @relation(fields: [animalId], references: [id])
       name     String?
       type     String?
 
-      @@map("animal_charecteristics")
+      @@map("animal_characteristics")
+      @@unique(fields: [animalId, type], name: "characteristicOfType")
 }

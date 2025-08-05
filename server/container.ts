@@ -25,6 +25,9 @@ import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -103,6 +106,18 @@ async function init() {
   container
     .bind<AnimalRepository>(TYPES.AnimalRepository)
     .to(AnimalRepository)
+    .inSingletonScope();
+  container
+    .bind<AnimalRescueRepository>(TYPES.AnimalRescueRepository)
+    .to(AnimalRescueRepository)
+    .inSingletonScope();
+  container
+    .bind<AnimalCharacteristicRepository>(TYPES.AnimalCharacteristicRepository)
+    .to(AnimalCharacteristicRepository)
+    .inSingletonScope();
+  container
+    .bind<FosterHomeRepository>(TYPES.FosterHomeRepository)
+    .to(FosterHomeRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

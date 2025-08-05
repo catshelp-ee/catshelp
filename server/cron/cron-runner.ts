@@ -14,6 +14,6 @@ export default class CronRunner {
 
   public startCronJobs() {
     cron.schedule('0 0 * * *', deleteExpiredRevokedTokens);
-    cron.schedule('*/10 * * * *', this.syncSheetDataToDBJob.run);
+    cron.schedule('*/10 * * * *', this.syncSheetDataToDBJob.syncSheetsToDb);
   }
 }

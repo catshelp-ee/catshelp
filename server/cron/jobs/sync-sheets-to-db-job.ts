@@ -119,7 +119,7 @@ export default class SyncSheetDataToDBJob {
     private async syncSheetDataToDb(previousSheetData, currentSheetData) {
         const oldValues = this.getPaastetudKpToHash(previousSheetData);
 
-        const valuesToUpdate = this.getValuesToUpdate(currentSheetData, oldValues)
+        const valuesToUpdate = this.getValuesToUpdate(currentSheetData, oldValues);
         const valuesToRemove = this.getValuesToRemove(currentSheetData, oldValues);
 
         for (let i = 0; i < valuesToUpdate.length; i++) {
@@ -171,25 +171,25 @@ export default class SyncSheetDataToDBJob {
 
     private async updateCharacteristics(animalId, newData) {
         if (newData['KASSI_VÄRV'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatColour', value: newData['KASSI_VÄRV'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatColour', name: newData['KASSI_VÄRV'].formattedValue});
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'coatColour'});
         }
 
         if (newData['KASSI_KARVA_PIKKUS'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatLength', value: newData['KASSI_KARVA_PIKKUS'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatLength', name: newData['KASSI_KARVA_PIKKUS'].formattedValue});
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'coatLength'});
         }
 
         if (newData['SUGU'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'gender', value: newData['SUGU'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'gender', name: newData['SUGU'].formattedValue});
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'gender'});
         }
 
         if (newData['LÕIGATUD'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'spayedOrNeutered', value: newData['LÕIGATUD'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'spayedOrNeutered', name: newData['LÕIGATUD'].formattedValue});
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'spayedOrNeutered'});
         }
@@ -198,7 +198,8 @@ export default class SyncSheetDataToDBJob {
     private getValuesToUpdate(data, oldValues) {
         const valuesToUpdate = [];
         data.forEach(row => {
-            if (!oldValues['jarjekorraNr'] || !oldValues.hash != row.hash) {
+            const oldHash = oldValues[row.jarjekorraNr.formattedValue];
+            if (oldHash != row.hash) {
                 valuesToUpdate.push(row);
             }
         });
@@ -210,8 +211,8 @@ export default class SyncSheetDataToDBJob {
         const valuesToKeep = {};
 
         data.forEach(row => {
-            let paastetudKp = row['jarjekorraNr'];
-            valuesToKeep[paastetudKp] = true;
+            let jarjekorraNr = row['jarjekorraNr'].formattedValue;
+            valuesToKeep[jarjekorraNr] = true;
         });
 
         Object.keys(oldValues).forEach(key => {
@@ -229,7 +230,7 @@ export default class SyncSheetDataToDBJob {
             return map;
         }
         data.forEach(row => {
-            map[row['jarjekorraNr']] = row['hash'];
+            map[row['jarjekorraNr'].formattedValue] = row['hash'];
         });
         return map;
     }

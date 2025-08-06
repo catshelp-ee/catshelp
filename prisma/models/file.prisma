@@ -1,6 +1,6 @@
 model File{
     id               Int                  @id @default(autoincrement())
-    animalID         Int                  @unique @map("animal_id")
+    animalID         Int                  @map("animal_id")
     profileAnimalID  Int?                 @unique @map("profile_animal_id")
     animal           Animal               @relation("Files", fields: [animalID], references: [id])
     profilePicture   Animal?              @relation("ProfilePicture", fields: [profileAnimalID], references: [id])

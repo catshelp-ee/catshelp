@@ -51,12 +51,12 @@ export default class AnimalRescueRepository {
   public async saveOrUpdateAnimalToAnimalRescue(data) {
     const newRow = await prisma.animalToAnimalRescue.upsert({
       where: {
-        animalRescueId: data.animalRescueId
+        animalToAnimalRescue: {
+          animalId: data.animalId,
+          animalRescueId: data.animalRescueId
+        }
       },
-      update: {
-        animalRescueId: data.animalRescueId,
-        animalId: data.animalId
-      },
+      update: {},
       create: {
         animalRescueId: data.animalRescueId,
         animalId: data.animalId

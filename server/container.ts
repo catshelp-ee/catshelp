@@ -28,6 +28,7 @@ import AnimalRepository from './repositories/animal-repository';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
 import FosterHomeRepository from '@repositories/foster-home-repository';
+import UserRepository from '@repositories/user-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -118,6 +119,10 @@ async function init() {
   container
     .bind<FosterHomeRepository>(TYPES.FosterHomeRepository)
     .to(FosterHomeRepository)
+    .inSingletonScope();
+  container
+    .bind<UserRepository>(TYPES.UserRepository)
+    .to(UserRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

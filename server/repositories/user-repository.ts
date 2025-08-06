@@ -7,4 +7,17 @@ export default class UserRepository {
   static async getAllUsers(): Promise<User[]> {
     return await prisma.user.findMany();
   }
+
+  public async saveOrUpdateUser(data) {
+    const newRow = await prisma.user.upsert({
+      where: {
+        fullName: data.fullName
+      },
+      update: {},
+      create: {
+        fullName: data.fullName
+      },
+    });
+    return newRow;
+  }
 }

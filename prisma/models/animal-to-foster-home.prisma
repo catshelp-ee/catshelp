@@ -7,4 +7,5 @@ model AnimalToFosterHome {
     fosterHomeEndDate DateTime?   @map("foster_home_end_date")
 
     @@map("animals_to_foster_homes")
+    @@unique(fields: [animalId, fosterHomeId], name: "animalToFosterHome")
 }

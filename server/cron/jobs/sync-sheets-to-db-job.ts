@@ -7,6 +7,8 @@ import TYPES from 'types/inversify-types';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import AnimalRepository from '@repositories/animal-repository';
 import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import UserRepository from '@repositories/user-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
 import moment from 'moment';
 
 @injectable()
@@ -20,7 +22,11 @@ export default class SyncSheetDataToDBJob {
         private animalRepository: AnimalRepository,
         @inject(TYPES.AnimalCharacteristicRepository)
         private animalCharacteristicRepository: AnimalCharacteristicRepository,
-    ) {}
+        @inject(TYPES.UserRepository)
+        private userRepository: UserRepository,
+        @inject(TYPES.FosterHomeRepository)
+        private fosterHomeRepository: FosterHomeRepository,
+    ) { }
 
     public async syncSheetsToDb() {
         if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
@@ -142,13 +148,40 @@ export default class SyncSheetDataToDBJob {
     }
 
     private async updateData(newData) {
-        const animalRescueData = {
-            rank_nr: newData['jarjekorraNr'].formattedValue,
-            address: newData['LEIDMISKOHT'].formattedValue,
-            rescue_date: moment(newData['PÄÄSTMISKP/_SÜNNIKP'].formattedValue, 'DD.MM.YYYY').toISOString() || null
-        }
-        const animalRescue = await this.animalRescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
+        const animalRescue = await this.updateAnimalRescue(newData);
+        const animal = await this.updateAnimal(newData, animalRescue);
 
+        const animalToAnimalRescueData = {
+            animalRescueId: animalRescue.id,
+            animalId: animal.id
+        };
+        await this.animalRescueRepository.saveOrUpdateAnimalToAnimalRescue(animalToAnimalRescueData);
+        await this.updateCharacteristics(newData, animal.id);
+
+        const user = await this.updateUser(newData);
+        const fosterHome = await this.updateFosterHome({userId: user.id});
+        const animalToFosterHomeData = {
+            animalId: animal.id,
+            fosterHomeId: fosterHome.id
+        }
+        await this.fosterHomeRepository.saveOrUpdateAnimalToFosterHome(animalToFosterHomeData);
+    }
+
+    private async updateFosterHome(newData) {
+        const fosterHomeData = {
+            userId: newData.userId
+        };
+        return await this.fosterHomeRepository.saveOrUpdateFosterHome(fosterHomeData);
+    }
+
+    private async updateUser(newData) {
+        const userData = {
+            fullName: newData['_HOIUKODU/_KLIINIKU_NIMI'].formattedValue
+        };
+        return await this.userRepository.saveOrUpdateUser(userData);
+    }
+
+    private async updateAnimal(newData, animalRescue) {
         let animal = await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id);
         const animalData = {
             id: animal?.id || null,
@@ -157,41 +190,41 @@ export default class SyncSheetDataToDBJob {
             chipNumber: newData['KIIP'].formattedValue || null,
             chipRegisteredWithUs: newData['KIIP_LLR-is_MTÜ_nimel-_täidab_registreerija'].formattedValue === 'Jah',
         };
-        animal = await this.animalRepository.saveOrUpdateAnimal(animalData);
-        
-        const animalToAnimalRescueData = {
-            animalRescueId: animalRescue.id,
-            animalId: animal.id
-        };
-        await this.animalRescueRepository.saveOrUpdateAnimalToAnimalRescue(animalToAnimalRescueData);
-
-        await this.updateCharacteristics(animal.id, newData);
-        //TODO foster homes
+        return await this.animalRepository.saveOrUpdateAnimal(animalData);
     }
 
-    private async updateCharacteristics(animalId, newData) {
+    private async updateAnimalRescue(newData) {
+        const animalRescueData = {
+            rank_nr: newData['jarjekorraNr'].formattedValue,
+            address: newData['LEIDMISKOHT'].formattedValue,
+            rescue_date: moment(newData['PÄÄSTMISKP/_SÜNNIKP'].formattedValue, 'DD.MM.YYYY').toISOString() || null
+        }
+        return await this.animalRescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
+    }
+
+    private async updateCharacteristics(newData, animalId) {
         if (newData['KASSI_VÄRV'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatColour', name: newData['KASSI_VÄRV'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'coatColour', name: newData['KASSI_VÄRV'].formattedValue });
         } else {
-            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'coatColour'});
+            await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'coatColour' });
         }
 
         if (newData['KASSI_KARVA_PIKKUS'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'coatLength', name: newData['KASSI_KARVA_PIKKUS'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'coatLength', name: newData['KASSI_KARVA_PIKKUS'].formattedValue });
         } else {
-            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'coatLength'});
+            await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'coatLength' });
         }
 
         if (newData['SUGU'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'gender', name: newData['SUGU'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'gender', name: newData['SUGU'].formattedValue });
         } else {
-            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'gender'});
+            await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'gender' });
         }
 
         if (newData['LÕIGATUD'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({animalId: animalId, type: 'spayedOrNeutered', name: newData['LÕIGATUD'].formattedValue});
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'spayedOrNeutered', name: newData['LÕIGATUD'].formattedValue });
         } else {
-            await this.animalCharacteristicRepository.deleteCharacteristic({animalId: animalId, type: 'spayedOrNeutered'});
+            await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'spayedOrNeutered' });
         }
     }
 

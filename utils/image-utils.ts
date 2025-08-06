@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 const createImageCanvas = (
   img: HTMLImageElement,
   width: number,
@@ -56,9 +57,7 @@ const resizeImage = async (
   const canvas = createImageCanvas(img, width, height);
   const blob = await canvasToBlob(canvas);
 
-  const baseName =
-    file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-  const newFileName = `${baseName}_${width}x${height}.jpg`;
+  const newFileName = `${uuidv4()}.jpg`;
 
   return new File([blob], newFileName, {
     type: 'image/jpeg',
@@ -68,7 +67,6 @@ const resizeImage = async (
 
 export const resizeImages = (images: File[]): Promise<File[]> => {
   const allResizePromises = images.flatMap(image => [
-    resizeImage(image, 64, 64),
     resizeImage(image, 256, 256),
   ]);
   return Promise.all(allResizePromises);

@@ -1,16 +1,17 @@
 model Animal {
-    id                    Int      @id @default(autoincrement())
-    name                  String?
-    birthday              DateTime?
-    profileTitle          String?  @map("profile_title")
-    description           String?  @db.Text
-    status                String?
-    chipNumber            String?  @map("chip_number")
-    chipRegisteredWithUs  Boolean  @default(false) @map("chip_registered_with_us")
-    driveId               String?  @map("drive_id")
+    id                    Int                     @id @default(autoincrement())
+    name                  String?                 
+    birthday              DateTime?               
+    profileTitle          String?                 @map("profile_title")
+    description           String?                 @db.Text
+    status                String?                 
+    chipNumber            String?                 @map("chip_number")
+    chipRegisteredWithUs  Boolean                 @default(false) @map("chip_registered_with_us")
+    profilePicture        File?                   @relation("ProfilePicture")
     animalsToRescue       AnimalToAnimalRescue[]
     animalCharacteristic  AnimalCharacteristic[]
     fosterHomeAnimals     AnimalToFosterHome[]
+    files                 File[]                  @relation("Files")
 
 
     @@map("animals")

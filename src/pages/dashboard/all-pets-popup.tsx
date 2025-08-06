@@ -21,7 +21,7 @@ const PetItem: React.FC<{ pet: Pet }> = ({ pet }) => {
     >
       <div className="flex items-center space-x-4">
         <Avatar
-          src={`/${pet.image}`}
+          src={`/${pet.pathToImage}`}
           alt={`${pet.name} pilt`}
           sx={{
             width: 48,

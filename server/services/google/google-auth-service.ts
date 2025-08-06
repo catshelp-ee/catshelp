@@ -14,12 +14,15 @@ export default class GoogleAuthService {
     const isProd = process.env.NODE_ENV === 'production';
 
     const keyFilePath = isProd
-      ? process.env.CREDENTIALS_PATH
+      ? process.env.PROD_CREDENTIALS_PATH
       : 'credentials.json';
 
     const auth = new google.auth.GoogleAuth({
       keyFile: keyFilePath,
-      scopes: ['https://www.googleapis.com/auth/drive'],
+      scopes: [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+      ],
     });
 
     const client = (await auth.getClient()) as OAuth2Client;

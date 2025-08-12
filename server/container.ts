@@ -22,7 +22,13 @@ import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
 import UserController from './controllers/user-controller';
+import CronRunner from './cron/cron-runner';
+import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
+import UserRepository from '@repositories/user-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -102,6 +108,22 @@ async function init() {
     .bind<AnimalRepository>(TYPES.AnimalRepository)
     .to(AnimalRepository)
     .inSingletonScope();
+  container
+    .bind<AnimalRescueRepository>(TYPES.AnimalRescueRepository)
+    .to(AnimalRescueRepository)
+    .inSingletonScope();
+  container
+    .bind<AnimalCharacteristicRepository>(TYPES.AnimalCharacteristicRepository)
+    .to(AnimalCharacteristicRepository)
+    .inSingletonScope();
+  container
+    .bind<FosterHomeRepository>(TYPES.FosterHomeRepository)
+    .to(FosterHomeRepository)
+    .inSingletonScope();
+  container
+    .bind<UserRepository>(TYPES.UserRepository)
+    .to(UserRepository)
+    .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────
   container
@@ -137,6 +159,17 @@ async function init() {
   container
     .bind<AuthorizationMiddleware>(TYPES.AuthorizationMiddleware)
     .to(AuthorizationMiddleware)
+    .inSingletonScope();
+
+  // ─── Cron jobs ───────────────────────────────────────────────────
+  container
+    .bind<SyncSheetDataToDBJob>(TYPES.SyncSheetDataToDBJob)
+    .to(SyncSheetDataToDBJob)
+    .inSingletonScope();
+
+  container
+    .bind<CronRunner>(TYPES.CronRunner)
+    .to(CronRunner)
     .inSingletonScope();
 
   return container;

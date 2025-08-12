@@ -57,6 +57,7 @@ async function bootstrap() {
   const auth = container.get<AuthorizationMiddleware>(
     TYPES.AuthorizationMiddleware
   );
+  const cron = container.get<CronRunner>(TYPES.CronRunner);
 
   const rootDir = path.join(__dirname, '..');
   const app = express();
@@ -75,7 +76,7 @@ async function bootstrap() {
   app.use(express.static(path.join(rootDir, 'dist')));
   app.use('/images', express.static(path.join(__dirname, 'images')));
 
-  startCronRunner();
+  cron.startCronJobs();
 
   // Public endpoints for authentication
   app.post('/api/login-google', (req, res) => {
@@ -134,11 +135,6 @@ async function bootstrap() {
   app.listen(process.env.BACKEND_PORT, () => {
     console.log(`connected to backend on port ${process.env.BACKEND_PORT}!`);
   });
-
-  function startCronRunner() {
-    const runner = new CronRunner();
-    runner.startCronJobs();
-  }
 }
 
 bootstrap();

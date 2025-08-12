@@ -4,7 +4,7 @@ model AnimalRescue {
   state              String?
   address            String?
   locationNotes      String?                   @map("location_notes")
-  rankNr             Int?                      @map("rank_nr")
+  rankNr             String?                   @map("rank_nr") @unique
   animalsToRescue    AnimalToAnimalRescue[]
   
   @@map("animal_rescues")

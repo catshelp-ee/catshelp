@@ -24,7 +24,9 @@
       "@services/*": ["server/services/*"],
       "@middleware/*": ["server/middleware/*"],
       "@models/*": ["models/*"],
-      "@components/*": ["src/components/*"]
+      "@components/*": ["src/components/*"],
+      "@cron/*": ["server/cron/*"],
+      "@repositories/*": ["server/repositories/*"]
     },
   },
   "include": ["server/**/*", "models/**/*", "src"],

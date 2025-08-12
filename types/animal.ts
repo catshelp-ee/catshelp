@@ -5,6 +5,7 @@ export interface CreateAnimalData {
   location: string;
   notes?: string;
   rankNr?: string;
+  date?: Date;
 }
 
 export interface CreateAnimalResult {

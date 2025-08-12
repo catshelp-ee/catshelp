@@ -16,12 +16,7 @@ export default class AddRescueController {
   async postAnimal(req: Request, res: Response): Promise<Response> {
     try {
       const animal = await this.animalService.createAnimal(req.body);
-
-      const date = animal.animalRescue.rescueDate;
-      const year = date.getFullYear() % 100;
-      const month =
-        date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth();
-      const animalID = `${year}'${month} nr ${animal.animalRescue.rankNr}`;
+      const animalID = animal.animalRescue.rankNr;
       const driveID = (
         await this.googleDriveService.createDriveFolder(animalID)
       ).data.id;

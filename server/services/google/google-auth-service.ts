@@ -11,10 +11,10 @@ export default class GoogleAuthService {
   }
 
   static async create() {
-    const isProd = process.env.NODE_ENV === 'production';
+    const isProd = process.env.VITE_ENVIRONMENT === 'PROD';
 
     const keyFilePath = isProd
-      ? process.env.PROD_CREDENTIALS_PATH
+      ? process.env.GOOGLE_CREDENTIALS_PATH
       : 'credentials.json';
 
     const auth = new google.auth.GoogleAuth({

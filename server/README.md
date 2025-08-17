@@ -3,7 +3,7 @@
 ## Setup and Deployment
 ### Environment Setup
 1. Ensure Node.js and npm are installed on your system.
-2. Copy `.env.example` (if available) to `.env` and configure necessary environment variables such as `JWT_SECRET`, `TOKEN_LENGTH`, `BACKEND_PORT`, and Google API credentials.
+2. Copy `.env.example` (if available) to `.env` and configure necessary environment variables such as `JWT_SECRET`, `JWT_TOKEN_EXPIRY`, `BACKEND_PORT`, and Google API credentials.
 3. Install dependencies:
    ```
    npm install
@@ -45,7 +45,7 @@ The application uses **Prisma ORM** for database interactions, with schema defin
 
 ## Troubleshooting and Maintenance
 ### Common Issues
-- **Environment Variables**: Ensure all required variables (`JWT_SECRET`, `TOKEN_LENGTH`, etc.) are set correctly. Missing variables will cause the application to fail on startup.
+- **Environment Variables**: Ensure all required variables (`JWT_SECRET`, `JWT_TOKEN_EXPIRY`, etc.) are set correctly. Missing variables will cause the application to fail on startup.
 - **Google API Authentication**: Verify that Google OAuth credentials and client IDs are correct if authentication fails.
 - **Database Connection**: Check Prisma configuration and database connection strings if database operations fail.
 

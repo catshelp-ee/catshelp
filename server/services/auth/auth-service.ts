@@ -24,11 +24,11 @@ export default class AuthService {
   ) {
     this.client = new OAuth2Client();
     this.jwtSecret = process.env.JWT_SECRET!;
-    this.tokenLength = process.env.TOKEN_LENGTH!;
+    this.tokenLength = process.env.JWT_TOKEN_EXPIRY!;
 
     if (!this.jwtSecret || !this.tokenLength) {
       throw new Error(
-        'Missing required environment variables: JWT_SECRET or TOKEN_LENGTH'
+        'Missing required environment variables: JWT_SECRET or JWT_TOKEN_EXPIRY'
       );
     }
   }

@@ -25,7 +25,7 @@ export default class EmailService {
 
   sendMagicLink(email: string, token: string) {
     return this.transporter.sendMail({
-      from: process.env.MAGIC_LINK_SENDER,
+      from: process.env.MAGIC_LINK_FROM_EMAIL,
       to: email,
       subject: '🐈 Cats Help Sisselogimine',
       html: `<a href="${process.env.VITE_FRONTEND_URL}/api/verify?token=${token}">Vajuta siia sisselogimiseks</a>`,

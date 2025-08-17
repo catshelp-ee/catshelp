@@ -69,7 +69,7 @@ export default class GoogleDriveService {
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
       corpora: 'drive',
-      driveId: process.env.DRIVE_ID,
+      driveId: process.env.GOOGLE_DRIVE_ID,
     });
 
     await Promise.all(
@@ -90,8 +90,8 @@ export default class GoogleDriveService {
     const fileMetadata = {
       name: name,
       mimeType: 'application/vnd.google-apps.folder',
-      parents: [process.env.DRIVE_PARENT_ID],
-      driveId: process.env.DRIVE_ID,
+      parents: [process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID],
+      driveId: process.env.GOOGLE_DRIVE_ID,
     };
     return this.drive.files.create({
       supportsAllDrives: true,

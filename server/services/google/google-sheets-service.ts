@@ -38,12 +38,12 @@ export default class GoogleSheetsService {
       auth: this.googleAuthService.getAuth(),
     });
 
-    if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
-      throw new Error('Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env');
+    if (!process.env.CATS_DATABASE_SHEETS_ID || !process.env.CATS_DATABASE_TABLE_NAME) {
+      throw new Error('Missing CATS_DATABASE_SHEETS_ID or CATS_DATABASE_TABLE_NAME from env');
     }
 
-    this.sheetID = process.env.CATS_SHEETS_ID!;
-    this.sheetTable = process.env.CATS_TABLE_NAME!;
+    this.sheetID = process.env.CATS_DATABASE_SHEETS_ID!;
+    this.sheetTable = process.env.CATS_DATABASE_TABLE_NAME!;
     this.rows = [];
   }
 
@@ -139,8 +139,8 @@ export default class GoogleSheetsService {
 
     await this.sheets.spreadsheets.values.append({
       auth: this.googleAuthService.getAuth(),
-      spreadsheetId: process.env.CATS_SHEETS_ID,
-      range: process.env.CATS_TABLE_NAME,
+      spreadsheetId: process.env.CATS_DATABASE_SHEETS_ID,
+      range: process.env.CATS_DATABASE_TABLE_NAME,
       valueInputOption: 'RAW',
       requestBody: {
         values: [row],
@@ -285,7 +285,7 @@ export default class GoogleSheetsService {
 
     try {
       await this.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: process.env.CATS_SHEETS_ID,
+        spreadsheetId: process.env.CATS_DATABASE_SHEETS_ID,
         requestBody: { requests: updateRequests },
       });
     } catch (error) {

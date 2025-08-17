@@ -139,6 +139,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 4. Go to Credentials → Create Credentials → OAuth 2.0 Client ID
 5. Configure OAuth consent screen if prompted
 6. Copy the Client ID
+7. Download the credentials and place in root folder
 
 ### Database Configuration
 

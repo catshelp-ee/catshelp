@@ -12,11 +12,13 @@ import NotificationService from '../notifications/notification-service';
 @injectable()
 export default class DashboardService {
   constructor(
-    @inject(TYPES.ImageService) private imageService: ImageService,
+    @inject(TYPES.ImageService)
+    private imageService: ImageService,
     @inject(TYPES.NotificationService)
     private notificationService: NotificationService,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
-  ) {}
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService
+  ) { }
 
   private getPets(userID: number | string) {
     return this.nodeCacheService.get<Pet[]>(`pets:${userID}`);

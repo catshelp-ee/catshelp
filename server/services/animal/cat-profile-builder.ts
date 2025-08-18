@@ -13,10 +13,11 @@ export default class CatProfileBuilder {
   constructor(
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
-    @inject(TYPES.ImageService) private imageService: ImageService,
+    @inject(TYPES.ImageService)
+    private imageService: ImageService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService
-  ) {}
+  ) { }
 
   async buildProfilesFromSheet(
     owner: User,

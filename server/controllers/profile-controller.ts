@@ -10,11 +10,15 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class ProfileController {
   constructor(
-    @inject(TYPES.ProfileService) private profileService: ProfileService,
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService
-  ) {}
+    @inject(TYPES.ProfileService)
+    private profileService: ProfileService,
+    @inject(TYPES.UserService)
+    private userService: UserService,
+    @inject(TYPES.AuthService)
+    private authService: AuthService,
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService
+  ) { }
 
   async getProfile(req: Request, res: Response): Promise<Response> {
     try {

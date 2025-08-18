@@ -6,7 +6,11 @@ import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class FileController {
-  constructor(@inject(TYPES.ImageService) private imageService: ImageService) {}
+  constructor(
+    @inject(TYPES.ImageService)
+    private imageService: ImageService
+  ) { }
+
   async addPicture(req: Request, res: Response): Promise<void> {
     try {
       if (!req.files || (Array.isArray(req.files) && req.files.length === 0)) {

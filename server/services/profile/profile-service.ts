@@ -10,8 +10,9 @@ export default class ProfileService {
   constructor(
     @inject(TYPES.CatProfileBuilder)
     private catProfileBuilder: CatProfileBuilder,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
-  ) {}
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService
+  ) { }
 
   getProfiles(userID: number | string) {
     return this.nodeCacheService.get<Profile[]>(`profiles:${userID}`);

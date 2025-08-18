@@ -8,14 +8,16 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class AddRescueController {
   constructor(
-    @inject(TYPES.AnimalService) private animalService: AnimalService,
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService,
     @inject(TYPES.GoogleDriveService)
     private googleDriveService: GoogleDriveService
-  ) {}
+  ) { }
 
   async postAnimal(req: Request, res: Response): Promise<Response> {
+    const animal = await this.animalService.createAnimal(req.body);
+    return res.status(200);
     try {
-      const animal = await this.animalService.createAnimal(req.body);
       const animalID = animal.animalRescue.rankNr;
       const driveID = (
         await this.googleDriveService.createDriveFolder(animalID)

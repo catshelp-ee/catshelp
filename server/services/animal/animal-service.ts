@@ -16,15 +16,19 @@ import CharacteristicsService from './characteristics-service';
 @injectable()
 export default class AnimalService {
   constructor(
-    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
+    @inject(TYPES.AnimalRepository)
+    private animalRepository: AnimalRepository,
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService,
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.ProfileService) private profileService: ProfileService
-  ) {}
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService,
+    @inject(TYPES.UserService)
+    private userService: UserService,
+    @inject(TYPES.ProfileService)
+    private profileService: ProfileService
+  ) { }
 
   getAnimals(userID: number | string): Promise<Animal[]> {
     return this.nodeCacheService.get(`animals:${userID}`);
@@ -41,11 +45,18 @@ export default class AnimalService {
   }
 
   async createAnimal(data: CreateAnimalData): Promise<CreateAnimalResult> {
+          const animalData = {
+                name: 'TEST'
+            };
+    return await this.animalRepository.saveOrUpdateAnimal(animalData);
+    //throw new Error("TEST");
+    /*
     data.date = new Date();
     const animal = await this.animalRepository.createAnimalWithRescue(data);
     data.rankNr = animal.animalRescue.rankNr;
     this.googleSheetsService.addDataToSheet(data);
     return animal;
+    */
   }
 
   async updateAnimalRescueTable(

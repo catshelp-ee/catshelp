@@ -8,9 +8,9 @@ import { AccordionDetails, Button, IconButton, TextField, Typography } from "@mu
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ImageGallery from "@pages/cat-profile/image-gallery";
-import { uploadImages } from "@utils/google-utils";
 import axios from "axios";
 import React, { useState } from "react";
+import { uploadImages } from "src/utils/image-utils";
 import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";

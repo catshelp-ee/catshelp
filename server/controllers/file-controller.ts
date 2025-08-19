@@ -18,17 +18,19 @@ export default class FileController {
         res.status(400).json({ error: 'No files provided' });
         return;
       }
+      let animal;
+      if (req.body.userEmail) {
+        const animals = await this.animalRepository.getCatsByUserEmail(
+          req.body.userEmail
+        );
 
-      const animals = await this.animalRepository.getCatsByUserEmail(
-        req.body.userEmail
-      );
-
-      const animal = animals.find(
-        animal => animal.name === req.body.animalName
-      );
+        animal = animals.find(animal => animal.name === req.body.animalName);
+      } else {
+        // If email is null, then a new animal has been submitted/created and thus the animals name is the rank nr
+        animal = this.animalRepository.getCatByRankNr(req.body.animalName);
+      }
 
       await this.imageService.insertImageFilenamesIntoDB(req.files, animal.id);
-
       res.sendStatus(200);
     } catch (error) {
       handleControllerError(error, res, 'Failed to upload pictures');

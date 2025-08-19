@@ -1,8 +1,8 @@
 import NodeCacheService from '@services/cache/cache-service';
 import ImageService from '@services/files/image-service';
-import { extractFileId } from '@utils/image-utils';
 import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
+import { extractFileId } from 'server/utils/google-utils';
 import { Pet } from 'types/animal';
 import { Result } from 'types/dashboard';
 import { Rows } from 'types/google-sheets';

@@ -10,8 +10,9 @@ import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { submitNewCatProfile } from "@utils/cat-profile-utils";
 import Header from "@components/header";
-import Popup from "@components/popup";
+import { useAlert } from "@context/alert-context";
 import States from "./states.json";
+import axios from 'axios';
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -25,56 +26,36 @@ const VisuallyHiddenInput = styled("input")({
 
 const AddCatForm = () => {
   const [images, setImages] = useState<File[]>([]);
-  const [isPopupVisible, setPopupVisible] = useState(false);
-  const [isSlidingDown, setSlidingDown] = useState(false);
-  const [isSlidingUp, setSlidingUp] = useState(false);
+  const { showAlert } = useAlert();
 
-  const handlePopupClose = () => {
-    setSlidingUp(true);
-    setSlidingDown(false);
-    setTimeout(() => {
-      setSlidingUp(false);
-      setPopupVisible(false);
-    }, 300);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (isPopupVisible) {
-      setSlidingDown(false);
-      setTimeout(() => setSlidingDown(true), 10);
-    } else {
-      setPopupVisible(true);
-      setSlidingDown(true);
-    }
-
     const formData = new FormData(e.target as HTMLFormElement);
 
-    const obj = {
+    const data = {
       notes: formData.get("notes"),
       location: formData.get("location"),
       state: formData.get("state"),
     };
 
-    submitNewCatProfile(obj, images);
+    try {
+      submitNewCatProfile(data, images);
+      showAlert('Success', "🐈‍⬛ Kiisuke lisatud! 🐈‍⬛");
+    } catch (error) {
+      showAlert('Error', "Kassi lisamine ebaõnnestus");
+    }
   };
+
+  
 
   return (
     <div className="h-screen flex justify-center">
-      <Popup
-        isVisible={isPopupVisible}
-        slidingDown={isSlidingDown}
-        slidingUp={isSlidingUp}
-        onClose={handlePopupClose}
-        title="🐈‍⬛ Kiisuke lisatud! 🐈‍⬛"
-      />
       <div className="flex flex-col w-1/3 max-sm:w-full">
         <Header className="mt-4" imgClass="m-auto" />
         <h1 className="text-5xl mt-4 mb-16 max-sm:text-4xl">Lisa uus kass</h1>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col overflow-scroll no-scrollbar w-full gap-4 mb-28"
+          className="flex flex-col w-full gap-4 mb-28"
         >
           <Button
             sx={{

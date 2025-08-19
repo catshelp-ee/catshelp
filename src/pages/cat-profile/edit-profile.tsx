@@ -9,6 +9,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ImageGallery from "@pages/cat-profile/image-gallery";
 import { uploadImages } from "@utils/google-utils";
+import axios from "axios";
 import React, { useState } from "react";
 import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
@@ -86,10 +87,9 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
 
     if (images.length > 0) {
-      uploadImages(images, user.email, updatedAnimalData.mainInfo.name);
+      await uploadImages(images, user.email, updatedAnimalData.mainInfo.name);
     }
 
-    /*
     try {
       await axios.put("/api/animals/cat-profile", updatedAnimalData, {
         withCredentials: true,
@@ -104,7 +104,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     } catch (error) {
       console.error("Error updating cat profile:", error);
     }
-      */
   };
 
   return (

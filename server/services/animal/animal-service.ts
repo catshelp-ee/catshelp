@@ -42,11 +42,7 @@ export default class AnimalService {
 
   async createAnimal(data: CreateAnimalData): Promise<CreateAnimalResult> {
     const animal = await this.animalRepository.createAnimalWithRescue(data);
-    const date = animal.animalRescue.rescueDate;
-    const year = date.getFullYear() % 100;
-    const month =
-      date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth();
-    data.rankNr = `${year}'${month} nr ${animal.animalRescue.rankNr}`;
+    data.rankNr = animal.animalRescue.rankNr;
     this.googleSheetsService.addDataToSheet(data);
     return animal;
   }

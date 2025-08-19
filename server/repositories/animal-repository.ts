@@ -28,6 +28,27 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
+  async getCatByRankNr(rankNr: string): Promise<Animal> {
+    return prisma.animal.findFirst({
+      where: {
+        animalsToRescue: {
+          some: {
+            animalRescue: {
+              rankNr: rankNr,
+            },
+          },
+        },
+      },
+      include: {
+        animalsToRescue: {
+          include: {
+            animalRescue: true,
+          },
+        },
+      },
+    });
+  }
+
   async createAnimalWithRescue(
     data: CreateAnimalData
   ): Promise<CreateAnimalResult> {

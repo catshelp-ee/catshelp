@@ -12,7 +12,6 @@ import { submitNewCatProfile } from "@utils/cat-profile-utils";
 import Header from "@components/header";
 import { useAlert } from "@context/alert-context";
 import States from "./states.json";
-import axios from 'axios';
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -45,8 +44,6 @@ const AddCatForm = () => {
       showAlert('Error', "Kassi lisamine ebaõnnestus");
     }
   };
-
-  
 
   return (
     <div className="h-screen flex justify-center">

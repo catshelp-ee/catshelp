@@ -50,12 +50,10 @@ export default class CatProfileBuilder {
     profile.images = await this.imageService.fetchImages(cat.id);
     const profilePicture = await this.imageService.fetchProfilePicture(cat.id);
     if (profilePicture) {
-      profile.profilePicture = `images/${profilePicture.uuid}.jpg`;
+      profile.profilePictureFilename = `images/${profilePicture.uuid}.jpg`;
     } else {
-      profile.profilePicture = `missing64x64.png`;
+      profile.profilePictureFilename = `missing64x64.png`;
     }
-
-    console.log(profile.profilePicture);
 
     return profile;
   }

@@ -12,18 +12,6 @@ export default class FileController {
     @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository
   ) {}
 
-  private normalizeFiles(
-    files: Express.Request['files']
-  ): Express.Multer.File[] {
-    if (!files) return [];
-
-    if (Array.isArray(files)) {
-      return files;
-    }
-
-    return Object.values(files).flat();
-  }
-
   async addPicture(req: Request, res: Response): Promise<void> {
     try {
       if (!req.files || (Array.isArray(req.files) && req.files.length === 0)) {
@@ -39,10 +27,7 @@ export default class FileController {
         animal => animal.name === req.body.animalName
       );
 
-      await this.imageService.insertImagesIntoDB(
-        this.normalizeFiles(req.files),
-        animal.id
-      );
+      await this.imageService.insertImageFilenamesIntoDB(req.files, animal.id);
 
       res.sendStatus(200);
     } catch (error) {

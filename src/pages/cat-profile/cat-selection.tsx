@@ -35,7 +35,7 @@ const CatSelection: React.FC<CatSelectionProps> = ({
           handleCatSelect(index, cat);
         }}
           isSelected={selectedCatIndex === index}
-          pet={{ name: cat.mainInfo.name, pathToImage: cat.profilePicture }} />
+          pet={{ name: cat.mainInfo.name, pathToImage: cat.profilePictureFilename }} />
       ))}
     </Stack>
   );

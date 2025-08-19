@@ -22,9 +22,25 @@ export default class ImageService {
     });
   }
 
-  async insertImagesIntoDB(files: Express.Multer.File[], animalID: number) {
+  private normalizeFiles(
+    files: Express.Request['files']
+  ): Express.Multer.File[] {
+    if (!files) return [];
+
+    if (Array.isArray(files)) {
+      return files;
+    }
+
+    return Object.values(files).flat();
+  }
+
+  async insertImageFilenamesIntoDB(
+    files:{ [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[],
+    animalID: number
+  ) {
+    const normalizedFiles = this.normalizeFiles(files);
     await Promise.all(
-      files.map(file =>
+      normalizedFiles.map(file =>
         prisma.file.create({
           data: {
             animalID: animalID,

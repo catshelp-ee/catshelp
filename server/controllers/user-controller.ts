@@ -1,3 +1,4 @@
+import UserRepository from '@repositories/user-repository';
 import AuthService from '@services/auth/auth-service';
 import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
@@ -9,7 +10,9 @@ import TYPES from 'types/inversify-types';
 export default class UserController {
   constructor(
     @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.UserService) private userService: UserService
+    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.UserRepository)
+    private userRepository: UserRepository
   ) {}
 
   async getUserData(
@@ -30,7 +33,9 @@ export default class UserController {
         return res.status(401).json({ error: 'Invalid or expired token' });
       }
 
-      const user = await this.userService.getUser(decodedToken.id);
+      const user = await this.userRepository.getUserById(
+        Number(decodedToken.id)
+      );
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }

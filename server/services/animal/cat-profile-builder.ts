@@ -13,7 +13,8 @@ export default class CatProfileBuilder {
   constructor(
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
-    @inject(TYPES.ImageService) private imageService: ImageService,
+    @inject(TYPES.ImageService)
+    private imageService: ImageService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService
   ) {}
@@ -71,6 +72,7 @@ export default class CatProfileBuilder {
 
   private extractBaseData(values: CatSheetsHeaders, cat: Animal): Profile {
     const profile = createProfile();
+    profile.animalId = cat.id;
     profile.title = cat.profileTitle;
     profile.description = cat.description;
     profile.mainInfo.microchip = cat.chipNumber;

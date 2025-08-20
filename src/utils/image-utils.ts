@@ -74,11 +74,7 @@ export const resizeImages = (images: File[]): Promise<File[]> => {
   return Promise.all(allResizePromises);
 };
 
-export const uploadImages = async (
-  files: File[],
-  userEmail: string,
-  animalName: string
-) => {
+export const uploadImages = async (files: File[], animalId: number) => {
   const resizedImages = await resizeImages(files);
   const formData = new FormData();
 
@@ -86,8 +82,7 @@ export const uploadImages = async (
   resizedImages.forEach((file: File) => {
     formData.append('images', file);
   });
-  formData.append('userEmail', userEmail);
-  formData.append('animalName', animalName);
+  formData.append('animalId', animalId.toString());
   try {
     await axios.post('/api/images', formData, {
       headers: {

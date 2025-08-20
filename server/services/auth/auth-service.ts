@@ -1,3 +1,4 @@
+import AnimalRepository from '@repositories/animal-repository';
 import AnimalService from '@services/animal/animal-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
 import UserService from '@services/user/user-service';
@@ -20,7 +21,9 @@ export default class AuthService {
     @inject(TYPES.UserService) private userService: UserService,
     @inject(TYPES.AnimalService) private animalService: AnimalService,
     @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
+    private googleSheetsService: GoogleSheetsService,
+    @inject(TYPES.AnimalRepository)
+    private animalRepository: AnimalRepository
   ) {
     this.client = new OAuth2Client();
     this.jwtSecret = process.env.JWT_SECRET!;
@@ -33,10 +36,7 @@ export default class AuthService {
     }
   }
 
-  async authenticateAndSetupUser(
-    email: string,
-    res: Response
-  ): Promise<User | null> {
+  async authenticate(email: string, res: Response): Promise<User | null> {
     const user = await UserService.getUserByEmail(email);
     if (!user) {
       return null;
@@ -44,14 +44,6 @@ export default class AuthService {
 
     const token = this.generateJWT(user.id);
     CookieService.setAuthCookies(res, token);
-
-    // Setup user context
-    this.userService.setUser(user);
-    this.animalService.setAnimals(user);
-
-    // Initialize Google Sheets
-    const cats = await this.animalService.getAnimals(user.id);
-    await this.googleSheetsService.setInitRows(user.id, cats);
 
     return user;
   }

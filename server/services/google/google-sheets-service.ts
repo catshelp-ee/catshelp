@@ -2,7 +2,6 @@ import NodeCacheService from '@services/cache/cache-service';
 import UserService from '@services/user/user-service';
 import { formatEstonianDate } from '@utils/date-utils';
 import { GaxiosResponse } from 'gaxios';
-import { Animal } from 'generated/prisma';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
 import moment from 'moment';
@@ -53,20 +52,6 @@ export default class GoogleSheetsService {
 
   setRows(userID: number | string, rows: Rows) {
     return this.nodeCacheService.set(`rows:${userID}`, rows);
-  }
-
-  async setInitRows(userID: number | string, animals: Animal[]) {
-    const filteredRows = [] as Rows;
-    for (let i = 1; i < this.rows.length; i++) {
-      const row = this.rows[i].row;
-      const animal = animals.find(animal => animal.name === row.catName);
-      if (!animal) {
-        continue;
-      }
-      this.rows[i].id = animal.id;
-      filteredRows.push(this.rows[i]);
-    }
-    await this.setRows(userID, filteredRows);
   }
 
   async getNewSheet() {

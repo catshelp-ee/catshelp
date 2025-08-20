@@ -26,20 +26,6 @@ export default class ProfileService {
       throw new Error('Owner is required');
     }
 
-    let profiles = await this.getProfiles(owner.id);
-
-    if (!profiles) {
-      if (cats.length === 0) {
-        return [];
-      }
-
-      profiles = await this.catProfileBuilder.buildProfilesFromSheet(
-        owner,
-        cats
-      );
-
-      this.setProfiles(owner.id, profiles);
-    }
-    return profiles;
+    return this.catProfileBuilder.buildProfiles(owner, cats);
   }
 }

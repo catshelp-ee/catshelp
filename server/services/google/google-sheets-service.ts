@@ -46,14 +46,6 @@ export default class GoogleSheetsService {
     this.rows = [];
   }
 
-  getRows(userID: number | string) {
-    return this.nodeCacheService.get<Rows>(`rows:${userID}`);
-  }
-
-  setRows(userID: number | string, rows: Rows) {
-    return this.nodeCacheService.set(`rows:${userID}`, rows);
-  }
-
   async getNewSheet() {
     try {
       const sheetData = await this.sheets.spreadsheets.get({

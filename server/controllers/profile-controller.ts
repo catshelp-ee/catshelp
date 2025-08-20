@@ -1,4 +1,6 @@
+import AnimalRepository from '@repositories/animal-repository';
 import AnimalService from '@services/animal/animal-service';
+import CatProfileBuilder from '@services/animal/cat-profile-builder';
 import AuthService from '@services/auth/auth-service';
 import ProfileService from '@services/profile/profile-service';
 import UserService from '@services/user/user-service';
@@ -13,24 +15,23 @@ export default class ProfileController {
     @inject(TYPES.ProfileService) private profileService: ProfileService,
     @inject(TYPES.UserService) private userService: UserService,
     @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService
+    @inject(TYPES.AnimalService) private animalService: AnimalService,
+    @inject(TYPES.AnimalRepository)
+    private animalRepository: AnimalRepository,
+    @inject(TYPES.CatProfileBuilder)
+    private catProfileBuilder: CatProfileBuilder
   ) {}
 
   async getProfile(req: Request, res: Response): Promise<Response> {
     try {
       const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
-      const user = await this.userService.getUser(decodedToken.id);
-      if (!user) {
-        res.status(401).json({ error: 'Invalid authentication' });
-        return;
-      }
 
-      const cats = await this.animalService.getAnimals(user.id);
-      const profiles = await this.profileService.getCatProfilesByOwner(
-        user,
-        cats
+      const animals = await this.animalRepository.getAnimalsByUserId(
+        Number(decodedToken.id)
       );
-      res.status(200).json({ profiles: profiles });
+
+      const profiles = await this.catProfileBuilder.buildProfiles(animals);
+      return res.status(200).json({ profiles: profiles });
     } catch (error) {
       handleControllerError(error, res, 'Failed to fetch profile');
     }

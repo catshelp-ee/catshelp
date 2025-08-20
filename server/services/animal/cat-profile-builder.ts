@@ -48,7 +48,7 @@ export default class CatProfileBuilder {
 
     this.buildCatProfile(profile, characteristics);
 
-    profile.images = await this.imageService.fetchImages(cat.id);
+    profile.images = await this.imageService.fetchImagePathsByAnimalId(cat.id);
     const profilePicture = await this.imageService.fetchProfilePicture(cat.id);
     if (profilePicture) {
       profile.profilePictureFilename = `images/${profilePicture.uuid}.jpg`;

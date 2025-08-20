@@ -37,6 +37,7 @@ export interface CharacteristicsResult {
 }
 
 export interface Profile {
+  animalId: number;
   title: string;
   description: string;
   profilePictureFilename: string;
@@ -49,6 +50,7 @@ export interface Profile {
 
 export function createProfile(): Profile {
   return {
+    animalId: null,
     title: '',
     description: '',
     profilePictureFilename: '',

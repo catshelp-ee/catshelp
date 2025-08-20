@@ -12,7 +12,6 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import React, { useState } from "react";
 import { resizeImages, uploadImages } from "src/utils/image-utils";
-import { CreateAnimalResult } from "types/animal";
 import States from "./states.json";
 
 const VisuallyHiddenInput = styled("input")({
@@ -41,14 +40,14 @@ const AddCatForm = () => {
   };
 
   const submitNewCatProfile = async (data: any, pictures: File[]) => {
-    const newAnimalProfile: CreateAnimalResult = (
+    const newAnimalId: number = (
       await axios.post('/api/animals', data, {
         withCredentials: true,
       })
     ).data;
 
     const resizedImages = await resizeImages(pictures);
-    uploadImages(resizedImages, null, newAnimalProfile.animal.name);
+    uploadImages(resizedImages, newAnimalId);
   };
 
 

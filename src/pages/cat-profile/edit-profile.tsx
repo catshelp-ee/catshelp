@@ -83,11 +83,9 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     const updatedAnimalData = parseDotNotationFormData(formData);
 
     const images: File[] = previews.map((p) => p.file);
-    const user = await getUser();
-
 
     if (images.length > 0) {
-      await uploadImages(images, updatedAnimalData.animalId);
+      await uploadImages(images, selectedCat.animalId);
     }
 
     try {
@@ -121,7 +119,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
         <div className="flex">
           {isMobile && (
             <ImageGallery
-              name="images"
               images={selectedCat?.images || []}
               isEditMode
               previews={previews}
@@ -221,7 +218,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
           {!isMobile && (
             <ImageGallery
-              name="images"
               images={selectedCat.images}
               isEditMode
               previews={previews}

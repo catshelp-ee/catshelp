@@ -54,7 +54,7 @@ export default class ImageService {
       normalizedFiles.map(file =>
         prisma.file.create({
           data: {
-            animalID: animalID,
+            animalId: animalID,
             uuid: file.filename.split('.')[0],
           },
         })
@@ -65,7 +65,7 @@ export default class ImageService {
   async fetchProfilePicture(animalID: number) {
     return prisma.file.findFirst({
       where: {
-        profileAnimalID: animalID,
+        profileAnimalId: animalID,
       },
     });
   }

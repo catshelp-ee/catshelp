@@ -15,6 +15,11 @@ import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
+import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
+import UserRepository from '@repositories/user-repository';
 import AddRescueController from './controllers/add-rescue-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
@@ -25,10 +30,6 @@ import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
-import AnimalRescueRepository from '@repositories/animal-rescue-repository';
-import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
-import FosterHomeRepository from '@repositories/foster-home-repository';
-import UserRepository from '@repositories/user-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -123,6 +124,10 @@ async function init() {
   container
     .bind<UserRepository>(TYPES.UserRepository)
     .to(UserRepository)
+    .inSingletonScope();
+  container
+    .bind<TreatmentHistoryRepository>(TYPES.TreatmentHistoryRepository)
+    .to(TreatmentHistoryRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

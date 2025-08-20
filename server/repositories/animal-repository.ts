@@ -5,6 +5,7 @@ import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 
 @injectable()
 export default class AnimalRepository {
+
   async getCatsByUserEmail(email: string): Promise<Animal[]> {
     const user = await prisma.user.findFirst({
       where: { email },
@@ -28,9 +29,11 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
-  async createAnimalWithRescue(
-    data: CreateAnimalData
-  ): Promise<CreateAnimalResult> {
+  static async getAllAnimals(): Promise<Animal[]> {
+    return await prisma.animal.findMany();
+  }
+
+  async createAnimalWithRescue(data: CreateAnimalData): Promise<CreateAnimalResult> {
     return await prisma.$transaction(async tx => {
       const animal = await tx.animal.create({ data: {} });
 
@@ -51,6 +54,56 @@ export default class AnimalRepository {
       });
 
       return { animal, animalRescue };
+    });
+  }
+
+  public getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal> {
+    const animal = prisma.animal.findFirst({
+      where: {
+        animalsToRescue: {
+          some: {
+            animalRescueId: animalRescueId,
+          },
+        },
+      },
+    });
+    return animal;
+  }
+
+  public async saveOrUpdateAnimal(data): Promise<Animal> {
+    const newRow = await prisma.animal.upsert({
+      where: {
+        id: data.id || 0
+      },
+      update: {
+        name: data.name,
+        birthday: data.birthday,
+        chipNumber: data.chipNumber,
+        chipRegisteredWithUs: data.chipRegisteredWithUs,
+        profileTitle: data.profileTitle,
+        status: data.status,
+        driveId: data.driveId,
+        description: data.description
+      },
+      create: {
+        name: data.name,
+        birthday: data.birthday,
+        chipNumber: data.chipNumber,
+        chipRegisteredWithUs: data.chipRegisteredWithUs,
+        profileTitle: data.profileTitle,
+        status: data.status,
+        driveId: data.driveId,
+        description: data.description
+      },
+    });
+    return newRow;
+  }
+
+  public async deleteAnimalById(id) {
+    await prisma.animal.deleteMany({
+      where: {
+        id: id
+      }
     });
   }
 }

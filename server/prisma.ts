@@ -21,6 +21,7 @@ export const prisma = basePrisma.$extends({
           orderBy: { id: 'desc' },
         });
 
+
         let newRankNr: number;
 
         if (
@@ -30,11 +31,15 @@ export const prisma = basePrisma.$extends({
         ) {
           newRankNr = 1;
         } else {
-          newRankNr = lastRescue.rankNr + 1;
+          let lastRank = lastRescue.rankNr;
+          let lastRankString = lastRank.substring(lastRank.indexOf('nr 0') + 4);
+          newRankNr = Number(lastRankString) + 1;
         }
 
         // Inject the computed rankNr into the create data
-        args.data.rankNr = newRankNr;
+        const year = currentDate.getFullYear() % 100;
+        const month = currentDate.getMonth() + 1 < 10 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth();
+        args.data.rankNr = `${year}'${month} nr ${newRankNr}`;
 
         return query(args);
       },

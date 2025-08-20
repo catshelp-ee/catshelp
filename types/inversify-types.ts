@@ -23,8 +23,16 @@ const TYPES = {
   FileController: Symbol.for('FileController'),
   AnimalController: Symbol.for('AnimalController'),
 
-  AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
   AnimalRepository: Symbol.for('AnimalRepository'),
+  AnimalRescueRepository: Symbol.for('AnimalRescueRepository'),
+  AnimalCharacteristicRepository: Symbol.for('AnimalCharacteristicRepository'),
+  FosterHomeRepository: Symbol.for('FosterHomeRepository'),
+  UserRepository: Symbol.for('UserRepository'),
+
+  AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
+  
+  CronRunner: Symbol.for('CronRunner'),
+  SyncSheetDataToDBJob: Symbol.for('SyncSheetDataToDBJob'),
 };
 
 export default TYPES;

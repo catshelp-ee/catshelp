@@ -55,6 +55,12 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
+  getAnimalById(id: number): Promise<Animal> {
+    return prisma.animal.findUnique({
+      where: { id },
+    });
+  }
+
   async createAnimalWithRescue(
     data: CreateAnimalData
   ): Promise<CreateAnimalResult> {

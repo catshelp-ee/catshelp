@@ -89,33 +89,9 @@ export default class AnimalService {
     return Object.prototype.toString.call(obj) === '[object Object]';
   }
 
-  private mergeObjects(updated, original) {
-    if (!updated) return original;
-    if (!original) return updated;
-
-    const merged = { ...original };
-
-    for (const key in updated) {
-      const updatedValue = updated[key];
-
-      if (!updatedValue || this.isEmptyObject(updatedValue)) {
-        continue;
-      }
-
-      if (this.isPlainObject(updatedValue) && this.isPlainObject(merged[key])) {
-        merged[key] = this.mergeObjects(updatedValue, merged[key]);
-      } else {
-        merged[key] = updatedValue;
-      }
-    }
-
-    return merged;
-  }
-
-  async updateAnimal(updatedAnimalData: Profile, userID: number | string) {
-    const animalRows = await this.googleSheetsService.getRows(userID);
-    const animal = animalRows.find(
-      animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
+  async updateAnimal(updatedAnimalData: Profile) {
+    const animal = this.animalRepository.getAnimalById(
+      Number(updatedAnimalData.animalId)
     );
 
     await prisma.$transaction(async tx => {
@@ -133,22 +109,5 @@ export default class AnimalService {
       animal.index,
       animal
     );
-
-    const user = await this.userService.getUser(userID);
-
-    await this.setAnimals(user);
-    const profiles = await this.profileService.getProfiles(userID);
-    const index = profiles.findIndex(
-      profile => profile.mainInfo.name === animal.row.catName
-    );
-
-    profiles[index] = this.mergeObjects(updatedAnimalData, profiles[index]);
-    await this.profileService.setProfiles(userID, profiles);
-
-    const animalIndex = animalRows.findIndex(
-      animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
-    );
-    animalRows[animalIndex] = animal;
-    await this.googleSheetsService.setRows(userID, animalRows);
   }
 }

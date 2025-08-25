@@ -1,7 +1,5 @@
 import NodeCacheService from '@services/cache/cache-service';
 import ImageService from '@services/files/image-service';
-import { extractFileId } from '@utils/image-utils';
-import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { Pet } from 'types/animal';
 import { Result } from 'types/dashboard';
@@ -12,10 +10,12 @@ import NotificationService from '../notifications/notification-service';
 @injectable()
 export default class DashboardService {
   constructor(
-    @inject(TYPES.ImageService) private imageService: ImageService,
+    @inject(TYPES.ImageService)
+    private imageService: ImageService,
     @inject(TYPES.NotificationService)
     private notificationService: NotificationService,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService
   ) {}
 
   private getPets(userID: number | string) {
@@ -30,17 +30,19 @@ export default class DashboardService {
     let pets = await this.getPets(userID);
     if (!pets) {
       const petPromises = rows.map(async row => {
-        const photoFileDriveID = extractFileId(row.row.photo);
-        const username = (
-          await this.nodeCacheService.get<User>(`user:${userID}`)
-        ).fullName;
-        const profilePicture = await this.imageService.downloadProfileImage(
-          row.row.catName,
-          photoFileDriveID,
-          username
+        const profilePicture = await this.imageService.fetchProfilePicture(
+          row.id
         );
 
-        return { name: row.row.catName, pathToImage: profilePicture };
+        let pathToImage = 'missing64x64.png';
+        if (profilePicture) {
+          pathToImage = `images/${profilePicture.uuid}.jpg`;
+        }
+
+        return {
+          name: row.row.catName,
+          pathToImage: pathToImage,
+        };
       });
 
       pets = await Promise.all(petPromises);

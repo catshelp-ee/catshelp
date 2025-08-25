@@ -147,7 +147,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
         </div>
       </div>
 
-      {!isMobile && <ImageGallery images={selectedCat?.images || []} />}
+      {!isMobile && <ImageGallery name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
     </>
   );
 };

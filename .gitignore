@@ -9,3 +9,4 @@ public/Temp
 images/
 dist
 generated
+prisma/migrations

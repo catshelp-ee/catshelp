@@ -1,4 +1,5 @@
 import Popup from "@components/popup";
+import { useAuth } from "@context/auth-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { useCatForm } from "@hooks/use-cat-form";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,6 +10,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import ImageGallery from "@pages/cat-profile/image-gallery";
 import axios from "axios";
 import React, { useState } from "react";
+import { uploadImages } from "src/utils/image-utils";
 import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";
@@ -46,6 +48,8 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     updateDateField
   } = useCatForm(selectedCat);
 
+  const { getUser } = useAuth();
+
   function parseDotNotationFormData(formData: FormData) {
     const obj = {} as Profile;
 
@@ -81,7 +85,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     const images: File[] = previews.map((p) => p.file);
 
     if (images.length > 0) {
-      //uploadImages(images, tempSelectedCat.driveId);
+      await uploadImages(images, selectedCat.animalId);
     }
 
     try {
@@ -115,7 +119,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
         <div className="flex">
           {isMobile && (
             <ImageGallery
-              name="images"
               images={selectedCat?.images || []}
               isEditMode
               previews={previews}
@@ -215,7 +218,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
           {!isMobile && (
             <ImageGallery
-              name="images"
               images={selectedCat.images}
               isEditMode
               previews={previews}

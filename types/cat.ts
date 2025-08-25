@@ -37,9 +37,10 @@ export interface CharacteristicsResult {
 }
 
 export interface Profile {
+  animalId: number;
   title: string;
   description: string;
-  driveID: string;
+  profilePictureFilename: string;
   images: string[];
   mainInfo: MainInfo;
   vaccineInfo: VaccineInfo;
@@ -49,9 +50,10 @@ export interface Profile {
 
 export function createProfile(): Profile {
   return {
+    animalId: null,
     title: '',
     description: '',
-    driveID: '',
+    profilePictureFilename: '',
     images: [],
     mainInfo: createMainInfo(),
     vaccineInfo: createVaccineInfo(),

@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+
 const createImageCanvas = (
   img: HTMLImageElement,
   width: number,
@@ -56,9 +59,7 @@ const resizeImage = async (
   const canvas = createImageCanvas(img, width, height);
   const blob = await canvasToBlob(canvas);
 
-  const baseName =
-    file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-  const newFileName = `${baseName}_${width}x${height}.jpg`;
+  const newFileName = `${uuidv4()}.jpg`;
 
   return new File([blob], newFileName, {
     type: 'image/jpeg',
@@ -68,10 +69,30 @@ const resizeImage = async (
 
 export const resizeImages = (images: File[]): Promise<File[]> => {
   const allResizePromises = images.flatMap(image => [
-    resizeImage(image, 64, 64),
     resizeImage(image, 256, 256),
   ]);
   return Promise.all(allResizePromises);
+};
+
+export const uploadImages = async (files: File[], animalId: number) => {
+  const resizedImages = await resizeImages(files);
+  const formData = new FormData();
+
+  // Append each file to the FormData object
+  resizedImages.forEach((file: File) => {
+    formData.append('images', file);
+  });
+  formData.append('animalId', animalId.toString());
+  try {
+    await axios.post('/api/images', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error('Error uploading files:', error);
+  }
 };
 
 export const isValidHyperlink = (link: string): boolean => {

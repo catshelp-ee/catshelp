@@ -30,7 +30,7 @@ export default class DashboardController {
     try {
       const response = {
         todos: await this.notificationService.processNotifications(animals),
-        pets: await this.dashboardService.getPetAvatars(userID, rows),
+        pets: await this.dashboardService.getAvatars(animals),
       };
       return res.json(response);
     } catch (e) {

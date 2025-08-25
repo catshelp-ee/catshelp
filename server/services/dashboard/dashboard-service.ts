@@ -1,7 +1,8 @@
 import NodeCacheService from '@services/cache/cache-service';
 import ImageService from '@services/files/image-service';
+import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
-import { Pet } from 'types/animal';
+import { Avatar, Pet } from 'types/animal';
 import { Result } from 'types/dashboard';
 import { Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
@@ -26,30 +27,16 @@ export default class DashboardService {
     this.nodeCacheService.set(`pets:${userID}`, pets);
   }
 
-  async getPetAvatars(userID: number | string, rows: Rows): Promise<Pet[]> {
-    let pets = await this.getPets(userID);
-    if (!pets) {
-      const petPromises = rows.map(async row => {
-        const profilePicture = await this.imageService.fetchProfilePicture(
-          row.id
-        );
-
-        let pathToImage = 'missing64x64.png';
-        if (profilePicture) {
-          pathToImage = `images/${profilePicture.uuid}.jpg`;
-        }
-
-        return {
-          name: row.row.catName,
-          pathToImage: pathToImage,
-        };
+  async getAvatars(animals: Animal[]): Promise<Avatar[]> {
+    const avatars: Avatar[] = [];
+    for (let index = 0; index < animals.length; index++) {
+      const animal = animals[index];
+      avatars.push({
+        name: animal.name,
+        pathToImage: await this.imageService.fetchProfilePicture(animal.id),
       });
-
-      pets = await Promise.all(petPromises);
-      this.setPets(userID, pets);
     }
-
-    return pets;
+    return avatars;
   }
 
   private getNotifications(userID: number | string) {

@@ -6,7 +6,11 @@ import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class FileController {
-  constructor(@inject(TYPES.ImageService) private imageService: ImageService) {}
+  constructor(
+    @inject(TYPES.ImageService)
+    private imageService: ImageService
+  ) {}
+
   async addPicture(req: Request, res: Response): Promise<void> {
     try {
       if (!req.files || (Array.isArray(req.files) && req.files.length === 0)) {
@@ -14,12 +18,10 @@ export default class FileController {
         return;
       }
 
-      if (!req.body.driveId) {
-        res.status(400).json({ error: 'Drive folder ID is required' });
-        return;
-      }
-
-      await this.imageService.uploadFiles(req.files, req.body.driveId);
+      await this.imageService.insertImageFilenamesIntoDB(
+        req.files,
+        Number(req.body.animalId)
+      );
       res.sendStatus(200);
     } catch (error) {
       handleControllerError(error, res, 'Failed to upload pictures');

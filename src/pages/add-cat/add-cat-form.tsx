@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import {
-  Button,
-  TextField,
-  Autocomplete,
-  ImageList,
-  ImageListItem,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { submitNewCatProfile } from "@utils/cat-profile-utils";
 import Header from "@components/header";
 import Popup from "@components/popup";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import {
+  Autocomplete,
+  Button,
+  ImageList,
+  ImageListItem,
+  TextField,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import axios from "axios";
+import React, { useState } from "react";
+import { resizeImages, uploadImages } from "src/utils/image-utils";
 import States from "./states.json";
 
 const VisuallyHiddenInput = styled("input")({
@@ -37,6 +38,18 @@ const AddCatForm = () => {
       setPopupVisible(false);
     }, 300);
   };
+
+  const submitNewCatProfile = async (data: any, pictures: File[]) => {
+    const newAnimalId: number = (
+      await axios.post('/api/animals', data, {
+        withCredentials: true,
+      })
+    ).data;
+
+    const resizedImages = await resizeImages(pictures);
+    uploadImages(resizedImages, newAnimalId);
+  };
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

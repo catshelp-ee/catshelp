@@ -1,10 +1,12 @@
+import { useAlert } from "@context/alert-context";
+import axios from "axios";
+import { User } from "generated/prisma";
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useAlert } from "@context/alert-context";
+
 
 type AuthContext = {
-    getUser: () => any;
+    getUser: () => Promise<User>;
     logout: () => void;
 };
 
@@ -13,16 +15,16 @@ type AuthContextProvider = {
 };
 
 export const AuthContext = createContext<AuthContext>({
-    getUser: () => { },
+    getUser: () => { return null },
     logout: () => { }
 });
 
 export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User>(null);
     const navigate = useNavigate();
     const { showAlert } = useAlert();
 
-    const getUser = async () => {
+    const getUser = async (): Promise<User> => {
         if (user) {
             return user;
         }

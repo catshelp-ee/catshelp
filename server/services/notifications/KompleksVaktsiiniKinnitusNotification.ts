@@ -3,8 +3,7 @@ import moment from 'moment';
 import { DashboardNotification } from './DasboardNotification';
 
 export default class KompleksVaktsiiniKinnitusNotification
-  implements DashboardNotification
-{
+  implements DashboardNotification {
   getText(): string {
     if (this.cellIsEmpty) {
       return 'Kompleksvaktsiini info puudub';

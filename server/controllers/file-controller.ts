@@ -9,7 +9,7 @@ export default class FileController {
   constructor(
     @inject(TYPES.ImageService)
     private imageService: ImageService
-  ) {}
+  ) { }
 
   async addPicture(req: Request, res: Response): Promise<void> {
     try {

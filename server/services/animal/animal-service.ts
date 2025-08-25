@@ -16,15 +16,19 @@ import CharacteristicsService from './characteristics-service';
 @injectable()
 export default class AnimalService {
   constructor(
-    @inject(TYPES.AnimalRepository) private animalRepository: AnimalRepository,
+    @inject(TYPES.AnimalRepository)
+    private animalRepository: AnimalRepository,
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService,
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.ProfileService) private profileService: ProfileService
-  ) {}
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService,
+    @inject(TYPES.UserService)
+    private userService: UserService,
+    @inject(TYPES.ProfileService)
+    private profileService: ProfileService
+  ) { }
 
   getAnimals(userID: number | string): Promise<Animal[]> {
     return this.nodeCacheService.get(`animals:${userID}`);

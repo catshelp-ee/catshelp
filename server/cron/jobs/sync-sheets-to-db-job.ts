@@ -159,7 +159,7 @@ export default class SyncSheetDataToDBJob {
         await this.updateCharacteristics(newData, animal.id);
 
         const user = await this.updateUser(newData);
-        const fosterHome = await this.updateFosterHome({userId: user.id});
+        const fosterHome = await this.updateFosterHome({ userId: user.id });
         const animalToFosterHomeData = {
             animalId: animal.id,
             fosterHomeId: fosterHome.id

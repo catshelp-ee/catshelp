@@ -10,9 +10,11 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class AnimalController {
   constructor(
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService
-  ) {}
+    @inject(TYPES.AuthService)
+    private authService: AuthService,
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService
+  ) { }
 
   private stringsToDates(animal: Profile) {
     animal.vaccineInfo.complexVaccine = parseDate(

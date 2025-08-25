@@ -1,5 +1,4 @@
 import NodeCacheService from '@services/cache/cache-service';
-import UserService from '@services/user/user-service';
 import { formatEstonianDate } from '@utils/date-utils';
 import { GaxiosResponse } from 'gaxios';
 import { Animal } from 'generated/prisma';
@@ -30,8 +29,8 @@ export default class GoogleSheetsService {
   constructor(
     @inject(TYPES.GoogleAuthService)
     private googleAuthService: GoogleAuthService,
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService
   ) {
     this.sheets = google.sheets({
       version: 'v4',

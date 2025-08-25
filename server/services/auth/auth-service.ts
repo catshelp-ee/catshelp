@@ -17,8 +17,10 @@ export default class AuthService {
   private readonly cookieLength = 24 * 60 * 60 * 1000;
 
   constructor(
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService,
+    @inject(TYPES.UserService)
+    private userService: UserService,
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService
   ) {

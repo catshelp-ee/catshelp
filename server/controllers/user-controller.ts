@@ -8,9 +8,11 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class UserController {
   constructor(
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.UserService) private userService: UserService
-  ) {}
+    @inject(TYPES.AuthService)
+    private authService: AuthService,
+    @inject(TYPES.UserService)
+    private userService: UserService
+  ) { }
 
   async getUserData(
     req: Request,

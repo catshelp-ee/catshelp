@@ -11,7 +11,7 @@ export default class ImageService {
   constructor(
     @inject(TYPES.GoogleDriveService)
     private googleDriveService: GoogleDriveService
-  ) {}
+  ) { }
 
   private isValidHyperlink = (link: string): boolean => {
     try {

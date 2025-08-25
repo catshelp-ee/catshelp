@@ -1,9 +1,6 @@
 import AnimalRepository from '@repositories/animal-repository';
-import AnimalService from '@services/animal/animal-service';
 import CatProfileBuilder from '@services/animal/cat-profile-builder';
 import AuthService from '@services/auth/auth-service';
-import ProfileService from '@services/profile/profile-service';
-import UserService from '@services/user/user-service';
 import { handleControllerError } from '@utils/error-handler';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
@@ -12,10 +9,8 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class ProfileController {
   constructor(
-    @inject(TYPES.ProfileService) private profileService: ProfileService,
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService,
+    @inject(TYPES.AuthService)
+    private authService: AuthService,
     @inject(TYPES.AnimalRepository)
     private animalRepository: AnimalRepository,
     @inject(TYPES.CatProfileBuilder)

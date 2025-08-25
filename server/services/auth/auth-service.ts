@@ -1,13 +1,9 @@
-import AnimalRepository from '@repositories/animal-repository';
-import AnimalService from '@services/animal/animal-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import UserService from '@services/user/user-service';
 import { OAuth2Client } from 'google-auth-library';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
 import { JWTPayload, User } from 'types/auth-types';
-import TYPES from 'types/inversify-types';
 import CookieService from './cookie-service';
 
 @injectable()
@@ -17,14 +13,7 @@ export default class AuthService {
   private readonly tokenLength: string;
   private readonly cookieLength = 24 * 60 * 60 * 1000;
 
-  constructor(
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService,
-    @inject(TYPES.AnimalRepository)
-    private animalRepository: AnimalRepository
-  ) {
+  constructor() {
     this.client = new OAuth2Client();
     this.jwtSecret = process.env.JWT_SECRET!;
     this.tokenLength = process.env.TOKEN_LENGTH!;

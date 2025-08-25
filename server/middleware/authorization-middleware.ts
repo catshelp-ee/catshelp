@@ -7,8 +7,8 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class AuthorizationMiddleware {
   constructor(
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AuthService) private authService: AuthService
+    @inject(TYPES.AuthService)
+    private authService: AuthService
   ) {
     this.authenticate = this.authenticate.bind(this);
   }

@@ -17,7 +17,10 @@ import TYPES from 'types/inversify-types';
 export default class LoginController {
   private emailService: EmailService;
 
-  constructor(@inject(TYPES.AuthService) private authService: AuthService) {
+  constructor(
+    @inject(TYPES.AuthService)
+    private authService: AuthService
+  ) {
     this.emailService = new EmailService();
   }
 

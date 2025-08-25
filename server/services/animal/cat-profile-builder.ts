@@ -1,5 +1,4 @@
 import ImageService from '@services/files/image-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { CharacteristicsResult, createProfile, Profile } from 'types/cat';
@@ -12,9 +11,7 @@ export default class CatProfileBuilder {
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.ImageService)
-    private imageService: ImageService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
+    private imageService: ImageService
   ) {}
 
   async buildProfiles(animals: Animal[]): Promise<Profile[]> {

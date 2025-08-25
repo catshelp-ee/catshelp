@@ -5,9 +5,7 @@ const TYPES = {
   NotificationService: Symbol.for('NotificationService'),
   AuthService: Symbol.for('AuthService'),
   CharacteristicsService: Symbol.for('CharacteristicsService'),
-  ProfileService: Symbol.for('ProfileService'),
   UserService: Symbol.for('UserService'),
-  NodeCacheService: Symbol.for('NodeCacheService'),
 
   CatProfileBuilder: Symbol.for('CatProfileBuilder'),
 

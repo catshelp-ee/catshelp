@@ -1,6 +1,5 @@
 import UserRepository from '@repositories/user-repository';
 import AuthService from '@services/auth/auth-service';
-import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { User } from 'types/auth-types';
@@ -9,8 +8,8 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class UserController {
   constructor(
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.AuthService)
+    private authService: AuthService,
     @inject(TYPES.UserRepository)
     private userRepository: UserRepository
   ) {}

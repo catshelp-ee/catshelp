@@ -1,13 +1,9 @@
-import NodeCacheService from '@services/cache/cache-service';
-import { inject, injectable } from 'inversify';
-import TYPES from 'types/inversify-types';
+import { injectable } from 'inversify';
 import { prisma } from '../../prisma';
 
 @injectable()
 export default class UserService {
-  constructor(
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
-  ) {}
+  constructor() {}
 
   static async getUserByEmail(email) {
     if (!email) {

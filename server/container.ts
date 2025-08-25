@@ -4,13 +4,11 @@ import AnimalService from '@services/animal/animal-service';
 import CatProfileBuilder from '@services/animal/cat-profile-builder';
 import CharacteristicsService from '@services/animal/characteristics-service';
 import AuthService from '@services/auth/auth-service';
-import NodeCacheService from '@services/cache/cache-service';
 import DashboardService from '@services/dashboard/dashboard-service';
 import ImageService from '@services/files/image-service';
 import GoogleAuthService from '@services/google/google-auth-service';
 import GoogleDriveService from '@services/google/google-drive-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import ProfileService from '@services/profile/profile-service';
 import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
@@ -51,10 +49,6 @@ async function init() {
     .toConstantValue(googleAuthService);
 
   // ─── Core/Infrastructure Services ───────────────────────────────
-  container
-    .bind<NodeCacheService>(TYPES.NodeCacheService)
-    .to(NodeCacheService)
-    .inSingletonScope();
 
   // ─── External Google Services ───────────────────────────────────
   container
@@ -82,10 +76,6 @@ async function init() {
   container
     .bind<DashboardService>(TYPES.DashboardService)
     .to(DashboardService)
-    .inSingletonScope();
-  container
-    .bind<ProfileService>(TYPES.ProfileService)
-    .to(ProfileService)
     .inSingletonScope();
   container
     .bind<NotificationService>(TYPES.NotificationService)

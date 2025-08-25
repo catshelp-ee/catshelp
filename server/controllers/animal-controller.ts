@@ -1,6 +1,4 @@
-import AnimalRepository from '@repositories/animal-repository';
 import AnimalService from '@services/animal/animal-service';
-import AuthService from '@services/auth/auth-service';
 import { parseDate } from '@utils/date-utils';
 import { handleControllerError } from '@utils/error-handler';
 import { Request, Response } from 'express';
@@ -11,10 +9,8 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class AnimalController {
   constructor(
-    @inject(TYPES.AuthService) private authService: AuthService,
-    @inject(TYPES.AnimalService) private animalService: AnimalService,
-    @inject(TYPES.AnimalRepository)
-    private animalRepository: AnimalRepository
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService
   ) {}
 
   private stringsToDates(animal: Profile) {

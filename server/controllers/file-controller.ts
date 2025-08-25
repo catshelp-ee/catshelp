@@ -18,12 +18,10 @@ export default class FileController {
         return;
       }
 
-      if (!req.body.driveId) {
-        res.status(400).json({ error: 'Drive folder ID is required' });
-        return;
-      }
-
-      await this.imageService.uploadFiles(req.files, req.body.driveId);
+      await this.imageService.insertImageFilenamesIntoDB(
+        req.files,
+        Number(req.body.animalId)
+      );
       res.sendStatus(200);
     } catch (error) {
       handleControllerError(error, res, 'Failed to upload pictures');

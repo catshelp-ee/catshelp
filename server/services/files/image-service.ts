@@ -1,7 +1,7 @@
 import GoogleDriveService from '@services/google/google-drive-service';
-import { extractFileId, isValidHyperlink } from '@utils/image-utils';
 import { inject, injectable } from 'inversify';
-import fs from 'node:fs';
+import { prisma } from 'server/prisma';
+import { extractFileId } from 'server/utils/google-utils';
 import { Profile } from 'types/cat';
 import { CatSheetsHeaders } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
@@ -13,6 +13,63 @@ export default class ImageService {
     private googleDriveService: GoogleDriveService
   ) { }
 
+  private isValidHyperlink = (link: string): boolean => {
+    try {
+      new URL(link);
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  async fetchImagePathsByAnimalId(animalId: number) {
+    const files = await prisma.file.findMany({
+      where: { animalId },
+    });
+    return files.map(file => {
+      return `./images/${file.uuid}.jpg`;
+    });
+  }
+
+  private normalizeFiles(
+    files: Express.Request['files']
+  ): Express.Multer.File[] {
+    if (!files) return [];
+
+    if (Array.isArray(files)) {
+      return files;
+    }
+
+    return Object.values(files).flat();
+  }
+
+  async insertImageFilenamesIntoDB(
+    files:
+      | { [fieldname: string]: Express.Multer.File[] }
+      | Express.Multer.File[],
+    animalID: number
+  ) {
+    const normalizedFiles = this.normalizeFiles(files);
+    await Promise.all(
+      normalizedFiles.map(file =>
+        prisma.file.create({
+          data: {
+            animalId: animalID,
+            uuid: file.filename.split('.')[0],
+          },
+        })
+      )
+    );
+  }
+
+  async fetchProfilePicture(animalID: number) {
+    return prisma.file.findFirst({
+      where: {
+        profileAnimalId: animalID,
+      },
+    });
+  }
+
   async processImages(
     profile: Profile,
     values: CatSheetsHeaders,
@@ -20,7 +77,7 @@ export default class ImageService {
   ): Promise<void> {
     const imageLink = values.photo;
 
-    if (!isValidHyperlink(imageLink)) {
+    if (!this.isValidHyperlink(imageLink)) {
       console.warn(
         `Skipping image for ${profile.mainInfo.name} due to invalid image link.`
       );
@@ -34,7 +91,6 @@ export default class ImageService {
     }
 
     await this.downloadProfileImage(profile.mainInfo.name, fileId, ownerName);
-    await this.downloadAdditionalImages(profile, ownerName);
   }
 
   async downloadProfileImage(
@@ -50,38 +106,5 @@ export default class ImageService {
     } catch (e) {
       return 'missing256x256.png';
     }
-  }
-
-  private async downloadAdditionalImages(
-    profile: Profile,
-    ownerName: string
-  ): Promise<void> {
-    try {
-      await this.googleDriveService.downloadImages(
-        profile.driveID,
-        ownerName,
-        profile
-      );
-    } catch (error) {
-      console.error(
-        `Failed to download additional images for ${profile.mainInfo.name}:`,
-        error
-      );
-    }
-  }
-
-  async uploadFiles(files: any, folderId: string): Promise<void> {
-    const fileArray = Array.isArray(files) ? files : [files];
-
-    const uploadPromises = fileArray.map(async file => {
-      const tempPath = file.path;
-      return await this.googleDriveService.uploadToDrive(
-        file.originalname,
-        fs.createReadStream(tempPath),
-        folderId
-      );
-    });
-
-    await Promise.all(uploadPromises);
   }
 }

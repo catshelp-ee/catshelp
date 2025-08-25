@@ -48,7 +48,13 @@ export default class CatProfileBuilder {
 
     this.buildCatProfile(profile, characteristics);
 
-    await this.imageService.processImages(profile, row, owner.fullName);
+    profile.images = await this.imageService.fetchImagePathsByAnimalId(cat.id);
+    const profilePicture = await this.imageService.fetchProfilePicture(cat.id);
+    if (profilePicture) {
+      profile.profilePictureFilename = `images/${profilePicture.uuid}.jpg`;
+    } else {
+      profile.profilePictureFilename = `missing64x64.png`;
+    }
 
     return profile;
   }
@@ -66,10 +72,10 @@ export default class CatProfileBuilder {
 
   private extractBaseData(values: CatSheetsHeaders, cat: Animal): Profile {
     const profile = createProfile();
+    profile.animalId = cat.id;
     profile.title = cat.profileTitle;
     profile.description = cat.description;
     profile.mainInfo.microchip = cat.chipNumber;
-    profile.driveID = cat.driveId;
     profile.mainInfo.microchipRegisteredInLLR = cat.chipRegisteredWithUs;
     profile.mainInfo.name = values.catName || cat.name;
     profile.mainInfo.birthDate = parseDate(values.birthDate) || cat.birthday;

@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import Header from "@components/header";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {
-  Button,
-  TextField,
   Autocomplete,
+  Button,
   ImageList,
   ImageListItem,
+  TextField,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { submitNewCatProfile } from "@utils/cat-profile-utils";
-import Header from "@components/header";
+import axios from "axios";
 import { useAlert } from "@context/alert-context";
 import States from "./states.json";
+import React, { useState } from "react";
+import { resizeImages, uploadImages } from "src/utils/image-utils";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,6 +28,18 @@ const AddCatForm = () => {
   const [images, setImages] = useState<File[]>([]);
   const { showAlert } = useAlert();
 
+  const submitNewCatProfile = async (data: any, pictures: File[]) => {
+    const newAnimalId: number = (
+      await axios.post('/api/animals', data, {
+        withCredentials: true,
+      })
+    ).data;
+
+    const resizedImages = await resizeImages(pictures);
+    uploadImages(resizedImages, newAnimalId);
+  };
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -38,7 +51,7 @@ const AddCatForm = () => {
     };
 
     try {
-      submitNewCatProfile(data, images);
+      await submitNewCatProfile(data, images);
       showAlert('Success', "🐈‍⬛ Kiisuke lisatud! 🐈‍⬛");
     } catch (error) {
       showAlert('Error', "Kassi lisamine ebaõnnestus");

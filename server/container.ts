@@ -4,17 +4,20 @@ import AnimalService from '@services/animal/animal-service';
 import CatProfileBuilder from '@services/animal/cat-profile-builder';
 import CharacteristicsService from '@services/animal/characteristics-service';
 import AuthService from '@services/auth/auth-service';
-import NodeCacheService from '@services/cache/cache-service';
 import DashboardService from '@services/dashboard/dashboard-service';
 import ImageService from '@services/files/image-service';
 import GoogleAuthService from '@services/google/google-auth-service';
 import GoogleDriveService from '@services/google/google-drive-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import ProfileService from '@services/profile/profile-service';
 import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
+import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
+import UserRepository from '@repositories/user-repository';
 import AddRescueController from './controllers/add-rescue-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
@@ -25,10 +28,6 @@ import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
-import AnimalRescueRepository from '@repositories/animal-rescue-repository';
-import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
-import FosterHomeRepository from '@repositories/foster-home-repository';
-import UserRepository from '@repositories/user-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -50,10 +49,6 @@ async function init() {
     .toConstantValue(googleAuthService);
 
   // ─── Core/Infrastructure Services ───────────────────────────────
-  container
-    .bind<NodeCacheService>(TYPES.NodeCacheService)
-    .to(NodeCacheService)
-    .inSingletonScope();
 
   // ─── External Google Services ───────────────────────────────────
   container
@@ -81,10 +76,6 @@ async function init() {
   container
     .bind<DashboardService>(TYPES.DashboardService)
     .to(DashboardService)
-    .inSingletonScope();
-  container
-    .bind<ProfileService>(TYPES.ProfileService)
-    .to(ProfileService)
     .inSingletonScope();
   container
     .bind<NotificationService>(TYPES.NotificationService)
@@ -123,6 +114,10 @@ async function init() {
   container
     .bind<UserRepository>(TYPES.UserRepository)
     .to(UserRepository)
+    .inSingletonScope();
+  container
+    .bind<TreatmentHistoryRepository>(TYPES.TreatmentHistoryRepository)
+    .to(TreatmentHistoryRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

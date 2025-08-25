@@ -7,14 +7,14 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class AuthorizationMiddleware {
   constructor(
-    @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.AuthService) private authService: AuthService
+    @inject(TYPES.AuthService)
+    private authService: AuthService
   ) {
     this.authenticate = this.authenticate.bind(this);
   }
 
   async canViewPage(token) {
-    const user = await this.userService.getUser(token.id);
+    const user = await UserService.getUserById(token.id);
     if (!user) {
       return false;
     }

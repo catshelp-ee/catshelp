@@ -9,6 +9,7 @@ model Animal {
     chipRegisteredWithUs  Boolean                 @default(false) @map("chip_registered_with_us")
     profilePicture        File?                   @relation("ProfilePicture")
     animalsToRescue       AnimalToAnimalRescue[]
+    treatmentHistory      TreatmentHistory[]
     animalCharacteristic  AnimalCharacteristic[]
     fosterHomeAnimals     AnimalToFosterHome[]
     files                 File[]                  @relation("Files")

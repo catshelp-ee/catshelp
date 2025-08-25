@@ -5,9 +5,7 @@ const TYPES = {
   NotificationService: Symbol.for('NotificationService'),
   AuthService: Symbol.for('AuthService'),
   CharacteristicsService: Symbol.for('CharacteristicsService'),
-  ProfileService: Symbol.for('ProfileService'),
   UserService: Symbol.for('UserService'),
-  NodeCacheService: Symbol.for('NodeCacheService'),
 
   CatProfileBuilder: Symbol.for('CatProfileBuilder'),
 
@@ -28,9 +26,10 @@ const TYPES = {
   AnimalCharacteristicRepository: Symbol.for('AnimalCharacteristicRepository'),
   FosterHomeRepository: Symbol.for('FosterHomeRepository'),
   UserRepository: Symbol.for('UserRepository'),
+  TreatmentHistoryRepository: Symbol.for('TreatmentHistoryRepository'),
 
   AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
-  
+
   CronRunner: Symbol.for('CronRunner'),
   SyncSheetDataToDBJob: Symbol.for('SyncSheetDataToDBJob'),
 };

@@ -5,7 +5,6 @@ import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 
 @injectable()
 export default class AnimalRepository {
-
   async getCatsByUserEmail(email: string): Promise<Animal[]> {
     const user = await prisma.user.findFirst({
       where: { email },
@@ -33,7 +32,38 @@ export default class AnimalRepository {
     return await prisma.animal.findMany();
   }
 
-  async createAnimalWithRescue(data: CreateAnimalData): Promise<CreateAnimalResult> {
+  async getAnimalsByUserId(id: number): Promise<Animal[]> {
+    const user = await prisma.user.findFirst({
+      where: { id },
+      include: {
+        fosterHome: {
+          include: {
+            fosterAnimals: {
+              include: { animal: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user?.fosterHome?.fosterAnimals) {
+      return [];
+    }
+
+    return user.fosterHome.fosterAnimals
+      .map(link => link.animal)
+      .filter(Boolean);
+  }
+
+  getAnimalById(id: number): Promise<Animal> {
+    return prisma.animal.findUnique({
+      where: { id },
+    });
+  }
+
+  async createAnimalWithRescue(
+    data: CreateAnimalData
+  ): Promise<CreateAnimalResult> {
     return await prisma.$transaction(async tx => {
       const animal = await tx.animal.create({ data: {} });
 
@@ -73,7 +103,7 @@ export default class AnimalRepository {
   public async saveOrUpdateAnimal(data): Promise<Animal> {
     const newRow = await prisma.animal.upsert({
       where: {
-        id: data.id || 0
+        id: data.id || 0,
       },
       update: {
         name: data.name,
@@ -83,7 +113,7 @@ export default class AnimalRepository {
         profileTitle: data.profileTitle,
         status: data.status,
         driveId: data.driveId,
-        description: data.description
+        description: data.description,
       },
       create: {
         name: data.name,
@@ -93,7 +123,7 @@ export default class AnimalRepository {
         profileTitle: data.profileTitle,
         status: data.status,
         driveId: data.driveId,
-        description: data.description
+        description: data.description,
       },
     });
     return newRow;
@@ -102,8 +132,8 @@ export default class AnimalRepository {
   public async deleteAnimalById(id) {
     await prisma.animal.deleteMany({
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
   }
 }

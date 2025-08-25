@@ -1,10 +1,7 @@
 import ImageService from '@services/files/image-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
-import { parseDate } from '@utils/date-utils';
-import { Animal, User } from 'generated/prisma';
+import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { CharacteristicsResult, createProfile, Profile } from 'types/cat';
-import { CatSheetsHeaders } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import CharacteristicsService from './characteristics-service';
 
@@ -14,96 +11,54 @@ export default class CatProfileBuilder {
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.ImageService)
-    private imageService: ImageService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
+    private imageService: ImageService
   ) {}
 
-  async buildProfilesFromSheet(
-    owner: User,
-    animals: Animal[]
-  ): Promise<Profile[]> {
-    const profilePromises = (
-      await this.googleSheetsService.getRows(owner.id)
-    ).map(row => {
-      return this.buildSingleProfile(row.row, animals, owner);
-    });
+  async buildProfiles(animals: Animal[]): Promise<Profile[]> {
+    const profiles = [];
+    for (let index = 0; index < animals.length; index++) {
+      const animal = animals[index];
 
-    return Promise.all(profilePromises);
+      profiles.push(this.buildProfile(animal));
+    }
+    return Promise.all(profiles);
   }
 
-  private async buildSingleProfile(
-    row: CatSheetsHeaders,
-    animals: Animal[],
-    owner: User
-  ): Promise<Profile | null> {
-    const cat = animals.find(animal => animal.name === row.catName);
-    if (!cat) {
-      return null;
-    }
+  private async buildProfile(animal: Animal): Promise<Profile | null> {
+    const profile = createProfile();
+
+    this.mapBaseData(profile, animal);
 
     const characteristics =
-      await this.characteristicsService.getCharacteristics(cat.id);
-    const profile = this.extractBaseData(row, cat);
+      await this.characteristicsService.getCharacteristics(animal.id);
 
-    this.buildCatProfile(profile, characteristics);
-
-    profile.images = await this.imageService.fetchImagePathsByAnimalId(cat.id);
-    const profilePicture = await this.imageService.fetchProfilePicture(cat.id);
+    profile.images = await this.imageService.fetchImagePathsByAnimalId(
+      animal.id
+    );
+    const profilePicture = await this.imageService.fetchProfilePicture(
+      animal.id
+    );
     if (profilePicture) {
       profile.profilePictureFilename = `images/${profilePicture.uuid}.jpg`;
     } else {
       profile.profilePictureFilename = `missing64x64.png`;
     }
+    this.mapCharacteristicsToProfile(profile, characteristics);
 
     return profile;
   }
 
-  private processGender(values: CatSheetsHeaders) {
-    const isMale = values.gender.toLowerCase() === 'isane';
-    const isSterilized = values.spayedOrNeutered === 'JAH';
-
-    if (isMale) {
-      return isSterilized ? 'Kastreeritud isane' : 'Kastreerimata isane';
-    } else {
-      return isSterilized ? 'Steriliseeritud emane' : 'Steriliseerimata emane';
-    }
+  private mapBaseData(profile: Profile, animal: Animal) {
+    profile.animalId = animal.id;
+    profile.mainInfo.name = animal.name;
+    profile.mainInfo.birthDate = animal.birthday;
+    profile.mainInfo.microchip = animal.chipNumber;
+    profile.mainInfo.microchipRegisteredInLLR = animal.chipRegisteredWithUs;
+    profile.description = animal.description;
+    profile.title = animal.profileTitle;
   }
 
-  private extractBaseData(values: CatSheetsHeaders, cat: Animal): Profile {
-    const profile = createProfile();
-    profile.animalId = cat.id;
-    profile.title = cat.profileTitle;
-    profile.description = cat.description;
-    profile.mainInfo.microchip = cat.chipNumber;
-    profile.mainInfo.microchipRegisteredInLLR = cat.chipRegisteredWithUs;
-    profile.mainInfo.name = values.catName || cat.name;
-    profile.mainInfo.birthDate = parseDate(values.birthDate) || cat.birthday;
-    profile.mainInfo.location = values.location;
-    profile.animalRescueInfo.rescueLocation = values.findingLocation;
-    profile.animalRescueInfo.rescueDate = parseDate(values.rescueOrBirthDate);
-    profile.vaccineInfo.dewormingOrFleaTreatmentName =
-      values.dewormingOrFleaTreatmentName;
-    profile.vaccineInfo.dewormingOrFleaTreatmentDate = parseDate(
-      values.dewormingOrFleaTreatmentDate
-    );
-    profile.vaccineInfo.complexVaccine = parseDate(values.complexVaccine);
-    profile.vaccineInfo.nextComplexVaccineDate = parseDate(
-      values.nextVaccineDate
-    );
-    profile.vaccineInfo.rabiesVaccine = parseDate(values.rabiesVaccine);
-    profile.vaccineInfo.nextRabiesVaccineDate = parseDate(
-      values.nextRabiesDate
-    );
-
-    if (values.spayedOrNeutered && values.gender) {
-      profile.characteristics.textFields.gender = this.processGender(values);
-    }
-
-    return profile;
-  }
-
-  private buildCatProfile(
+  private mapCharacteristicsToProfile(
     profile: Profile,
     characteristics: CharacteristicsResult
   ): void {
@@ -155,7 +110,5 @@ export default class CatProfileBuilder {
     Object.entries(multiselectFieldsMap).forEach(([key, value]) => {
       multiselectFields[key] = value || [];
     });
-
-    profile.images = [];
   }
 }

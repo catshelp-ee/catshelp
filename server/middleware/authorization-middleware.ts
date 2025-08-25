@@ -14,7 +14,7 @@ export default class AuthorizationMiddleware {
   }
 
   async canViewPage(token) {
-    const user = await UserService.getUserByEmail(token.id);
+    const user = await UserService.getUserById(token.id);
     if (!user) {
       return false;
     }

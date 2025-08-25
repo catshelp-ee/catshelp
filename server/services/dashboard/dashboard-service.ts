@@ -2,7 +2,7 @@ import NodeCacheService from '@services/cache/cache-service';
 import ImageService from '@services/files/image-service';
 import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
-import { Avatar } from 'types/animal';
+import { AvatarInfo } from 'types/animal';
 import { Result } from 'types/dashboard';
 import { Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
@@ -19,13 +19,23 @@ export default class DashboardService {
     private nodeCacheService: NodeCacheService
   ) {}
 
-  async getAvatars(animals: Animal[]): Promise<Avatar[]> {
-    const avatars: Avatar[] = [];
+  async getAvatars(animals: Animal[]): Promise<AvatarInfo[]> {
+    const avatars: AvatarInfo[] = [];
     for (let index = 0; index < animals.length; index++) {
       const animal = animals[index];
+      const profileImage = await this.imageService.fetchProfilePicture(
+        animal.id
+      );
+      if (!profileImage) {
+        avatars.push({
+          name: animal.name,
+          pathToImage: `missing64x64.png`,
+        });
+        continue;
+      }
       avatars.push({
         name: animal.name,
-        pathToImage: await this.imageService.fetchProfilePicture(animal.id),
+        pathToImage: `images/${profileImage.uuid}.jpg`,
       });
     }
     return avatars;

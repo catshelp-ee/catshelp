@@ -3,10 +3,10 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { Pet } from "types/animal";
+import { AvatarInfo } from "types/animal";
 
 export const PetAvatar: React.FC<{
-  pet: Pet;
+  pet: AvatarInfo;
   isSelected?: boolean;
   onClick?: () => void;
 }> = ({ pet, isSelected, onClick }) => {

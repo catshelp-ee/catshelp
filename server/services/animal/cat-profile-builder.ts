@@ -30,6 +30,8 @@ export default class CatProfileBuilder {
   private async buildProfile(animal: Animal): Promise<Profile | null> {
     const profile = createProfile();
 
+    this.mapBaseData(profile, animal);
+
     const characteristics =
       await this.characteristicsService.getCharacteristics(animal.id);
 
@@ -47,6 +49,16 @@ export default class CatProfileBuilder {
     this.mapCharacteristicsToProfile(profile, characteristics);
 
     return profile;
+  }
+
+  private mapBaseData(profile: Profile, animal: Animal) {
+    profile.animalId = animal.id;
+    profile.mainInfo.name = animal.name;
+    profile.mainInfo.birthDate = animal.birthday;
+    profile.mainInfo.microchip = animal.chipNumber;
+    profile.mainInfo.microchipRegisteredInLLR = animal.chipRegisteredWithUs;
+    profile.description = animal.description;
+    profile.title = animal.profileTitle;
   }
 
   private mapCharacteristicsToProfile(

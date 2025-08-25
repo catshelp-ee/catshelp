@@ -13,7 +13,7 @@ export interface CreateAnimalResult {
   animalRescue: AnimalRescue;
 }
 
-export interface Avatar {
+export interface AvatarInfo {
   name: string;
   pathToImage: string;
 }

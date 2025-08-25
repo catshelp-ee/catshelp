@@ -1,5 +1,4 @@
 import NodeCacheService from '@services/cache/cache-service';
-import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import TYPES from 'types/inversify-types';
 import { prisma } from '../../prisma';
@@ -9,22 +8,6 @@ export default class UserService {
   constructor(
     @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
   ) {}
-
-  getUser(userID: number | string) {
-    try {
-      return this.nodeCacheService.get<User>(`user:${userID}`);
-    } catch {
-      throw new Error('Error fetching user from cache');
-    }
-  }
-
-  setUser(user: User) {
-    try {
-      this.nodeCacheService.set(`user:${user.id}`, user);
-    } catch {
-      throw new Error('Error caching user');
-    }
-  }
 
   static async getUserByEmail(email) {
     if (!email) {

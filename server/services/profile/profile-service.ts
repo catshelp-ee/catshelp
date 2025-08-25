@@ -13,14 +13,6 @@ export default class ProfileService {
     @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
   ) {}
 
-  getProfiles(userID: number | string) {
-    return this.nodeCacheService.get<Profile[]>(`profiles:${userID}`);
-  }
-
-  setProfiles(userID: number | string, profiles: Profile[]) {
-    this.nodeCacheService.set(`profiles:${userID}`, profiles);
-  }
-
   async getCatProfilesByOwner(owner: User, cats: Animal[]): Promise<Profile[]> {
     if (!owner) {
       throw new Error('Owner is required');

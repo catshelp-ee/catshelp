@@ -11,22 +11,6 @@ export default class UserService {
     private nodeCacheService: NodeCacheService
   ) { }
 
-  getUser(userID: number | string) {
-    try {
-      return this.nodeCacheService.get<User>(`user:${userID}`);
-    } catch {
-      throw new Error('Error fetching user from cache');
-    }
-  }
-
-  setUser(user: User) {
-    try {
-      this.nodeCacheService.set(`user:${user.id}`, user);
-    } catch {
-      throw new Error('Error caching user');
-    }
-  }
-
   static async getUserByEmail(email) {
     if (!email) {
       return null;

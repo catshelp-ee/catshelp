@@ -2,7 +2,6 @@ import NodeCacheService from '@services/cache/cache-service';
 import ImageService from '@services/files/image-service';
 import { inject, injectable } from 'inversify';
 import { Pet } from 'types/animal';
-import { Result } from 'types/dashboard';
 import { Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import NotificationService from '../notifications/notification-service';
@@ -17,14 +16,6 @@ export default class DashboardService {
     @inject(TYPES.NodeCacheService)
     private nodeCacheService: NodeCacheService
   ) { }
-
-  private getPets(userID: number | string) {
-    return this.nodeCacheService.get<Pet[]>(`pets:${userID}`);
-  }
-
-  private setPets(userID: number | string, pets) {
-    this.nodeCacheService.set(`pets:${userID}`, pets);
-  }
 
   async getPetAvatars(rows: Rows): Promise<Pet[]> {
     const petPromises = rows.map(async row => {
@@ -44,25 +35,5 @@ export default class DashboardService {
     });
 
     return Promise.all(petPromises);
-  }
-
-  private getNotifications(userID: number | string) {
-    return this.nodeCacheService.get<Result[]>(`notifications:${userID}`);
-  }
-
-  private setNotifications(userID: number | string, pets) {
-    this.nodeCacheService.set(`notifications:${userID}`, pets);
-  }
-
-  async displayNotifications(
-    userID: number | string,
-    rows: Rows
-  ): Promise<Result[]> {
-    let todos = await this.getNotifications(userID);
-    if (!todos) {
-      todos = this.notificationService.processNotifications(rows);
-      this.setNotifications(userID, todos);
-    }
-    return todos;
   }
 }

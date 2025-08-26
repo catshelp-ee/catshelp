@@ -46,14 +46,6 @@ export default class GoogleSheetsService {
     this.rows = [];
   }
 
-  getRows(userID: number | string) {
-    return this.nodeCacheService.get<Rows>(`rows:${userID}`);
-  }
-
-  setRows(userID: number | string, rows: Rows) {
-    return this.nodeCacheService.set(`rows:${userID}`, rows);
-  }
-
   async getSheetRows(animals: Animal[]) {
     const filteredRows = [] as Rows;
     for (let i = 1; i < this.rows.length; i++) {
@@ -79,7 +71,6 @@ export default class GoogleSheetsService {
       this.rows[i].id = animal.id;
       filteredRows.push(this.rows[i]);
     }
-    await this.setRows(userID, filteredRows);
   }
 
   async getNewSheet() {

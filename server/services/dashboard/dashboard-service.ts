@@ -26,30 +26,24 @@ export default class DashboardService {
     this.nodeCacheService.set(`pets:${userID}`, pets);
   }
 
-  async getPetAvatars(userID: number | string, rows: Rows): Promise<Pet[]> {
-    let pets = await this.getPets(userID);
-    if (!pets) {
-      const petPromises = rows.map(async row => {
-        const profilePicture = await this.imageService.fetchProfilePicture(
-          row.id
-        );
+  async getPetAvatars(rows: Rows): Promise<Pet[]> {
+    const petPromises = rows.map(async row => {
+      const profilePicture = await this.imageService.fetchProfilePicture(
+        row.id
+      );
 
-        let pathToImage = 'missing64x64.png';
-        if (profilePicture) {
-          pathToImage = `images/${profilePicture.uuid}.jpg`;
-        }
+      let pathToImage = 'missing64x64.png';
+      if (profilePicture) {
+        pathToImage = `images/${profilePicture.uuid}.jpg`;
+      }
 
-        return {
-          name: row.row.catName,
-          pathToImage: pathToImage,
-        };
-      });
+      return {
+        name: row.row.catName,
+        pathToImage: pathToImage,
+      };
+    });
 
-      pets = await Promise.all(petPromises);
-      this.setPets(userID, pets);
-    }
-
-    return pets;
+    return Promise.all(petPromises);
   }
 
   private getNotifications(userID: number | string) {

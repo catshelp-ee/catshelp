@@ -54,6 +54,20 @@ export default class GoogleSheetsService {
     return this.nodeCacheService.set(`rows:${userID}`, rows);
   }
 
+  async getSheetRows(animals: Animal[]) {
+    const filteredRows = [] as Rows;
+    for (let i = 1; i < this.rows.length; i++) {
+      const row = this.rows[i].row;
+      const animal = animals.find(animal => animal.name === row.catName);
+      if (!animal) {
+        continue;
+      }
+      this.rows[i].id = animal.id;
+      filteredRows.push(this.rows[i]);
+    }
+    return filteredRows;
+  }
+
   async setInitRows(userID: number | string, animals: Animal[]) {
     const filteredRows = [] as Rows;
     for (let i = 1; i < this.rows.length; i++) {

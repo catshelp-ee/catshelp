@@ -43,6 +43,22 @@ export default class UserService {
     return user;
   }
 
+  static async getUserById(id: number): Promise<User> {
+    if (!id) {
+      return null;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (user == null) {
+      return null;
+    }
+
+    return user;
+  }
+
   static async setTokenInvalid(token, decodedToken) {
     const date = new Date(0);
     date.setUTCSeconds(decodedToken.exp);

@@ -47,13 +47,9 @@ export default class AuthService {
     const token = this.generateJWT(user.id);
     CookieService.setAuthCookies(res, token);
 
-    // Setup user context
-    this.userService.setUser(user);
-    this.animalService.setAnimals(user);
-
     // Initialize Google Sheets
-    const cats = await this.animalService.getAnimals(user.id);
-    await this.googleSheetsService.setInitRows(user.id, cats);
+    const animals = await this.animalService.getAnimalsByUserId(user.id);
+    await this.googleSheetsService.setInitRows(user.id, animals);
 
     return user;
   }

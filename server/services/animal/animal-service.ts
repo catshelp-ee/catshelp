@@ -44,6 +44,10 @@ export default class AnimalService {
     );
   }
 
+  getAnimalsByUserId(id: number): Promise<Animal[]> {
+    return this.animalRepository.getAnimalsByUserId(id);
+  }
+
   async createAnimal(data: CreateAnimalData): Promise<CreateAnimalResult> {
     data.date = new Date();
     const animal = await this.animalRepository.createAnimalWithRescue(data);

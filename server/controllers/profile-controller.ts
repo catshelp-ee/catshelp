@@ -23,16 +23,16 @@ export default class ProfileController {
   async getProfile(req: Request, res: Response): Promise<Response> {
     try {
       const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
-      const user = await this.userService.getUser(decodedToken.id);
+      const user = await UserService.getUserById(Number(decodedToken.id));
       if (!user) {
         res.status(401).json({ error: 'Invalid authentication' });
         return;
       }
 
-      const cats = await this.animalService.getAnimals(user.id);
+      const animals = await this.animalService.getAnimalsByUserId(user.id);
       const profiles = await this.profileService.getCatProfilesByOwner(
         user,
-        cats
+        animals
       );
       res.status(200).json({ profiles: profiles });
     } catch (error) {

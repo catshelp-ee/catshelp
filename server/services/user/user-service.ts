@@ -11,6 +11,21 @@ export default class UserService {
     private nodeCacheService: NodeCacheService
   ) { }
 
+  async getUser(userId: number): Promise<User> {
+    const user = this.nodeCacheService.get<User>(`users:${userId}`);
+    if (!user) {
+      const user = await UserService.getUserById(userId);
+      this.setUser(userId, user);
+      return user;
+    }
+    return user;
+  }
+
+  setUser(userId: number, user: User): void {
+    const fiveMinutesInSeconds = 300;
+    this.nodeCacheService.set(`users:${userId}`, user, fiveMinutesInSeconds);
+  }
+
   static async getUserByEmail(email) {
     if (!email) {
       return null;

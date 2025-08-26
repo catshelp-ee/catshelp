@@ -47,6 +47,8 @@ export default class AuthService {
     const token = this.generateJWT(user.id);
     CookieService.setAuthCookies(res, token);
 
+    this.userService.setUser(user.id, user);
+
     // Initialize Google Sheets
     const animals = await this.animalService.getAnimalsByUserId(user.id);
     await this.googleSheetsService.setInitRows(user.id, animals);

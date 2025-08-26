@@ -135,8 +135,9 @@ export default class AnimalService {
     return merged;
   }
 
-  async updateAnimal(updatedAnimalData: Profile, userID: number | string) {
-    const animalRows = await this.googleSheetsService.getRows(userID);
+  async updateAnimal(updatedAnimalData: Profile, userID: number) {
+    const animals = await this.getAnimalsByUserId(Number(userID));
+    const animalRows = await this.googleSheetsService.getSheetRows(animals);
     const animal = animalRows.find(
       animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
     );
@@ -156,22 +157,5 @@ export default class AnimalService {
       animal.index,
       animal
     );
-
-    const user = await this.userService.getUser(userID);
-
-    await this.setAnimals(user);
-    const profiles = await this.profileService.getProfiles(userID);
-    const index = profiles.findIndex(
-      profile => profile.mainInfo.name === animal.row.catName
-    );
-
-    profiles[index] = this.mergeObjects(updatedAnimalData, profiles[index]);
-    await this.profileService.setProfiles(userID, profiles);
-
-    const animalIndex = animalRows.findIndex(
-      animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
-    );
-    animalRows[animalIndex] = animal;
-    await this.googleSheetsService.setRows(userID, animalRows);
   }
 }

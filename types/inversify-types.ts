@@ -30,6 +30,7 @@ const TYPES = {
   FosterHomeRepository: Symbol.for('FosterHomeRepository'),
   UserRepository: Symbol.for('UserRepository'),
   TreatmentHistoryRepository: Symbol.for("TreatmentHistoryRepository"),
+  FileRepository: Symbol.for("FileRepository"),
 
   AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
 

@@ -30,7 +30,7 @@ export default class AnimalService {
     private profileService: ProfileService
   ) { }
 
-  getAnimalsByUserId(id: number): Promise<Animal[]> {
+  getAnimalsByUserId(id: number | string): Promise<Animal[]> {
     return this.animalRepository.getAnimalsByUserId(id);
   }
 
@@ -121,8 +121,8 @@ export default class AnimalService {
     return merged;
   }
 
-  async updateAnimal(updatedAnimalData: Profile, userID: number) {
-    const animals = await this.getAnimalsByUserId(Number(userID));
+  async updateAnimal(updatedAnimalData: Profile, userID: number | string) {
+    const animals = await this.getAnimalsByUserId(userID);
     const animalRows = await this.googleSheetsService.getSheetRows(animals);
     const animal = animalRows.find(
       animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name

@@ -22,15 +22,13 @@ export default class DashboardController {
     private animalService: AnimalService,
     @inject(TYPES.NotificationService)
     private notificationService: NotificationService
-  ) {}
+  ) { }
 
   public async getDashboard(req: Request, res: Response): Promise<Response> {
     const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
     const userID = decodedToken.id;
     try {
-      const animals = await this.animalService.getAnimalsByUserId(
-        Number(userID)
-      );
+      const animals = await this.animalService.getAnimalsByUserId(userID);
       const rows = await this.googleSheetsService.getSheetRows(animals);
       const response = {
         todos: await this.notificationService.processNotifications(rows),

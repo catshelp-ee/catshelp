@@ -68,7 +68,7 @@ export default class AnimalController {
         updateAnimalData.mainInfo.microchipRegisteredInLLR
       );
       const userID = this.authService.decodeJWT(req.cookies.jwt).id;
-      await this.animalService.updateAnimal(updateAnimalData, Number(userID));
+      await this.animalService.updateAnimal(updateAnimalData, userID);
       return res.sendStatus(204);
     } catch (error) {
       handleControllerError(error, res, 'Failed to update pet');

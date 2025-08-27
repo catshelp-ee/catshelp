@@ -1,3 +1,4 @@
+
 const TYPES = {
   AnimalService: Symbol.for('AnimalService'),
   DashboardService: Symbol.for('DashboardService'),
@@ -28,9 +29,10 @@ const TYPES = {
   AnimalCharacteristicRepository: Symbol.for('AnimalCharacteristicRepository'),
   FosterHomeRepository: Symbol.for('FosterHomeRepository'),
   UserRepository: Symbol.for('UserRepository'),
+  TreatmentHistoryRepository: Symbol.for("TreatmentHistoryRepository"),
 
   AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
-  
+
   CronRunner: Symbol.for('CronRunner'),
   SyncSheetDataToDBJob: Symbol.for('SyncSheetDataToDBJob'),
 };

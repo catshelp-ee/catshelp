@@ -23,7 +23,7 @@ export default class ProfileController {
   async getProfile(req: Request, res: Response): Promise<Response> {
     try {
       const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
-      const user = await this.userService.getUser(Number(decodedToken.id));
+      const user = await this.userService.getUser(decodedToken.id);
       if (!user) {
         res.status(401).json({ error: 'Invalid authentication' });
         return;

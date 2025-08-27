@@ -28,7 +28,8 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
-  async getAnimalsByUserId(id: number): Promise<Animal[]> {
+  async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
+    id = Number(id);
     const user = await prisma.user.findFirst({
       where: { id },
       include: {

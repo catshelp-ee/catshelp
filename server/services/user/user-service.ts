@@ -13,12 +13,12 @@ export default class UserService {
 
   async getUser(userId: number | string): Promise<User> {
     userId = Number(userId);
-    const user = this.nodeCacheService.get<User>(`users:${userId}`);
-    if (!user) {
-      const user = await UserService.getUserById(userId);
-      this.setUser(userId, user);
+    let user = await this.nodeCacheService.get<User>(`users:${userId}`);
+    if (user) {
       return user;
     }
+    user = await UserService.getUserById(userId);
+    this.setUser(userId, user);
     return user;
   }
 
@@ -27,36 +27,24 @@ export default class UserService {
     this.nodeCacheService.set(`users:${userId}`, user, fiveMinutesInSeconds);
   }
 
-  static async getUserByEmail(email) {
+  static getUserByEmail(email: string): Promise<User> {
     if (!email) {
       return null;
     }
 
-    const user = await prisma.user.findFirst({
+    return prisma.user.findFirst({
       where: { email: email },
     });
-
-    if (user == null) {
-      return null;
-    }
-
-    return user;
   }
 
-  static async getUserById(id: number): Promise<User> {
+  static getUserById(id: number): Promise<User> {
     if (!id) {
       return null;
     }
 
-    const user = await prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { id },
     });
-
-    if (user == null) {
-      return null;
-    }
-
-    return user;
   }
 
   static async setTokenInvalid(token, decodedToken) {

@@ -1,5 +1,4 @@
 import { formatEstonianDate } from '@utils/date-utils';
-import { GaxiosResponse } from 'gaxios';
 import { Animal } from 'generated/prisma';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
@@ -57,18 +56,6 @@ export default class GoogleSheetsService {
     return filteredRows;
   }
 
-  async setInitRows(userID: number | string, animals: Animal[]) {
-    const filteredRows = [] as Rows;
-    for (let i = 1; i < this.rows.length; i++) {
-      const row = this.rows[i].row;
-      const animal = animals.find(animal => animal.name === row.catName);
-      if (!animal) {
-        continue;
-      }
-      this.rows[i].id = animal.id;
-      filteredRows.push(this.rows[i]);
-    }
-  }
 
   async getNewSheet() {
     try {
@@ -128,29 +115,6 @@ export default class GoogleSheetsService {
     return columnMapping;
   }
 
-  async init() {
-    if (this.headers) {
-      throw new Error('Google Auth Service already initialized');
-    }
-
-    const sheetData: GaxiosResponse<sheets_v4.Schema$Spreadsheet> =
-      await this.getNewSheet();
-
-    if (!sheetData.data.sheets || sheetData.data.sheets.length === 0) {
-      throw new Error('No sheet found');
-    }
-
-    this.sheetIDNum = sheetData.data.sheets[0].properties.sheetId;
-    const rows = sheetData.data.sheets[0].data;
-    if (!rows || rows.length === 0) {
-      throw new Error('No rows in sheet');
-    }
-
-    this.headers = this.extractColumnMapping(rows);
-
-    const rowData = rows[0].rowData;
-    this.convertRowToObject(rowData, this.rows);
-  }
 
   async addDataToSheet(data: CreateAnimalData) {
     const row = new Array(30).fill('');

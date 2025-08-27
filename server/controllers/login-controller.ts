@@ -45,7 +45,7 @@ export default class LoginController {
         return res.status(400).json({ error: 'Invalid Google token' });
       }
 
-      const user = await this.authService.authenticateAndSetupUser(email, res);
+      const user = await this.authService.authenticate(email, res);
       if (!user) {
         return res.sendStatus(401);
       }

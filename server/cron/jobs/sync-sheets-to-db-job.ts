@@ -178,6 +178,10 @@ export default class SyncSheetDataToDBJob {
         const userData = {
             fullName: newData['_HOIUKODU/_KLIINIKU_NIMI'].formattedValue
         };
+        if (!userData.fullName) {
+            throw new Error("No user for data sync");
+        }
+
         return await this.userRepository.saveOrUpdateUser(userData);
     }
 

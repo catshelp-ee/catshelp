@@ -20,4 +20,16 @@ export default class UserRepository {
     });
     return newRow;
   }
+
+  public async getUserById(id: number) {
+    return prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
+  public async getUserByEmail(email: string) {
+    return prisma.user.findFirst({
+      where: { email: email },
+    });
+  }
 }

@@ -5,6 +5,7 @@ import CookieService from '@services/auth/cookie-service';
 import EmailService from '@services/auth/email-service';
 import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
+import { Types } from 'generated/prisma/runtime/library';
 import { inject, injectable } from 'inversify';
 import {
   EmailLoginRequest,
@@ -19,91 +20,74 @@ export default class LoginController {
 
   constructor(
     @inject(TYPES.AuthService)
-    private authService: AuthService
+    private authService: AuthService,
+    @inject(TYPES.UserService)
+    private userService: UserService
   ) {
     this.emailService = new EmailService();
   }
 
-  async googleLogin(
-    req: Request<object, object, GoogleLoginRequest>,
-    res: Response
-  ): Promise<Response> {
-    try {
-      const { credential, clientId } = req.body;
+  public async googleLogin(req: Request<object, object, GoogleLoginRequest>, res: Response): Promise<Response> {
 
-      if (!credential || !clientId) {
-        return res
-          .status(400)
-          .json({ error: 'Missing credential or clientId' });
-      }
+    const { credential, clientId } = req.body;
 
-      const email = await this.authService.verifyGoogleToken(
-        credential,
-        clientId
-      );
-      if (!email) {
-        return res.status(400).json({ error: 'Invalid Google token' });
-      }
-
-      const user = await this.authService.authenticateAndSetupUser(email, res);
-      if (!user) {
-        return res.sendStatus(401);
-      }
-
-      return res.sendStatus(200);
-    } catch (error) {
-      console.error('Google login error:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+    if (!credential || !clientId) {
+      return res
+        .status(400)
+        .json({ error: 'Missing credential or clientId' });
     }
+
+    const email = await this.authService.verifyGoogleToken(
+      credential,
+      clientId
+    );
+
+    if (!email) {
+      return res.status(400).json({ error: 'Invalid Google token' });
+    }
+
+    const user = await this.authService.authenticateUser(email, res);
+    if (!user) {
+      return res.sendStatus(401);
+    }
+
+    return res.sendStatus(200);
   }
 
-  async emailLogin(
-    req: Request<object, object, EmailLoginRequest>,
-    res: Response
-  ): Promise<Response> {
-    try {
-      const { email } = req.body;
+  async emailLogin(req: Request<object, object, EmailLoginRequest>, res: Response): Promise<Response> {
+    const { email } = req.body;
 
-      if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
-      }
-
-      const user = await UserService.getUserByEmail(email);
-      if (!user) {
-        return res.sendStatus(401);
-      }
-
-      await this.emailService.sendRequest(user.id, user.email);
-      return res.sendStatus(200);
-    } catch (error) {
-      console.error('Email login error:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
+
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) {
+      return res.sendStatus(401);
+    }
+
+    await this.emailService.sendRequest(user.id, user.email);
+    return res.sendStatus(200);
   }
 
-  async logout(req: Request, res: Response): Promise<Response> {
+  public async logout(req: Request, res: Response): Promise<Response> {
     try {
       const token = req.cookies?.jwt;
 
       if (!token) {
         return res.sendStatus(200);
       }
-
+      
       await this.authService.invalidateToken(token);
-      CookieService.clearAuthCookies(res);
-      return res.sendStatus(200);
     } catch (error) {
       console.error('Logout error:', error);
-      // Still clear cookies even if token invalidation fails
+    } finally {
       CookieService.clearAuthCookies(res);
       return res.sendStatus(200);
     }
   }
 
-  async verify(
-    req: Request<object, object, object, VerifyRequest>,
-    res: Response
-  ): Promise<Response> {
+  public async verify(req: Request<object, object, object, VerifyRequest>, res: Response): Promise<Response> {
     try {
       const { token } = req.query;
 

@@ -3,80 +3,69 @@ import { User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import TYPES from 'types/inversify-types';
 import { prisma } from '../../prisma';
+import UserRepository from '@repositories/user-repository';
+import RevokedTokenRepository from '@repositories/revoked-token-repository';
 
 @injectable()
 export default class UserService {
   constructor(
     @inject(TYPES.NodeCacheService)
-    private nodeCacheService: NodeCacheService
+    private nodeCacheService: NodeCacheService,
+    @inject(TYPES.UserRepository)
+    private userRepository: UserRepository,
+    @inject(TYPES.RevokedTokenRepository)
+    private revokedTokenRepository: RevokedTokenRepository,
   ) { }
 
-  async getUser(userId: number | string): Promise<User> {
+  public async getUser(userId: number | string): Promise<User> {
     userId = Number(userId);
     let user = await this.nodeCacheService.get<User>(`users:${userId}`);
     if (user) {
       return user;
     }
-    user = await UserService.getUserById(userId);
-    this.setUser(userId, user);
+    user = await this.getUserById(userId);
+    this.setUserInCache(userId, user);
     return user;
   }
 
-  setUser(userId: number, user: User): void {
+  private setUserInCache(userId: number, user: User): void {
     const fiveMinutesInSeconds = 300;
     this.nodeCacheService.set(`users:${userId}`, user, fiveMinutesInSeconds);
   }
 
-  static getUserByEmail(email: string): Promise<User> {
+  public getUserByEmail(email: string): Promise<User> {
     if (!email) {
       return null;
     }
 
-    return prisma.user.findFirst({
-      where: { email: email },
-    });
+    return this.userRepository.getUserByEmail(email);
   }
 
-  static getUserById(id: number): Promise<User> {
+  public getUserById(id: number): Promise<User> {
     if (!id) {
       return null;
     }
 
-    return prisma.user.findUnique({
-      where: { id },
-    });
+    return this.userRepository.getUserById(id);
   }
 
-  static async setTokenInvalid(token, decodedToken) {
+  public async setTokenInvalid(token, decodedToken) {
     const date = new Date(0);
     date.setUTCSeconds(decodedToken.exp);
 
-    try {
-      await prisma.revokedToken.upsert({
-        where: {
-          token: token,
-        },
-        update: {},
-        create: {
-          token: token,
-          expiresAt: date,
-        },
-      });
-    } catch (e) {
-      console.error(e);
+    const data = {
+      token: token,
+      expiresAt: date
     }
+
+    await this.revokedTokenRepository.saveOrUpdateRevokedToken(data);
   }
 
-  static async isTokenInvalid(token) {
+  public async isTokenInvalid(token) {
     if (!token) {
       return true;
     }
-
-    const count = await prisma.revokedToken.count({
-      where: {
-        token: token,
-      },
-    });
+    const count = await this.revokedTokenRepository.getRevokedTokenCountByToken(token);
     return count > 0;
   }
 }

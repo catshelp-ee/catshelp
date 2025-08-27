@@ -6,7 +6,6 @@ import AnimalService from '@services/animal/animal-service';
 import AuthService from '@services/auth/auth-service';
 import DashboardService from '@services/dashboard/dashboard-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import { handleControllerError } from '@utils/error-handler';
 import TYPES from 'types/inversify-types';
 
 @injectable()
@@ -25,18 +24,13 @@ export default class DashboardController {
   ) { }
 
   public async getDashboard(req: Request, res: Response): Promise<Response> {
-    const decodedToken = this.authService.decodeJWT(req.cookies.jwt);
-    const userID = decodedToken.id;
-    try {
-      const animals = await this.animalService.getAnimalsByUserId(userID);
-      const rows = await this.googleSheetsService.getSheetRows(animals);
-      const response = {
-        todos: await this.notificationService.processNotifications(rows),
-        pets: await this.dashboardService.getPetAvatars(rows),
-      };
-      return res.json(response);
-    } catch (e) {
-      handleControllerError(e, res, 'Failed to fetch dashboard data');
-    }
+    const userID = req.user.id;
+    const animals = await this.animalService.getAnimalsByUserId(userID);
+    const rows = await this.googleSheetsService.getSheetRows(animals);
+    const response = {
+      todos: await this.notificationService.processNotifications(rows),
+      pets: await this.dashboardService.getPetAvatars(rows),
+    };
+    return res.json(response);
   }
 }

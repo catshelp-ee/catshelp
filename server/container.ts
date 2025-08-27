@@ -29,6 +29,7 @@ import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
 import FosterHomeRepository from '@repositories/foster-home-repository';
 import UserRepository from '@repositories/user-repository';
+import RevokedTokenRepository from '@repositories/revoked-token-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -123,6 +124,10 @@ async function init() {
   container
     .bind<UserRepository>(TYPES.UserRepository)
     .to(UserRepository)
+    .inSingletonScope();
+  container
+    .bind<RevokedTokenRepository>(TYPES.RevokedTokenRepository)
+    .to(RevokedTokenRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

@@ -28,6 +28,7 @@ const TYPES = {
   AnimalCharacteristicRepository: Symbol.for('AnimalCharacteristicRepository'),
   FosterHomeRepository: Symbol.for('FosterHomeRepository'),
   UserRepository: Symbol.for('UserRepository'),
+  RevokedTokenRepository: Symbol.for('RevokedTokenRepository'),
 
   AuthorizationMiddleware: Symbol.for('AuthorizationMiddleware'),
   

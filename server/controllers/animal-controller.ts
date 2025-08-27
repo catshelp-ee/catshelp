@@ -1,7 +1,6 @@
 import AnimalService from '@services/animal/animal-service';
 import AuthService from '@services/auth/auth-service';
 import { parseDate } from '@utils/date-utils';
-import { handleControllerError } from '@utils/error-handler';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { Profile } from 'types/cat';
@@ -56,22 +55,15 @@ export default class AnimalController {
     return false;
   }
 
-  async updateAnimal(
-    req: Request<object, object, Profile>,
-    res: Response
-  ): Promise<Response> {
-    try {
-      const updateAnimalData = req.body;
-      this.stringsToDates(updateAnimalData);
-      this.multiSelectsToArrays(updateAnimalData);
-      updateAnimalData.mainInfo.microchipRegisteredInLLR = this.toBoolean(
-        updateAnimalData.mainInfo.microchipRegisteredInLLR
-      );
-      const userID = this.authService.decodeJWT(req.cookies.jwt).id;
-      await this.animalService.updateAnimal(updateAnimalData, userID);
-      return res.sendStatus(204);
-    } catch (error) {
-      handleControllerError(error, res, 'Failed to update pet');
-    }
+  async updateAnimal(req: Request<object, object, Profile>, res: Response): Promise<Response> {
+    const updateAnimalData = req.body;
+    this.stringsToDates(updateAnimalData);
+    this.multiSelectsToArrays(updateAnimalData);
+    updateAnimalData.mainInfo.microchipRegisteredInLLR = this.toBoolean(
+      updateAnimalData.mainInfo.microchipRegisteredInLLR
+    );
+    const userID = req.user.id;
+    await this.animalService.updateAnimal(updateAnimalData, userID);
+    return res.sendStatus(204);
   }
 }

@@ -5,30 +5,8 @@ import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 
 @injectable()
 export default class AnimalRepository {
-  async getCatsByUserEmail(email: string): Promise<Animal[]> {
-    const user = await prisma.user.findFirst({
-      where: { email },
-      include: {
-        fosterHome: {
-          include: {
-            fosterAnimals: {
-              include: { animal: true },
-            },
-          },
-        },
-      },
-    });
 
-    if (!user?.fosterHome?.fosterAnimals) {
-      return [];
-    }
-
-    return user.fosterHome.fosterAnimals
-      .map(link => link.animal)
-      .filter(Boolean);
-  }
-
-  async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
+  public async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
     id = Number(id);
     const user = await prisma.user.findFirst({
       where: { id },
@@ -52,13 +30,7 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
-  static async getAllAnimals(): Promise<Animal[]> {
-    return await prisma.animal.findMany();
-  }
-
-  async createAnimalWithRescue(
-    data: CreateAnimalData
-  ): Promise<CreateAnimalResult> {
+  public async createAnimalWithRescue(data: CreateAnimalData): Promise<CreateAnimalResult> {
     return await prisma.$transaction(async tx => {
       const animal = await tx.animal.create({ data: {} });
 
@@ -82,8 +54,8 @@ export default class AnimalRepository {
     });
   }
 
-  public getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal> {
-    const animal = prisma.animal.findFirst({
+  public async getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal> {
+    const animal = await prisma.animal.findFirst({
       where: {
         animalsToRescue: {
           some: {
@@ -107,7 +79,6 @@ export default class AnimalRepository {
         chipRegisteredWithUs: data.chipRegisteredWithUs,
         profileTitle: data.profileTitle,
         status: data.status,
-        driveId: data.driveId,
         description: data.description,
       },
       create: {
@@ -117,7 +88,6 @@ export default class AnimalRepository {
         chipRegisteredWithUs: data.chipRegisteredWithUs,
         profileTitle: data.profileTitle,
         status: data.status,
-        driveId: data.driveId,
         description: data.description,
       },
     });

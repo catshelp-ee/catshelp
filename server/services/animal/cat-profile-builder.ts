@@ -14,7 +14,7 @@ export default class CatProfileBuilder {
     private imageService: ImageService,
   ) { }
 
-  async buildProfiles(animals: Animal[]): Promise<Profile[]> {
+  buildProfiles(animals: Animal[]): Promise<Profile[]> {
     return Promise.all(animals.map(animal => this.buildProfile(animal)));
   }
 
@@ -22,6 +22,7 @@ export default class CatProfileBuilder {
     const profile = createProfile();
 
     profile.animalId = animal.id;
+    profile.mainInfo.name = animal.name;
     profile.title = animal.profileTitle;
     profile.description = animal.description;
     profile.mainInfo.microchip = animal.chipNumber;

@@ -1,7 +1,4 @@
-import NodeCacheService from '@services/cache/cache-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import ProfileService from '@services/profile/profile-service';
-import UserService from '@services/user/user-service';
 import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import moment from 'moment';
@@ -22,12 +19,6 @@ export default class AnimalService {
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService,
-    @inject(TYPES.NodeCacheService)
-    private nodeCacheService: NodeCacheService,
-    @inject(TYPES.UserService)
-    private userService: UserService,
-    @inject(TYPES.ProfileService)
-    private profileService: ProfileService
   ) { }
 
   getAnimalsByUserId(id: number | string): Promise<Animal[]> {

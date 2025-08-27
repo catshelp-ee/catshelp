@@ -1,5 +1,3 @@
-import AnimalService from '@services/animal/animal-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import UserService from '@services/user/user-service';
 import { OAuth2Client } from 'google-auth-library';
 import { inject, injectable } from 'inversify';
@@ -19,10 +17,6 @@ export default class AuthService {
   constructor(
     @inject(TYPES.UserService)
     private userService: UserService,
-    @inject(TYPES.AnimalService)
-    private animalService: AnimalService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
   ) {
     this.client = new OAuth2Client();
     this.jwtSecret = process.env.JWT_SECRET!;
@@ -35,60 +29,43 @@ export default class AuthService {
     }
   }
 
-  async authenticateAndSetupUser(
-    email: string,
-    res: Response
-  ): Promise<User | null> {
-    const user = await UserService.getUserByEmail(email);
+  public async authenticateUser(email: string, res: Response): Promise<User | null> {
+    const user = await this.userService.getUserByEmail(email);
     if (!user) {
       return null;
     }
 
     const token = this.generateJWT(user.id);
     CookieService.setAuthCookies(res, token);
-
-    this.userService.setUser(user.id, user);
-
-    // Initialize Google Sheets
-    const animals = await this.animalService.getAnimalsByUserId(user.id);
-    await this.googleSheetsService.setInitRows(user.id, animals);
-
     return user;
   }
 
-  async invalidateToken(token: string): Promise<void> {
+  public async invalidateToken(token: string): Promise<void> {
     const decoded = this.decodeJWT(token);
     if (decoded) {
-      await UserService.setTokenInvalid(token, decoded);
+      await this.userService.setTokenInvalid(token, decoded);
     }
   }
 
-  async verifyAndRefreshToken(token: string, res: Response): Promise<boolean> {
+  public async verifyAndRefreshToken(token: string, res: Response): Promise<boolean> {
     const decodedToken = this.verifyJWT(token);
     if (!decodedToken) {
       return false;
     }
 
-    if (await UserService.isTokenInvalid(token)) {
+    if (await this.userService.isTokenInvalid(token)) {
       return false;
     }
 
     // Invalidate old token and create new one
-    await UserService.setTokenInvalid(token, decodedToken);
+    await this.userService.setTokenInvalid(token, decodedToken);
     const newToken = this.generateJWT(decodedToken.id);
     CookieService.setAuthCookies(res, newToken);
 
     return true;
   }
 
-  getCookieLength() {
-    return this.cookieLength;
-  }
-
-  async verifyGoogleToken(
-    credential: string,
-    clientId: string
-  ): Promise<string | null> {
+  public async verifyGoogleToken(credential: string, clientId: string): Promise<string | null> {
     try {
       const ticket = await this.client.verifyIdToken({
         idToken: credential,
@@ -103,13 +80,13 @@ export default class AuthService {
     }
   }
 
-  generateJWT(userId: string | number): string {
+  public generateJWT(userId: string | number): string {
     return jwt.sign({ id: userId }, this.jwtSecret, {
       expiresIn: this.tokenLength,
     });
   }
 
-  verifyJWT(token: string): JWTPayload | null {
+  private verifyJWT(token: string): JWTPayload | null {
     try {
       return jwt.verify(token, this.jwtSecret) as JWTPayload;
     } catch (error) {
@@ -118,7 +95,7 @@ export default class AuthService {
     }
   }
 
-  decodeJWT(token: string): JWTPayload | null {
+  public decodeJWT(token: string): JWTPayload | null {
     try {
       return jwtDecode<JWTPayload>(token);
     } catch (error) {

@@ -5,7 +5,6 @@ import CookieService from '@services/auth/cookie-service';
 import EmailService from '@services/auth/email-service';
 import UserService from '@services/user/user-service';
 import { Request, Response } from 'express';
-import { Types } from 'generated/prisma/runtime/library';
 import { inject, injectable } from 'inversify';
 import {
   EmailLoginRequest,
@@ -77,7 +76,7 @@ export default class LoginController {
       if (!token) {
         return res.sendStatus(200);
       }
-      
+
       await this.authService.invalidateToken(token);
     } catch (error) {
       console.error('Logout error:', error);

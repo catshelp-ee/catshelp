@@ -29,10 +29,10 @@ export default class ProfileController {
         return;
       }
 
-      const cats = await this.animalService.getAnimals(user.id);
+      const animals = await this.animalService.getAnimalsByUserId(user.id);
       const profiles = await this.profileService.getCatProfilesByOwner(
         user,
-        cats
+        animals
       );
       res.status(200).json({ profiles: profiles });
     } catch (error) {

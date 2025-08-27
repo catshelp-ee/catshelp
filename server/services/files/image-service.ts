@@ -47,14 +47,15 @@ export default class ImageService {
     files:
       | { [fieldname: string]: Express.Multer.File[] }
       | Express.Multer.File[],
-    animalID: number
+    animalId: number | string
   ) {
+    animalId = Number(animalId);
     const normalizedFiles = this.normalizeFiles(files);
     await Promise.all(
       normalizedFiles.map(file =>
         prisma.file.create({
           data: {
-            animalId: animalID,
+            animalId,
             uuid: file.filename.split('.')[0],
           },
         })

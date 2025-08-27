@@ -20,7 +20,7 @@ export default class FileController {
 
       await this.imageService.insertImageFilenamesIntoDB(
         req.files,
-        Number(req.body.animalId)
+        req.body.animalId
       );
       res.sendStatus(200);
     } catch (error) {

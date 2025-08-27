@@ -24,7 +24,7 @@ export default class CatProfileBuilder {
     animals: Animal[]
   ): Promise<Profile[]> {
     const profilePromises = (
-      await this.googleSheetsService.getRows(owner.id)
+      await this.googleSheetsService.getSheetRows(animals)
     ).map(row => {
       return this.buildSingleProfile(row.row, animals, owner);
     });

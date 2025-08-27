@@ -1,8 +1,5 @@
-import NodeCacheService from '@services/cache/cache-service';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import ProfileService from '@services/profile/profile-service';
-import UserService from '@services/user/user-service';
-import { Animal, User } from 'generated/prisma';
+import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import moment from 'moment';
 import { prisma } from 'server/prisma';
@@ -22,26 +19,10 @@ export default class AnimalService {
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService,
-    @inject(TYPES.NodeCacheService)
-    private nodeCacheService: NodeCacheService,
-    @inject(TYPES.UserService)
-    private userService: UserService,
-    @inject(TYPES.ProfileService)
-    private profileService: ProfileService
   ) { }
 
-  getAnimals(userID: number | string): Promise<Animal[]> {
-    return this.nodeCacheService.get(`animals:${userID}`);
-  }
-
-  async setAnimals(user: User): Promise<Animal[]> {
-    if (!user) {
-      return [];
-    }
-    this.nodeCacheService.set(
-      `animals:${user.id}`,
-      this.animalRepository.getCatsByUserEmail(user.email)
-    );
+  getAnimalsByUserId(id: number | string): Promise<Animal[]> {
+    return this.animalRepository.getAnimalsByUserId(id);
   }
 
   async createAnimal(data: CreateAnimalData): Promise<CreateAnimalResult> {
@@ -132,7 +113,8 @@ export default class AnimalService {
   }
 
   async updateAnimal(updatedAnimalData: Profile, userID: number | string) {
-    const animalRows = await this.googleSheetsService.getRows(userID);
+    const animals = await this.getAnimalsByUserId(userID);
+    const animalRows = await this.googleSheetsService.getSheetRows(animals);
     const animal = animalRows.find(
       animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
     );
@@ -152,22 +134,5 @@ export default class AnimalService {
       animal.index,
       animal
     );
-
-    const user = await this.userService.getUser(userID);
-
-    await this.setAnimals(user);
-    const profiles = await this.profileService.getProfiles(userID);
-    const index = profiles.findIndex(
-      profile => profile.mainInfo.name === animal.row.catName
-    );
-
-    profiles[index] = this.mergeObjects(updatedAnimalData, profiles[index]);
-    await this.profileService.setProfiles(userID, profiles);
-
-    const animalIndex = animalRows.findIndex(
-      animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
-    );
-    animalRows[animalIndex] = animal;
-    await this.googleSheetsService.setRows(userID, animalRows);
   }
 }

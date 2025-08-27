@@ -15,15 +15,14 @@ export default class AuthorizationMiddleware {
     this.authenticate = this.authenticate.bind(this);
   }
 
-  async canViewPage(token) {
-    const user = await this.userService.getUser(token.id);
+  public canViewPage(user) {
     if (!user) {
       return false;
     }
     return true;
   }
 
-  refreshToken(decodedToken, res) {
+  private refreshToken(decodedToken, res) {
     delete decodedToken.iat;
     delete decodedToken.exp;
     delete decodedToken.nbf;
@@ -34,14 +33,14 @@ export default class AuthorizationMiddleware {
     CookieService.setAuthCookies(res, newToken);
   }
 
-  tokenNeedsRefresh(decodedToken) {
+  private tokenNeedsRefresh(decodedToken) {
     const tokenExpTime = new Date(decodedToken.exp * 1000);
     const difInMilliseconds = new Date().getTime() - tokenExpTime.getTime();
     const refreshTime = 120000; //2 min
     return difInMilliseconds < refreshTime;
   }
 
-  async authenticate(req, res, next) {
+  public async authenticate(req, res, next) {
     let decodedToken;
     try {
       decodedToken = this.authService.decodeJWT(req.cookies.jwt);
@@ -52,13 +51,16 @@ export default class AuthorizationMiddleware {
       return res.sendStatus(401);
     }
 
-    if (!decodedToken || (await UserService.isTokenInvalid(req.cookies.jwt))) {
+    if (!decodedToken || (await this.userService.isTokenInvalid(req.cookies.jwt))) {
       res.cookie('jwt', '');
       res.cookie('catshelp', '');
       return res.sendStatus(401);
     }
 
-    if (!(await this.canViewPage(decodedToken))) {
+    const user = await this.userService.getUser(decodedToken.id);
+    req.user = user;
+
+    if (!this.canViewPage(user)) {
       return res.sendStatus(401);
     }
 

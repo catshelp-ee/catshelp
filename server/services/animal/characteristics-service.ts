@@ -11,6 +11,7 @@ import { PrismaTransactionClient } from 'types/prisma';
 @injectable()
 export default class CharacteristicsService {
   characteristicsInfo: CharacteristicsInfo;
+
   constructor() {
     this.characteristicsInfo = createCharacteristicsInfo();
   }

@@ -17,7 +17,7 @@ export default class CatProfileBuilder {
     private imageService: ImageService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService
-  ) {}
+  ) { }
 
   async buildProfilesFromSheet(
     owner: User,

@@ -7,8 +7,9 @@ import { prisma } from '../../prisma';
 @injectable()
 export default class UserService {
   constructor(
-    @inject(TYPES.NodeCacheService) private nodeCacheService: NodeCacheService
-  ) {}
+    @inject(TYPES.NodeCacheService)
+    private nodeCacheService: NodeCacheService
+  ) { }
 
   getUser(userID: number | string) {
     try {

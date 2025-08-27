@@ -10,7 +10,7 @@ export default class CronRunner {
   constructor(
     @inject(TYPES.SyncSheetDataToDBJob)
     private syncSheetDataToDBJob: SyncSheetDataToDBJob
-  ) {}
+  ) { }
 
   public startCronJobs() {
     cron.schedule('0 0 * * *', deleteExpiredRevokedTokens);

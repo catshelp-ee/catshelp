@@ -16,7 +16,7 @@ export default class DashboardService {
     private notificationService: NotificationService,
     @inject(TYPES.NodeCacheService)
     private nodeCacheService: NodeCacheService
-  ) {}
+  ) { }
 
   private getPets(userID: number | string) {
     return this.nodeCacheService.get<Pet[]>(`pets:${userID}`);

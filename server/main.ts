@@ -17,7 +17,6 @@ import { init } from './container';
  */
 
 import uploadImages from '@middleware/storage-middleware';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import AddRescueController from './controllers/add-rescue-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
@@ -34,10 +33,6 @@ dotenv.config();
 async function bootstrap() {
   // Initialize dependency injection container
   const container = await init();
-  const googleSheetsService = container.get<GoogleSheetsService>(
-    TYPES.GoogleSheetsService
-  );
-  await googleSheetsService.init();
 
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);

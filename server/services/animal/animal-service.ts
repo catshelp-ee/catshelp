@@ -112,6 +112,8 @@ export default class AnimalService {
     return merged;
   }
 
+
+  // SIIN
   async updateAnimal(updatedAnimalData: Profile, userID: number | string) {
     const animals = await this.getAnimalsByUserId(userID);
     const animalRows = await this.googleSheetsService.getSheetRows(animals);

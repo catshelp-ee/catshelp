@@ -17,6 +17,7 @@ import TYPES from 'types/inversify-types';
 
 import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import FileRepository from '@repositories/file-repository';
 import FosterHomeRepository from '@repositories/foster-home-repository';
 import RevokedTokenRepository from '@repositories/revoked-token-repository';
 import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
@@ -133,6 +134,10 @@ async function init() {
   container
     .bind<TreatmentHistoryRepository>(TYPES.TreatmentHistoryRepository)
     .to(TreatmentHistoryRepository)
+    .inSingletonScope();
+  container
+    .bind<FileRepository>(TYPES.FileRepository)
+    .to(FileRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

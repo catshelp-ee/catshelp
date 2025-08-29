@@ -3,12 +3,11 @@ import KompleksVaktsiiniKinnitusNotification from '@notifications/KompleksVaktsi
 import MarutaudVaktsiiniKinnitusNotification from '@notifications/MarutaudVaktsiiniKinnitusNotification';
 import PoleKassiNotification from '@notifications/PoleKassiNotification';
 import UssirohiNotification from '@notifications/UssirohiNotification';
-import GoogleSheetsService from '@services/google/google-sheets-service';
-import { formatEstonianDate, parseEstonianDate } from '@utils/date-utils';
-import { inject, injectable } from 'inversify';
+import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
+import { formatEstonianDate } from '@utils/date-utils';
+import { Animal, Treatment, TreatmentHistory } from 'generated/prisma';
+import { injectable } from 'inversify';
 import { Result } from 'types/dashboard';
-import { CatSheetsHeaders, Rows } from 'types/google-sheets';
-import TYPES from 'types/inversify-types';
 import { DEFAULT_COLORS } from '../dashboard/constants';
 
 @injectable()
@@ -16,10 +15,7 @@ export default class NotificationService {
   private readonly notifications: DashboardNotification[];
   private readonly colours: string[];
 
-  constructor(
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
-  ) {
+  constructor() {
     this.notifications = [
       new UssirohiNotification(),
       new KompleksVaktsiiniKinnitusNotification(),
@@ -28,59 +24,63 @@ export default class NotificationService {
     this.colours = DEFAULT_COLORS;
   }
 
-  processNotifications(rows: Rows): Result[] {
-    if (rows.length === 0) {
+  async processNotifications(animals: Animal[]): Promise<Result[]> {
+    if (animals.length === 0) {
       return this.createEmptyStateNotification();
     }
 
     const results: Result[] = [];
 
-    rows.forEach((row, index) => {
+    for (let index = 0; index < animals.length; index++) {
+      const animal = animals[index];
+
+      const treatmentHistories =
+        await TreatmentHistoryRepository.getEntireTreatmentHistory(animal.id);
+
       this.notifications.forEach(notification => {
-        const result = this.processNotification(notification, row.row, index);
+        const treatment = treatmentHistories.find(treatmentHistory => {
+          treatmentHistory.treatment.treatmentName ===
+            notification.dbColumnName;
+        });
+        const result = this.processNotification(
+          notification,
+          treatment,
+          animal
+        );
         if (result) {
           results.push(result);
         }
       });
-    });
+    }
 
     return results;
   }
 
   private processNotification(
     notification: DashboardNotification,
-    row: CatSheetsHeaders,
-    catIndex: number
+    treatmentHistory: TreatmentHistory & { treatment: Treatment },
+    animal: Animal
   ): Result | null {
-    const columnIndex =
-      this.googleSheetsService.headers[notification.dbColumnName];
-    if (columnIndex === undefined) {
-      return null;
-    }
-
-    const dateCell = row[columnIndex];
-    const sheetsDate = dateCell?.formattedValue;
-
     const result: Result = {
       label: notification.getText(),
-      assignee: row.catName,
+      assignee: animal.name,
       due: formatEstonianDate(new Date()),
       action: {
         label: notification.buttonText,
         redirect: notification.redirectURL,
       },
       urgent: true,
-      catColour: this.colours[catIndex % this.colours.length],
+      catColour: this.colours[0],
     };
 
     // Handle empty cell
-    if (!sheetsDate) {
+    if (!treatmentHistory) {
       notification.cellIsEmpty = true;
       return result;
     }
 
     // Parse and validate date
-    const triggerDate = parseEstonianDate(sheetsDate);
+    const triggerDate = treatmentHistory.visitDate;
     if (!triggerDate) {
       return null;
     }

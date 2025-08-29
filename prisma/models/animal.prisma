@@ -11,6 +11,7 @@ model Animal {
     animalsToRescue       AnimalToAnimalRescue[]
     animalCharacteristic  AnimalCharacteristic[]
     fosterHomeAnimals     AnimalToFosterHome[]
+    treatmentHistory      TreatmentHistory[]
     files                 File[]                  @relation("Files")
 
 

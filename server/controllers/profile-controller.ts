@@ -1,4 +1,5 @@
 import AnimalService from '@services/animal/animal-service';
+import CatProfileBuilder from '@services/animal/cat-profile-builder';
 import AuthService from '@services/auth/auth-service';
 import ProfileService from '@services/profile/profile-service';
 import UserService from '@services/user/user-service';
@@ -17,7 +18,9 @@ export default class ProfileController {
     @inject(TYPES.AuthService)
     private authService: AuthService,
     @inject(TYPES.AnimalService)
-    private animalService: AnimalService
+    private animalService: AnimalService,
+    @inject(TYPES.CatProfileBuilder)
+    private catProfileBuilder: CatProfileBuilder
   ) { }
 
   async getProfile(req: Request, res: Response): Promise<Response> {
@@ -30,10 +33,7 @@ export default class ProfileController {
       }
 
       const animals = await this.animalService.getAnimalsByUserId(user.id);
-      const profiles = await this.profileService.getCatProfilesByOwner(
-        user,
-        animals
-      );
+      const profiles = await this.catProfileBuilder.buildProfiles(animals);
       res.status(200).json({ profiles: profiles });
     } catch (error) {
       handleControllerError(error, res, 'Failed to fetch profile');

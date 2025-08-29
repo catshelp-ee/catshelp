@@ -1,5 +1,3 @@
-import AnimalService from '@services/animal/animal-service';
-import GoogleSheetsService from '@services/google/google-sheets-service';
 import UserService from '@services/user/user-service';
 import { OAuth2Client } from 'google-auth-library';
 import { inject, injectable } from 'inversify';
@@ -19,10 +17,6 @@ export default class AuthService {
   constructor(
     @inject(TYPES.UserService)
     private userService: UserService,
-    @inject(TYPES.AnimalService)
-    private animalService: AnimalService,
-    @inject(TYPES.GoogleSheetsService)
-    private googleSheetsService: GoogleSheetsService
   ) {
     this.client = new OAuth2Client();
     this.jwtSecret = process.env.JWT_SECRET!;
@@ -35,7 +29,7 @@ export default class AuthService {
     }
   }
 
-  async authenticateAndSetupUser(
+  async authenticate(
     email: string,
     res: Response
   ): Promise<User | null> {
@@ -48,10 +42,6 @@ export default class AuthService {
     CookieService.setAuthCookies(res, token);
 
     this.userService.setUser(user.id, user);
-
-    // Initialize Google Sheets
-    const animals = await this.animalService.getAnimalsByUserId(user.id);
-    await this.googleSheetsService.setInitRows(user.id, animals);
 
     return user;
   }

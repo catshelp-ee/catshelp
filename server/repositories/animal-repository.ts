@@ -28,6 +28,21 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
+  getAnimalByIdWithRescue(id: number) {
+    return prisma.animal.findFirst({
+      where: {
+        id
+      },
+      include: {
+        animalsToRescue: {
+          include: {
+            animalRescue: true
+          }
+        }
+      }
+    })
+  }
+
   async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
     id = Number(id);
     const user = await prisma.user.findFirst({

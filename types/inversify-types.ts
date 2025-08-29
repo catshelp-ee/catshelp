@@ -10,6 +10,7 @@ const TYPES = {
   UserService: Symbol.for('UserService'),
   NodeCacheService: Symbol.for('NodeCacheService'),
   AdminService: Symbol.for('AdminService'),
+  EmailService: Symbol.for('EmailService'),
 
   CatProfileBuilder: Symbol.for('CatProfileBuilder'),
 
@@ -25,6 +26,7 @@ const TYPES = {
   FileController: Symbol.for('FileController'),
   AnimalController: Symbol.for('AnimalController'),
   AdminController: Symbol.for('AdminController'),
+  EmailController: Symbol.for('EmailController'),
 
   AnimalRepository: Symbol.for('AnimalRepository'),
   AnimalRescueRepository: Symbol.for('AnimalRescueRepository'),

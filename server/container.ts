@@ -22,17 +22,19 @@ import FosterHomeRepository from '@repositories/foster-home-repository';
 import RevokedTokenRepository from '@repositories/revoked-token-repository';
 import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
 import UserRepository from '@repositories/user-repository';
+import AdminService from '@services/admin/admin-service';
+import EmailService from '@services/auth/email-service';
 import AddRescueController from './controllers/add-rescue-controller';
+import AdminController from './controllers/admin-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
+import EmailController from './controllers/email-controller';
 import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
 import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import AnimalRepository from './repositories/animal-repository';
-import AdminController from './controllers/admin-controller';
-import AdminService from '@services/admin/admin-service';
 
 import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import SyncUserDataToDBJob from './cron/jobs/sync-users-to-db-job';
@@ -105,6 +107,10 @@ async function init() {
   container
     .bind<CharacteristicsService>(TYPES.CharacteristicsService)
     .to(CharacteristicsService)
+    .inSingletonScope();
+  container
+    .bind<EmailService>(TYPES.EmailService)
+    .to(EmailService)
     .inSingletonScope();
   container
     .bind<CatProfileBuilder>(TYPES.CatProfileBuilder)
@@ -181,6 +187,9 @@ async function init() {
   container
     .bind<AdminController>(TYPES.AdminController)
     .to(AdminController)
+  container
+    .bind<EmailController>(TYPES.EmailController)
+    .to(EmailController)
     .inSingletonScope();
 
   // ─── Middleware ─────────────────────────────────────────────────

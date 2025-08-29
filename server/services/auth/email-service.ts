@@ -1,6 +1,8 @@
+import { injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 import { createTransport } from 'nodemailer';
 
+@injectable()
 export default class EmailService {
   transporter;
 
@@ -13,6 +15,21 @@ export default class EmailService {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
       },
+    });
+  }
+
+  sendEmail(
+    html: string,
+    subject: string,
+    to: string[],
+    attachments?: { filename: string; path: string }[]
+  ) {
+    return this.transporter.sendMail({
+      from: process.env.MAGIC_LINK_SENDER,
+      to,
+      subject,
+      html,
+      attachments,
     });
   }
 

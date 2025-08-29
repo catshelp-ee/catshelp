@@ -20,6 +20,7 @@ import uploadImages from '@middleware/storage-middleware';
 import AddRescueController from './controllers/add-rescue-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
+import EmailController from './controllers/email-controller';
 import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
@@ -40,6 +41,7 @@ async function bootstrap() {
   const animalController = container.get<AnimalController>(
     TYPES.AnimalController
   );
+  const emailController = container.get<EmailController>(TYPES.EmailController);
   const addRescueController = container.get<AddRescueController>(
     TYPES.AddRescueController
   );
@@ -98,6 +100,12 @@ async function bootstrap() {
     auth.authenticate,
     uploadImages,
     fileController.addPicture.bind(fileController)
+  );
+  app.post(
+    '/api/notifications/email',
+    auth.authenticate,
+    uploadImages,
+    emailController.sendNotification.bind(emailController)
   );
 
   app.get(

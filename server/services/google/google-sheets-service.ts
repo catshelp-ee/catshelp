@@ -1,5 +1,5 @@
+import AnimalRepository from '@repositories/animal-repository';
 import { formatEstonianDate } from '@utils/date-utils';
-import { Animal } from 'generated/prisma';
 import { google, sheets_v4 } from 'googleapis';
 import { inject, injectable } from 'inversify';
 import moment from 'moment';
@@ -7,9 +7,7 @@ import { CreateAnimalData } from 'types/animal';
 import { Profile } from 'types/cat';
 import {
   CatSheetsHeaders,
-  Headers,
-  RowLocation,
-  Rows,
+  Rows
 } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import { rowToObjectFixed } from 'utils/sheet-utils';
@@ -19,14 +17,13 @@ import GoogleAuthService from './google-auth-service';
 export default class GoogleSheetsService {
   sheets: sheets_v4.Sheets;
   sheetID: string;
-  sheetIDNum: number;
   sheetTable: string;
-  headers: Headers;
-  rows: Rows;
 
   constructor(
     @inject(TYPES.GoogleAuthService)
     private googleAuthService: GoogleAuthService,
+    @inject(TYPES.AnimalRepository)
+    private animalRepository: AnimalRepository,
   ) {
     this.sheets = google.sheets({
       version: 'v4',
@@ -39,21 +36,6 @@ export default class GoogleSheetsService {
 
     this.sheetID = process.env.CATS_SHEETS_ID!;
     this.sheetTable = process.env.CATS_TABLE_NAME!;
-    this.rows = [];
-  }
-
-  async getSheetRows(animals: Animal[]) {
-    const filteredRows = [] as Rows;
-    for (let i = 1; i < this.rows.length; i++) {
-      const row = this.rows[i].row;
-      const animal = animals.find(animal => animal.name === row.catName);
-      if (!animal) {
-        continue;
-      }
-      this.rows[i].id = animal.id;
-      filteredRows.push(this.rows[i]);
-    }
-    return filteredRows;
   }
 
 
@@ -98,22 +80,6 @@ export default class GoogleSheetsService {
     }
   }
 
-  private extractColumnMapping(rows: sheets_v4.Schema$GridData[]) {
-    const columnMapping: Headers = {};
-    const headerRow = rows[0]?.rowData?.[0]?.values;
-
-    if (!headerRow) {
-      throw new Error('No header row found');
-    }
-
-    headerRow.forEach((col, index: number) => {
-      if (col?.formattedValue) {
-        columnMapping[col.formattedValue] = index;
-      }
-    });
-
-    return columnMapping;
-  }
 
 
   async addDataToSheet(data: CreateAnimalData) {
@@ -142,42 +108,35 @@ export default class GoogleSheetsService {
     return m.isValid() ? m.format('DD.MM.YYYY') : '';
   }
 
-  updateRowValues(animalRow: RowLocation, animal: Profile) {
-    const newRow = animalRow.row;
+  updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
+    const values = rowToObjectFixed({ row: row.values });
 
-    const [spayedOrNeutered, gender] =
-      animal.characteristics.textFields.gender.split(' ');
+    if (animalProfile.characteristics.textFields.gender) {
+      const [spayedOrNeutered, gender] = animalProfile.characteristics.textFields.gender.split(' ');
+      values.gender = gender.toUpperCase();
+      values.spayedOrNeutered = spayedOrNeutered.endsWith('mata') ? 'EI' : 'JAH';
+    }
 
-    newRow.catName = animal.mainInfo.name;
-    newRow.microchip = animal.mainInfo.microchip;
-    newRow.microchipRegisteredInLLR = animal.mainInfo.microchipRegisteredInLLR
+    values.catName = animalProfile.mainInfo.name;
+    values.microchip = animalProfile.mainInfo.microchip;
+    values.microchipRegisteredInLLR = animalProfile.mainInfo.microchipRegisteredInLLR
       ? 'Jah'
       : 'Ei';
-    newRow.birthDate = this.formatDate(animal.mainInfo.birthDate);
-    newRow.gender = gender.toUpperCase();
-    newRow.spayedOrNeutered = spayedOrNeutered.endsWith('mata') ? 'EI' : 'JAH';
-    newRow.catColor = animal.characteristics.selectFields.coatColour;
-    newRow.furLength = animal.characteristics.selectFields.coatLength;
-    newRow.findingLocation = animal.animalRescueInfo.rescueLocation;
-    newRow.complexVaccine = this.formatDate(animal.vaccineInfo.complexVaccine);
-    newRow.nextVaccineDate = this.formatDate(
-      animal.vaccineInfo.nextComplexVaccineDate
-    );
-    newRow.rabiesVaccine = this.formatDate(animal.vaccineInfo.rabiesVaccine);
-    newRow.nextRabiesDate = this.formatDate(
-      animal.vaccineInfo.nextRabiesVaccineDate
-    );
-    newRow.dewormingOrFleaTreatmentName =
-      animal.vaccineInfo.dewormingOrFleaTreatmentName;
-    newRow.dewormingOrFleaTreatmentDate = this.formatDate(
-      animal.vaccineInfo.dewormingOrFleaTreatmentDate
-    );
-    animalRow.row = newRow;
+    values.birthDate = this.formatDate(animalProfile.mainInfo.birthDate);
+    values.catColor = animalProfile.characteristics.selectFields.coatColour;
+    values.furLength = animalProfile.characteristics.selectFields.coatLength;
+    values.findingLocation = animalProfile.animalRescueInfo.rescueLocation;
+    values.complexVaccine = this.formatDate(animalProfile.vaccineInfo.complexVaccine);
+    values.nextVaccineDate = this.formatDate(animalProfile.vaccineInfo.nextComplexVaccineDate);
+    values.rabiesVaccine = this.formatDate(animalProfile.vaccineInfo.rabiesVaccine);
+    values.nextRabiesDate = this.formatDate(animalProfile.vaccineInfo.nextRabiesVaccineDate);
+    values.dewormingOrFleaTreatmentName = animalProfile.vaccineInfo.dewormingOrFleaTreatmentName;
+    values.dewormingOrFleaTreatmentDate = this.formatDate(animalProfile.vaccineInfo.dewormingOrFleaTreatmentDate);
+
+    return values;
   }
 
-  convertAnimalToCellDataArray(
-    cat: CatSheetsHeaders
-  ): sheets_v4.Schema$CellData[] {
+  convertAnimalToCellDataArray(animal: CatSheetsHeaders): sheets_v4.Schema$CellData[] {
     const orderedKeys: (keyof CatSheetsHeaders)[] = [
       'catName',
       'rescueSequenceNumber',
@@ -214,46 +173,68 @@ export default class GoogleSheetsService {
 
     return orderedKeys.map(key => ({
       userEnteredValue: {
-        stringValue: String(cat[key] ?? ''),
+        stringValue: String(animal[key] ?? ''),
       },
     }));
   }
 
+  async getRow(animalProfile: Profile): Promise<[sheets_v4.Schema$RowData, number, number]> {
+    const sheet = await this.getNewSheet();
+
+    const sheetRows = sheet.data.sheets[0].data[0].rowData;
+
+    const animalWithRescue = await this.animalRepository.getAnimalByIdWithRescue(animalProfile.animalId);
+    const animalRescueSequenceNumber = animalWithRescue.animalsToRescue[animalWithRescue.animalsToRescue.length - 1].animalRescue.rankNr
+
+    for (let index = 1; index < sheetRows.length; index++) {
+      const row = sheetRows[index];
+      const rescueSequenceNumber = row.values[1].formattedValue;
+
+      if (rescueSequenceNumber !== animalRescueSequenceNumber) {
+        continue
+      }
+
+      return [row, index, sheet.data.sheets[0].properties.sheetId];
+    }
+    return null;
+
+  }
+
   async updateSheetCells(
-    animal: Profile,
-    animalRowIndex: number,
-    animalRow: RowLocation
+    animalProfile: Profile,
   ): Promise<void> {
+
     try {
-      this.updateRowValues(animalRow, animal);
+      const [row, rowIndex, sheetId] = await this.getRow(animalProfile);
+      const updatedRow = this.updateSheetRow(row, animalProfile);
+
       const updateRequests = this.buildUpdateRequests(
-        animalRow,
-        animalRowIndex
+        updatedRow,
+        rowIndex,
+        sheetId
       );
 
       await this.executeSheetUpdate(updateRequests);
+
     } catch (error) {
       console.error('Error updating sheet cells:', error);
       throw new Error(`Failed to update sheet cells: ${error.message}`);
     }
   }
 
-  private buildUpdateRequests(
-    animalRow: RowLocation,
-    animalRowIndex: number
-  ): any[] {
+  private buildUpdateRequests(row: CatSheetsHeaders, rowIndex: number, sheetId: number): sheets_v4.Schema$Request[] {
     const updateRequests: sheets_v4.Schema$Request[] = [];
 
     updateRequests.push({
       updateCells: {
         start: {
-          sheetId: this.sheetIDNum,
-          rowIndex: animalRowIndex, // Convert to 0-based index
+          sheetId,
+          rowIndex,
           columnIndex: 0,
         },
         rows: [
           {
-            values: this.convertAnimalToCellDataArray(animalRow.row),
+            values: this.convertAnimalToCellDataArray(row),
           },
         ],
         fields: 'userEnteredValue',
@@ -263,9 +244,7 @@ export default class GoogleSheetsService {
     return updateRequests;
   }
 
-  private async executeSheetUpdate(
-    updateRequests: sheets_v4.Schema$Request[]
-  ): Promise<void> {
+  private async executeSheetUpdate(updateRequests: sheets_v4.Schema$Request[]): Promise<void> {
     if (!updateRequests.length) {
       throw new Error('No update requests provided');
     }

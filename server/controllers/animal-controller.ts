@@ -1,5 +1,4 @@
 import AnimalService from '@services/animal/animal-service';
-import AuthService from '@services/auth/auth-service';
 import { parseDate } from '@utils/date-utils';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
@@ -9,8 +8,6 @@ import TYPES from 'types/inversify-types';
 @injectable()
 export default class AnimalController {
   constructor(
-    @inject(TYPES.AuthService)
-    private authService: AuthService,
     @inject(TYPES.AnimalService)
     private animalService: AnimalService
   ) { }
@@ -62,8 +59,7 @@ export default class AnimalController {
     updateAnimalData.mainInfo.microchipRegisteredInLLR = this.toBoolean(
       updateAnimalData.mainInfo.microchipRegisteredInLLR
     );
-    const userID = req.user.id;
-    await this.animalService.updateAnimal(updateAnimalData, userID);
+    await this.animalService.updateAnimal(updateAnimalData);
     return res.sendStatus(204);
   }
 }

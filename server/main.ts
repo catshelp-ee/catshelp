@@ -18,8 +18,10 @@ import { init } from './container';
 
 import uploadImages from '@middleware/storage-middleware';
 import AddRescueController from './controllers/add-rescue-controller';
+import AdminController from './controllers/admin-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
+import EmailController from './controllers/email-controller';
 import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
@@ -27,7 +29,6 @@ import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import AuthorizationMiddleware from './middleware/authorization-middleware';
 import errorMiddleware from './middleware/error-middleware';
-import AdminController from './controllers/admin-controller';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ async function bootstrap() {
   const userController = container.get<UserController>(TYPES.UserController);
   const fileController = container.get<FileController>(TYPES.FileController);
   const animalController = container.get<AnimalController>(TYPES.AnimalController);
+  const emailController = container.get<EmailController>(TYPES.EmailController);
   const addRescueController = container.get<AddRescueController>(TYPES.AddRescueController);
   const dashboardController = container.get<DashboardController>(TYPES.DashboardController);
   const profileController = container.get<ProfileController>(TYPES.ProfileController);
@@ -90,6 +92,12 @@ async function bootstrap() {
     auth.authenticate,
     uploadImages,
     fileController.addPicture.bind(fileController)
+  );
+  app.post(
+    '/api/notifications/email',
+    auth.authenticate,
+    uploadImages,
+    emailController.sendNotification.bind(emailController)
   );
 
   app.get(

@@ -1,3 +1,4 @@
+import AnimalRepository from '@repositories/animal-repository';
 import GoogleSheetsService from '@services/google/google-sheets-service';
 import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
@@ -7,7 +8,6 @@ import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 import { Profile } from 'types/cat';
 import TYPES from 'types/inversify-types';
 import { PrismaTransactionClient } from 'types/prisma';
-import AnimalRepository from '../../repositories/animal-repository';
 import CharacteristicsService from './characteristics-service';
 
 @injectable()
@@ -35,15 +35,14 @@ export default class AnimalService {
 
   async updateAnimalRescueTable(
     tx: PrismaTransactionClient,
-    animalID: number,
     updatedAnimalData: Profile
   ) {
     const relation = await tx.animalToAnimalRescue.findFirst({
-      where: { animalId: animalID },
+      where: { animalId: updatedAnimalData.animalId },
     });
 
     if (!relation?.animalRescueId) {
-      throw new Error(`AnimalRescue relation missing for cat ID: ${animalID}`);
+      throw new Error(`AnimalRescue relation missing for cat ID: ${updatedAnimalData.animalId}`);
     }
 
     await tx.animalRescue.update({
@@ -57,7 +56,6 @@ export default class AnimalService {
 
   async updateAnimalTable(
     tx: PrismaTransactionClient,
-    animalID: number,
     updatedAnimalData: Profile
   ) {
     const data = {
@@ -72,7 +70,7 @@ export default class AnimalService {
     };
 
     await tx.animal.update({
-      where: { id: animalID },
+      where: { id: updatedAnimalData.animalId },
       data: data,
     });
   }
@@ -113,28 +111,13 @@ export default class AnimalService {
   }
 
 
-  // SIIN
-  async updateAnimal(updatedAnimalData: Profile, userID: number | string) {
-    const animals = await this.getAnimalsByUserId(userID);
-    const animalRows = await this.googleSheetsService.getSheetRows(animals);
-    const animal = animalRows.find(
-      animalRow => animalRow.row.catName === updatedAnimalData.mainInfo.name
-    );
-
+  async updateAnimal(updatedAnimalData: Profile) {
     await prisma.$transaction(async tx => {
-      await this.characteristicsService.updateCharacteristics(
-        tx,
-        animal.id,
-        updatedAnimalData
-      );
-      await this.updateAnimalTable(tx, animal.id, updatedAnimalData);
-      await this.updateAnimalRescueTable(tx, animal.id, updatedAnimalData);
+      await this.characteristicsService.updateCharacteristics(tx, updatedAnimalData);
+      await this.updateAnimalTable(tx, updatedAnimalData);
+      await this.updateAnimalRescueTable(tx, updatedAnimalData);
     });
 
-    await this.googleSheetsService.updateSheetCells(
-      updatedAnimalData,
-      animal.index,
-      animal
-    );
+    await this.googleSheetsService.updateSheetCells(updatedAnimalData);
   }
 }

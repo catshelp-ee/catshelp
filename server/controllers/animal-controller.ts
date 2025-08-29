@@ -64,11 +64,9 @@ export default class AnimalController {
       const updateAnimalData = req.body;
       this.stringsToDates(updateAnimalData);
       this.multiSelectsToArrays(updateAnimalData);
-      updateAnimalData.mainInfo.microchipRegisteredInLLR = this.toBoolean(
-        updateAnimalData.mainInfo.microchipRegisteredInLLR
-      );
-      const userID = this.authService.decodeJWT(req.cookies.jwt).id;
-      await this.animalService.updateAnimal(updateAnimalData, userID);
+      updateAnimalData.mainInfo.microchipRegisteredInLLR = this.toBoolean(updateAnimalData.mainInfo.microchipRegisteredInLLR);
+
+      await this.animalService.updateAnimal(updateAnimalData);
       return res.sendStatus(204);
     } catch (error) {
       handleControllerError(error, res, 'Failed to update pet');

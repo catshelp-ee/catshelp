@@ -6,11 +6,10 @@ import moment from 'moment';
 import { CreateAnimalData } from 'types/animal';
 import { Profile } from 'types/cat';
 import {
-  CatSheetsHeaders,
-  Rows
+  CatSheetsHeaders
 } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
-import { rowToObjectFixed } from 'utils/sheet-utils';
+import { sheetsRowToObject } from 'utils/sheet-utils';
 import GoogleAuthService from './google-auth-service';
 
 @injectable()
@@ -50,19 +49,6 @@ export default class GoogleSheetsService {
       return sheetData;
     } catch (e) {
       throw new Error('Error fetching sheet: ', e);
-    }
-  }
-
-  convertRowToObject(rowData: sheets_v4.Schema$RowData[], rows: Rows) {
-    for (let i = 0; i < rowData.length; i++) {
-      const row = rowData[i];
-      const values = rowToObjectFixed({ row: row.values });
-
-      rows.push({
-        row: values,
-        index: i,
-        id: -1,
-      });
     }
   }
 
@@ -109,7 +95,7 @@ export default class GoogleSheetsService {
   }
 
   updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
-    const values = rowToObjectFixed({ row: row.values });
+    const values = sheetsRowToObject(row.values);
 
     if (animalProfile.characteristics.textFields.gender) {
       const [spayedOrNeutered, gender] = animalProfile.characteristics.textFields.gender.split(' ');
@@ -191,7 +177,7 @@ export default class GoogleSheetsService {
       const rescueSequenceNumber = row.values[1].formattedValue;
 
       if (rescueSequenceNumber !== animalRescueSequenceNumber) {
-        continue
+        continue;
       }
 
       return [row, index, sheet.data.sheets[0].properties.sheetId];

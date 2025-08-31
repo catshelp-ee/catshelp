@@ -33,10 +33,7 @@ export default class AnimalService {
     return animal;
   }
 
-  async updateAnimalRescueTable(
-    tx: PrismaTransactionClient,
-    updatedAnimalData: Profile
-  ) {
+  async updateAnimalRescueTable(tx: PrismaTransactionClient, updatedAnimalData: Profile) {
     const relation = await tx.animalToAnimalRescue.findFirst({
       where: { animalId: updatedAnimalData.animalId },
     });
@@ -54,10 +51,7 @@ export default class AnimalService {
     });
   }
 
-  async updateAnimalTable(
-    tx: PrismaTransactionClient,
-    updatedAnimalData: Profile
-  ) {
+  async updateAnimalTable(tx: PrismaTransactionClient, updatedAnimalData: Profile) {
     const data = {
       profileTitle: updatedAnimalData.title || null,
       description: updatedAnimalData.description || null,
@@ -74,42 +68,6 @@ export default class AnimalService {
       data: data,
     });
   }
-
-  private isEmptyObject(obj: any): boolean {
-    return (
-      obj &&
-      Object.prototype.toString.call(obj) === '[object Object]' &&
-      Object.keys(obj).length === 0
-    );
-  }
-
-  private isPlainObject(obj) {
-    return Object.prototype.toString.call(obj) === '[object Object]';
-  }
-
-  private mergeObjects(updated, original) {
-    if (!updated) return original;
-    if (!original) return updated;
-
-    const merged = { ...original };
-
-    for (const key in updated) {
-      const updatedValue = updated[key];
-
-      if (!updatedValue || this.isEmptyObject(updatedValue)) {
-        continue;
-      }
-
-      if (this.isPlainObject(updatedValue) && this.isPlainObject(merged[key])) {
-        merged[key] = this.mergeObjects(updatedValue, merged[key]);
-      } else {
-        merged[key] = updatedValue;
-      }
-    }
-
-    return merged;
-  }
-
 
   async updateAnimal(updatedAnimalData: Profile) {
     await prisma.$transaction(async tx => {

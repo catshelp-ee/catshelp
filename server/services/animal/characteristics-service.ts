@@ -2,52 +2,47 @@ import { injectable } from 'inversify';
 import { prisma } from 'server/prisma';
 import {
   CharacteristicsInfo,
-  CharacteristicsResult,
   createCharacteristicsInfo,
   MultiselectFields,
   Profile,
   SelectFields,
-  TextFields,
+  TextFields
 } from 'types/cat';
 import { PrismaTransactionClient } from 'types/prisma';
 
 @injectable()
 export default class CharacteristicsService {
-  private readonly characteristicsInfo: CharacteristicsInfo;
-
-  constructor() {
-    this.characteristicsInfo = createCharacteristicsInfo();
-  }
-
-  async getCharacteristics(animalId: number): Promise<CharacteristicsResult> {
+  async getCharacteristics(animalId: number): Promise<CharacteristicsInfo> {
     const characteristics = await prisma.animalCharacteristic.findMany({
       where: { animalId },
     });
 
-    const multiSelectArrays: Record<string, string[]> = {};
-    const others: Record<string, string> = {};
+    const characteristicsInfo = createCharacteristicsInfo();
 
-    for (const { type, name } of characteristics) {
-      if (type in this.characteristicsInfo.multiselectFields) {
-        if (!multiSelectArrays[type]) {
-          multiSelectArrays[type] = [];
-        }
-        multiSelectArrays[type].push(name);
-      } else {
-        others[type] = name;
-      }
-    }
 
-    return {
-      multiSelectArrays,
-      others,
-    };
+    characteristicsInfo.multiselectFields.behaviorTraits = characteristics.find(c => c.type === "BEHAVIOUR_TRAITS")?.value?.split(",") ?? [];
+    characteristicsInfo.multiselectFields.likes = characteristics.find(c => c.type === "LIKES")?.value?.split(",") ?? [];
+    characteristicsInfo.multiselectFields.personality = characteristics.find(c => c.type === "PERSONALITY")?.value?.split(",") ?? [];
+
+    characteristicsInfo.selectFields.attitudeTowardsCats = characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CATS")?.value ?? "";
+    characteristicsInfo.selectFields.attitudeTowardsChildren = characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CHILDREN")?.value ?? "";
+    characteristicsInfo.selectFields.attitudeTowardsDogs = characteristics.find(c => c.type === "ATTITUDE_TOWARDS_DOGS")?.value ?? "";
+    characteristicsInfo.selectFields.coatColour = characteristics.find(c => c.type === "COAT_COLOUR")?.value ?? "";
+    characteristicsInfo.selectFields.coatLength = characteristics.find(c => c.type === "COAT_LENGTH")?.value ?? "";
+    characteristicsInfo.selectFields.suitabilityForIndoorOrOutdoor = characteristics.find(c => c.type === "SUITABILITY_FOR_INDOOR_OR_OUTDOOR")?.value ?? "";
+
+    characteristicsInfo.textFields.additionalNotes = characteristics.find(c => c.type === "ADDITIONAL_NOTES")?.value ?? "";
+    characteristicsInfo.textFields.chronicConditions = characteristics.find(c => c.type === "CHRONIC_CONDITIONS")?.value ?? "";
+    characteristicsInfo.textFields.description = characteristics.find(c => c.type === "DESCRIPTION")?.value ?? "";
+    characteristicsInfo.textFields.fosterStayDuration = characteristics.find(c => c.type === "FOSTER_STAY_DURATION")?.value ?? "";
+    characteristicsInfo.textFields.rescueStory = characteristics.find(c => c.type === "RESCUE_STORY")?.value ?? "";
+    characteristicsInfo.textFields.specialRequirementsForNewFamily = characteristics.find(c => c.type === "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY")?.value ?? "";
+    characteristicsInfo.textFields.gender = characteristics.find(c => c.type === "GENDER")?.value ?? "";
+
+    return characteristicsInfo;
   }
 
-  async updateCharacteristics(
-    tx: PrismaTransactionClient,
-    updatedAnimalData: Profile
-  ): Promise<void> {
+  async updateCharacteristics(tx: PrismaTransactionClient, updatedAnimalData: Profile): Promise<void> {
     const { animalId, characteristics } = updatedAnimalData;
 
     // Handle multiselect fields
@@ -60,115 +55,70 @@ export default class CharacteristicsService {
     await this.updateTextFields(tx, animalId, characteristics.textFields);
   }
 
-  private async updateMultiselectFields(
-    tx: PrismaTransactionClient,
-    animalId: number,
-    multiselectFields: MultiselectFields
-  ): Promise<void> {
-    for (const [type, values] of Object.entries(multiselectFields)) {
-      await this.updateArrayCharacteristic(tx, animalId, type, values);
-    }
+  private async updateMultiselectFields(tx: PrismaTransactionClient, animalId: number, multiselectFields: MultiselectFields): Promise<void> {
+    await Promise.all([
+      this.updateCharacteristic(tx, animalId, "BEHAVIOUR_TRAITS", multiselectFields.behaviorTraits),
+      this.updateCharacteristic(tx, animalId, "LIKES", multiselectFields.likes),
+      this.updateCharacteristic(tx, animalId, "PERSONALITY", multiselectFields.personality)
+    ]);
   }
 
-  private async updateSelectFields(
-    tx: PrismaTransactionClient,
-    animalId: number,
-    selectFields: SelectFields
-  ): Promise<void> {
-    for (const [type, value] of Object.entries(selectFields)) {
-      await this.updateSingleCharacteristic(tx, animalId, type, value);
-    }
+  private async updateSelectFields(tx: PrismaTransactionClient, animalId: number, selectFields: SelectFields): Promise<void> {
+    await Promise.all([
+      this.updateCharacteristic(tx, animalId, "ATTITUDE_TOWARDS_CATS", selectFields.attitudeTowardsCats),
+      this.updateCharacteristic(tx, animalId, "ATTITUDE_TOWARDS_CHILDREN", selectFields.attitudeTowardsChildren),
+      this.updateCharacteristic(tx, animalId, "ATTITUDE_TOWARDS_DOGS", selectFields.attitudeTowardsDogs),
+      this.updateCharacteristic(tx, animalId, "COAT_COLOUR", selectFields.coatColour),
+      this.updateCharacteristic(tx, animalId, "COAT_LENGTH", selectFields.coatLength),
+      this.updateCharacteristic(tx, animalId, "SUITABILITY_FOR_INDOOR_OR_OUTDOOR", selectFields.suitabilityForIndoorOrOutdoor),
+    ]);
   }
 
-  private async updateTextFields(
-    tx: PrismaTransactionClient,
-    animalId: number,
-    textFields: TextFields
-  ): Promise<void> {
-    for (const [type, value] of Object.entries(textFields)) {
-      if (type === 'gender') {
-        await this.handleGenderField(tx, animalId, value);
-      } else {
-        await this.updateSingleCharacteristic(tx, animalId, type, value);
-      }
-    }
-  }
+  private async updateTextFields(tx: PrismaTransactionClient, animalId: number, textFields: TextFields): Promise<void> {
+    const promises = [
+      this.updateCharacteristic(tx, animalId, "ADDITIONAL_NOTES", textFields.additionalNotes),
+      this.updateCharacteristic(tx, animalId, "CHRONIC_CONDITIONS", textFields.chronicConditions),
+      this.updateCharacteristic(tx, animalId, "DESCRIPTION", textFields.description),
+      this.updateCharacteristic(tx, animalId, "FOSTER_STAY_DURATION", textFields.fosterStayDuration),
 
-  private async handleGenderField(
-    tx: PrismaTransactionClient,
-    animalId: number,
-    genderValue: string
-  ): Promise<void> {
-    const genderParts = genderValue.split(' ');
+      this.updateCharacteristic(tx, animalId, "FOSTER_STAY_DURATION", textFields.gender),
 
-    if (genderParts.length >= 2) {
-      const [spayedOrNeutered, gender] = genderParts;
+      this.updateCharacteristic(tx, animalId, "RESCUE_STORY", textFields.rescueStory),
+      this.updateCharacteristic(tx, animalId, "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY", textFields.specialRequirementsForNewFamily),
+    ];
 
-      await Promise.all([
-        this.updateSingleCharacteristic(tx, animalId, 'spayedOrNeutered', spayedOrNeutered),
-        this.updateSingleCharacteristic(tx, animalId, 'gender', gender),
-      ]);
-    } else {
-      // If gender doesn't have the expected format, just update as-is
-      await this.updateSingleCharacteristic(tx, animalId, 'gender', genderValue);
-    }
-  }
+    const genderParts = textFields.gender?.split(' ');
 
-  private async updateArrayCharacteristic(
-    tx: PrismaTransactionClient,
-    animalId: number,
-    type: string,
-    values: string[]
-  ): Promise<void> {
-    // Delete existing characteristics of this type
-    await tx.animalCharacteristic.deleteMany({
-      where: { animalId, type },
-    });
-
-    // Insert new values if any exist
-    if (values && values.length > 0) {
-      const insertData = values
-        .filter(val => val && val.trim()) // Filter out empty/null values
-        .map(val => ({
-          animalId,
-          type,
-          name: val.trim(),
-        }));
-
-      if (insertData.length > 0) {
-        await tx.animalCharacteristic.createMany({ data: insertData });
-      }
-    }
-  }
-
-  private async updateSingleCharacteristic(
-    tx: PrismaTransactionClient,
-    animalId: number,
-    type: string,
-    value: string
-  ): Promise<void> {
-    if (!value || !value.trim()) {
-      // If value is empty, delete existing characteristic
-      await tx.animalCharacteristic.deleteMany({
-        where: { animalId, type },
-      });
+    if (!genderParts || genderParts.length < 2) {
+      await Promise.all(promises);
       return;
     }
 
-    const trimmedValue = value.trim();
-    const existing = await tx.animalCharacteristic.findFirst({
-      where: { animalId, type },
-    });
+    const [spayedOrNeutered, gender] = genderParts;
 
-    if (existing) {
-      await tx.animalCharacteristic.update({
-        where: { id: existing.id },
-        data: { name: trimmedValue },
-      });
-    } else {
-      await tx.animalCharacteristic.create({
-        data: { animalId, type, name: trimmedValue },
-      });
+    promises.push(this.updateCharacteristic(tx, animalId, 'SPAYED_OR_NEUTERED', spayedOrNeutered));
+    promises.push(this.updateCharacteristic(tx, animalId, 'GENDER', gender));
+
+    await Promise.all(promises);
+  }
+
+  private async updateCharacteristic(tx: PrismaTransactionClient, animalId: number, type: string, values: string[] | string) {
+    if (!values) {
+      return;
     }
+
+    await tx.animalCharacteristic.upsert({
+      where: {
+        characteristicOfType: { animalId, type }
+      },
+      update: {
+        value: values.toString(),
+      },
+      create: {
+        animalId,
+        type,
+        value: values.toString(),
+      },
+    });
   }
 }

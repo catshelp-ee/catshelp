@@ -32,8 +32,9 @@ export interface formFields {
 }
 
 export interface CharacteristicsResult {
-  multiSelectArrays: Record<keyof MultiselectFields, string[]>;
-  others: Record<keyof SelectFields | keyof TextFields, string>;
+  multiselectFieldValues: Record<keyof MultiselectFields, string[]>;
+  selectFieldValues: Record<keyof SelectFields, string>;
+  textFieldValues: Record<keyof TextFields, string>;
 }
 
 export interface Profile {
@@ -126,7 +127,7 @@ function createMultiselectFields() {
   };
 }
 
-interface SelectFields {
+export interface SelectFields {
   attitudeTowardsCats: string;
   attitudeTowardsDogs: string;
   attitudeTowardsChildren: string;
@@ -146,7 +147,7 @@ function createSelectFields() {
   };
 }
 
-interface TextFields {
+export interface TextFields {
   gender: string;
   chronicConditions: string;
   fosterStayDuration: string;

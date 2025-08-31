@@ -97,6 +97,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
     }
 
+
     try {
       await axios.put("/api/animals/cat-profile", updatedAnimalData, {
         withCredentials: true,

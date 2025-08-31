@@ -149,6 +149,7 @@ function createSelectFields() {
 
 export interface TextFields {
   gender: string;
+  spayedOrNeutered: string;
   chronicConditions: string;
   fosterStayDuration: string;
   rescueStory: string;
@@ -160,6 +161,7 @@ export interface TextFields {
 function createTextFields() {
   return {
     gender: '',
+    spayedOrNeutered: '',
     chronicConditions: '',
     fosterStayDuration: '',
     rescueStory: '',

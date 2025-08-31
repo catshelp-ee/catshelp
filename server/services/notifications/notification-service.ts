@@ -45,7 +45,8 @@ export default class NotificationService {
         const result = this.processNotification(
           notification,
           treatment,
-          animal
+          animal,
+          index
         );
         if (result) {
           results.push(result);
@@ -59,7 +60,8 @@ export default class NotificationService {
   private processNotification(
     notification: DashboardNotification,
     treatmentHistory: TreatmentHistory & { treatment: Treatment },
-    animal: Animal
+    animal: Animal,
+    catColourIndex: number
   ): Result | null {
     const result: Result = {
       label: notification.getText(),
@@ -70,7 +72,7 @@ export default class NotificationService {
         redirect: notification.redirectURL,
       },
       urgent: true,
-      catColour: this.colours[0],
+      catColour: this.colours[catColourIndex % this.colours.length],
     };
 
     // Handle empty cell

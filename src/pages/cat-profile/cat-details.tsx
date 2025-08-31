@@ -107,7 +107,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
   };
 
   const FIELD_LABELS = {
-    "Kassi sugu": capitalize(selectedCat.characteristics.textFields.gender.split(' ')[1]),
+    "Kassi sugu": capitalize(selectedCat.characteristics.textFields.gender),
     "Kassi vanus": calculateAge(selectedCat.mainInfo.birthDate),
     "Kassi välimus": [
       selectedCat.characteristics.selectFields.coatColour,

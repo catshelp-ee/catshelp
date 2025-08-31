@@ -38,6 +38,7 @@ export default class CharacteristicsService {
     characteristicsInfo.textFields.rescueStory = characteristics.find(c => c.type === "RESCUE_STORY")?.value ?? "";
     characteristicsInfo.textFields.specialRequirementsForNewFamily = characteristics.find(c => c.type === "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY")?.value ?? "";
     characteristicsInfo.textFields.gender = characteristics.find(c => c.type === "GENDER")?.value ?? "";
+    characteristicsInfo.textFields.spayedOrNeutered = characteristics.find(c => c.type === "SPAYED_OR_NEUTERED")?.value ?? "";
 
     return characteristicsInfo;
   }
@@ -80,24 +81,11 @@ export default class CharacteristicsService {
       this.updateCharacteristic(tx, animalId, "CHRONIC_CONDITIONS", textFields.chronicConditions),
       this.updateCharacteristic(tx, animalId, "DESCRIPTION", textFields.description),
       this.updateCharacteristic(tx, animalId, "FOSTER_STAY_DURATION", textFields.fosterStayDuration),
-
-      this.updateCharacteristic(tx, animalId, "FOSTER_STAY_DURATION", textFields.gender),
-
+      this.updateCharacteristic(tx, animalId, "GENDER", textFields.gender),
+      this.updateCharacteristic(tx, animalId, "SPAYED_OR_NEUTERED", textFields.spayedOrNeutered),
       this.updateCharacteristic(tx, animalId, "RESCUE_STORY", textFields.rescueStory),
       this.updateCharacteristic(tx, animalId, "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY", textFields.specialRequirementsForNewFamily),
     ];
-
-    const genderParts = textFields.gender?.split(' ');
-
-    if (!genderParts || genderParts.length < 2) {
-      await Promise.all(promises);
-      return;
-    }
-
-    const [spayedOrNeutered, gender] = genderParts;
-
-    promises.push(this.updateCharacteristic(tx, animalId, 'SPAYED_OR_NEUTERED', spayedOrNeutered));
-    promises.push(this.updateCharacteristic(tx, animalId, 'GENDER', gender));
 
     await Promise.all(promises);
   }

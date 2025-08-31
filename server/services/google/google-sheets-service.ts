@@ -97,21 +97,20 @@ export default class GoogleSheetsService {
   updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
     const values = sheetsRowToObject(row.values);
 
-    if (animalProfile.characteristics.textFields.gender) {
-      const [spayedOrNeutered, gender] = animalProfile.characteristics.textFields.gender.split(' ');
-      values.gender = gender.toUpperCase();
-      values.spayedOrNeutered = spayedOrNeutered.endsWith('mata') ? 'EI' : 'JAH';
-    }
-
     values.catName = animalProfile.mainInfo.name;
     values.microchip = animalProfile.mainInfo.microchip;
     values.microchipRegisteredInLLR = animalProfile.mainInfo.microchipRegisteredInLLR
       ? 'Jah'
       : 'Ei';
     values.birthDate = this.formatDate(animalProfile.mainInfo.birthDate);
+
     values.catColor = animalProfile.characteristics.selectFields.coatColour;
     values.furLength = animalProfile.characteristics.selectFields.coatLength;
+    values.gender = animalProfile.characteristics.textFields.gender;
+    values.spayedOrNeutered = animalProfile.characteristics.textFields.spayedOrNeutered.endsWith('mata') ? "EI" : "JAH";
+
     values.findingLocation = animalProfile.animalRescueInfo.rescueLocation;
+
     values.complexVaccine = this.formatDate(animalProfile.vaccineInfo.complexVaccine);
     values.nextVaccineDate = this.formatDate(animalProfile.vaccineInfo.nextComplexVaccineDate);
     values.rabiesVaccine = this.formatDate(animalProfile.vaccineInfo.rabiesVaccine);

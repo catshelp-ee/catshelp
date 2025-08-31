@@ -64,7 +64,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       <FormLabel>Sugu</FormLabel>
       <RadioGroup
         name="characteristics.textFields.gender"
-        value={tempSelectedCat.characteristics.textFields.gender}
+        value={tempSelectedCat.characteristics.textFields.spayedOrNeutered + " " + tempSelectedCat.characteristics.textFields.gender}
         onChange={(e) => {
           updateField(e, "characteristics.textFields.gender");
         }}

@@ -25,26 +25,11 @@ export default class CharacteristicsService {
 
     const characteristicsInfo = createCharacteristicsInfo();
 
-    const characteristicsMap = {
-      "BEHAVIOUR_TRAITS": characteristics.find(c => c.type === "BEHAVIOUR_TRAITS"),
-      "LIKES": characteristics.find(c => c.type === "LIKES"),
-      "PERSONALITY": characteristics.find(c => c.type === "PERSONALITY"),
+    const characteristicsMap = {};
 
-      "ATTITUDE_TOWARDS_CATS": characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CATS"),
-      "ATTITUDE_TOWARDS_CHILDREN": characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CHILDREN"),
-      "ATTITUDE_TOWARDS_DOGS": characteristics.find(c => c.type === "ATTITUDE_TOWARDS_DOGS"),
-      "COAT_COLOUR": characteristics.find(c => c.type === "COAT_COLOUR"),
-      "COAT_LENGTH": characteristics.find(c => c.type === "COAT_LENGTH"),
-      "SUITABILITY_FOR_INDOOR_OR_OUTDOOR": characteristics.find(c => c.type === "SUITABILITY_FOR_INDOOR_OR_OUTDOOR"),
-
-      "ADDITIONAL_NOTES": characteristics.find(c => c.type === "ADDITIONAL_NOTES"),
-      "CHRONIC_CONDITIONS": characteristics.find(c => c.type === "CHRONIC_CONDITIONS"),
-      "DESCRIPTION": characteristics.find(c => c.type === "DESCRIPTION"),
-      "FOSTER_STAY_DURATION": characteristics.find(c => c.type === "FOSTER_STAY_DURATION"),
-      "RESCUE_STORY": characteristics.find(c => c.type === "RESCUE_STORY"),
-      "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY": characteristics.find(c => c.type === "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY"),
-      "GENDER": characteristics.find(c => c.type === "GENDER"),
-      "SPAYED_OR_NEUTERED": characteristics.find(c => c.type === "SPAYED_OR_NEUTERED"),
+    for (let index = 0; index < characteristics.length; index++) {
+      const characteristic = characteristics[index];
+      characteristicsMap[characteristic.type] = characteristic;
     }
 
     characteristicsInfo.multiselectFields.behaviorTraits = characteristicsMap["BEHAVIOUR_TRAITS"]?.value?.split(",") ?? [];

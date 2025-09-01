@@ -1,33 +1,30 @@
-import ImageService from '@services/files/image-service';
+import FileRepository from '@repositories/file-repository';
+import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { Pet } from 'types/animal';
-import { Rows } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class DashboardService {
   constructor(
-    @inject(TYPES.ImageService)
-    private imageService: ImageService,
+    @inject(TYPES.FileRepository)
+    private fileRepository: FileRepository
   ) { }
 
-  async getPetAvatars(rows: Rows): Promise<Pet[]> {
-    const petPromises = rows.map(async row => {
-      const profilePicture = await this.imageService.fetchProfilePicture(
-        row.id
-      );
+  public async getAvatars(animals: Animal[]): Promise<Pet[]> {
+    const avatars: Pet[] = [];
+    for (let index = 0; index < animals.length; index++) {
+      const animal = animals[index];
+      const profilePicture = await this.fileRepository.getProfilePicture(animal.id);
 
-      let pathToImage = 'missing64x64.png';
-      if (profilePicture) {
-        pathToImage = `images/${profilePicture.uuid}.jpg`;
-      }
+      const pathToImage = profilePicture ? `images/${profilePicture.uuid}.jpg` : "missing64x64.png";
 
-      return {
-        name: row.row.catName,
-        pathToImage: pathToImage,
-      };
-    });
+      avatars.push({
+        name: animal.name,
+        pathToImage,
+      });
+    }
 
-    return Promise.all(petPromises);
+    return avatars;
   }
 }

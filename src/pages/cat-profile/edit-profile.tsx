@@ -81,12 +81,22 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
     const formData = new FormData(e.target as HTMLFormElement);
     const updatedAnimalData = parseDotNotationFormData(formData);
+    updatedAnimalData.animalId = tempSelectedCat.animalId;
+
+    const [spayedOrNeutered, gender] = updatedAnimalData.characteristics.textFields.gender.split(" ");
+
+
+    updatedAnimalData.characteristics.textFields.gender = gender;
+    updatedAnimalData.characteristics.textFields.spayedOrNeutered = spayedOrNeutered;
+
 
     const images: File[] = previews.map((p) => p.file);
 
     if (images.length > 0) {
       await uploadImages(images, selectedCat.animalId);
+
     }
+
 
     try {
       await axios.put("/api/animals/cat-profile", updatedAnimalData, {

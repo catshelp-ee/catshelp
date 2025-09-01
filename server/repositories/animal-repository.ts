@@ -30,6 +30,22 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
+  public getAnimalByIdWithRescue(id: number) {
+    return prisma.animal.findFirst({
+      where: {
+        id
+      },
+      include: {
+        animalsToRescue: {
+          include: {
+            animalRescue: true
+          }
+        }
+      }
+    })
+  }
+
+
   public async createAnimalWithRescue(data: CreateAnimalData): Promise<CreateAnimalResult> {
     return await prisma.$transaction(async tx => {
       const animal = await tx.animal.create({ data: {} });
@@ -67,8 +83,9 @@ export default class AnimalRepository {
     return animal;
   }
 
-  public async saveOrUpdateAnimal(data): Promise<Animal> {
-    const newRow = await prisma.animal.upsert({
+  public async saveOrUpdateAnimal(data, tx?): Promise<Animal> {
+    const orm = tx || prisma;
+    const newRow = await orm.animal.upsert({
       where: {
         id: data.id || 0,
       },

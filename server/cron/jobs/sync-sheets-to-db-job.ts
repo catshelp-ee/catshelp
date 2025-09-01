@@ -1,15 +1,15 @@
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import AnimalRepository from '@repositories/animal-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
+import UserRepository from '@repositories/user-repository';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import path from "node:path";
-import fs from "node:fs";
 import sha256 from 'crypto-js/sha256';
 import { inject, injectable } from 'inversify';
-import TYPES from 'types/inversify-types';
-import AnimalRescueRepository from '@repositories/animal-rescue-repository';
-import AnimalRepository from '@repositories/animal-repository';
-import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
-import UserRepository from '@repositories/user-repository';
-import FosterHomeRepository from '@repositories/foster-home-repository';
 import moment from 'moment';
+import fs from "node:fs";
+import path from "node:path";
+import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class SyncSheetDataToDBJob {
@@ -208,25 +208,25 @@ export default class SyncSheetDataToDBJob {
 
     private async updateCharacteristics(newData, animalId) {
         if (newData['KASSI_VÄRV'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'coatColour', name: newData['KASSI_VÄRV'].formattedValue });
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'coatColour', value: newData['KASSI_VÄRV'].formattedValue });
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'coatColour' });
         }
 
         if (newData['KASSI_KARVA_PIKKUS'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'coatLength', name: newData['KASSI_KARVA_PIKKUS'].formattedValue });
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'coatLength', value: newData['KASSI_KARVA_PIKKUS'].formattedValue });
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'coatLength' });
         }
 
         if (newData['SUGU'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'gender', name: newData['SUGU'].formattedValue });
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'gender', value: newData['SUGU'].formattedValue });
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'gender' });
         }
 
         if (newData['LÕIGATUD'].formattedValue) {
-            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'spayedOrNeutered', name: newData['LÕIGATUD'].formattedValue });
+            await this.animalCharacteristicRepository.saveOrUpdateCharacteristic({ animalId: animalId, type: 'spayedOrNeutered', value: newData['LÕIGATUD'].formattedValue });
         } else {
             await this.animalCharacteristicRepository.deleteCharacteristic({ animalId: animalId, type: 'spayedOrNeutered' });
         }

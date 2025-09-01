@@ -4,8 +4,9 @@ import { prisma } from 'server/prisma';
 @injectable()
 export default class AnimalCharacteristicRepository {
 
-    public async saveOrUpdateCharacteristic(data) {
-        const newRow = await prisma.animalCharacteristic.upsert({
+    public async saveOrUpdateCharacteristic(data, tx?) {
+        const orm = tx || prisma;
+        const newRow = await orm.animalCharacteristic.upsert({
             where: {
                 characteristicOfType: {
                     animalId: data.animalId,
@@ -13,16 +14,17 @@ export default class AnimalCharacteristicRepository {
                 }
             },
             update: {
-                name: data.name
+                value: data.name
             },
             create: {
                 animalId: data.animalId,
                 type: data.type,
-                name: data.name
+                value: data.name
             },
         });
         return newRow;
     }
+
 
     public async deleteCharacteristic(data) {
         await prisma.animalCharacteristic.deleteMany({

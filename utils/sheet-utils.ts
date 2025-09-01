@@ -1,3 +1,4 @@
+import { sheets_v4 } from 'googleapis';
 import { SheetCell, SheetData } from '../types/dashboard';
 import {
   CatSheetsHeaders,
@@ -78,40 +79,38 @@ function rowToObject(
  * @param values - Array of 30 values in the exact order of the Header interface
  * @returns Object with English property names and corresponding values
  */
-export function rowToObjectFixed(values: Row): CatSheetsHeaders {
-  const estonianHeaders: (keyof Header)[] = [
-    'KASSI NIMI',
-    "PÄÄSTETUD JÄRJEKORRA NR (AA'KK nr ..)",
-    'ÜLE 1-AASTASED',
-    'ALLA 1-AASTASED',
-    'LEPINGU NR',
-    'SEIS',
-    'ASUKOHT',
-    '_HOIUKODU/ KLIINIKU NIMI',
-    'MENTOR',
-    'SÜNNIAEG',
-    'SUGU',
-    'KASSI VÄRV',
-    'KASSI KARVA PIKKUS',
-    'TÄIENDAVAD MÄRKMED',
-    'KIIP',
-    'KIIP LLR-is MTÜ nimel- täidab registreerija',
-    'PILT',
-    'PÄÄSTMISKP/ SÜNNIKP',
-    'KASSITUPPA SAABUMISE KUUPÄEV',
-    'KOJU SAAMISE KUUPÄEV',
-    'LEIDMISKOHT',
-    'viimati FB-s',
-    'viimati kodulehel',
-    'LÕIGATUD',
-    'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)',
-    'JÄRGMISE VAKTSIINI AEG',
-    'MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)',
-    'JÄRGMINE MARUTAUDI AEG',
-    'USSIROHU/ TURJATILGA KP',
-    'Ussirohu/ turjatilga nimi',
-    'MUU',
-  ];
-
-  return rowToObject(values, estonianHeaders);
+export function sheetsRowToObject(row: sheets_v4.Schema$CellData[]): CatSheetsHeaders {
+  return {
+    catName: row[0].formattedValue,
+    rescueSequenceNumber: row[1].formattedValue,
+    overOneYear: row[2].formattedValue,
+    underOneYear: row[3].formattedValue,
+    contractNumber: row[4].formattedValue,
+    status: row[5].formattedValue,
+    location: row[6].formattedValue,
+    shelterOrClinicName: row[7].formattedValue,
+    mentor: row[8].formattedValue,
+    birthDate: row[9].formattedValue,
+    gender: row[10].formattedValue,
+    catColor: row[11].formattedValue,
+    furLength: row[12].formattedValue,
+    additionalNotes: row[13].formattedValue,
+    microchip: row[14].formattedValue,
+    microchipRegisteredInLLR: row[15].formattedValue,
+    photo: row[16].formattedValue,
+    rescueOrBirthDate: row[17].formattedValue,
+    arrivalAtShelterDate: row[18].formattedValue,
+    adoptionDate: row[19].formattedValue,
+    findingLocation: row[20].formattedValue,
+    lastPostedOnFacebook: row[21].formattedValue,
+    lastPostedOnWebsite: row[22].formattedValue,
+    spayedOrNeutered: row[23].formattedValue,
+    complexVaccine: row[24].formattedValue,
+    nextVaccineDate: row[25].formattedValue,
+    rabiesVaccine: row[26].formattedValue,
+    nextRabiesDate: row[27].formattedValue,
+    dewormingOrFleaTreatmentDate: row[28].formattedValue,
+    dewormingOrFleaTreatmentName: row[29].formattedValue,
+    other: row[30].formattedValue,
+  }
 }

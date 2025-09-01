@@ -99,10 +99,15 @@ const CatDetails: React.FC<CatDetailsProps> = ({
   const handleEditClick = () => setIsEditMode(true);
   const isMobile = useIsMobile();
 
-  const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  const capitalize = str => {
+    if (!str) {
+      return ""
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  };
 
   const FIELD_LABELS = {
-    "Kassi sugu": capitalize(selectedCat.characteristics.textFields.gender.split(' ')[1]),
+    "Kassi sugu": capitalize(selectedCat.characteristics.textFields.gender),
     "Kassi vanus": calculateAge(selectedCat.mainInfo.birthDate),
     "Kassi välimus": [
       selectedCat.characteristics.selectFields.coatColour,

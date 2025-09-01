@@ -139,14 +139,6 @@ async function init() {
     .bind<FileRepository>(TYPES.FileRepository)
     .to(FileRepository)
     .inSingletonScope();
-  container
-    .bind<TreatmentHistoryRepository>(TYPES.TreatmentHistoryRepository)
-    .to(TreatmentHistoryRepository)
-    .inSingletonScope();
-  container
-    .bind<FileRepository>(TYPES.FileRepository)
-    .to(FileRepository)
-    .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────
   container

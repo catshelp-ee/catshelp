@@ -18,37 +18,59 @@ export default class CharacteristicsService {
     @inject(TYPES.AnimalCharacteristicRepository)
     private animalCharacteristicRepository: AnimalCharacteristicRepository
   ) { }
-  async getCharacteristics(animalId: number): Promise<CharacteristicsInfo> {
+  public async getCharacteristics(animalId: number): Promise<CharacteristicsInfo> {
     const characteristics = await prisma.animalCharacteristic.findMany({
       where: { animalId },
     });
 
     const characteristicsInfo = createCharacteristicsInfo();
 
-    characteristicsInfo.multiselectFields.behaviorTraits = characteristics.find(c => c.type === "BEHAVIOUR_TRAITS")?.value?.split(",") ?? [];
-    characteristicsInfo.multiselectFields.likes = characteristics.find(c => c.type === "LIKES")?.value?.split(",") ?? [];
-    characteristicsInfo.multiselectFields.personality = characteristics.find(c => c.type === "PERSONALITY")?.value?.split(",") ?? [];
+    const characteristicsMap = {
+      "BEHAVIOUR_TRAITS": characteristics.find(c => c.type === "BEHAVIOUR_TRAITS"),
+      "LIKES": characteristics.find(c => c.type === "LIKES"),
+      "PERSONALITY": characteristics.find(c => c.type === "PERSONALITY"),
 
-    characteristicsInfo.selectFields.attitudeTowardsCats = characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CATS")?.value ?? "";
-    characteristicsInfo.selectFields.attitudeTowardsChildren = characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CHILDREN")?.value ?? "";
-    characteristicsInfo.selectFields.attitudeTowardsDogs = characteristics.find(c => c.type === "ATTITUDE_TOWARDS_DOGS")?.value ?? "";
-    characteristicsInfo.selectFields.coatColour = characteristics.find(c => c.type === "COAT_COLOUR")?.value ?? "";
-    characteristicsInfo.selectFields.coatLength = characteristics.find(c => c.type === "COAT_LENGTH")?.value ?? "";
-    characteristicsInfo.selectFields.suitabilityForIndoorOrOutdoor = characteristics.find(c => c.type === "SUITABILITY_FOR_INDOOR_OR_OUTDOOR")?.value ?? "";
+      "ATTITUDE_TOWARDS_CATS": characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CATS"),
+      "ATTITUDE_TOWARDS_CHILDREN": characteristics.find(c => c.type === "ATTITUDE_TOWARDS_CHILDREN"),
+      "ATTITUDE_TOWARDS_DOGS": characteristics.find(c => c.type === "ATTITUDE_TOWARDS_DOGS"),
+      "COAT_COLOUR": characteristics.find(c => c.type === "COAT_COLOUR"),
+      "COAT_LENGTH": characteristics.find(c => c.type === "COAT_LENGTH"),
+      "SUITABILITY_FOR_INDOOR_OR_OUTDOOR": characteristics.find(c => c.type === "SUITABILITY_FOR_INDOOR_OR_OUTDOOR"),
 
-    characteristicsInfo.textFields.additionalNotes = characteristics.find(c => c.type === "ADDITIONAL_NOTES")?.value ?? "";
-    characteristicsInfo.textFields.chronicConditions = characteristics.find(c => c.type === "CHRONIC_CONDITIONS")?.value ?? "";
-    characteristicsInfo.textFields.description = characteristics.find(c => c.type === "DESCRIPTION")?.value ?? "";
-    characteristicsInfo.textFields.fosterStayDuration = characteristics.find(c => c.type === "FOSTER_STAY_DURATION")?.value ?? "";
-    characteristicsInfo.textFields.rescueStory = characteristics.find(c => c.type === "RESCUE_STORY")?.value ?? "";
-    characteristicsInfo.textFields.specialRequirementsForNewFamily = characteristics.find(c => c.type === "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY")?.value ?? "";
-    characteristicsInfo.textFields.gender = characteristics.find(c => c.type === "GENDER")?.value ?? "";
-    characteristicsInfo.textFields.spayedOrNeutered = characteristics.find(c => c.type === "SPAYED_OR_NEUTERED")?.value ?? "";
+      "ADDITIONAL_NOTES": characteristics.find(c => c.type === "ADDITIONAL_NOTES"),
+      "CHRONIC_CONDITIONS": characteristics.find(c => c.type === "CHRONIC_CONDITIONS"),
+      "DESCRIPTION": characteristics.find(c => c.type === "DESCRIPTION"),
+      "FOSTER_STAY_DURATION": characteristics.find(c => c.type === "FOSTER_STAY_DURATION"),
+      "RESCUE_STORY": characteristics.find(c => c.type === "RESCUE_STORY"),
+      "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY": characteristics.find(c => c.type === "SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY"),
+      "GENDER": characteristics.find(c => c.type === "GENDER"),
+      "SPAYED_OR_NEUTERED": characteristics.find(c => c.type === "SPAYED_OR_NEUTERED"),
+    }
+
+    characteristicsInfo.multiselectFields.behaviorTraits = characteristicsMap["BEHAVIOUR_TRAITS"]?.value?.split(",") ?? [];
+    characteristicsInfo.multiselectFields.likes = characteristicsMap["LIKES"]?.value?.split(",") ?? [];
+    characteristicsInfo.multiselectFields.personality = characteristicsMap["PERSONALITY"]?.value?.split(",") ?? [];
+
+    characteristicsInfo.selectFields.attitudeTowardsCats = characteristicsMap["ATTITUDE_TOWARDS_CATS"]?.value ?? "";
+    characteristicsInfo.selectFields.attitudeTowardsChildren = characteristicsMap["ATTITUDE_TOWARDS_CHILDREN"]?.value ?? "";
+    characteristicsInfo.selectFields.attitudeTowardsDogs = characteristicsMap["ATTITUDE_TOWARDS_DOGS"]?.value ?? "";
+    characteristicsInfo.selectFields.coatColour = characteristicsMap["COAT_COLOUR"]?.value ?? "";
+    characteristicsInfo.selectFields.coatLength = characteristicsMap["COAT_LENGTH"]?.value ?? "";
+    characteristicsInfo.selectFields.suitabilityForIndoorOrOutdoor = characteristicsMap["SUITABILITY_FOR_INDOOR_OR_OUTDOOR"]?.value ?? "";
+
+    characteristicsInfo.textFields.additionalNotes = characteristicsMap["ADDITIONAL_NOTES"]?.value ?? "";
+    characteristicsInfo.textFields.chronicConditions = characteristicsMap["CHRONIC_CONDITIONS"]?.value ?? "";
+    characteristicsInfo.textFields.description = characteristicsMap["DESCRIPTION"]?.value ?? "";
+    characteristicsInfo.textFields.fosterStayDuration = characteristicsMap["FOSTER_STAY_DURATION"]?.value ?? "";
+    characteristicsInfo.textFields.rescueStory = characteristicsMap["RESCUE_STORY"]?.value ?? "";
+    characteristicsInfo.textFields.specialRequirementsForNewFamily = characteristicsMap["SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY"]?.value ?? "";
+    characteristicsInfo.textFields.gender = characteristicsMap["GENDER"]?.value ?? "";
+    characteristicsInfo.textFields.spayedOrNeutered = characteristicsMap["SPAYED_OR_NEUTERED"]?.value ?? "";
 
     return characteristicsInfo;
   }
 
-  async updateCharacteristics(tx: PrismaTransactionClient, updatedAnimalData: Profile): Promise<void> {
+  public async updateCharacteristics(updatedAnimalData: Profile, tx: PrismaTransactionClient): Promise<void> {
     const { animalId, characteristics } = updatedAnimalData;
 
     await this.updateMultiselectFields(tx, animalId, characteristics.multiselectFields);

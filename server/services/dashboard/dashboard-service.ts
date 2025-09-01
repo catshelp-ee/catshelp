@@ -11,7 +11,7 @@ export default class DashboardService {
     private fileRepository: FileRepository
   ) { }
 
-  async getAvatars(animals: Animal[]): Promise<Pet[]> {
+  public async getAvatars(animals: Animal[]): Promise<Pet[]> {
     const avatars: Pet[] = [];
     for (let index = 0; index < animals.length; index++) {
       const animal = animals[index];

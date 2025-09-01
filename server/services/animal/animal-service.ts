@@ -1,13 +1,12 @@
 import AnimalRepository from '@repositories/animal-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import GoogleSheetsService from '@services/google/google-sheets-service';
 import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
-import moment from 'moment';
 import { prisma } from 'server/prisma';
 import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 import { Profile } from 'types/cat';
 import TYPES from 'types/inversify-types';
-import { PrismaTransactionClient } from 'types/prisma';
 import CharacteristicsService from './characteristics-service';
 
 @injectable()
@@ -15,6 +14,8 @@ export default class AnimalService {
   constructor(
     @inject(TYPES.AnimalRepository)
     private animalRepository: AnimalRepository,
+    @inject(TYPES.AnimalRescueRepository)
+    private animalRescueRepository: AnimalRescueRepository,
     @inject(TYPES.CharacteristicsService)
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.GoogleSheetsService)
@@ -33,47 +34,34 @@ export default class AnimalService {
     return animal;
   }
 
-  async updateAnimalRescueTable(tx: PrismaTransactionClient, updatedAnimalData: Profile) {
-    const relation = await tx.animalToAnimalRescue.findFirst({
-      where: { animalId: updatedAnimalData.animalId },
-    });
+  async updateAnimal(updatedAnimalData: Profile) {
+    const animalWithRescue = await this.animalRepository.getAnimalByIdWithRescue(updatedAnimalData.animalId);
 
-    if (!relation?.animalRescueId) {
-      throw new Error(`AnimalRescue relation missing for cat ID: ${updatedAnimalData.animalId}`);
-    }
-
-    await tx.animalRescue.update({
-      where: { id: relation.animalRescueId },
-      data: {
-        rescueDate: updatedAnimalData.animalRescueInfo.rescueDate,
-        address: updatedAnimalData.animalRescueInfo.rescueLocation,
-      },
-    });
-  }
-
-  async updateAnimalTable(tx: PrismaTransactionClient, updatedAnimalData: Profile) {
-    const data = {
-      profileTitle: updatedAnimalData.title || null,
-      description: updatedAnimalData.description || null,
+    const animalData = {
+      id: updatedAnimalData.animalId,
       name: updatedAnimalData.mainInfo.name,
-      birthday:
-        moment(updatedAnimalData.mainInfo.birthDate, 'YYYYMMDD').toDate() ||
-        null,
-      chipNumber: updatedAnimalData.mainInfo.microchip || null,
+      birthday: updatedAnimalData.mainInfo.birthDate,
+      chipNumber: updatedAnimalData.mainInfo.microchip,
       chipRegisteredWithUs: updatedAnimalData.mainInfo.microchipRegisteredInLLR,
+      profileTitle: updatedAnimalData.title,
+      status: animalWithRescue.status,
+      description: updatedAnimalData.description,
     };
 
-    await tx.animal.update({
-      where: { id: updatedAnimalData.animalId },
-      data: data,
-    });
-  }
+    const animalRescue = animalWithRescue.animalsToRescue.at(animalWithRescue.animalsToRescue.length - 1).animalRescue
 
-  async updateAnimal(updatedAnimalData: Profile) {
+    const animalRescueData = {
+      rankNr: animalRescue.rankNr,
+      rescueDate: updatedAnimalData.animalRescueInfo.rescueDate,
+      locationNotes: updatedAnimalData.animalRescueInfo.rescueLocation,
+      state: animalRescue.state,
+      address: animalRescue.address
+    };
     await prisma.$transaction(async tx => {
-      await this.characteristicsService.updateCharacteristics(tx, updatedAnimalData);
-      await this.updateAnimalTable(tx, updatedAnimalData);
-      await this.updateAnimalRescueTable(tx, updatedAnimalData);
+      await this.animalRepository.saveOrUpdateAnimal(animalData, tx);
+      await this.animalRescueRepository.saveOrUpdateAnimalRescue(animalRescueData, tx);
+      await this.characteristicsService.updateCharacteristics(updatedAnimalData, tx);
+
     });
 
     await this.googleSheetsService.updateSheetCells(updatedAnimalData);

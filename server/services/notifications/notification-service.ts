@@ -24,7 +24,7 @@ export default class NotificationService {
     this.colours = DEFAULT_COLORS;
   }
 
-  async processNotifications(animals: Animal[]): Promise<Result[]> {
+  public async processNotifications(animals: Animal[]): Promise<Result[]> {
     if (animals.length === 0) {
       return this.createEmptyStateNotification();
     }

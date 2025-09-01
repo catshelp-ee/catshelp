@@ -15,6 +15,13 @@ import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
+import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
+import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import FileRepository from '@repositories/file-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
+import RevokedTokenRepository from '@repositories/revoked-token-repository';
+import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
+import UserRepository from '@repositories/user-repository';
 import AddRescueController from './controllers/add-rescue-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
@@ -25,11 +32,6 @@ import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
-import AnimalRescueRepository from '@repositories/animal-rescue-repository';
-import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
-import FosterHomeRepository from '@repositories/foster-home-repository';
-import UserRepository from '@repositories/user-repository';
-import RevokedTokenRepository from '@repositories/revoked-token-repository';
 
 /**
  * Dependency Injection Container Setup
@@ -128,6 +130,14 @@ async function init() {
   container
     .bind<RevokedTokenRepository>(TYPES.RevokedTokenRepository)
     .to(RevokedTokenRepository)
+    .inSingletonScope();
+  container
+    .bind<TreatmentHistoryRepository>(TYPES.TreatmentHistoryRepository)
+    .to(TreatmentHistoryRepository)
+    .inSingletonScope();
+  container
+    .bind<FileRepository>(TYPES.FileRepository)
+    .to(FileRepository)
     .inSingletonScope();
 
   // ─── Controllers ────────────────────────────────────────────────

@@ -26,8 +26,9 @@ export default class AnimalRescueRepository {
     return rescue;
   }
 
-  public async saveOrUpdateAnimalRescue(data): Promise<AnimalRescue> {
-    const newRow = await prisma.animalRescue.upsert({
+  public async saveOrUpdateAnimalRescue(data, tx?): Promise<AnimalRescue> {
+    const orm = tx || prisma;
+    const newRow = await orm.animalRescue.upsert({
       where: {
         rankNr: data.rank_nr
       },

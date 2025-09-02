@@ -1,7 +1,8 @@
 import AnimalRepository from '@repositories/animal-repository';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
+import FosterHomeRepository from '@repositories/foster-home-repository';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import { Animal } from 'generated/prisma';
+import { Animal, User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { prisma } from 'server/prisma';
 import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
@@ -20,17 +21,27 @@ export default class AnimalService {
     private characteristicsService: CharacteristicsService,
     @inject(TYPES.GoogleSheetsService)
     private googleSheetsService: GoogleSheetsService,
+    @inject(TYPES.FosterHomeRepository)
+    private fosterHomeRepository: FosterHomeRepository,
   ) { }
 
   getAnimalsByUserId(id: number | string): Promise<Animal[]> {
     return this.animalRepository.getAnimalsByUserId(id);
   }
 
-  async createAnimal(data: CreateAnimalData): Promise<CreateAnimalResult> {
+  public async createAnimal(data: CreateAnimalData, user: User): Promise<CreateAnimalResult> {
     data.date = new Date();
     const animal = await this.animalRepository.createAnimalWithRescue(data);
     data.rankNr = animal.animalRescue.rankNr;
-    this.googleSheetsService.addDataToSheet(data);
+    
+    const fosterHome = await this.fosterHomeRepository.saveOrUpdateFosterHome({userId : user.id});
+    const animalToFosterHomeData = {
+            animalId: animal.animal.id,
+            fosterHomeId: fosterHome.id
+    }
+    await this.fosterHomeRepository.saveOrUpdateAnimalToFosterHome(animalToFosterHomeData);
+
+    this.googleSheetsService.addDataToSheet(data, user);
     return animal;
   }
 

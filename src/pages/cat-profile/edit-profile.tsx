@@ -86,6 +86,20 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
     const images: File[] = previews.map((p) => p.file);
 
+
+    if (e.nativeEvent.submitter.name === "email") {
+      formData.append('to', JSON.stringify(["veeb@catshelp.ee"]));
+      formData.append('subject', "Uuenda veebi");
+      try {
+        await axios.post("/api/notifications/email", formData, {
+          withCredentials: true,
+        })
+      } catch (e) {
+
+      }
+      return;
+    }
+
     if (images.length > 0) {
       await uploadImages(images, selectedCat.animalId);
 
@@ -205,9 +219,15 @@ const EditProfile: React.FC<CatDetailsProps> = ({
                   />
                 </AccordionDetails>
               </Accordion>
-              <Button sx={{ width: "50%", margin: "2rem auto" }} variant="contained" type="submit">
-                Salvesta
-              </Button>
+
+              <div className="flex justify-around mt-8">
+                <Button sx={{ width: "32%" }} variant="contained" name="save" type="submit">
+                  Salvesta
+                </Button>
+                <Button sx={{ width: "32%" }} variant="contained" name="email" type="submit">
+                  Uuenda veebi
+                </Button>
+              </div>
             </div>
           </div>
 

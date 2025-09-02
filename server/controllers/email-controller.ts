@@ -10,7 +10,7 @@ export default class EmailController {
     private emailService: EmailService
   ) { }
 
-  async sendNotification(req: Request, res: Response) {
+  public async sendNotification(req: Request, res: Response) {
     const images = req.files as Express.Multer.File[];
     const data = req.body;
 

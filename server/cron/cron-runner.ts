@@ -13,7 +13,26 @@ export default class CronRunner {
   ) { }
 
   public startCronJobs() {
-    cron.schedule('0 0 * * *', deleteExpiredRevokedTokens);
-    cron.schedule('*/10 * * * *', async () => this.syncSheetDataToDBJob.syncSheetsToDb());
+    cron.schedule('0 0 * * *', this.withErrorHandling(deleteExpiredRevokedTokens));
+    cron.schedule('*/10 * * * *', this.withErrorHandling(this.syncSheetDataToDBJob.syncSheetsToDb, true));
+  }
+
+  private withErrorHandling(functionToRun, async = false) {
+    if (async) {
+      return async function (...args) {
+        try {
+          return await functionToRun.apply(this, args);
+        } catch (error) {
+          console.error("Error during cron job: " + error);
+        }
+      }
+    }
+    return function (...args) {
+      try {
+        return functionToRun.apply(this, args);
+      } catch (error) {
+        console.error("Error during cron job: " + error);
+      }
+    }
   }
 }

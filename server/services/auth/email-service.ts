@@ -18,7 +18,7 @@ export default class EmailService {
     });
   }
 
-  sendEmail(
+  public sendEmail(
     html: string,
     subject: string,
     to: string[],
@@ -33,14 +33,14 @@ export default class EmailService {
     });
   }
 
-  async sendRequest(id: number, email: string) {
+  public async sendRequest(id: number, email: string) {
     const token = jwt.sign({ id }, process.env.JWT_SECRET as string, {
       expiresIn: '10m',
     });
     await this.sendMagicLink(email, token);
   }
 
-  sendMagicLink(email: string, token: string) {
+  public sendMagicLink(email: string, token: string) {
     return this.transporter.sendMail({
       from: process.env.MAGIC_LINK_SENDER,
       to: email,

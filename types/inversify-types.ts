@@ -39,6 +39,7 @@ const TYPES = {
 
   CronRunner: Symbol.for('CronRunner'),
   SyncSheetDataToDBJob: Symbol.for('SyncSheetDataToDBJob'),
+  TodoNotificationJob: Symbol.for('TodoNotificationJob'),
 };
 
 export default TYPES;

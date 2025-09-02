@@ -11,7 +11,7 @@ export default class AddRescueController {
   ) { }
 
   async postAnimal(req: Request, res: Response): Promise<Response> {
-    const newAnimal = await this.animalService.createAnimal(req.body);
+    const newAnimal = await this.animalService.createAnimal(req.body, req.user);
     return res.status(201).json(newAnimal.animal.id);
   }
 }

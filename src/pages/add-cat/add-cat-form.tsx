@@ -5,7 +5,7 @@ import {
   Button,
   ImageList,
   ImageListItem,
-  TextField,
+  TextField
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
@@ -68,19 +68,6 @@ const AddCatForm = () => {
           className="flex flex-col w-full gap-4 mb-28"
         >
           <Button
-            sx={{
-              width: "300px",
-              position: "fixed",
-              bottom: "25px",
-              left: "50%",
-              transform: "translate(-50%, 0)",
-            }}
-            type="submit"
-            variant="outlined"
-          >
-            Kinnita
-          </Button>
-          <Button
             component="label"
             variant="contained"
             startIcon={<CloudUploadIcon />}
@@ -132,9 +119,30 @@ const AddCatForm = () => {
             )}
           />
           <TextField name="location" label="Asula" multiline maxRows={4} />
-        </form>
+
+
+          <div className="flex flex-row items-center justify-center gap-2">
+          <Button
+            sx={{
+              width: "300px",
+            }}
+            variant="outlined" href="/">
+            Tagasi
+          </Button>
+          <Button
+            sx={{
+              width: "300px",
+            }}
+            type="submit"
+            variant="outlined"
+          >
+            Kinnita
+          </Button>
       </div>
-    </div>
+
+    </form>
+      </div >
+    </div >
   );
 };
 

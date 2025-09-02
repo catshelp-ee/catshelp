@@ -26,14 +26,16 @@ export default class SyncSheetDataToDBJob {
         private userRepository: UserRepository,
         @inject(TYPES.FosterHomeRepository)
         private fosterHomeRepository: FosterHomeRepository,
-    ) { }
+    ) { 
+        this.syncSheetsToDb = this.syncSheetsToDb.bind(this);
+    }
 
     public async syncSheetsToDb() {
         if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
             console.log("Google cats sheet id or table name not set. Skipping db sync");
             return;
         }
-
+        
         const currentSheet = await this.getCurrentSheetData();
         if (!currentSheet) {
             console.log("Could not load data from google sheets. Skipping sync");

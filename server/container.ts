@@ -15,6 +15,7 @@ import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
+import TodoNotificationJob from '@cron/jobs/todo-notification-job';
 import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import FileRepository from '@repositories/file-repository';
@@ -190,6 +191,11 @@ async function init() {
   container
     .bind<SyncSheetDataToDBJob>(TYPES.SyncSheetDataToDBJob)
     .to(SyncSheetDataToDBJob)
+    .inSingletonScope();
+
+  container
+    .bind<TodoNotificationJob>(TYPES.TodoNotificationJob)
+    .to(TodoNotificationJob)
     .inSingletonScope();
 
   container

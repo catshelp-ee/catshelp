@@ -88,7 +88,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
 
     if (e.nativeEvent.submitter.name === "email") {
-      formData.append('to', JSON.stringify(["veeb@catshelp.ee"]));
+      formData.append('to', JSON.stringify([import.meta.env.UPDATE_NOTIFICATION_EMAIL]));
       formData.append('subject', "Uuenda veebi");
       try {
         await axios.post("/api/notifications/email", formData, {

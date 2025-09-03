@@ -22,7 +22,7 @@ export default class EmailService {
     html: string,
     subject: string,
     to: string[],
-    attachments?: { filename: string; path: string }[]
+    attachments?: { filename: string; path: string, cid?: string }[]
   ) {
     return this.transporter.sendMail({
       from: process.env.MAGIC_LINK_SENDER,

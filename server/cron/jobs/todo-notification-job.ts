@@ -3,6 +3,7 @@ import AnimalRepository from "@repositories/animal-repository";
 import UserRepository from "@repositories/user-repository";
 import EmailService from "@services/auth/email-service";
 import { inject, injectable } from "inversify";
+import path from "path";
 import TYPES from "types/inversify-types";
 
 type Tasks = {
@@ -26,12 +27,16 @@ export default class TodoNotificationJob {
         const users = await this.userRepository.getAllUsers();
 
         const renderTasks = (tasks: Tasks) => {
-            return Object.entries(tasks).map(([assignee, labels]) => `
-                <h3 style="margin:0 0 10px 0; color:#333;">${assignee}:</h3>
-                <ol style="padding-left:20px; margin:0;">
-                    ${labels.map(label => `<li>${label}</li>`)}
-                </ol>   
-                `);
+            let html = "";
+            for (const [assignee, labels] of Object.entries(tasks)) {
+                html += `<h3 style="margin:0 0 10px 0; color:#333;">${assignee}:</h3>`;
+                html += `<ol style="padding-left:20px; margin:0;">`;
+                for (const label of labels) {
+                    html += `<li>${label}</li>`;
+                }
+                html += `</ol>`;
+            }
+            return html;
         };
 
         const createHtmlTemplate = (tasks: Tasks) => `
@@ -40,7 +45,7 @@ export default class TodoNotificationJob {
                     <p style="font-size:12px; color:#666;">
                         Email not displaying correctly? <a href="#" style="color:#0073e6;">View it in your browser</a>.
                     </p>
-                    <img src="https://placekitten.com/800/400" alt="Cat" style="width:100%; height:auto; border-radius:6px;"/>
+                    <img src="cid:email-cat" alt="Cat" style="width:100%; height:auto; border-radius:6px;"/>
                     <h2 style="color:#333; margin:20px 0 10px;">Armas hoiukodu, sulle on meeldetuletus</h2>
                 </header>
 
@@ -58,7 +63,7 @@ export default class TodoNotificationJob {
                 </section>
 
                 <section style="text-align:center; margin:20px 0;">
-                    <a href="catshelp.ee" 
+                    <a href="${process.env.DASHBOARD_LINK}" 
                         style="background:#00a6a6; color:#fff; padding:12px 24px; border-radius:4px; text-decoration:none; font-weight:bold;">
                         Märgi tehtuks
                     </a>
@@ -92,7 +97,9 @@ export default class TodoNotificationJob {
             }
 
 
-            this.emailService.sendEmail(createHtmlTemplate(tasks), "Hoiukodu meeldetuletus", [user.email]);
+            this.emailService.sendEmail(createHtmlTemplate(tasks), "Hoiukodu meeldetuletus", [user.email], [{
+                filename: "email-cat.jpg", path: path.join(__dirname, "./email-cat.jpg"), cid: "email-cat"
+            }])
         }
     }
 }

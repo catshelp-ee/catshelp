@@ -4,8 +4,8 @@ import { prisma } from 'server/prisma';
 
 @injectable()
 export default class UserRepository {
-  static async getAllUsers(): Promise<User[]> {
-    return await prisma.user.findMany();
+  public async getAllUsers(): Promise<User[]> {
+    return prisma.user.findMany();
   }
 
   public async saveOrUpdateUser(data) {

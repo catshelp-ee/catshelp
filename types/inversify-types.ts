@@ -9,6 +9,7 @@ const TYPES = {
   ProfileService: Symbol.for('ProfileService'),
   UserService: Symbol.for('UserService'),
   NodeCacheService: Symbol.for('NodeCacheService'),
+  EmailService: Symbol.for('EmailService'),
 
   CatProfileBuilder: Symbol.for('CatProfileBuilder'),
 
@@ -23,6 +24,7 @@ const TYPES = {
   AddRescueController: Symbol.for('AddRescueController'),
   FileController: Symbol.for('FileController'),
   AnimalController: Symbol.for('AnimalController'),
+  EmailController: Symbol.for('EmailController'),
 
   AnimalRepository: Symbol.for('AnimalRepository'),
   AnimalRescueRepository: Symbol.for('AnimalRescueRepository'),
@@ -37,6 +39,7 @@ const TYPES = {
 
   CronRunner: Symbol.for('CronRunner'),
   SyncSheetDataToDBJob: Symbol.for('SyncSheetDataToDBJob'),
+  TodoNotificationJob: Symbol.for('TodoNotificationJob'),
 };
 
 export default TYPES;

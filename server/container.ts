@@ -15,6 +15,7 @@ import UserService from '@services/user/user-service';
 import { Container } from 'inversify';
 import TYPES from 'types/inversify-types';
 
+import TodoNotificationJob from '@cron/jobs/todo-notification-job';
 import AnimalCharacteristicRepository from '@repositories/animal-characteristic-repository';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import FileRepository from '@repositories/file-repository';
@@ -22,9 +23,11 @@ import FosterHomeRepository from '@repositories/foster-home-repository';
 import RevokedTokenRepository from '@repositories/revoked-token-repository';
 import TreatmentHistoryRepository from '@repositories/treatment-history-repository';
 import UserRepository from '@repositories/user-repository';
+import EmailService from '@services/auth/email-service';
 import AddRescueController from './controllers/add-rescue-controller';
 import AnimalController from './controllers/animal-controller';
 import DashboardController from './controllers/dashboard-controller';
+import EmailController from './controllers/email-controller';
 import FileController from './controllers/file-controller';
 import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
@@ -102,6 +105,10 @@ async function init() {
     .to(CharacteristicsService)
     .inSingletonScope();
   container
+    .bind<EmailService>(TYPES.EmailService)
+    .to(EmailService)
+    .inSingletonScope();
+  container
     .bind<CatProfileBuilder>(TYPES.CatProfileBuilder)
     .to(CatProfileBuilder)
     .inSingletonScope();
@@ -169,6 +176,10 @@ async function init() {
     .bind<AnimalController>(TYPES.AnimalController)
     .to(AnimalController)
     .inSingletonScope();
+  container
+    .bind<EmailController>(TYPES.EmailController)
+    .to(EmailController)
+    .inSingletonScope();
 
   // ─── Middleware ─────────────────────────────────────────────────
   container
@@ -180,6 +191,11 @@ async function init() {
   container
     .bind<SyncSheetDataToDBJob>(TYPES.SyncSheetDataToDBJob)
     .to(SyncSheetDataToDBJob)
+    .inSingletonScope();
+
+  container
+    .bind<TodoNotificationJob>(TYPES.TodoNotificationJob)
+    .to(TodoNotificationJob)
     .inSingletonScope();
 
   container

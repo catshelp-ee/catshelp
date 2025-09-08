@@ -5,6 +5,7 @@ import { inject, injectable } from 'inversify';
 import moment from 'moment';
 import { CreateAnimalData } from 'types/animal';
 import { Profile } from 'types/cat';
+import { User } from 'generated/prisma';
 import {
   CatSheetsHeaders
 } from 'types/google-sheets';
@@ -68,10 +69,11 @@ export default class GoogleSheetsService {
 
 
 
-  async addDataToSheet(data: CreateAnimalData) {
+  async addDataToSheet(data: CreateAnimalData, user: User) {
     const row = new Array(30).fill('');
     row[0] = data.rankNr!;
     row[1] = data.rankNr!;
+    row[7] = user.fullName;
     row[17] = formatEstonianDate(new Date());
     row[20] = `${data.state}, ${data.location}`;
     row[30] = data.notes;

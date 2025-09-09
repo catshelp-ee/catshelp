@@ -201,9 +201,9 @@ export default class SyncSheetDataToDBJob {
 
     private async updateAnimalRescue(newData) {
         const animalRescueData = {
-            rank_nr: newData['jarjekorraNr'].formattedValue,
+            rankNr: newData['jarjekorraNr'].formattedValue,
             address: newData['LEIDMISKOHT'].formattedValue,
-            rescue_date: moment(newData['PÄÄSTMISKP/_SÜNNIKP'].formattedValue, 'DD.MM.YYYY').toISOString() || null
+            rescueDate: moment(newData['PÄÄSTMISKP/_SÜNNIKP'].formattedValue, 'DD.MM.YYYY').toISOString() || null
         }
         return await this.animalRescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
     }

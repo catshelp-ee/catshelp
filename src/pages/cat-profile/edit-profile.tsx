@@ -15,6 +15,7 @@ import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";
 import { VaccinationFields } from "./form/vaccination-fields";
+import { useAlert } from "@context/alert-context";
 
 
 interface CatDetailsProps {
@@ -36,19 +37,15 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 }) => {
   const [previews, setPreviews] = useState<PreviewImage[]>([]);
   const isMobile = useIsMobile();
+  const { showAlert } = useAlert();
 
   const {
     tempSelectedCat,
-    isPopupVisible,
-    isSlidingDown,
-    setPopupVisible,
-    setSlidingDown,
     updateField,
     updateMultiSelectField,
     updateDateField
   } = useCatForm(selectedCat);
 
-  const { getUser } = useAuth();
 
   function parseDotNotationFormData(formData: FormData) {
     const obj = {} as Profile;
@@ -75,9 +72,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isPopupVisible) {
-      return;
-    }
 
     const formData = new FormData(e.target as HTMLFormElement);
     const updatedAnimalData = parseDotNotationFormData(formData);
@@ -97,20 +91,19 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
     }
 
-
     try {
       await axios.put("/api/animals/cat-profile", updatedAnimalData, {
         withCredentials: true,
       });
 
       setSelectedCat(tempSelectedCat);
-      setSlidingDown(true);
-      setPopupVisible(true);
       setTimeout(() => {
         setIsEditMode(false);
       }, 1500);
+      showAlert('Success', "🐈‍⬛ Andmed uuendatud! 🐈‍⬛");
     } catch (error) {
       console.error("Error updating cat profile:", error);
+      showAlert('Error', "Andmete uuendamine ebaõnnestus");
     }
   };
 
@@ -120,12 +113,6 @@ const EditProfile: React.FC<CatDetailsProps> = ({
         className={`flex flex-col ${isMobile ? "flex-col w-full" : ""}`}
         onSubmit={handleSubmit}
       >
-        <Popup
-          isVisible={isPopupVisible}
-          slidingDown={isSlidingDown}
-          title="🐈‍⬛ Andmed uuendatud! 🐈‍⬛"
-        />
-
         <div className="flex">
           {isMobile && (
             <ImageGallery
@@ -142,7 +129,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
               <div className="flex justify-between">
                 <TextField
                   name="title"
-                  value={tempSelectedCat.title}
+                  value={tempSelectedCat.title || ""}
                   onChange={(e) => updateField(e, "title")}
                   sx={{ "& .MuiInputBase-input": { fontWeight: "bold", fontSize: "24px", padding: 0 } }}
                 />
@@ -159,7 +146,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
                   }}
                 >
-                  <KeyboardBackspaceIcon /> {/* default is 24 */}
+                  <KeyboardBackspaceIcon />
                 </IconButton>
               </div>
             </div>
@@ -168,7 +155,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
               <h1 className="text-secondary"> LOOMA KIRJELDUS: </h1>
               <TextField
                 name="description"
-                value={tempSelectedCat.description}
+                value={tempSelectedCat.description || ""}
                 onChange={(e) => updateField(e, "description")}
                 sx={{ width: "100%" }}
                 multiline
@@ -186,14 +173,12 @@ const EditProfile: React.FC<CatDetailsProps> = ({
                 </AccordionSummary>
 
                 <AccordionDetails sx={{ display: 'flex', flexDirection: 'column' }}>
-
                   <BasicInfoFields
                     isMobile={isMobile}
                     tempSelectedCat={tempSelectedCat}
                     updateField={updateField}
                     updateDateField={updateDateField}
                   />
-
                   <VaccinationFields
                     tempSelectedCat={tempSelectedCat}
                     updateField={updateField}

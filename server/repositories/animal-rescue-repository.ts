@@ -30,20 +30,20 @@ export default class AnimalRescueRepository {
     const orm = tx || prisma;
     const newRow = await orm.animalRescue.upsert({
       where: {
-        rankNr: data.rank_nr
+        rankNr: data.rankNr
       },
       update: {
-        rescueDate: data.rescue_date,
+        rescueDate: data.rescueDate,
         state: data.state,
         address: data.address,
         locationNotes: data.locationNotes
       },
       create: {
-        rescueDate: data.rescue_date,
+        rescueDate: data.rescueDate,
         state: data.state,
         address: data.address,
         locationNotes: data.locationNotes,
-        rankNr: data.rank_nr
+        rankNr: data.rankNr
       },
     });
     return newRow;

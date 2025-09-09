@@ -202,7 +202,6 @@ export default class GoogleSheetsService {
       );
 
       await this.executeSheetUpdate(updateRequests);
-
     } catch (error) {
       console.error('Error updating sheet cells:', error);
       throw new Error(`Failed to update sheet cells: ${error.message}`);

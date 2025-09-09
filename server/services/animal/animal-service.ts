@@ -75,6 +75,8 @@ export default class AnimalService {
 
     });
 
-    await this.googleSheetsService.updateSheetCells(updatedAnimalData);
+    this.googleSheetsService.updateSheetCells(updatedAnimalData).then(() => {}, (error) => {
+      console.error("Error saving data to sheets: " + error);
+    });
   }
 }

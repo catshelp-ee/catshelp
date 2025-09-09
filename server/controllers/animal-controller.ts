@@ -52,7 +52,7 @@ export default class AnimalController {
     return false;
   }
 
-  async updateAnimal(req: Request<object, object, Profile>, res: Response): Promise<Response> {
+  public async updateAnimal(req: Request<object, object, Profile>, res: Response): Promise<Response> {
     const updateAnimalData = req.body;
     this.stringsToDates(updateAnimalData);
     this.multiSelectsToArrays(updateAnimalData);

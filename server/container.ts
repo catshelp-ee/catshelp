@@ -30,8 +30,13 @@ import LoginController from './controllers/login-controller';
 import ProfileController from './controllers/profile-controller';
 import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
-import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
 import AnimalRepository from './repositories/animal-repository';
+import AdminController from './controllers/admin-controller';
+import AdminService from '@services/admin/admin-service';
+
+import SyncSheetDataToDBJob from './cron/jobs/sync-sheets-to-db-job';
+import SyncUserDataToDBJob from './cron/jobs/sync-users-to-db-job';
+
 
 /**
  * Dependency Injection Container Setup
@@ -105,6 +110,10 @@ async function init() {
     .bind<CatProfileBuilder>(TYPES.CatProfileBuilder)
     .to(CatProfileBuilder)
     .inSingletonScope();
+  container
+    .bind<AdminService>(TYPES.AdminService)
+    .to(AdminService)
+    .inSingletonScope();
 
   // ─── Repositories ───────────────────────────────────────────────
   container
@@ -169,6 +178,10 @@ async function init() {
     .bind<AnimalController>(TYPES.AnimalController)
     .to(AnimalController)
     .inSingletonScope();
+  container
+    .bind<AdminController>(TYPES.AdminController)
+    .to(AdminController)
+    .inSingletonScope();
 
   // ─── Middleware ─────────────────────────────────────────────────
   container
@@ -180,6 +193,10 @@ async function init() {
   container
     .bind<SyncSheetDataToDBJob>(TYPES.SyncSheetDataToDBJob)
     .to(SyncSheetDataToDBJob)
+    .inSingletonScope();
+  container
+    .bind<SyncUserDataToDBJob>(TYPES.SyncUserDataToDBJob)
+    .to(SyncUserDataToDBJob)
     .inSingletonScope();
 
   container

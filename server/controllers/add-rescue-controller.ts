@@ -10,7 +10,11 @@ export default class AddRescueController {
     private animalService: AnimalService
   ) { }
 
-  async postAnimal(req: Request, res: Response): Promise<Response> {
+  public async postAnimal(req: Request, res: Response): Promise<Response> {
+    if (req.user.role !== 'ADMIN') {
+      return res.sendStatus(403);
+    }
+    
     const newAnimal = await this.animalService.createAnimal(req.body, req.user);
     return res.status(201).json(newAnimal.animal.id);
   }

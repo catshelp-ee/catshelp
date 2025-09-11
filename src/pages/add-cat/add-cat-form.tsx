@@ -11,8 +11,10 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import { useAlert } from "@context/alert-context";
 import States from "./states.json";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { resizeImages, uploadImages } from "src/utils/image-utils";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@context/auth-context";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,6 +29,25 @@ const VisuallyHiddenInput = styled("input")({
 const AddCatForm = () => {
   const [images, setImages] = useState<File[]>([]);
   const { showAlert } = useAlert();
+  const { getUser } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserRights = async () => {
+      try {
+        const user = await getUser();
+        if (user.role !== 'ADMIN') {
+          showAlert('Error', "Sul pole privileege, et kuva näha");
+          navigate(`/dashboard`);
+        }
+      } catch (error) {
+        showAlert('Error', "Sul pole privileege, et kuva näha");
+        navigate(`/dashboard`);
+      }
+    }
+    checkUserRights();
+  }, []);
+
 
   const submitNewCatProfile = async (data: any, pictures: File[]) => {
     const newAnimalId: number = (
@@ -122,25 +143,25 @@ const AddCatForm = () => {
 
 
           <div className="flex flex-row items-center justify-center gap-2">
-          <Button
-            sx={{
-              width: "300px",
-            }}
-            variant="outlined" href="/">
-            Tagasi
-          </Button>
-          <Button
-            sx={{
-              width: "300px",
-            }}
-            type="submit"
-            variant="outlined"
-          >
-            Kinnita
-          </Button>
-      </div>
+            <Button
+              sx={{
+                width: "300px",
+              }}
+              variant="outlined" href="/">
+              Tagasi
+            </Button>
+            <Button
+              sx={{
+                width: "300px",
+              }}
+              type="submit"
+              variant="outlined"
+            >
+              Kinnita
+            </Button>
+          </div>
 
-    </form>
+        </form>
       </div >
     </div >
   );

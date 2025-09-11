@@ -2,6 +2,7 @@ model User {
   id                Int         @id @default(autoincrement())
   fosterHome        FosterHome?
   fullName          String?     @map("full_name") @unique
+  role              String?
   email             String?
   identityCode      String?     @map("identity_code")
   citizenship       String?

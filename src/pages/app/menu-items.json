@@ -10,10 +10,17 @@
       "text": "Kiisu profiil veebis",
       "path": "/cat-profile"
     },
-        {
+    {
       "icon": "Document.png",
       "text": "Lisa kiisu",
-      "path": "/add-cat"
+      "path": "/add-cat",
+      "requiredRole": "ADMIN"
+    },
+    {
+      "icon": "Document.png",
+      "text": "Admin töölaud",
+      "path": "/admin",
+      "requiredRole": "ADMIN"
     }
   ]
 }

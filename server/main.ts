@@ -27,6 +27,7 @@ import UserController from './controllers/user-controller';
 import CronRunner from './cron/cron-runner';
 import AuthorizationMiddleware from './middleware/authorization-middleware';
 import errorMiddleware from './middleware/error-middleware';
+import AdminController from './controllers/admin-controller';
 
 dotenv.config();
 
@@ -37,21 +38,12 @@ async function bootstrap() {
   const loginController = container.get<LoginController>(TYPES.LoginController);
   const userController = container.get<UserController>(TYPES.UserController);
   const fileController = container.get<FileController>(TYPES.FileController);
-  const animalController = container.get<AnimalController>(
-    TYPES.AnimalController
-  );
-  const addRescueController = container.get<AddRescueController>(
-    TYPES.AddRescueController
-  );
-  const dashboardController = container.get<DashboardController>(
-    TYPES.DashboardController
-  );
-  const profileController = container.get<ProfileController>(
-    TYPES.ProfileController
-  );
-  const auth = container.get<AuthorizationMiddleware>(
-    TYPES.AuthorizationMiddleware
-  );
+  const animalController = container.get<AnimalController>(TYPES.AnimalController);
+  const addRescueController = container.get<AddRescueController>(TYPES.AddRescueController);
+  const dashboardController = container.get<DashboardController>(TYPES.DashboardController);
+  const profileController = container.get<ProfileController>(TYPES.ProfileController);
+  const adminController = container.get<AdminController>(TYPES.AdminController);
+  const auth = container.get<AuthorizationMiddleware>(TYPES.AuthorizationMiddleware);
   const cron = container.get<CronRunner>(TYPES.CronRunner);
 
   const rootDir = path.join(__dirname, '..');
@@ -119,7 +111,13 @@ async function bootstrap() {
     '/api/animals/cat-profile',
     auth.authenticate,
     animalController.updateAnimal.bind(animalController)
-  ); // Commented out for future implementation or deprecated
+  );
+  app.post(
+    '/api/admin/run-cron-job',
+    auth.authenticate,
+    adminController.runCronJob.bind(adminController)
+  );
+
   // Fallback for client-side routes (React Router)
   app.get('*', (req, res) => {
     res.sendFile(path.join(rootDir, 'dist', 'index.html'));

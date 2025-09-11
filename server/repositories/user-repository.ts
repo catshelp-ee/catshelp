@@ -15,7 +15,9 @@ export default class UserRepository {
       },
       update: {},
       create: {
-        fullName: data.fullName
+        fullName: data.fullName,
+        identityCode: data.identityCode || "",
+        email: data.email || ""
       },
     });
     return newRow;

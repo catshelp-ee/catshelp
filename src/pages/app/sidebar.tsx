@@ -11,15 +11,36 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
-  const [isClosed, setIsClosed] = useState(false);
+  const [isNavbarClosed, setIsNavbarClosed] = useState(false);
   const { logout } = useAuth();
   const isMobile = useIsMobile();
   const animationDelayInMS = 200;
+  const { getUser } = useAuth();
+  const [user, setUser] = useState(null);
+  let menuItemArray = menuItems["menu-items"];
+
+  useEffect(() => {
+    async function fetchUser() {
+      const u = await getUser();
+      setUser(u);
+    }
+
+    fetchUser();
+    if (!isNavbarClosed) {
+      return;
+    }
+
+    setTimeout(() => {
+      setView(false);
+    }, animationDelayInMS);
+  }, [isNavbarClosed]);
 
   const content = (
     <>
       <div>
-        {menuItems["menu-items"].map((item, index) => (
+        {menuItemArray.filter((element) => {
+          return !element.requiredRole || element.requiredRole === user?.role;
+        }).map((item, index) => (
           <Link
             to={item.path}
             key={index}
@@ -67,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
   const Navbar = (props) => {
     let classes = `flex flex-col w-full md:w-1/5 z-10 md:z-auto absolute md:sticky left-0 top-0 h-screen bg-[#30B0C7] md:bg-none `;
     if (isMobile) {
-      classes += `${isClosed ? "animate-slide-left" : "animate-slide-right"}`;
+      classes += `${isNavbarClosed ? "animate-slide-left" : "animate-slide-right"}`;
     }
     return <nav className={classes}>{props.children}</nav>;
   };
@@ -87,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
               backgroundColor: "#E5E7EB", // Tailwind gray-300
               "&:hover": { backgroundColor: "#D1D5DB" }, // Hover effect
             }}
-            onClick={() => setIsClosed(true)}
+            onClick={() => setIsNavbarClosed(true)}
           >
             <CloseIcon />
           </IconButton>
@@ -101,16 +122,6 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
       </div>
     );
   };
-
-  useEffect(() => {
-    if (!isClosed) {
-      return;
-    }
-
-    setTimeout(() => {
-      setView(false);
-    }, animationDelayInMS);
-  }, [isClosed]);
 
   return (
     <Navbar>

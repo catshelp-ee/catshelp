@@ -6,8 +6,6 @@ export const useCatForm = (selectedCat: Profile) => {
   const [tempSelectedCat, setTempSelectedCat] = useState<Profile>({
     ...selectedCat,
   });
-  const [isPopupVisible, setPopupVisible] = useState(false);
-  const [isSlidingDown, setSlidingDown] = useState(false);
 
   useEffect(() => {
     setTempSelectedCat({ ...selectedCat });
@@ -52,10 +50,6 @@ export const useCatForm = (selectedCat: Profile) => {
   return {
     tempSelectedCat,
     setTempSelectedCat,
-    isPopupVisible,
-    setPopupVisible,
-    isSlidingDown,
-    setSlidingDown,
     updateField,
     updateMultiSelectField,
     updateDateField,

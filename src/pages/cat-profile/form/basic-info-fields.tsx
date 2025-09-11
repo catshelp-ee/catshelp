@@ -31,7 +31,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <TextField
       label="Nimi"
       name="mainInfo.name"
-      value={tempSelectedCat.mainInfo.name}
+      value={tempSelectedCat.mainInfo.name || ""}
       onChange={(e) => updateField(e, "mainInfo.name")}
     />
 
@@ -47,7 +47,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <TextField
       label="Leidmiskoht"
       name="animalRescueInfo.rescueLocation"
-      value={tempSelectedCat.animalRescueInfo.rescueLocation}
+      value={tempSelectedCat.animalRescueInfo.rescueLocation || ""}
       onChange={(e) => updateField(e, "animalRescueInfo.rescueLocation")}
     />
 
@@ -64,7 +64,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       <FormLabel>Sugu</FormLabel>
       <RadioGroup
         name="characteristics.textFields.gender"
-        value={tempSelectedCat.characteristics.textFields.spayedOrNeutered + " " + tempSelectedCat.characteristics.textFields.gender}
+        value={tempSelectedCat.characteristics.textFields.gender}
         onChange={(e) => {
           updateField(e, "characteristics.textFields.gender");
         }}
@@ -125,7 +125,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <TextField
       label="Kiibi number"
       name="mainInfo.microchip"
-      value={tempSelectedCat.mainInfo.microchip}
+      value={tempSelectedCat.mainInfo.microchip || ""}
       onChange={(e) => updateField(e, "mainInfo.microchip")}
     />
 

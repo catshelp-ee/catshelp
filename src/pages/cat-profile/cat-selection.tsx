@@ -9,9 +9,6 @@ interface CatSelectionProps {
   setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AVATAR_SIZE = { width: 72, height: 72 };
-const SELECTED_INDICATOR_STYLE = "border-b-4 border-[#5DC2D8]";
-
 const CatSelection: React.FC<CatSelectionProps> = ({
   cats,
   setSelectedCat,
@@ -31,7 +28,7 @@ const CatSelection: React.FC<CatSelectionProps> = ({
   return (
     <Stack direction="row" spacing={2}>
       {cats.map((cat, index) => (
-        <PetAvatar onClick={() => {
+        <PetAvatar key={cat.animalId} onClick={() => {
           handleCatSelect(index, cat);
         }}
           isSelected={selectedCatIndex === index}

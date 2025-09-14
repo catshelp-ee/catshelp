@@ -7,7 +7,7 @@ export default class UserController {
   constructor(
   ) { }
 
-  async getUserData(req: Request, res: Response): Promise<Response<User | { error: string }>> {
+  public async getUserData(req: Request, res: Response): Promise<Response<User | { error: string }>> {
     const user = req.user;
     if (!user) {
       res.status(404);

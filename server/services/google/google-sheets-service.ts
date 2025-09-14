@@ -34,12 +34,13 @@ export default class GoogleSheetsService {
       throw new Error('Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env');
     }
 
+    //TODO see vajab natuke ümber tegemist. hetkel on enamik funktsioone eeldusega, et tegemist saab olla ainult kassi andmetega.
     this.sheetID = process.env.CATS_SHEETS_ID!;
     this.sheetTable = process.env.CATS_TABLE_NAME!;
   }
 
 
-  async getNewSheet() {
+  private async getNewSheet() {
     try {
       const sheetData = await this.sheets.spreadsheets.get({
         auth: this.googleAuthService.getAuth(),
@@ -53,7 +54,7 @@ export default class GoogleSheetsService {
     }
   }
 
-  async getSheetData(sheetId, sheetTable) {
+  public async getSheetData(sheetId, sheetTable) {
     try {
       const sheetData = await this.sheets.spreadsheets.get({
         auth: this.googleAuthService.getAuth(),
@@ -69,7 +70,7 @@ export default class GoogleSheetsService {
 
 
 
-  async addDataToSheet(data: CreateAnimalData, user: User) {
+  public async addDataToSheet(data: CreateAnimalData, user: User) {
     const row = new Array(30).fill('');
     row[0] = data.rankNr!;
     row[1] = data.rankNr!;
@@ -80,8 +81,8 @@ export default class GoogleSheetsService {
 
     await this.sheets.spreadsheets.values.append({
       auth: this.googleAuthService.getAuth(),
-      spreadsheetId: process.env.CATS_SHEETS_ID,
-      range: process.env.CATS_TABLE_NAME,
+      spreadsheetId: this.sheetID,
+      range: this.sheetTable,
       valueInputOption: 'RAW',
       requestBody: {
         values: [row],
@@ -89,14 +90,14 @@ export default class GoogleSheetsService {
     });
   }
 
-  formatDate(date: Date | string | null | undefined): string {
+  private formatDate(date: Date | string | null | undefined): string {
     if (!date) return '';
 
     const m = moment(date);
     return m.isValid() ? m.format('DD.MM.YYYY') : '';
   }
 
-  updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
+  private updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
     const values = sheetsRowToObject(row.values);
 
     values.catName = animalProfile.mainInfo.name;
@@ -123,7 +124,7 @@ export default class GoogleSheetsService {
     return values;
   }
 
-  convertAnimalToCellDataArray(animal: CatSheetsHeaders): sheets_v4.Schema$CellData[] {
+  private convertAnimalToCellDataArray(animal: CatSheetsHeaders): sheets_v4.Schema$CellData[] {
     const orderedKeys: (keyof CatSheetsHeaders)[] = [
       'catName',
       'rescueSequenceNumber',
@@ -165,7 +166,7 @@ export default class GoogleSheetsService {
     }));
   }
 
-  async getRow(animalProfile: Profile): Promise<[sheets_v4.Schema$RowData, number, number]> {
+  private async getRow(animalProfile: Profile): Promise<[sheets_v4.Schema$RowData, number, number]> {
     const sheet = await this.getNewSheet();
 
     const sheetRows = sheet.data.sheets[0].data[0].rowData;
@@ -184,13 +185,9 @@ export default class GoogleSheetsService {
       return [row, index, sheet.data.sheets[0].properties.sheetId];
     }
     return null;
-
   }
 
-  async updateSheetCells(
-    animalProfile: Profile,
-  ): Promise<void> {
-
+  public async updateSheetCells(animalProfile: Profile): Promise<void> {
     try {
       const [row, rowIndex, sheetId] = await this.getRow(animalProfile);
       const updatedRow = this.updateSheetRow(row, animalProfile);
@@ -237,7 +234,7 @@ export default class GoogleSheetsService {
 
     try {
       await this.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: process.env.CATS_SHEETS_ID,
+        spreadsheetId: this.sheetID,
         requestBody: { requests: updateRequests },
       });
     } catch (error) {

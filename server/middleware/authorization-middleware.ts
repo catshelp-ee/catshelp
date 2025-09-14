@@ -15,13 +15,6 @@ export default class AuthorizationMiddleware {
     this.authenticate = this.authenticate.bind(this);
   }
 
-  public canViewPage(user) {
-    if (!user) {
-      return false;
-    }
-    return true;
-  }
-
   private refreshToken(decodedToken, res) {
     delete decodedToken.iat;
     delete decodedToken.exp;
@@ -60,7 +53,7 @@ export default class AuthorizationMiddleware {
     const user = await this.userService.getUser(decodedToken.id);
     req.user = user;
 
-    if (!this.canViewPage(user)) {
+    if (!user) {
       return res.sendStatus(401);
     }
 

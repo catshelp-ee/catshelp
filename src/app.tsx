@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageLayout from "@pages/app/page-layout";
 import Dashboard from "@pages/dashboard/dashboard";
+import Admin from "@pages/admin/admin";
 import AddCatForm from "@pages/add-cat/add-cat-form";
 import CatProfile from "@pages/cat-profile/cat-profile";
 import weekday from "dayjs/plugin/weekday";
@@ -25,6 +26,7 @@ function App() {
       <Route path="/login" element={<LoginForm />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<PageLayout />}>
+          <Route path="/admin" element={<Admin/>}/>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/cat-profile" element={<CatProfile />} />
         </Route>

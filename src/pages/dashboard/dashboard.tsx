@@ -46,6 +46,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
       }
     };
 
+    //TODO SEE MANUAALNE LOADING ASI TULEB ÜMBER TEHA
     const fetchDashboardWithLoading = async () => {
       await isLoadingWrapper(loadDashboardData, setIsLoading);
     };

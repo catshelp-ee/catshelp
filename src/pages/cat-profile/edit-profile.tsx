@@ -1,5 +1,4 @@
-import Popup from "@components/popup";
-import { useAuth } from "@context/auth-context";
+import { useAlert } from "@context/alert-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { useCatForm } from "@hooks/use-cat-form";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -15,7 +14,6 @@ import { Profile } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";
 import { VaccinationFields } from "./form/vaccination-fields";
-import { useAlert } from "@context/alert-context";
 
 
 interface CatDetailsProps {
@@ -87,7 +85,7 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     const images: File[] = previews.map((p) => p.file);
 
 
-    if (e.nativeEvent.submitter.name === "email") {
+    if (e.nativeEvent.submitter.name === "notify-volunteers") {
       formData.append('to', JSON.stringify([import.meta.env.UPDATE_NOTIFICATION_EMAIL]));
       formData.append('subject', "Uuenda veebi");
       try {
@@ -221,11 +219,11 @@ const EditProfile: React.FC<CatDetailsProps> = ({
               </Accordion>
 
               <div className="flex justify-around mt-8">
-                <Button sx={{ width: "32%" }} variant="contained" name="save" type="submit">
+                <Button sx={{ width: "32%" }} variant="contained" name="save-to-db" type="submit">
                   Salvesta
                 </Button>
-                <Button sx={{ width: "32%" }} variant="contained" name="email" type="submit">
-                  Uuenda veebi
+                <Button sx={{ width: "32%" }} variant="contained" name="notify-volunteers" type="submit">
+                  Saada vabatahtlikele teavitus
                 </Button>
               </div>
             </div>

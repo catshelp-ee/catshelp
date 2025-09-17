@@ -48,6 +48,7 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
             name={`characteristics.multiselectFields.${label}`}
             multiple
             value={value}
+            disabled
             onChange={(e) => updateMultiSelectField(e, `characteristics.multiselectFields.${label}`)}
             renderValue={(selected: string[]) => (
               <div className="flex flex-wrap whitespace-normal break-words">
@@ -85,6 +86,7 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
           <ResponsiveMultiSelect
             name={`characteristics.selectFields.${label}`}
             value={value}
+            disabled
             onChange={(e) => updateField(e, `characteristics.selectFields.${label}`)}
           >
             {FIELD_VALUES[label].map((val, idx) => (
@@ -110,6 +112,7 @@ export const DynamicFormFields: React.FC<DynamicFormFieldsProps> = ({
           </FormLabel>
           <TextField
             value={value}
+            disabled
             onChange={(e) => updateField(e, `characteristics.textFields.${label}`)}
             name={`characteristics.textFields.${label}`}
             fullWidth

@@ -23,12 +23,9 @@ export default class EmailService {
     });
   }
 
-  public async sendEmail(
-    images: Express.Multer.File[],
-    data: any,
-  ) {
 
-    const to = JSON.parse(data.to);
+  public async sendNotificationToVolunteers(images: Express.Multer.File[], data: any) {
+    const mailList = JSON.parse(data.to);
     const subject = data.subject;
 
     const animal = await this.animalService.getAnimalById(data.animalId);
@@ -48,6 +45,24 @@ export default class EmailService {
       };
     });
 
+    this.sendEmail(html, subject, mailList, attachments)
+  }
+
+  public sendNotificationToUser(
+    html: string,
+    subject: string,
+    to: string[],
+    attachments?: { filename: string; path: string, cid?: string }[]
+  ) {
+    this.sendEmail(html, subject, to, attachments);
+  }
+
+  private sendEmail(
+    html: string,
+    subject: string,
+    to: string[],
+    attachments?: { filename: string; path: string, cid?: string }[]
+  ) {
     return this.transporter.sendMail({
       from: process.env.MAGIC_LINK_SENDER,
       to,

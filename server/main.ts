@@ -97,7 +97,7 @@ async function bootstrap() {
     '/api/notifications/email',
     auth.authenticate,
     uploadImages,
-    emailController.sendNotification.bind(emailController)
+    emailController.sendNotificationToVolunteers.bind(emailController)
   );
 
   app.get(

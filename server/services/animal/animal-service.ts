@@ -29,15 +29,19 @@ export default class AnimalService {
     return this.animalRepository.getAnimalsByUserId(id);
   }
 
+  public getAnimalById(id: number | string) {
+    return this.animalRepository.getAnimalByIdWithRescue(Number(id));
+  }
+
   public async createAnimal(data: CreateAnimalData, user: User): Promise<CreateAnimalResult> {
     data.date = new Date();
     const animal = await this.animalRepository.createAnimalWithRescue(data);
     data.rankNr = animal.animalRescue.rankNr;
-    
-    const fosterHome = await this.fosterHomeRepository.saveOrUpdateFosterHome({userId : user.id});
+
+    const fosterHome = await this.fosterHomeRepository.saveOrUpdateFosterHome({ userId: user.id });
     const animalToFosterHomeData = {
-            animalId: animal.animal.id,
-            fosterHomeId: fosterHome.id
+      animalId: animal.animal.id,
+      fosterHomeId: fosterHome.id
     }
     await this.fosterHomeRepository.saveOrUpdateAnimalToFosterHome(animalToFosterHomeData);
 
@@ -75,7 +79,7 @@ export default class AnimalService {
 
     });
 
-    this.googleSheetsService.updateSheetCells(updatedAnimalData).then(() => {}, (error) => {
+    this.googleSheetsService.updateSheetCells(updatedAnimalData).then(() => { }, (error) => {
       console.error("Error saving data to sheets: " + error);
     });
   }

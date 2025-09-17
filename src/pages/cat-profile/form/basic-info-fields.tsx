@@ -49,6 +49,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <TextField
       label="Leidmiskoht"
       name="animalRescueInfo.rescueLocation"
+      disabled
       value={tempSelectedCat.animalRescueInfo.rescueLocation || ""}
       onChange={(e) => updateField(e, "animalRescueInfo.rescueLocation")}
     />

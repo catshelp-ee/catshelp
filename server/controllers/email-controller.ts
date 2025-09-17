@@ -1,3 +1,4 @@
+import AnimalService from '@services/animal/animal-service';
 import EmailService from '@services/auth/email-service';
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
@@ -7,7 +8,9 @@ import TYPES from 'types/inversify-types';
 export default class EmailController {
   constructor(
     @inject(TYPES.EmailService)
-    private emailService: EmailService
+    private emailService: EmailService,
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService
   ) { }
 
   public async sendNotification(req: Request, res: Response) {
@@ -17,10 +20,13 @@ export default class EmailController {
     const mailList = JSON.parse(data.to);
     const subject = data.subject;
 
+    const animal = await this.animalService.getAnimalById(data.animalId);
+
     const html = `
     <main>
       <h1>Pealkiri: ${data.title}</h1>
       <h2>Looma kirjeldus: ${data.description}</h2>
+      <h3>Looma järjekorranumber: ${animal.animalsToRescue.at(animal.animalsToRescue.length - 1).animalRescue.rankNr}</h3>
     </main>
     `;
 

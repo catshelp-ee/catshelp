@@ -70,23 +70,24 @@ const EditProfile: React.FC<CatDetailsProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.target as HTMLFormElement);
     const updatedAnimalData = parseDotNotationFormData(formData);
     updatedAnimalData.animalId = tempSelectedCat.animalId;
 
-    const [spayedOrNeutered, gender] = updatedAnimalData.characteristics.textFields.gender.split(" ");
+    if (updatedAnimalData.characteristics) {
+      const [spayedOrNeutered, gender] = updatedAnimalData.characteristics.textFields.gender.split(" ");
 
-
-    updatedAnimalData.characteristics.textFields.gender = gender;
-    updatedAnimalData.characteristics.textFields.spayedOrNeutered = spayedOrNeutered;
+      updatedAnimalData.characteristics.textFields.gender = gender;
+      updatedAnimalData.characteristics.textFields.spayedOrNeutered = spayedOrNeutered;
+    }
 
 
     const images: File[] = previews.map((p) => p.file);
 
 
     if (e.nativeEvent.submitter.name === "notify-volunteers") {
-      formData.append('to', JSON.stringify([import.meta.env.UPDATE_NOTIFICATION_EMAIL]));
+      formData.append('animalId', tempSelectedCat.animalId);
+      formData.append('to', JSON.stringify([import.meta.env.VITE_UPDATE_NOTIFICATION_EMAIL]));
       formData.append('subject', "Uuenda veebi");
       try {
         await axios.post("/api/notifications/email", formData, {

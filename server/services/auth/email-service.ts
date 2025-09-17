@@ -1,12 +1,17 @@
-import { injectable } from 'inversify';
+import AnimalService from '@services/animal/animal-service';
+import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 import { createTransport } from 'nodemailer';
+import TYPES from 'types/inversify-types';
 
 @injectable()
 export default class EmailService {
   transporter;
 
-  constructor() {
+  constructor(
+    @inject(TYPES.AnimalService)
+    private animalService: AnimalService
+  ) {
     this.transporter = createTransport({
       host: 'smtp.gmail.com',
       port: 465,
@@ -18,12 +23,31 @@ export default class EmailService {
     });
   }
 
-  public sendEmail(
-    html: string,
-    subject: string,
-    to: string[],
-    attachments?: { filename: string; path: string, cid?: string }[]
+  public async sendEmail(
+    images: Express.Multer.File[],
+    data: any,
   ) {
+
+    const to = JSON.parse(data.to);
+    const subject = data.subject;
+
+    const animal = await this.animalService.getAnimalById(data.animalId);
+
+    const html = `
+    <main>
+      <h1>Pealkiri: ${data.title}</h1>
+      <h2>Looma kirjeldus: ${data.description}</h2>
+      <h3>Looma järjekorranumber: ${animal.animalsToRescue.at(animal.animalsToRescue.length - 1).animalRescue.rankNr}</h3>
+    </main>
+    `;
+
+    const attachments = images.map(image => {
+      return {
+        filename: image.filename,
+        path: image.path,
+      };
+    });
+
     return this.transporter.sendMail({
       from: process.env.MAGIC_LINK_SENDER,
       to,

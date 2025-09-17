@@ -215,6 +215,16 @@ async function init() {
     .inSingletonScope();
 
   container
+    .bind<TodoNotificationJob>(TYPES.TodoNotificationJob)
+    .to(TodoNotificationJob)
+    .inSingletonScope();
+
+  container
+    .bind<TodoNotificationJob>(TYPES.TodoNotificationJob)
+    .to(TodoNotificationJob)
+    .inSingletonScope();
+
+  container
     .bind<CronRunner>(TYPES.CronRunner)
     .to(CronRunner)
     .inSingletonScope();

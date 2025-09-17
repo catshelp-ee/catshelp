@@ -2,6 +2,7 @@ import { Animal } from 'generated/prisma';
 import { injectable } from 'inversify';
 import { prisma } from 'server/prisma';
 import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
+import { ProfileHeader } from 'types/cat';
 
 @injectable()
 export default class AnimalRepository {
@@ -30,10 +31,10 @@ export default class AnimalRepository {
       .filter(Boolean);
   }
 
-  public getAnimalByIdWithRescue(id: number) {
+  public getAnimalByIdWithRescue(id: number | string) {
     return prisma.animal.findFirst({
       where: {
-        id
+        id: Number(id)
       },
       include: {
         animalsToRescue: {
@@ -81,6 +82,19 @@ export default class AnimalRepository {
       },
     });
     return animal;
+  }
+
+  public async updateEditProfile(data: ProfileHeader): Promise<Animal> {
+    const newRow = await prisma.animal.update({
+      where: {
+        id: Number(data.animalId),
+      },
+      data: {
+        profileTitle: data.title,
+        description: data.description,
+      },
+    });
+    return newRow;
   }
 
   public async saveOrUpdateAnimal(data, tx?): Promise<Animal> {

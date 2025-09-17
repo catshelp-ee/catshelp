@@ -6,7 +6,7 @@ import { Animal, User } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { prisma } from 'server/prisma';
 import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
-import { Profile } from 'types/cat';
+import { Profile, ProfileHeader } from 'types/cat';
 import TYPES from 'types/inversify-types';
 import CharacteristicsService from './characteristics-service';
 
@@ -49,7 +49,11 @@ export default class AnimalService {
     return animal;
   }
 
-  async updateAnimal(updatedAnimalData: Profile) {
+  async updateAnimal(updatedAnimalData: ProfileHeader) {
+    await this.animalRepository.updateEditProfile(updatedAnimalData);
+  }
+
+  async updateAnimalAdmin(updatedAnimalData: Profile) {
     const animalWithRescue = await this.animalRepository.getAnimalByIdWithRescue(updatedAnimalData.animalId);
 
     const animalData = {
@@ -76,7 +80,6 @@ export default class AnimalService {
       await this.animalRepository.saveOrUpdateAnimal(animalData, tx);
       await this.animalRescueRepository.saveOrUpdateAnimalRescue(animalRescueData, tx);
       await this.characteristicsService.updateCharacteristics(updatedAnimalData, tx);
-
     });
 
     this.googleSheetsService.updateSheetCells(updatedAnimalData).then(() => { }, (error) => {

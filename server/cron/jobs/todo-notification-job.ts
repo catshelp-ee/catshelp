@@ -23,24 +23,23 @@ export default class TodoNotificationJob {
         private userRepository: UserRepository
     ) { }
 
-    public async sendNotifications() {
-        const users = await this.userRepository.getAllUsers();
-
-        const renderTasks = (tasks: Tasks) => {
-            let html = "";
-            for (const [assignee, labels] of Object.entries(tasks)) {
-                html += `<h3 style="margin:0 0 10px 0; color:#333;">${assignee}:</h3>`;
-                html += `<ol style="padding-left:20px; margin:0;">`;
-                for (const label of labels) {
-                    html += `<li>${label}</li>`;
-                }
-                html += `</ol>`;
+    private renderTasks(tasks: Tasks) {
+        let html = "";
+        for (const [assignee, labels] of Object.entries(tasks)) {
+            html += `<h3 style="margin:0 0 10px 0; color:#333;">${assignee}:</h3>`;
+            html += `<ol style="padding-left:20px; margin:0;">`;
+            for (const label of labels) {
+                html += `<li>${label}</li>`;
             }
-            return html;
-        };
+            html += `</ol>`;
+        }
+        return html;
+    };
 
-        const createHtmlTemplate = (tasks: Tasks) => `
-            <body style="font-family: Arial, sans-serif; max-width:600px; border-radius:6px; background-color:#f6f6f6; margin:20px auto; padding:20px;">
+
+    private createHtmlTemplate(tasks: Tasks) {
+        return `
+             <body style="font-family: Arial, sans-serif; max-width:600px; border-radius:6px; background-color:#f6f6f6; margin:20px auto; padding:20px;">
                 <header style="text-align:center; margin-bottom:20px;">
                     <p style="font-size:12px; color:#666;">
                         Email not displaying correctly? <a href="#" style="color:#0073e6;">View it in your browser</a>.
@@ -55,7 +54,7 @@ export default class TodoNotificationJob {
                         Allpool leiad teemad, mis vajavad sinu tähelepanu. Kõik juhised ning lisainfo leiad, kui logid sisse meie digitaalsesse hoiukiisude keskkonda.
                     </p>
 
-                    ${renderTasks(tasks)}
+                    ${this.renderTasks(tasks)}
 
                     <p>
                         Kui need on kõik juba tehtud, siis palun anna meile sellest teada märkides need digitaalses hoiukisude keskkonnas tehtuks.
@@ -74,7 +73,10 @@ export default class TodoNotificationJob {
                     <a href="mailto:abi@catshelp.ee" style="color:#0073e6;">abi@catshelp.ee</a>
                 </footer>
             </body>
-         `;
+         `};
+
+    public async sendNotifications() {
+        const users = await this.userRepository.getAllUsers();
 
         for (let index = 0; index < users.length; index++) {
             const user = users[index];
@@ -97,9 +99,12 @@ export default class TodoNotificationJob {
             }
 
 
-            this.emailService.sendEmail(createHtmlTemplate(tasks), "Hoiukodu meeldetuletus", [user.email], [{
-                filename: "email-cat.jpg", path: path.join(__dirname, "./email-cat.jpg"), cid: "email-cat"
-            }])
+            this.emailService.sendNotificationToUser(
+                this.createHtmlTemplate(tasks),
+                "Hoiukodu meeldetuletus",
+                [user.email],
+                [{ filename: "email-cat.jpg", path: path.join(__dirname, "./email-cat.jpg"), cid: "email-cat" }]
+            )
         }
     }
 }

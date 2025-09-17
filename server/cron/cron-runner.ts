@@ -18,7 +18,7 @@ export default class CronRunner {
   public startCronJobs() {
     cron.schedule('0 0 * * *', this.withErrorHandling(deleteExpiredRevokedTokens));
     cron.schedule('*/10 * * * *', this.withErrorHandling(this.syncSheetDataToDBJob.syncSheetsToDb, true));
-    cron.schedule('0 12 1,15 * *', this.withErrorHandling(this.todoNotificationJob.sendNotifications()));
+    cron.schedule('0 12 1,15 * *', this.withErrorHandling(this.todoNotificationJob.sendNotifications, true));
   }
 
   private withErrorHandling(functionToRun, async = false) {

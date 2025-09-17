@@ -49,6 +49,12 @@ export interface Profile {
   characteristics: CharacteristicsInfo;
 }
 
+export interface ProfileHeader {
+  animalId: number | string,
+  title: string,
+  description: string
+}
+
 export function createProfile(): Profile {
   return {
     animalId: null,

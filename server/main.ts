@@ -7,6 +7,9 @@ import express from 'express';
 import 'express-async-errors';
 import 'reflect-metadata';
 import TYPES from 'types/inversify-types';
+import "reflect-metadata"
+import { DataSource } from "typeorm"
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { init } from './container';
 /**
@@ -28,8 +31,6 @@ import CronRunner from './cron/cron-runner';
 import AuthorizationMiddleware from './middleware/authorization-middleware';
 import errorMiddleware from './middleware/error-middleware';
 import AdminController from './controllers/admin-controller';
-
-dotenv.config();
 
 async function bootstrap() {
   // Initialize dependency injection container
@@ -130,4 +131,31 @@ async function bootstrap() {
   });
 }
 
+async function setupDatabase() {
+  
+  const AppDataSource = new DataSource({
+    type: "mariadb",
+    host: process.env.DATABASE_HOST,
+    port: Number(process.env.DATABASE_PORT),
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    entities: ["./server/models/*.ts"],
+    synchronize: true,
+    logging: false,
+    namingStrategy: new SnakeNamingStrategy()
+  });
+
+  // to initialize the initial connection with the database, register all entities
+  // and "synchronize" database schema, call "initialize()" method of a newly created database
+  // once in your application bootstrap
+  try {
+    await AppDataSource.initialize();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+dotenv.config();
+setupDatabase();
 bootstrap();

@@ -64,6 +64,8 @@
     "tailwindcss": "^3.4.14",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
+    "typeorm": "^0.3.26",
+    "typeorm-naming-strategies": "^4.1.0",
     "uuid": "^11.1.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
@@ -76,7 +78,7 @@
     "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^1.4.13",
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.5.2",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.3.12",

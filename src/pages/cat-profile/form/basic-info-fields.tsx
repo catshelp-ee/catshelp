@@ -31,6 +31,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <TextField
       label="Nimi"
       name="mainInfo.name"
+      disabled
       value={tempSelectedCat.mainInfo.name || ""}
       onChange={(e) => updateField(e, "mainInfo.name")}
     />
@@ -38,6 +39,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <DatePicker
       label="Sünniaeg"
       name="mainInfo.birthDate"
+      disabled
       value={
         tempSelectedCat.mainInfo.birthDate ? dayjs(tempSelectedCat.mainInfo.birthDate) : null
       }
@@ -47,6 +49,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <TextField
       label="Leidmiskoht"
       name="animalRescueInfo.rescueLocation"
+      disabled
       value={tempSelectedCat.animalRescueInfo.rescueLocation || ""}
       onChange={(e) => updateField(e, "animalRescueInfo.rescueLocation")}
     />
@@ -54,6 +57,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <DatePicker
       label="Leidmiskuupäev"
       name="animalRescueInfo.rescueDate"
+      disabled
       value={
         tempSelectedCat.animalRescueInfo.rescueDate ? dayjs(tempSelectedCat.animalRescueInfo.rescueDate) : null
       }
@@ -72,21 +76,25 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
         <FormControlLabel
           value="Steriliseerimata emane"
           control={<Radio />}
+          disabled
           label="Steriliseerimata emane"
         />
         <FormControlLabel
           value="Steriliseeritud emane"
           control={<Radio />}
+          disabled
           label="Steriliseeritud emane"
         />
         <FormControlLabel
           value="Kastreerimata isane"
           control={<Radio />}
+          disabled
           label="Kastreerimata isane"
         />
         <FormControlLabel
           value="Kastreeritud isane"
           control={<Radio />}
+          disabled
           label="Kastreeritud isane"
         />
       </RadioGroup>
@@ -97,6 +105,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       <ResponsiveMultiSelect
         name="characteristics.selectFields.coatLength"
         value={tempSelectedCat.characteristics.selectFields.coatLength}
+        disabled
         onChange={(e) => updateField(e, "characteristics.selectFields.coatLength")}
       >
         {COAT_LENGTHS.map((length, index) => (
@@ -112,6 +121,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       <ResponsiveMultiSelect
         name="characteristics.selectFields.coatColour"
         value={tempSelectedCat.characteristics.selectFields.coatColour}
+        disabled
         onChange={(e) => updateField(e, "characteristics.selectFields.coatColour")}
       >
         {COAT_COLOURS.map((colour, index) => (
@@ -126,6 +136,7 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       label="Kiibi number"
       name="mainInfo.microchip"
       value={tempSelectedCat.mainInfo.microchip || ""}
+      disabled
       onChange={(e) => updateField(e, "mainInfo.microchip")}
     />
 
@@ -136,8 +147,8 @@ export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
         value={tempSelectedCat.mainInfo.microchipRegisteredInLLR}
         onChange={(e) => updateField(e, "mainInfo.microchipRegisteredInLLR")}
       >
-        <FormControlLabel value={true} control={<Radio />} label="Jah" />
-        <FormControlLabel value={false} control={<Radio />} label="Ei" />
+        <FormControlLabel value={true} disabled control={<Radio />} label="Jah" />
+        <FormControlLabel value={false} disabled control={<Radio />} label="Ei" />
       </RadioGroup>
     </FormControl>
   </div>

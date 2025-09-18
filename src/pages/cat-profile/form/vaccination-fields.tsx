@@ -21,6 +21,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
         label="Vaktsineerimis-kuupäev"
         name="vaccineInfo.complexVaccine"
         value={tempSelectedCat.vaccineInfo.complexVaccine && dayjs(tempSelectedCat.vaccineInfo.complexVaccine)}
+        disabled
         onChange={(e) => updateDateField(e, "vaccineInfo.complexVaccine")}
       />
 
@@ -28,6 +29,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
         label="Vaktsiini lõppemise kuupäev"
         name="vaccineInfo.nextComplexVaccineDate"
         value={tempSelectedCat.vaccineInfo.nextComplexVaccineDate && dayjs(tempSelectedCat.vaccineInfo.nextComplexVaccineDate)}
+        disabled
         onChange={(e) => updateDateField(e, "vaccineInfo.nextComplexVaccineDate")}
       />
 
@@ -37,6 +39,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
         value={
           tempSelectedCat.vaccineInfo.rabiesVaccine && dayjs(tempSelectedCat.vaccineInfo.rabiesVaccine)
         }
+        disabled
         onChange={(e) => updateDateField(e, "vaccineInfo.rabiesVaccine")}
       />
 
@@ -47,6 +50,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
           tempSelectedCat.vaccineInfo.nextRabiesVaccineDate &&
           dayjs(tempSelectedCat.vaccineInfo.nextRabiesVaccineDate)
         }
+        disabled
         onChange={(e) => updateDateField(e, "vaccineInfo.nextRabiesVaccineDate")}
       />
 
@@ -54,6 +58,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
         label="Ussirohu turjatilga nimi"
         name="vaccineInfo.dewormingOrFleaTreatmentName"
         value={tempSelectedCat.vaccineInfo.dewormingOrFleaTreatmentName}
+        disabled
         onChange={(e) => updateField(e, "vaccineInfo.dewormingOrFleaTreatmentName")}
       />
 
@@ -62,6 +67,7 @@ export const VaccinationFields: React.FC<VaccinationFieldsProps> = ({
         name="vaccineInfo.dewormingOrFleaTreatmentDate"
         value={
           tempSelectedCat.vaccineInfo.dewormingOrFleaTreatmentDate && dayjs(tempSelectedCat.vaccineInfo.dewormingOrFleaTreatmentDate)}
+        disabled
         onChange={(e) => updateDateField(e, "vaccineInfo.dewormingOrFleaTreatmentDate")}
       />
     </>

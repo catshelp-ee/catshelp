@@ -1,5 +1,4 @@
-import Popup from "@components/popup";
-import { useAuth } from "@context/auth-context";
+import { useAlert } from "@context/alert-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { useCatForm } from "@hooks/use-cat-form";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -11,11 +10,10 @@ import ImageGallery from "@pages/cat-profile/image-gallery";
 import axios from "axios";
 import React, { useState } from "react";
 import { uploadImages } from "src/utils/image-utils";
-import { Profile } from "types/cat";
+import { Profile, ProfileHeader } from "types/cat";
 import { BasicInfoFields } from "./form/basic-info-fields";
 import { DynamicFormFields } from "./form/dynamic-form-fields";
 import { VaccinationFields } from "./form/vaccination-fields";
-import { useAlert } from "@context/alert-context";
 
 
 interface CatDetailsProps {
@@ -46,49 +44,43 @@ const EditProfile: React.FC<CatDetailsProps> = ({
     updateDateField
   } = useCatForm(selectedCat);
 
-
-  function parseDotNotationFormData(formData: FormData) {
-    const obj = {} as Profile;
-
-    for (const [key, value] of formData.entries()) {
-      const keys = key.split('.'); // split by dots
-      let current = obj;
-
-      keys.forEach((part, index) => {
-        // If it's the last key, assign the value
-        if (index === keys.length - 1) {
-          current[part] = value;
-        } else {
-          // If this key doesn't exist yet, create an empty object
-          if (!current[part]) current[part] = {};
-          current = current[part];
-        }
-      });
-    }
-
-    return obj;
-  }
-
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.target as HTMLFormElement);
-    const updatedAnimalData = parseDotNotationFormData(formData);
-    updatedAnimalData.animalId = tempSelectedCat.animalId;
-
-    const [spayedOrNeutered, gender] = updatedAnimalData.characteristics.textFields.gender.split(" ");
-
-
-    updatedAnimalData.characteristics.textFields.gender = gender;
-    updatedAnimalData.characteristics.textFields.spayedOrNeutered = spayedOrNeutered;
-
+    const updatedAnimalData = { animalId: tempSelectedCat.animalId, title: formData.get('title'), description: formData.get('description') } as ProfileHeader;
 
     const images: File[] = previews.map((p) => p.file);
 
+
+    if (e.nativeEvent.submitter.name === "notify-volunteers") {
+      formData.append('animalId', tempSelectedCat.animalId.toString());
+      formData.append('to', JSON.stringify([import.meta.env.VITE_UPDATE_NOTIFICATION_EMAIL]));
+      formData.append('subject', "Uuenda veebi");
+      for (let index = 0; index < images.length; index++) {
+        const image = images[index];
+        formData.append('images', image);
+      }
+      try {
+        await axios.post("/api/notifications/email", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          withCredentials: true,
+        });
+
+        setTimeout(() => {
+          setIsEditMode(false);
+        }, 1500);
+        showAlert('Success', "🐈‍⬛ Andmed uuendatud! 🐈‍⬛");
+      } catch (e) {
+        console.error("Error updating cat profile:", e);
+        showAlert('Error', "Andmete uuendamine ebaõnnestus");
+      }
+      return;
+    }
+
     if (images.length > 0) {
       await uploadImages(images, selectedCat.animalId);
-
     }
 
     try {
@@ -96,6 +88,8 @@ const EditProfile: React.FC<CatDetailsProps> = ({
         withCredentials: true,
       });
 
+      tempSelectedCat.title = updatedAnimalData.title;
+      tempSelectedCat.description = updatedAnimalData.description;
       setSelectedCat(tempSelectedCat);
       setTimeout(() => {
         setIsEditMode(false);
@@ -205,9 +199,15 @@ const EditProfile: React.FC<CatDetailsProps> = ({
                   />
                 </AccordionDetails>
               </Accordion>
-              <Button sx={{ width: "50%", margin: "2rem auto" }} variant="contained" type="submit">
-                Salvesta
-              </Button>
+
+              <div className="flex justify-around mt-8">
+                <Button sx={{ width: "32%" }} variant="contained" name="save-to-db" type="submit">
+                  Salvesta
+                </Button>
+                <Button sx={{ width: "32%" }} variant="contained" name="notify-volunteers" type="submit">
+                  Saada vabatahtlikele teavitus
+                </Button>
+              </div>
             </div>
           </div>
 

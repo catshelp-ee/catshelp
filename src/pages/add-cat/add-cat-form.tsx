@@ -80,10 +80,9 @@ const AddCatForm = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center">
-      <div className="flex flex-col w-1/3 max-sm:w-full">
-        <Header className="mt-4" imgClass="m-auto" />
-        <h1 className="text-5xl mt-4 mb-16 max-sm:text-4xl">Lisa uus kass</h1>
+    <div className="flex md:mx-12">
+      <div className="flex flex-col">
+        <h1 className="text-6xl my-4">Lisa uus kass</h1>
         <form
           onSubmit={handleSubmit}
           className="flex flex-col w-full gap-4 mb-28"
@@ -143,13 +142,6 @@ const AddCatForm = () => {
 
 
           <div className="flex flex-row items-center justify-center gap-2">
-            <Button
-              sx={{
-                width: "300px",
-              }}
-              variant="outlined" href="/">
-              Tagasi
-            </Button>
             <Button
               sx={{
                 width: "300px",

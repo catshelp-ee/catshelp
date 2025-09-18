@@ -27,7 +27,7 @@ export default class ImageService {
       where: { animalId },
     });
     return files.map(file => {
-      return `$/images/${file.uuid}.jpg`;
+      return `/images/${file.uuid}.jpg`;
     });
   }
 

@@ -23,11 +23,12 @@ export default class ImageService {
   };
 
   async fetchImagePathsByAnimalId(animalId: number) {
+    const current = process.cwd();
     const files = await prisma.file.findMany({
       where: { animalId },
     });
     return files.map(file => {
-      return `./images/${file.uuid}.jpg`;
+      return `${current}/images/${file.uuid}.jpg`;
     });
   }
 

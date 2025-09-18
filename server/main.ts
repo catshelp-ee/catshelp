@@ -63,7 +63,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.static(path.join(rootDir, 'dist')));
-  app.use('/images', express.static(path.join(__dirname, 'images')));
+  app.use('/images', express.static(path.join(process.cwd(), 'images')));
 
   cron.startCronJobs();
 

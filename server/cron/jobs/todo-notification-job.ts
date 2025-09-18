@@ -50,7 +50,7 @@ export default class TodoNotificationJob {
 
                 <section style="font-size:15px; line-height:1.6; color:#333;">
                     <p>
-                        See kiri saadeti sulle automaatselt, sest oled Cats Help MTÜ hoiukodu ja meie andmete järgi vajab sinu hoiukiisu peatselt natuke sinu tähelepanu. 
+                        See kiri saadeti sulle automaatselt, sest oled Cats Help MTÜ hoiukodu ja meie andmete järgi vajab sinu hoiukiisu peatselt natuke sinu tähelepanu.
                         Allpool leiad teemad, mis vajavad sinu tähelepanu. Kõik juhised ning lisainfo leiad, kui logid sisse meie digitaalsesse hoiukiisude keskkonda.
                     </p>
 
@@ -62,18 +62,19 @@ export default class TodoNotificationJob {
                 </section>
 
                 <section style="text-align:center; margin:20px 0;">
-                    <a href="${process.env.DASHBOARD_LINK}" 
+                    <a href="${process.env.DASHBOARD_LINK}"
                         style="background:#00a6a6; color:#fff; padding:12px 24px; border-radius:4px; text-decoration:none; font-weight:bold;">
                         Märgi tehtuks
                     </a>
                 </section>
 
                 <footer style="text-align:center; font-size:13px; color:#666;">
-                    Kui sul on abi vaja, kirjuta 
+                    Kui sul on abi vaja, kirjuta
                     <a href="mailto:abi@catshelp.ee" style="color:#0073e6;">abi@catshelp.ee</a>
                 </footer>
             </body>
-         `};
+         `
+    };
 
     public async sendNotifications() {
         const users = await this.userRepository.getAllUsers();

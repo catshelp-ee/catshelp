@@ -1,5 +1,4 @@
 {
-  "files": [],
   "compilerOptions": {
     "jsx": "react-jsx",
     "experimentalDecorators": true,
@@ -26,9 +25,10 @@
       "@models/*": ["models/*"],
       "@components/*": ["src/components/*"],
       "@cron/*": ["server/cron/*"],
-      "@repositories/*": ["server/repositories/*"]
+      "@repositories/*": ["server/repositories/*"],
+      "@database/*": ["database/*"],
     },
   },
-  "include": ["server/**/*", "models/**/*", "src"],
+  "include": ["server/**/*", "src", "database/**/*"],
   "exclude": ["node_modules", "dist"]
 }

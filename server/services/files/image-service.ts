@@ -23,6 +23,7 @@ export default class ImageService {
   };
 
   async fetchImagePathsByAnimalId(animalId: number) {
+    //TODO
     const files = await prisma.file.findMany({
       where: { animalId },
     });
@@ -52,6 +53,7 @@ export default class ImageService {
     animalId = Number(animalId);
     const normalizedFiles = this.normalizeFiles(files);
     await Promise.all(
+      //TODO
       normalizedFiles.map(file =>
         prisma.file.create({
           data: {
@@ -64,6 +66,7 @@ export default class ImageService {
   }
 
   async fetchProfilePicture(animalID: number) {
+    //TODO
     return prisma.file.findFirst({
       where: {
         profileAnimalId: animalID,

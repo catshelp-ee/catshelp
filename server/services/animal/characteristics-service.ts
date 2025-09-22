@@ -19,6 +19,7 @@ export default class CharacteristicsService {
     private animalCharacteristicRepository: AnimalCharacteristicRepository
   ) { }
   public async getCharacteristics(animalId: number): Promise<CharacteristicsInfo> {
+    //TODO
     const characteristics = await prisma.animalCharacteristic.findMany({
       where: { animalId },
     });

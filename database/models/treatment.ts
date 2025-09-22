@@ -7,7 +7,7 @@ export class Treatment {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column()
+    @Column("varchar")
     public treatmentName: string;
 
     @Column({
@@ -15,7 +15,7 @@ export class Treatment {
     })
     public active: boolean;
 
-    @Column()
+    @Column("boolean")
     public confirmed: boolean;
 
     @Column()

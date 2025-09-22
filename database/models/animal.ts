@@ -1,8 +1,7 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { File } from "./file";
 import { AnimalCharacteristic } from "./animal-characteristic";
 import { Treatment } from "./treatment";
-import { FosterHome } from "./foster-home";
 import { AnimalRescue } from "./animal-rescue";
 import { AnimalToFosterHome } from "./animal-to-foster-home";
 

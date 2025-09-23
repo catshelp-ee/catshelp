@@ -27,7 +27,9 @@ const PageLayout: React.FC<LayoutProps> = () => {
         <Header />
         <div className="flex">
           <Sidebar />
-          <Outlet />
+          <div className="w-full">
+            <Outlet />
+          </div>
         </div>
       </div>
     )

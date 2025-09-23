@@ -10,7 +10,7 @@ export class Treatment {
     @Column("varchar")
     public treatmentName: string;
 
-    @Column({
+    @Column("boolean", {
         default: true
     })
     public active: boolean;
@@ -18,13 +18,13 @@ export class Treatment {
     @Column("boolean")
     public confirmed: boolean;
 
-    @Column()
+    @Column("date")
     public confirmationDate: Date;
 
-    @Column()
+    @Column("date")
     public visitDate: Date;
 
-    @Column()
+    @Column("date")
     public nextVisitDate: Date;
 
     @ManyToOne(() => Animal, (animal) => animal.treatments)

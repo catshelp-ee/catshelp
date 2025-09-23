@@ -7,21 +7,21 @@ export class User {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column({
+    @Column("varchar", {
         unique: true
     })
     public fullName: string;
 
-    @Column()
+    @Column("varchar")
     public role: string;
 
-    @Column()
+    @Column("varchar")
     public email: string;
 
-    @Column()
+    @Column("varchar")
     public identityCode: string;
 
-    @Column()
+    @Column("varchar")
     public citizenship: string;
 
     @CreateDateColumn()

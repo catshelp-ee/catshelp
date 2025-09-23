@@ -7,19 +7,19 @@ export class AnimalRescue {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column()
+    @Column("date")
     public rescueDate: Date;
 
-    @Column()
+    @Column("varchar")
     public state: string;
 
-    @Column()
+    @Column("varchar")
     public address: string;
 
-    @Column()
+    @Column("varchar")
     public locationNotes: string;
 
-    @Column({
+    @Column("varchar", {
         unique: true
     })
     public rankNr: string;

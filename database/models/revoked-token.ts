@@ -6,13 +6,11 @@ export class RevokedToken {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column({
+    @Column("varchar", {
         unique: true
     })
     public token: string;
 
-    @Column({
-        type: "datetime"
-    })
+    @Column("datetime")
     public expiresAt: Date;
 }

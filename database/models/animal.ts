@@ -11,27 +11,25 @@ export class Animal {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column()
+    @Column("varchar")
     public name: string;
 
-    @Column()
+    @Column("date")
     public birthday: Date;
 
-    @Column()
+    @Column("varchar")
     public profileTitle: string;
 
-    @Column({
-        type: "text"
-    })
+    @Column("text")
     public description: string;
 
-    @Column()
+    @Column("varchar")
     public status: string;
 
-    @Column()
+    @Column("varchar")
     public chipNumber: string;
 
-    @Column({
+    @Column("boolean", {
         default: false
     })
     public chipRegisteredWithUs: boolean;

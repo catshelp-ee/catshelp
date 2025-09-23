@@ -8,7 +8,7 @@ export class AnimalToFosterHome {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column()
+    @Column("date")
     public fosterHomeEndDate: Date;
 
     @ManyToOne(() => Animal, (animal) => animal.animalToFosterHome)

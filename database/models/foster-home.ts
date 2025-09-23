@@ -9,16 +9,16 @@ export class FosterHome {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column()
+    @Column("varchar")
     public location: string;
 
-    @Column()
+    @Column("date")
     public startDate: Date;
 
-    @Column()
+    @Column("date")
     public endDate: Date;
 
-    @Column()
+    @Column("integer")
     public catshelpMentorId: number;
 
     @OneToOne(() => User, (user) => user.fosterHome)

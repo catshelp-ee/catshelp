@@ -14,7 +14,7 @@ export class Animal {
     @Column("varchar")
     public name: string;
 
-    @Column("date")
+    @Column("datetime")
     public birthday: Date;
 
     @Column("varchar")

@@ -7,7 +7,7 @@ export class AnimalRescue {
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column("date")
+    @Column("datetime")
     public rescueDate: Date;
 
     @Column("varchar")

@@ -7,10 +7,16 @@
     "dev": "npm-run-all --parallel dev:api dev:vite",
     "dev:api": "nodemon --watch server --ext ts,tsx --exec tsx server/main.ts",
     "dev:vite": "vite",
+
+    "migrate": "tsx ./node_modules/typeorm/cli.js -d database/data-source.ts migration:run",
+    "create-migration": "typeorm migration:create",
+
+
     "copy:pm2": "cp server/pm2.config.js dist/",
     "build": "vite build && npm run bundle --prefix ./server",
     "lint": "eslint server --ext .ts",
     "start": "node dist/bundle.cjs"
+
   },
   "prisma": {
     "schema": "./prisma"
@@ -49,6 +55,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16",
     "pg-hstore": "^2.3.4",
+    "pluralize": "^8.0.0",
     "postcss": "^8.4.47",
     "posthog-js": "^1.236.5",
     "prisma": "^6.10.1",

@@ -59,3 +59,9 @@ The application uses **Prisma ORM** for database interactions, with schema defin
 
 ## Additional Notes
 This documentation aims to provide a comprehensive guide to the CatsHelp server-side implementation. For further details on specific components or to implement the proposed directory restructuring, refer to the project maintainers or relevant code files.
+
+
+
+
+npm run typeorm migration:run
+npm run create-migration database/migrations/test

@@ -63,5 +63,5 @@ This documentation aims to provide a comprehensive guide to the CatsHelp server-
 
 
 
-npm run typeorm migration:run
+npm run migrate
 npm run create-migration database/migrations/test

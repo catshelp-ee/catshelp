@@ -16,10 +16,11 @@ export default class FileController {
       return;
     }
 
-    await this.imageService.insertImageFilenamesIntoDB(
+    const paths = await this.imageService.insertImageFilenamesIntoDB(
       req.files,
       req.body.animalId
     );
-    res.sendStatus(200);
+
+    res.send(paths);
   }
 }

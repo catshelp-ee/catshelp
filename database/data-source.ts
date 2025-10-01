@@ -12,9 +12,9 @@ export const AppDataSource = new DataSource({
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  entities: ["database/models/*.ts"],
-  migrations: ["database/migrations/*.ts"],
-  synchronize: true,
+  entities: ["database/models/*.{ts,js}"],
+  migrations: ["database/migrations/*.{ts,js}"],
+  synchronize: false,
   logging: false,
   namingStrategy: new PluralSnakeNamingStrategy()
 });

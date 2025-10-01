@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, OneToOne } from "typeorm";
 import { FosterHome } from './foster-home';
 
-@Entity()
+@Entity("users")
 export class User {
     
     @PrimaryGeneratedColumn()

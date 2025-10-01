@@ -1,12 +1,10 @@
-import { User } from 'generated/prisma';
 import { injectable } from 'inversify';
 import { prisma } from 'server/prisma';
 
+import { AppDataSource } from '@database/data-source';
+
 @injectable()
 export default class UserRepository {
-  static async getAllUsers(): Promise<User[]> {
-    return await prisma.user.findMany();
-  }
 
   public async saveOrUpdateUser(data) {
     const newRow = await prisma.user.upsert({
@@ -24,14 +22,16 @@ export default class UserRepository {
   }
 
   public async getUserById(id: number) {
-    return prisma.user.findUnique({
-      where: { id },
-    });
+    return await AppDataSource.getRepository("users")
+      .createQueryBuilder("user")
+      .where("user.id = :id", { id : id })
+      .getOne();
   }
 
   public async getUserByEmail(email: string) {
-    return prisma.user.findFirst({
-      where: { email: email },
-    });
+    return await AppDataSource.getRepository("users")
+      .createQueryBuilder("user")
+      .where("user.email = :email", { email : email })
+      .getOne();
   }
 }

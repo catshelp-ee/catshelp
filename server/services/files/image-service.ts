@@ -51,16 +51,22 @@ export default class ImageService {
   ) {
     animalId = Number(animalId);
     const normalizedFiles = this.normalizeFiles(files);
+    const paths: string[] = [];
     await Promise.all(
-      normalizedFiles.map(file =>
-        prisma.file.create({
+      normalizedFiles.map(file => {
+        const uuid = file.filename.split('.')[0];
+        paths.push(`images/${uuid}.jpg`);
+
+        return prisma.file.create({
           data: {
             animalId,
-            uuid: file.filename.split('.')[0],
+            uuid,
           },
-        })
+        });
+      }
       )
     );
+    return paths;
   }
 
   async fetchProfilePicture(animalID: number) {

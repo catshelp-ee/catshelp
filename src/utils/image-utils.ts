@@ -84,12 +84,13 @@ export const uploadImages = async (files: File[], animalId: number) => {
   });
   formData.append('animalId', animalId.toString());
   try {
-    await axios.post('/api/images', formData, {
+    const paths = await axios.post('/api/images', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
       withCredentials: true,
     });
+    return paths;
   } catch (error) {
     console.error('Error uploading files:', error);
   }

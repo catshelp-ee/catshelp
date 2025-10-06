@@ -2,13 +2,14 @@ import AnimalRepository from '@repositories/animal-repository';
 import AnimalRescueRepository from '@repositories/animal-rescue-repository';
 import FosterHomeRepository from '@repositories/foster-home-repository';
 import GoogleSheetsService from '@services/google/google-sheets-service';
-import { Animal, User } from 'generated/prisma';
+import { Animal } from 'generated/prisma';
 import { inject, injectable } from 'inversify';
 import { prisma } from 'server/prisma';
 import { CreateAnimalData, CreateAnimalResult } from 'types/animal';
 import { Profile } from 'types/cat';
 import TYPES from 'types/inversify-types';
 import CharacteristicsService from './characteristics-service';
+import { User } from '@database/models/user';
 
 @injectable()
 export default class AnimalService {

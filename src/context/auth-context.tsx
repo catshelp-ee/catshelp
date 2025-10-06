@@ -1,6 +1,6 @@
 import { useAlert } from "@context/alert-context";
+import { User } from "@database/models/user";
 import axios from "axios";
-import { User } from "generated/prisma";
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

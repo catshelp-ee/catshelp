@@ -5,13 +5,13 @@ import { inject, injectable } from 'inversify';
 import moment from 'moment';
 import { CreateAnimalData } from 'types/animal';
 import { Profile } from 'types/cat';
-import { User } from 'generated/prisma';
 import {
   CatSheetsHeaders
 } from 'types/google-sheets';
 import TYPES from 'types/inversify-types';
 import { sheetsRowToObject } from 'utils/sheet-utils';
 import GoogleAuthService from './google-auth-service';
+import { User } from '@database/models/user';
 
 @injectable()
 export default class GoogleSheetsService {

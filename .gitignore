@@ -1,12 +1,4 @@
 node_modules
+dist
 .env
 credentials.json
-oauth.json
-.public/Cats
-.vscode
-config/config.json
-public/Temp
-images/
-dist
-generated
-prisma/migrations

@@ -1,9 +1,0 @@
-model Treatment{
-    id                  Int              @id @default(autoincrement())
-    treatmentName       String
-    active              Boolean          @default(true)
-    treatmentHistoryId  Int              @unique()
-    treatmentHistory    TreatmentHistory @relation(fields: [treatmentHistoryId], references: [id])
-
-    @@map("treatments")
-}

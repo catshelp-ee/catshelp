@@ -5,7 +5,7 @@ import { Characteristic } from "./characteristic.entity";
 import { Rescue } from "./rescue.entity";
 import { Treatment } from "./treatment.entity";
 
-@Entity()
+@Entity("animals")
 export class Animal {
 
     @PrimaryGeneratedColumn()
@@ -33,7 +33,7 @@ export class Animal {
     public chipRegisteredWithUs: boolean;
 
     @OneToMany(() => File, (file) => file.animal)
-    public files: File;
+    public files: File[];
 
     @OneToMany(() => Characteristic, (animalCharacteristic) => animalCharacteristic.animal)
     public animalCharacteristics: Characteristic[];

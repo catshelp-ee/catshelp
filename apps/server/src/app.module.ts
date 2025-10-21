@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CronModule } from '@cron/cron.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { join } from 'path';
 import { AdminModule } from './admin/admin.module';
 import { AnimalModule } from './animal/animal.module';
 import { AuthModule } from './auth/auth.module';
@@ -31,7 +32,7 @@ import { UserModule } from './user/user.module';
             max: 100, // max items in in-memory cache
         }),
         ConfigModule.forRoot({
-            envFilePath: ["../.env"],
+            envFilePath: [join(__dirname, '../../.env')],
             isGlobal: true
         }),
         ScheduleModule.forRoot(),
@@ -43,7 +44,7 @@ import { UserModule } from './user/user.module';
             password: process.env.DB_PASS,
             database: process.env.DB_NAME,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: true,
+            synchronize: false,
         }),
         AdminModule,
         AnimalModule,

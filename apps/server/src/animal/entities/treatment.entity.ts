@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Animal } from "./animal.entity";
 
-@Entity()
+@Entity("treatments")
 export class Treatment {
 
     @PrimaryGeneratedColumn()

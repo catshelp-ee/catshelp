@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev:vite": "vite",
+    "build": "vite build",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {

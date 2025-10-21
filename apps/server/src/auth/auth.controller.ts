@@ -36,7 +36,6 @@ export class AuthController {
         @Res() res: Response,
     ): Promise<void> {
         const { credential, clientId } = body;
-        console.log(credential, clientId);
 
         if (!credential || !clientId) {
             throw new HttpException(

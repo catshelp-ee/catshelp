@@ -1,36 +1,24 @@
 {
   "name": "catshelp",
+  "packageManager": "npm@10.8.2",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspaces",
-    "build": "npm run build --workspaces",
-    "dev:client": "npm run dev:vite -w @catshelp/client",
-    "dev:server": "npm run start:dev -w @catshelp/server"
+    "build:server": "turbo run build --filter=@catshelp/server",
+    "build": "turbo run build",
+    "start:prod": "node build/server/main.js",
+    "client": "npm run dev:vite -w @catshelp/client",
+    "server": "npm run start:dev -w @catshelp/server",
+    "migrate": "tsx ./node_modules/typeorm/cli.js -d apps/server/src/data-source.ts migration:run",
+    "create-migration": "typeorm migration:create"
   },
   "dependencies": {
-    "@nestjs/cache-manager": "^3.0.1",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/schedule": "^6.0.1",
-    "@nestjs/typeorm": "^11.0.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2",
-    "cookie-parser": "^1.4.7",
-    "crypto-js": "^4.2.0",
-    "google-auth-library": "^10.4.0",
-    "googleapis": "^162.0.0",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "^4.0.0",
-    "multer": "^2.0.2",
-    "mysql": "^2.18.1",
-    "node-cron": "^4.2.1",
-    "nodemailer": "^7.0.9",
-    "typeorm": "^0.3.27"
+    "esbuild": "^0.25.11"
   },
   "devDependencies": {
-    "@types/multer": "^2.0.0"
+    "turbo": "^2.5.8"
   }
 }

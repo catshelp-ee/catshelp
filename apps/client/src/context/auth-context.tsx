@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
     const logout = async () => {
         //DO axios logout
         try {
-            await axios.post("/api/logout");
+            await axios.post("/api/auth/logout");
         } catch (error) {
             showAlert('Error', "Väljumine ebaõnnestus");
             return;

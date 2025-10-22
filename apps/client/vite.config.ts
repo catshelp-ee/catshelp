@@ -3,13 +3,13 @@ import * as dotenv from "dotenv";
 import { join } from 'path';
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-dotenv.config({ path: join(__dirname, '../../.env') });
+dotenv.config({ path: join(__dirname, '/../.env') });
 
 export default defineConfig({
-  envDir: join(__dirname, '../../.env'),
+  envDir: join(__dirname, '/../.env'),
   plugins: [react(), tsconfigPaths()],
   build: {
-    outDir: '../../build/client',
+    outDir: './../../build/client',
     emptyOutDir: true,
     sourcemap: true,
   },

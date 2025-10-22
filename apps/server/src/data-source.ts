@@ -3,7 +3,12 @@ import * as dotenv from 'dotenv';
 import { DataSource } from "typeorm";
 import { PluralSnakeNamingStrategy } from "./plural-naming-strategy";
 
-dotenv.config({ path: join(__dirname, '../../.env') });
+
+//TODO FIX ME
+// When running npm script __dirname is apps\server\src folder. When running app, it is set to build/server i think
+let rootFolder = __dirname + "/../../..";
+console.log(rootFolder + "/apps/.env");
+dotenv.config({ path: rootFolder + "/apps/.env" });
 
 //Tsx does not support all functionality atm
 //https://github.com/privatenumber/tsx/issues/740
@@ -14,8 +19,8 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    migrations: [__dirname + "/../migrations/*.{ts,js}"],
+    entities: [rootFolder + '/apps/server/src/**/*.entity{.ts,.js}'],
+    migrations: [rootFolder + "/apps/server/migrations/*.{ts,js}"],
     synchronize: false,
     logging: false,
     migrationsRun: false,

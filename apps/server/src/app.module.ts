@@ -18,6 +18,7 @@ import { GoogleModule } from './google/google.module';
 import { NotificationModule } from './notification/notification.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
+import { AppDataSource } from './data-source';
 
 @Module({
     providers: [
@@ -32,19 +33,15 @@ import { UserModule } from './user/user.module';
             max: 100, // max items in in-memory cache
         }),
         ConfigModule.forRoot({
-            envFilePath: [join(__dirname, '../../.env')],
+            envFilePath: [join(__dirname, '/../.env')],
             isGlobal: true
         }),
         ScheduleModule.forRoot(),
-        TypeOrmModule.forRoot({
-            type: 'mariadb',
-            host: process.env.DB_HOST,
-            port: Number(process.env.DB_PORT),
-            username: process.env.DB_USER,
-            password: process.env.DB_PASS,
-            database: process.env.DB_NAME,
-            entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: false,
+        TypeOrmModule.forRootAsync({
+            useFactory: async () => ({
+                ...AppDataSource.options,
+                autoLoadEntities: true, // optional
+            }),
         }),
         AdminModule,
         AnimalModule,

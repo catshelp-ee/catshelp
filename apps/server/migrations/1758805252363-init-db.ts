@@ -138,12 +138,12 @@ export class InitDb1758805252363 implements MigrationInterface {
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS treatments (
                 id INT(11) NOT NULL AUTO_INCREMENT,
-                treatment_name VARCHAR(191) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+                treatmentName VARCHAR(191) NOT NULL COLLATE 'utf8mb4_unicode_ci',
                 active TINYINT(1) NOT NULL DEFAULT '1',
-                treatment_history_id INT(11) NOT NULL,
+                treatmentHistoryId INT(11) NOT NULL,
                 PRIMARY KEY (id) USING BTREE,
                 UNIQUE INDEX treatments_treatment_history_id_key (treatment_history_id) USING BTREE,
-                CONSTRAINT treatments_treatment_history_id_fkey FOREIGN KEY (treatment_history_id) REFERENCES treatment_history (id) ON UPDATE CASCADE ON DELETE RESTRICT
+                CONSTRAINT treatments_treatmentHistoryId_fkey FOREIGN KEY (treatment_history_id) REFERENCES treatment_history (id) ON UPDATE CASCADE ON DELETE RESTRICT
             )`);
     }
 

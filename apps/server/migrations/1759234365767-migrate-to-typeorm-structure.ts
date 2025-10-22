@@ -8,13 +8,13 @@ export class MigrateToTypeormStructure1759234365767 implements MigrationInterfac
         `);
 
         await queryRunner.query(`
-            UPDATE animal_rescues JOIN animals_to_animal_rescues
+            UPDATE animal_rescues JOIN animals_to_animal_rescues 
             ON animal_rescues.id = animals_to_animal_rescues.animal_rescue_id
             SET animal_rescues.animal_id = animals_to_animal_rescues.animal_id
         `);
 
         await queryRunner.query(`
-            CREATE INDEX animal_rescues_animal_id_fkey ON animal_rescues (animal_id) USING BTREE
+            CREATE INDEX animal_rescues_animal_id_key ON animal_rescues (animal_id) USING BTREE
         `);
 
         await queryRunner.query(`
@@ -34,15 +34,15 @@ export class MigrateToTypeormStructure1759234365767 implements MigrationInterfac
         `);
 
         await queryRunner.query(`
-            ALTER TABLE treatments ADD COLUMN confirmationDate DATETIME(3)
+            ALTER TABLE treatments ADD COLUMN confirmation_date DATETIME(3)
         `);
 
         await queryRunner.query(`
-            ALTER TABLE treatments ADD COLUMN visitDate DATETIME(3)
+            ALTER TABLE treatments ADD COLUMN visit_date DATETIME(3)
         `);
 
         await queryRunner.query(`
-            ALTER TABLE treatments ADD COLUMN nextVisitDate DATETIME(3)
+            ALTER TABLE treatments ADD COLUMN next_visit_date DATETIME(3)
         `);
 
         await queryRunner.query(`
@@ -58,11 +58,19 @@ export class MigrateToTypeormStructure1759234365767 implements MigrationInterfac
         `);
 
         await queryRunner.query(`
-            ALTER TABLE treatments DROP FOREIGN KEY treatments_treatment_history_id_fkey;
+            ALTER TABLE treatments DROP FOREIGN KEY treatments_treatmentHistoryId_fkey;
         `);
 
         await queryRunner.query(`
-            ALTER TABLE treatments DROP COLUMN treatment_history_id
+            ALTER TABLE treatments DROP COLUMN treatmentHistoryId 
+        `);
+
+        await queryRunner.query(`
+            ALTER TABLE treatments DROP COLUMN treatmentName 
+        `);
+
+        await queryRunner.query(`
+            ALTER TABLE treatments ADD COLUMN treatment_name varchar(191) not null
         `);
 
         await queryRunner.query(`

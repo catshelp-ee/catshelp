@@ -2,9 +2,7 @@ import pluralize from "pluralize";
 import { NamingStrategyInterface } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
-export class PluralSnakeNamingStrategy
-    extends SnakeNamingStrategy
-    implements NamingStrategyInterface {
+export class PluralSnakeNamingStrategy extends SnakeNamingStrategy implements NamingStrategyInterface {
     tableName(className: string, customName: string): string {
         const baseName = customName || pluralize(className);
         return baseName

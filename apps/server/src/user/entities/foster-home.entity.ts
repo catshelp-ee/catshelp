@@ -2,7 +2,7 @@ import { Animal } from "@animal/entities/animal.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
-@Entity("fosterhomes")
+@Entity("foster_homes")
 export class FosterHome {
 
     @PrimaryGeneratedColumn()

@@ -22,7 +22,7 @@ export class AnimalRepository extends Repository<Animal> {
         relations: ['animals', 'animals.animalRescues'],
       });
 
-    return userFosterHome?.animals ?? [];
+    return userFosterHome?.animalToFosterHome.map(rel => rel.animal).filter(Boolean) ?? [];
   }
 
   /** Get animal by ID including rescue info */

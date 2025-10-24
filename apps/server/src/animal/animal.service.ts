@@ -30,11 +30,15 @@ export class AnimalService {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.fosterHome', 'fosterHome')
-      .leftJoinAndSelect('fosterHome.animals', 'animal')
+      .leftJoinAndSelect('fosterHome.animalToFosterHome', 'animalToFosterHome')
+      .leftJoinAndSelect('animalToFosterHome.animal', 'animal')
       .where('user.id = :id', { id })
       .getOne();
 
-    return user?.fosterHome?.animals ?? [];
+    if (!user?.fosterHome?.animalToFosterHome) return [];
+
+    // Map over the OneToMany relation to extract animals
+    return user.fosterHome.animalToFosterHome.map(rel => rel.animal).filter(Boolean);
   }
 
   public getAnimalById(id: number | string) {

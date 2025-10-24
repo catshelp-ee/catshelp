@@ -1,6 +1,6 @@
 import { File } from "@file/file.entity";
-import { FosterHome } from "@user/entities/foster-home.entity";
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { AnimalToFosterHome } from "./animalToFosterhome.entity";
 import { Characteristic } from "./characteristic.entity";
 import { Rescue } from "./rescue.entity";
 import { Treatment } from "./treatment.entity";
@@ -35,14 +35,14 @@ export class Animal {
     @OneToMany(() => File, (file) => file.animal)
     public files: File[];
 
+    @OneToMany(() => AnimalToFosterHome, animalToFosterHome => animalToFosterHome.animal)
+    public animalToFosterHome: AnimalToFosterHome[];
+
     @OneToMany(() => Characteristic, (animalCharacteristic) => animalCharacteristic.animal)
     public animalCharacteristics: Characteristic[];
 
     @OneToMany(() => Treatment, (treatment) => treatment.animal)
     public treatments: Treatment[];
-
-    @ManyToOne(() => FosterHome, fosterHome => fosterHome.animals)
-    public fosterHome: FosterHome;
 
     @OneToOne(() => Rescue, (animalRescue) => animalRescue.animal)
     public animalRescue: Rescue;

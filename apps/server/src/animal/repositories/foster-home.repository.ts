@@ -1,4 +1,3 @@
-import { Animal } from '@animal/entities/animal.entity';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -24,20 +23,4 @@ export class FosterHomeRepository extends Repository<FosterHome> {
         return fosterHome;
     }
 
-    /** Link an animal to a foster home (upsert behavior) */
-    async saveOrUpdateAnimalToFosterHome(animalId: number, fosterHomeId: number): Promise<void> {
-        const fosterHome = await this.findOne({
-            where: { id: fosterHomeId },
-            relations: ['animals'],
-        });
-        if (!fosterHome) throw new Error('Foster home not found');
-
-        // Check if the animal is already linked
-        const alreadyLinked = fosterHome.animals?.some(a => a.id === animalId);
-        if (!alreadyLinked) {
-            const animal = this.dataSource.manager.getRepository(Animal).create({ id: animalId });
-            fosterHome.animals = [...(fosterHome.animals || []), animal];
-            await this.save(fosterHome);
-        }
-    }
 }

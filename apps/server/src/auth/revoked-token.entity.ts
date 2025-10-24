@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity("revoked_tokens")
 export class RevokedToken {
 
     @PrimaryGeneratedColumn()

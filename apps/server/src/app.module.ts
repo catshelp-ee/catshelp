@@ -13,12 +13,14 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { TransactionInterceptor } from './common/interceptors/transaction.interceptor';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { AppDataSource } from './data-source';
 import { FileModule } from './file/file.module';
 import { GoogleModule } from './google/google.module';
 import { NotificationModule } from './notification/notification.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
-import { AppDataSource } from './data-source';
+
+console.log([join(__dirname, '../../.env')],)
 
 @Module({
     providers: [
@@ -33,7 +35,7 @@ import { AppDataSource } from './data-source';
             max: 100, // max items in in-memory cache
         }),
         ConfigModule.forRoot({
-            envFilePath: [join(__dirname, '/../.env')],
+            envFilePath: [join(__dirname, '../../.env')],
             isGlobal: true
         }),
         ScheduleModule.forRoot(),

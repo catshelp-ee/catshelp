@@ -1,4 +1,4 @@
-import { Animal } from "@animal/entities/animal.entity";
+import { AnimalToFosterHome } from "@animal/entities/animalToFosterhome.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
@@ -24,6 +24,6 @@ export class FosterHome {
     @JoinColumn()
     public user: User;
 
-    @OneToMany(() => Animal, animal => animal.fosterHome)
-    public animals: Animal[];
+    @OneToMany(() => AnimalToFosterHome, animalToFosterHome => animalToFosterHome.fosterHome)
+    public animalToFosterHome: AnimalToFosterHome[];
 }

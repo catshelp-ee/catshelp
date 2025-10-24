@@ -9,12 +9,12 @@
   "scripts": {
     "build:server": "turbo run build --filter=@catshelp/server",
     "build": "turbo run build",
-    "start:prod": "node build/server/main.js",
+    "start:prod": "BUILD=true node build/server/main.js",
     "client": "npm run dev:vite -w @catshelp/client",
     "server": "npm run start:dev -w @catshelp/server",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
     "migration:run": "ts-node -r tsconfig-paths/register --project apps/server/tsconfig.json ./node_modules/typeorm/cli.js migration:run -d apps/server/src/data-source.ts",
-    "migration:create": "npm run typeorm -- migration:create ./apps/server/migrations/%npm_config_name%"
+    "migration:create": "npm run typeorm -- migration:create ./apps/server/migrations/test"
   },
   "dependencies": {
     "esbuild": "^0.25.11"

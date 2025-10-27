@@ -20,7 +20,7 @@ import { NotificationModule } from './notification/notification.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 
-console.log([join(__dirname, '../../.env')],)
+const pathToEnv = join(__dirname, '../../.env');
 
 @Module({
     providers: [
@@ -35,7 +35,7 @@ console.log([join(__dirname, '../../.env')],)
             max: 100, // max items in in-memory cache
         }),
         ConfigModule.forRoot({
-            envFilePath: [join(__dirname, '../../.env')],
+            envFilePath: [pathToEnv],
             isGlobal: true
         }),
         ScheduleModule.forRoot(),

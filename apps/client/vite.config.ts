@@ -1,26 +1,28 @@
 import react from "@vitejs/plugin-react";
 import * as dotenv from "dotenv";
-import { join } from 'path';
+import path, { join } from 'path';
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-dotenv.config({ path: join(__dirname, '../../.env') });
+
+const pathToEnv = join(__dirname, '../../.env');
+dotenv.config({ path: pathToEnv });
 
 export default defineConfig({
-  envDir: join(__dirname, '../../.env'),
-  plugins: [react(), tsconfigPaths()],
-  build: {
-    outDir: './../../build/client',
-    emptyOutDir: true,
-    sourcemap: true,
-  },
-  server: {
-    port: process.env.FRONTEND_PORT,
-    strictPort: true,
-    proxy: {
-      "/api": {
-        target: process.env.VITE_BACKEND_URL,
-        changeOrigin: true,
-      },
+    envDir: pathToEnv,
+    plugins: [react(), tsconfigPaths()],
+    build: {
+        outDir: './../../build/client',
+        emptyOutDir: true,
+        sourcemap: true,
     },
-  },
+    server: {
+        port: process.env.FRONTEND_PORT,
+        strictPort: true,
+        proxy: {
+            "/api": {
+                target: process.env.VITE_BACKEND_URL,
+                changeOrigin: true,
+            },
+        },
+    },
 });

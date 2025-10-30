@@ -7,7 +7,7 @@ import { AnimalModule } from '../animal/animal.module';
 import { Animal } from '../animal/entities/animal.entity';
 import { AnimalRepository } from '../animal/repositories/animal.repository';
 import { AuthModule } from '../auth/auth.module';
-import { CommonModule } from '../common/common.module';
+import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
 import { DashboardController } from './dashboard.controller';
@@ -19,7 +19,6 @@ import { DashboardService } from './dashboard.service';
         TypeOrmModule.forFeature([Animal]),
         AnimalModule,
         GoogleModule,
-        CommonModule,
         UserModule,
         AuthModule,
     ],
@@ -29,7 +28,8 @@ import { DashboardService } from './dashboard.service';
         AnimalService,
         NotificationService,
         FileRepository,
-        AnimalRepository
+        AnimalRepository,
+        RevokedTokenRepository,
     ],
     exports: [DashboardService],
 })

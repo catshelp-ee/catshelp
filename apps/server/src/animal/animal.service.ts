@@ -27,41 +27,15 @@ export class AnimalService {
   ) { }
 
   async getAnimalsByUserId(id: number): Promise<Animal[]> {
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.fosterHome', 'fosterHome')
-      .leftJoinAndSelect('fosterHome.animalToFosterHome', 'animalToFosterHome')
-      .leftJoinAndSelect('animalToFosterHome.animal', 'animal')
-      .where('user.id = :id', { id })
-      .getOne();
-
-    if (!user?.fosterHome?.animalToFosterHome) return [];
-
-    // Map over the OneToMany relation to extract animals
-    return user.fosterHome.animalToFosterHome.map(rel => rel.animal).filter(Boolean);
+    return this.userRepository.getAnimalsByUserId(id);
   }
 
   public getAnimalById(id: number | string) {
-    return this.animalRepository.findOne({
-      where: { id: Number(id) }
-    });
+    return this.animalRepository.getAnimalById(id);
   }
 
   async saveOrUpdateFosterHome(data: { userId: number }): Promise<FosterHome> {
-    // 1️⃣ Try to find existing FosterHome
-    let fosterHome = await this.fosterhomeRepository.findOne({
-      where: { user: { id: data.userId } },
-      relations: ['user'],
-    });
-
-    // 2️⃣ If it exists, just return it
-    if (fosterHome) return fosterHome;
-
-    // 3️⃣ Otherwise, create new
-    fosterHome = this.fosterhomeRepository.create({
-      user: { id: data.userId } as User,
-    });
-    return this.fosterhomeRepository.save(fosterHome);
+    return this.fosterhomeRepository.saveOrUpdateFosterHome(data.userId);
   }
 
   public async createAnimal(
@@ -84,7 +58,7 @@ export class AnimalService {
   }
 
   async updateAnimal(updatedAnimalData: UpdateAnimalDto) {
-    const animal = await this.animalRepository.findOneBy({ id: Number(updatedAnimalData.animalId) });
+    const animal = await this.animalRepository.getAnimalById(updatedAnimalData.animalId);
     if (!animal) throw new Error('Animal not found');
 
     animal.profileTitle = updatedAnimalData.title;

@@ -42,6 +42,7 @@ import { RevokedTokenRepository } from './revoked-token.repository';
         AuthService,
         CookieService,
         EmailService,
+        RevokedTokenRepository,
     ],
 })
 export class AuthModule { }

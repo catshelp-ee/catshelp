@@ -1,24 +1,59 @@
-import { AuthService } from '@auth/auth.service';
 import { CookieService } from '@auth/cookie.service';
+import { RevokedTokenRepository } from '@auth/revoked-token.repository';
+import { JWTPayload } from '@catshelp/types/src';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   CanActivate,
   ExecutionContext,
-  forwardRef,
   Inject,
   Injectable,
-  UnauthorizedException,
+  Scope,
+  UnauthorizedException
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserService } from '@user/user.service';
+import { User } from '@server/src/user/entities/user.entity';
+import { UserRepository } from '@server/src/user/user.repository';
+import jwt, { SignOptions } from 'jsonwebtoken';
+import { jwtDecode } from 'jwt-decode';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-@Injectable()
+
+@Injectable({ scope: Scope.REQUEST })
 export class AuthorizationGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @Inject(forwardRef(() => UserService)) private userService: UserService,
-    @Inject(forwardRef(() => AuthService)) private authService: AuthService,
-  ) { }
+    private readonly userRepository: UserRepository,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
+    private readonly revokedTokenRepository: RevokedTokenRepository,
+  ) {
+  }
+
+  private async getUser(userId: number | string): Promise<User | null> {
+    userId = Number(userId);
+
+    // Try cache first
+    const cached = await this.cacheManager.get<User>(`users:${userId}`);
+    if (cached) {
+      return cached;
+    }
+
+    const user = await this.userRepository.getUserById(userId);
+
+    if (!user) {
+      return null;
+    }
+
+    await this.cacheManager.set(`users:${userId}`, user);
+
+    return user;
+  }
+
+  private generateJWT(userId: string | number): string {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+      expiresIn: process.env.TOKEN_LENGTH,
+    } as SignOptions);
+  }
 
   private refreshToken(decodedToken, res: any) {
     delete decodedToken.iat;
@@ -26,7 +61,7 @@ export class AuthorizationGuard implements CanActivate {
     delete decodedToken.nbf;
     delete decodedToken.jti;
 
-    const newToken = this.authService.generateJWT(decodedToken.id);
+    const newToken = this.generateJWT(decodedToken.id);
     CookieService.setAuthCookies(res, newToken);
   }
 
@@ -37,6 +72,15 @@ export class AuthorizationGuard implements CanActivate {
     return difInMilliseconds < refreshTime;
   }
 
+
+  public decodeJWT(token: string): JWTPayload | null {
+    try {
+      return jwtDecode<JWTPayload>(token);
+    } catch (error) {
+      console.error('JWT decode failed:', error);
+      return null;
+    }
+  }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Check if the route is public or not
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -53,21 +97,32 @@ export class AuthorizationGuard implements CanActivate {
 
     let decodedToken;
     try {
-      decodedToken = this.authService.decodeJWT(jwt);
+      decodedToken = this.decodeJWT(jwt);
     } catch (e) {
       response.cookie('jwt', '');
       response.cookie('catshelp', '');
       throw new UnauthorizedException();
     }
 
-    const tokenInvalid = await this.userService.isTokenInvalid(jwt);
+    let tokenInvalid: boolean;
+
+    if (!jwt) {
+      tokenInvalid = true;
+    }
+    else {
+      const count = await this.revokedTokenRepository.count({
+        where: { token: jwt }
+      });
+      tokenInvalid = count > 0;
+    }
+
     if (!decodedToken || tokenInvalid) {
       response.cookie('jwt', '');
       response.cookie('catshelp', '');
       throw new UnauthorizedException();
     }
 
-    const user = await this.userService.getUser(decodedToken.id);
+    const user = await this.getUser(decodedToken.id);
     if (!user) throw new UnauthorizedException();
 
     request.user = user;

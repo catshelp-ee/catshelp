@@ -8,9 +8,7 @@ import {
     HttpStatus,
     Post,
     Req,
-    UseGuards,
-    UsePipes,
-    ValidationPipe,
+    UseGuards
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AdminService } from './admin.service';
@@ -28,9 +26,10 @@ export class AdminController {
 
     @Post('run-cron-job')
     @HttpCode(HttpStatus.OK)
-    @UsePipes(new ValidationPipe({ whitelist: true }))
     async runCronJob(@Req() req: Request, @Body() body: RunCronJobDto) {
         const user = req.user;
+
+        console.log(user);
 
         if (user.role !== 'ADMIN') {
             throw new ForbiddenException('Only admins can run cron jobs.');

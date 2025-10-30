@@ -8,7 +8,7 @@ import { Treatment } from '../animal/entities/treatment.entity';
 import { AnimalRepository } from '../animal/repositories/animal.repository';
 import { TreatmentRepository } from '../animal/repositories/treatment.repository';
 import { AuthModule } from '../auth/auth.module';
-import { CommonModule } from '../common/common.module';
+import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
 import { NotificationController } from './notification.controller';
@@ -20,7 +20,6 @@ import { NotificationService } from './notification.service';
         TypeOrmModule.forFeature([Animal]),
         AnimalModule,
         GoogleModule,
-        CommonModule,
         UserModule,
         AuthModule,
     ],
@@ -31,6 +30,7 @@ import { NotificationService } from './notification.service';
         TreatmentRepository,
         AnimalService,
         AnimalRepository,
+        RevokedTokenRepository,
     ],
     exports: [NotificationService],
 })

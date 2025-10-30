@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from '../auth/auth.module';
+import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { UserModule } from '../user/user.module';
-import { AuthorizationGuard } from './middleware/authorization.guard';
 
 
 @Module({
@@ -13,11 +12,12 @@ import { AuthorizationGuard } from './middleware/authorization.guard';
     controllers: [
     ],
     providers: [
-        {
-            provide: APP_GUARD,
-            useClass: AuthorizationGuard,
-        }
+        RevokedTokenRepository
     ],
-    exports: [],
+    exports: [RevokedTokenRepository],
 })
-export class CommonModule { }
+export class CommonModule {
+    constructor() {
+        console.log("CommonModule");
+    }
+}

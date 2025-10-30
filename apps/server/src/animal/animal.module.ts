@@ -6,7 +6,7 @@ import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
 import { AuthModule } from '../auth/auth.module';
-import { CommonModule } from '../common/common.module';
+import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { FileModule } from '../file/file.module';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
@@ -30,7 +30,6 @@ import { TreatmentRepository } from './repositories/treatment.repository';
         TypeOrmModule.forFeature([Rescue]),
         FileModule,
         GoogleModule,
-        CommonModule,
         UserModule,
         AuthModule,
     ],
@@ -47,6 +46,7 @@ import { TreatmentRepository } from './repositories/treatment.repository';
         FosterHomeRepository,
         RescueRepository,
         TreatmentRepository,
+        RevokedTokenRepository,
     ],
     exports: [
         ProfileBuilder,

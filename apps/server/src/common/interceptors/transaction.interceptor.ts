@@ -4,25 +4,43 @@ import {
     Injectable,
     NestInterceptor,
 } from '@nestjs/common';
-import { Observable, from } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Request } from 'express';
+import { Observable, catchError, concatMap, finalize } from 'rxjs';
 import { DataSource } from 'typeorm';
+
+export const ENTITY_MANAGER_KEY = 'ENTITY_MANAGER';
 
 @Injectable()
 export class TransactionInterceptor implements NestInterceptor {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(private dataSource: DataSource) { }
 
-    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-        return from(
-            this.dataSource.manager.transaction(async (transactionalEntityManager) => {
-                const request = context.switchToHttp().getRequest();
-                request.transactionalEntityManager = transactionalEntityManager;
+    async intercept(
+        context: ExecutionContext,
+        next: CallHandler<any>,
+    ): Promise<Observable<any>> {
+        // get request object
+        const req = context.switchToHttp().getRequest<Request>();
+        // start transaction
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        // attach query manager with transaction to the request
+        req[ENTITY_MANAGER_KEY] = queryRunner.manager;
 
-                return next.handle().toPromise();
+        return next.handle().pipe(
+            // concatMap gets called when route handler completes successfully
+            concatMap(async (data) => {
+                await queryRunner.commitTransaction();
+                return data;
             }),
-        ).pipe(
-            catchError((error) => {
-                throw error;
+            // catchError gets called when route handler throws an exception
+            catchError(async (e) => {
+                await queryRunner.rollbackTransaction();
+                throw e;
+            }),
+            // always executed, even if catchError method throws an exception
+            finalize(async () => {
+                await queryRunner.release();
             }),
         );
     }

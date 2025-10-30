@@ -34,15 +34,11 @@ export class UserService {
     }
 
     public async getUserByEmail(email: string): Promise<User | null> {
-        return this.userRepository.findOne({
-            where: { email }
-        })
+        return this.userRepository.getUserByEmail(email);
     }
 
     public async getUserById(id: number): Promise<User | null> {
-        return this.userRepository.findOne({
-            where: { id }
-        });
+        return this.userRepository.getUserById(id);
     }
 
     public async setTokenInvalid(token: string, decodedToken: any) {

@@ -17,9 +17,7 @@ export class CharacteristicsService {
   ) { }
 
   async getCharacteristics(animalId: number): Promise<CharacteristicsInfo> {
-    const characteristics = await this.characteristicRepository.find({
-      where: { animalId },
-    });
+    const characteristics = await this.characteristicRepository.getAll(animalId);
 
     const characteristicsInfo = createCharacteristicsInfo();
     const characteristicsMap: Record<string, Characteristic> = {};
@@ -115,11 +113,11 @@ export class CharacteristicsService {
   ) {
     const val = Array.isArray(value) ? value.join(',') : value ?? '';
 
-    const existing = await this.characteristicRepository.findOne({ where: { animalId, type } });
+    const characteristic = await this.characteristicRepository.get(animalId, type);
 
-    if (existing) {
-      existing.value = val;
-      return this.characteristicRepository.save(existing);
+    if (characteristic) {
+      characteristic.value = val;
+      return this.characteristicRepository.save(characteristic);
     } else {
       const characteristic = this.characteristicRepository.create({ animalId, type, value: val });
       return this.characteristicRepository.save(characteristic);

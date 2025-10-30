@@ -45,27 +45,12 @@ export class FileService {
       | Express.Multer.File[],
     animalId: number | string
   ) {
-    animalId = Number(animalId);
     const normalizedFiles = this.normalizeFiles(files);
-    await Promise.all(
-      normalizedFiles.map(file =>
-        this.fileRepository.save({
-          animal: { id: animalId },
-          uuid: file.filename.split('.')[0],
-        })
-      )
-    );
-
+    await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
   }
 
   public fetchProfilePicture(animalID: number) {
-    return this.fileRepository.findOne({
-      where: {
-        animal: {
-          id: animalID
-        }
-      }
-    })
+    return this.fileRepository.fetchProfilePicture(animalID);
   }
 
   public async processImages(

@@ -3,7 +3,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OAuth2Client } from 'google-auth-library';
 import { AuthModule } from '../auth/auth.module';
-import { CommonModule } from '../common/common.module';
+import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { GoogleAuthService } from '../google/google-auth.service';
 import { UserModule } from '../user/user.module';
 import { FileController } from './file.controller';
@@ -14,7 +14,6 @@ import { FileService } from './file.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([File]),
-        forwardRef(() => CommonModule),
         forwardRef(() => UserModule),
         forwardRef(() => AuthModule),
     ],
@@ -28,6 +27,7 @@ import { FileService } from './file.service';
         GoogleAuthService,
         FileRepository,
         OAuth2Client,
+        RevokedTokenRepository,
     ],
     exports: [
         FileService,

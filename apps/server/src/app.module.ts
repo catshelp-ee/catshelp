@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -12,6 +12,7 @@ import { AnimalModule } from './animal/animal.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { TransactionInterceptor } from './common/interceptors/transaction.interceptor';
+import { AuthorizationGuard } from './common/middleware/authorization.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AppDataSource } from './data-source';
 import { FileModule } from './file/file.module';
@@ -27,7 +28,11 @@ const pathToEnv = join(__dirname, '../../.env');
         {
             provide: APP_INTERCEPTOR,
             useClass: TransactionInterceptor
-        }
+        },
+        {
+            provide: APP_GUARD,
+            useClass: AuthorizationGuard,
+        },
     ],
     imports: [
         CacheModule.register({

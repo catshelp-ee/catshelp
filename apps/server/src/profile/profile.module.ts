@@ -6,7 +6,7 @@ import { AnimalModule } from '../animal/animal.module';
 import { Animal } from '../animal/entities/animal.entity';
 import { AnimalRepository } from '../animal/repositories/animal.repository';
 import { AuthModule } from '../auth/auth.module';
-import { CommonModule } from '../common/common.module';
+import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { FileModule } from '../file/file.module';
 import { GoogleModule } from '../google/google.module';
 import { User } from '../user/entities/user.entity';
@@ -21,7 +21,6 @@ import { ProfileController } from './profile.controller';
         AnimalModule,
         GoogleModule,
         FileModule,
-        CommonModule,
         UserModule,
         AuthModule,
     ],
@@ -31,6 +30,7 @@ import { ProfileController } from './profile.controller';
         ProfileBuilder,
         AnimalRepository,
         UserRepository,
+        RevokedTokenRepository,
     ],
     exports: [],
 })

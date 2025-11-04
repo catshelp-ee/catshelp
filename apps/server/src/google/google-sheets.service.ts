@@ -104,8 +104,6 @@ export class GoogleSheetsService {
     }
   }
 
-
-
   public async addDataToSheet(data: AnimalRescueDto, user: User) {
     const row = new Array(30).fill('');
     row[0] = data.rankNr!;

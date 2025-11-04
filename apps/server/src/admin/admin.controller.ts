@@ -1,4 +1,3 @@
-// src/admin/admin.controller.ts
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
 import {
     Body,
@@ -28,8 +27,6 @@ export class AdminController {
     @HttpCode(HttpStatus.OK)
     async runCronJob(@Req() req: Request, @Body() body: RunCronJobDto) {
         const user = req.user;
-
-        console.log(user);
 
         if (user.role !== 'ADMIN') {
             throw new ForbiddenException('Only admins can run cron jobs.');

@@ -11,6 +11,7 @@ import { FileModule } from '../file/file.module';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
 import { AnimalController } from './animal.controller';
+import { AddRescueController } from './add-rescue.controller';
 import { AnimalService } from './animal.service';
 import { CharacteristicsService } from './characteristics.service';
 import { Animal } from './entities/animal.entity';
@@ -21,6 +22,7 @@ import { CharacteristicRepository } from './repositories/characteristic.reposito
 import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { TreatmentRepository } from './repositories/treatment.repository';
+
 
 @Module({
     imports: [
@@ -33,7 +35,10 @@ import { TreatmentRepository } from './repositories/treatment.repository';
         UserModule,
         AuthModule,
     ],
-    controllers: [AnimalController],
+    controllers: [
+        AnimalController,
+        AddRescueController
+    ],
     providers: [
         AnimalService,
         CharacteristicsService,

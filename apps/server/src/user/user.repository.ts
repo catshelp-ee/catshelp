@@ -57,7 +57,9 @@ export class UserRepository extends BaseRepository {
       .where('user.id = :id', { id })
       .getOne();
 
-    if (!user?.fosterHome?.animalToFosterHome) return [];
+    if (!user?.fosterHome?.animalToFosterHome) {
+      return [];
+    }
 
     // Map over the OneToMany relation to extract animals
     return user.fosterHome.animalToFosterHome.map(rel => rel.animal).filter(Boolean);

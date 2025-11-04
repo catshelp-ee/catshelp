@@ -29,7 +29,6 @@ export class UserService {
         }
 
         await this.cacheManager.set(`users:${userId}`, user);
-
         return user;
     }
 
@@ -52,7 +51,9 @@ export class UserService {
     }
 
     public async isTokenInvalid(token: string): Promise<boolean> {
-        if (!token) return true;
+        if (!token) {
+            return true;
+        }
         const count = await this.revokedTokenRepository.count({
             where: { token }
         });

@@ -1,4 +1,3 @@
-// common/filters/http-exception.filter.ts
 import {
   ArgumentsHost,
   Catch,

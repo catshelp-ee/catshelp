@@ -59,10 +59,7 @@ export class CharacteristicsService {
     ]);
   }
 
-  private async updateMultiselectFields(
-    animalId: number,
-    multiselectFields: MultiselectFields,
-  ) {
+  private async updateMultiselectFields(animalId: number, multiselectFields: MultiselectFields) {
     await Promise.all([
       this.saveOrUpdateCharacteristic(animalId, 'BEHAVIOUR_TRAITS', multiselectFields.behaviorTraits),
       this.saveOrUpdateCharacteristic(animalId, 'LIKES', multiselectFields.likes),
@@ -70,10 +67,7 @@ export class CharacteristicsService {
     ]);
   }
 
-  private async updateSelectFields(
-    animalId: number,
-    selectFields: SelectFields,
-  ) {
+  private async updateSelectFields(animalId: number, selectFields: SelectFields) {
     const updates = [
       ['ATTITUDE_TOWARDS_CATS', selectFields.attitudeTowardsCats],
       ['ATTITUDE_TOWARDS_CHILDREN', selectFields.attitudeTowardsChildren],
@@ -87,10 +81,7 @@ export class CharacteristicsService {
     );
   }
 
-  private async updateTextFields(
-    animalId: number,
-    textFields: TextFields,
-  ) {
+  private async updateTextFields(animalId: number, textFields: TextFields) {
     const updates = [
       ['ADDITIONAL_NOTES', textFields.additionalNotes],
       ['CHRONIC_CONDITIONS', textFields.chronicConditions],
@@ -106,21 +97,17 @@ export class CharacteristicsService {
     );
   }
 
-  private async saveOrUpdateCharacteristic(
-    animalId: number,
-    type: string,
-    value: string | string[],
-  ) {
+  private async saveOrUpdateCharacteristic(animalId: number, type: string, value: string | string[]) {
     const val = Array.isArray(value) ? value.join(',') : value ?? '';
 
-    const characteristic = await this.characteristicRepository.get(animalId, type);
+    let characteristic = await this.characteristicRepository.get(animalId, type);
 
     if (characteristic) {
       characteristic.value = val;
       return this.characteristicRepository.save(characteristic);
-    } else {
-      const characteristic = this.characteristicRepository.create({ animalId, type, value: val });
-      return this.characteristicRepository.save(characteristic);
     }
+
+    characteristic = this.characteristicRepository.create({ animalId, type, value: val });
+    return this.characteristicRepository.save(characteristic);
   }
 }

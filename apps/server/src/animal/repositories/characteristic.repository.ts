@@ -29,7 +29,7 @@ export class CharacteristicRepository extends BaseRepository {
         return this.getRepository(Characteristic).create(data);
     }
 
-    async saveOrUpdateCharacteristic(data: { animalId: number; type: string; value: string }) {
+    public async saveOrUpdateCharacteristic(data: { animalId: number; type: string; value: string }) {
         const existing = await this.getRepository(Characteristic).findOne({
             where: {
                 animalId: data.animalId,
@@ -50,14 +50,14 @@ export class CharacteristicRepository extends BaseRepository {
         return this.getRepository(Characteristic).save(newChar);
     }
 
-    async deleteCharacteristic(data: { animalId: number; type: string }) {
+    public async deleteCharacteristic(data: { animalId: number; type: string }) {
         return this.getRepository(Characteristic).delete({
             animalId: data.animalId,
             type: data.type,
         });
     }
 
-    async deleteAllCharacteristicsByAnimalId(animalId: number) {
+    public async deleteAllCharacteristicsByAnimalId(animalId: number) {
         return this.getRepository(Characteristic).delete({
             animalId,
         });

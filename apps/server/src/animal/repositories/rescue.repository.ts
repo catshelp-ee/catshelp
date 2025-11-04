@@ -44,7 +44,6 @@ export class RescueRepository extends BaseRepository {
     return this.getRepository(Rescue).save(newRescue);
   }
 
-
   async deleteAnimalRescueById(id: number) {
     return this.getRepository(Rescue).delete({ id });
   }

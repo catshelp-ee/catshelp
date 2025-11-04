@@ -1,4 +1,3 @@
-// src/animals/add-rescue.controller.ts
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
 import {
   Body,
@@ -8,9 +7,7 @@ import {
   HttpStatus,
   Post,
   Req,
-  UseGuards,
-  UsePipes,
-  ValidationPipe
+  UseGuards
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AnimalService } from './animal.service';
@@ -18,11 +15,12 @@ import { AnimalService } from './animal.service';
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
 export class AddRescueController {
-  constructor(private readonly animalService: AnimalService) { }
+  constructor(
+    private readonly animalService: AnimalService
+  ) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   async postAnimal(@Req() req: Request, @Body() body: any) {
     const user = req.user;
 

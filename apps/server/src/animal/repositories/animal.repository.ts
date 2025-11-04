@@ -17,11 +17,9 @@ export class AnimalRepository extends BaseRepository {
     super(dataSource, req);
   }
 
-
   public save(animal: Partial<Animal>) {
     return this.getRepository(Animal).save(animal);
   }
-
 
   public getAnimalById(id: number | string) {
     return this.getRepository(Animal).findOne({
@@ -30,7 +28,7 @@ export class AnimalRepository extends BaseRepository {
   }
 
   /** Get animals by user ID */
-  async getAnimalsByUserId(userId: number): Promise<Animal[]> {
+  public async getAnimalsByUserId(userId: number): Promise<Animal[]> {
     const userFosterHome = await this.getRepository(FosterHome)
       .findOne({
         where: { user: { id: userId } },
@@ -41,7 +39,7 @@ export class AnimalRepository extends BaseRepository {
   }
 
   /** Get animal by ID including rescue info */
-  async getAnimalByIdWithRescue(id: number): Promise<Animal | null> {
+  public async getAnimalByIdWithRescue(id: number): Promise<Animal | null> {
     return this.getRepository(Animal).findOne({
       where: { id },
       relations: ['animalToAnimalRescues', 'animalToAnimalRescues.animalRescue'],
@@ -49,7 +47,7 @@ export class AnimalRepository extends BaseRepository {
   }
 
   /** Create animal and associated rescue in a transaction */
-  async createAnimalWithRescue(data: AnimalRescueDto,): Promise<RescueResult> {
+  public async createAnimalWithRescue(data: AnimalRescueDto,): Promise<RescueResult> {
     const animal = this.getRepository(Animal).create();
     await this.getRepository(Animal).save(animal);
 
@@ -67,7 +65,7 @@ export class AnimalRepository extends BaseRepository {
   }
 
   /** Get animal by Rescue ID */
-  async getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal | null> {
+  public async getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal | null> {
     return this.getRepository(Animal).createQueryBuilder('animal')
       .innerJoin('animal.animalToAnimalRescues', 'link')
       .where('link.animalRescueId = :animalRescueId', { animalRescueId })
@@ -75,7 +73,7 @@ export class AnimalRepository extends BaseRepository {
   }
 
   /** Update basic animal profile */
-  async updateEditProfile(data: UpdateAnimalDto): Promise<Animal> {
+  public async updateEditProfile(data: UpdateAnimalDto): Promise<Animal> {
     const animal = await this.getRepository(Animal).findOne({ where: { id: Number(data.animalId) } });
     if (!animal) throw new Error('Animal not found');
 
@@ -86,7 +84,7 @@ export class AnimalRepository extends BaseRepository {
   }
 
   /** Save or update animal */
-  async saveOrUpdateAnimal(data: Partial<Animal>): Promise<Animal> {
+  public async saveOrUpdateAnimal(data: Partial<Animal>): Promise<Animal> {
 
     if (data.id) {
       const animal = (await this.getRepository(Animal).findOne({ where: { id: data.id } }))!;
@@ -95,12 +93,11 @@ export class AnimalRepository extends BaseRepository {
     }
 
     const animal = this.getRepository(Animal).create(data);
-
     return this.getRepository(Animal).save(animal);
   }
 
   /** Delete animal by ID */
-  async deleteAnimalById(id: number): Promise<void> {
+  public async deleteAnimalById(id: number): Promise<void> {
     await this.getRepository(Animal).delete({ id });
   }
 }

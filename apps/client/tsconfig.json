@@ -22,7 +22,6 @@
       "@utils/*": ["utils/*"],
       "@hooks/*": ["src/hooks/*"],
       "@server/*" : ["../server/src/*"],
-      "@cat/*": ["../../packages/types/src/types/cat"],
     }
   },
   "include": ["src/**/*"],

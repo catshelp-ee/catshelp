@@ -26,8 +26,7 @@ export class AuthorizationGuard implements CanActivate {
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
     private readonly revokedTokenRepository: RevokedTokenRepository,
-  ) {
-  }
+  ) { }
 
   private async getUser(userId: number | string): Promise<User | null> {
     userId = Number(userId);
@@ -72,7 +71,6 @@ export class AuthorizationGuard implements CanActivate {
     return difInMilliseconds < refreshTime;
   }
 
-
   public decodeJWT(token: string): JWTPayload | null {
     try {
       return jwtDecode<JWTPayload>(token);
@@ -81,19 +79,24 @@ export class AuthorizationGuard implements CanActivate {
       return null;
     }
   }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Check if the route is public or not
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
+    if (isPublic) {
+      return true;
+    }
 
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
     const jwt = request.cookies?.jwt;
 
-    if (!jwt) throw new UnauthorizedException();
+    if (!jwt) {
+      throw new UnauthorizedException();
+    }
 
     let decodedToken;
     try {
@@ -105,7 +108,6 @@ export class AuthorizationGuard implements CanActivate {
     }
 
     let tokenInvalid: boolean;
-
     if (!jwt) {
       tokenInvalid = true;
     }

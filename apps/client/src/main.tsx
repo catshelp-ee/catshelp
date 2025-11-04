@@ -10,19 +10,19 @@ import { PostHogProviderWrapper } from "./analytics/post-hog-provider-wrapper";
 import App from "./app";
 
 createRoot(document.getElementById("root")!).render(
-  <PostHogProviderWrapper>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
-        <BrowserRouter>
-          <AlertProvider>
-            <AuthProvider>
-              <IsMobileProvider>
-                <App />
-              </IsMobileProvider>
-            </AuthProvider>
-          </AlertProvider>
-        </BrowserRouter>
-      </LocalizationProvider>
-    </GoogleOAuthProvider>
-  </PostHogProviderWrapper>
+    <PostHogProviderWrapper>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
+                <BrowserRouter>
+                    <AlertProvider>
+                        <AuthProvider>
+                            <IsMobileProvider>
+                                <App />
+                            </IsMobileProvider>
+                        </AuthProvider>
+                    </AlertProvider>
+                </BrowserRouter>
+            </LocalizationProvider>
+        </GoogleOAuthProvider>
+    </PostHogProviderWrapper>
 );

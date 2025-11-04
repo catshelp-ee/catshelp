@@ -1,4 +1,3 @@
-// src/files/file.controller.ts
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
 import {
   BadRequestException,

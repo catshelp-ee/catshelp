@@ -7,39 +7,29 @@ import type { Request } from 'express';
 import { DataSource } from 'typeorm';
 
 @Injectable({ scope: Scope.REQUEST })
-export class FosterHomeRepository extends BaseRepository {
-    constructor(dataSource: DataSource, @Inject(REQUEST) req: Request) {
-        super(dataSource, req);
+export class FosterHomeRepository extends BaseRepository<FosterHome> {
+    constructor(dataSource: DataSource, @Inject(REQUEST) request: Request) {
+        super(FosterHome, dataSource, request);
     }
 
     public get(userId: number | string) {
         userId = Number(userId);
-        return this.getRepository(FosterHome).findOne({
+        return this.findOne({
             where: { user: { id: userId } },
             relations: ['user'],
         });
     }
-
-    public create(data) {
-        return this.getRepository(FosterHome).create({
-            user: { id: data.userId } as User
-        })
-    }
-
-    public save(fosterhome: Partial<FosterHome>) {
-        return this.getRepository(FosterHome).save(fosterhome);
-    }
-
+    
     /** Find existing foster home by userId or create a new one */
     async saveOrUpdateFosterHome(userId: number): Promise<FosterHome> {
-        let fosterHome = await this.getRepository(FosterHome).findOne({
+        let fosterHome = await this.findOne({
             where: { user: { id: userId } },
             relations: ['user'],
         });
 
         if (!fosterHome) {
-            fosterHome = this.getRepository(FosterHome).create({ user: { id: userId } });
-            await this.getRepository(FosterHome).save(fosterHome);
+            fosterHome = this.create({ user: { id: userId } });
+            await this.save(fosterHome);
         }
 
         return fosterHome;

@@ -6,16 +6,17 @@ import type { Request } from 'express';
 import { DataSource } from 'typeorm';
 
 @Injectable({ scope: Scope.REQUEST })
-export class TreatmentRepository extends BaseRepository {
-  constructor(dataSource: DataSource, @Inject(REQUEST) req: Request) {
-    super(dataSource, req);
-  }
+export class TreatmentRepository extends BaseRepository<Treatment> {
+    constructor(dataSource: DataSource, @Inject(REQUEST) request: Request) {
+        super(Treatment, dataSource, request);
+    }
 
-  /** Get the full treatment history for an animal, including treatment details */
-  async getTreatements(animalId: number): Promise<Treatment[]> {
-    return this.getRepository(Treatment).find({
-      where: { animal: { id: animalId } },
-      relations: ['treatment'],
-    });
-  }
+
+    /** Get the full treatment history for an animal, including treatment details */
+    async getTreatements(animalId: number): Promise<Treatment[]> {
+        return this.find({
+            where: { animal: { id: animalId } },
+            relations: ['treatment'],
+        });
+    }
 }

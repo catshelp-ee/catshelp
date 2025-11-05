@@ -6,31 +6,23 @@ import { DataSource } from 'typeorm';
 import { Characteristic } from '../entities/characteristic.entity';
 
 @Injectable({ scope: Scope.REQUEST })
-export class CharacteristicRepository extends BaseRepository {
-    constructor(dataSource: DataSource, @Inject(REQUEST) req: Request) {
-        super(dataSource, req);
+export class CharacteristicRepository extends BaseRepository<Characteristic> {
+    constructor(dataSource: DataSource, @Inject(REQUEST) request: Request) {
+        super(Characteristic, dataSource, request);
     }
 
     public get(animalId: string | number, type: string) {
         animalId = Number(animalId);
-        return this.getRepository(Characteristic).findOne({ where: { animalId, type } });
+        return this.findOne({ where: { animalId, type } });
     }
 
     public getAll(animalId: string | number) {
         animalId = Number(animalId);
-        return this.getRepository(Characteristic).find({ where: { animalId } });
-    }
-
-    public save(characteristic: Partial<Characteristic>) {
-        return this.getRepository(Characteristic).save(characteristic);
-    }
-
-    public create(data: Partial<Characteristic>) {
-        return this.getRepository(Characteristic).create(data);
+        return this.find({ where: { animalId } });
     }
 
     public async saveOrUpdateCharacteristic(data: { animalId: number; type: string; value: string }) {
-        const existing = await this.getRepository(Characteristic).findOne({
+        const existing = await this.findOne({
             where: {
                 animalId: data.animalId,
                 type: data.type,
@@ -39,26 +31,26 @@ export class CharacteristicRepository extends BaseRepository {
 
         if (existing) {
             existing.value = data.value;
-            return this.getRepository(Characteristic).save(existing);
+            return this.save(existing);
         }
 
-        const newChar = this.getRepository(Characteristic).create({
+        const newChar = this.create({
             animalId: data.animalId,
             type: data.type,
             value: data.value,
         });
-        return this.getRepository(Characteristic).save(newChar);
+        return this.save(newChar);
     }
 
     public async deleteCharacteristic(data: { animalId: number; type: string }) {
-        return this.getRepository(Characteristic).delete({
+        return this.delete({
             animalId: data.animalId,
             type: data.type,
         });
     }
 
     public async deleteAllCharacteristicsByAnimalId(animalId: number) {
-        return this.getRepository(Characteristic).delete({
+        return this.delete({
             animalId,
         });
     }

@@ -6,13 +6,13 @@ import { UpdateAnimalDto } from './dto/update-animal.dto';
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
 export class AnimalController {
-  constructor(
-    private readonly animalService: AnimalService
-  ) { }
+    constructor(
+        private readonly animalService: AnimalService
+    ) { }
 
-  @Put()
-  @HttpCode(204)
-  async updateAnimal(@Body() updateAnimalData: UpdateAnimalDto) {
-    await this.animalService.updateAnimal(updateAnimalData);
-  }
+    @Put()
+    @HttpCode(204)
+    async updateAnimal(@Body() updateAnimalData: UpdateAnimalDto) {
+        await this.animalService.updateAnimal(updateAnimalData);
+    }
 }

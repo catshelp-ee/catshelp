@@ -6,14 +6,14 @@ import { DataSource } from 'typeorm';
 import { BaseRepository } from '../common/base.repository';
 
 @Injectable({ scope: Scope.REQUEST })
-export class FileRepository extends BaseRepository {
-    constructor(dataSource: DataSource, @Inject(REQUEST) req: Request) {
-        super(dataSource, req);
+export class FileRepository extends BaseRepository<File> {
+    constructor(dataSource: DataSource, @Inject(REQUEST) request: Request) {
+        super(File, dataSource, request);
     }
 
     /** Get the first file associated with an animal (profile picture) */
     async getProfilePicture(animalId: number): Promise<File | null> {
-        return this.getRepository(File).findOne({
+        return this.findOne({
             where: { animal: { id: animalId } },
             relations: ['animal'],
         });
@@ -21,14 +21,14 @@ export class FileRepository extends BaseRepository {
 
     /** Optional: fetch all files for an animal */
     async getFilesByAnimalId(animalId: number): Promise<File[]> {
-        return this.getRepository(File).find({
+        return this.find({
             where: { animal: { id: animalId } },
             relations: ['animal'],
         });
     }
 
     async getImages(animalId: number) {
-        return this.getRepository(File).find({
+        return this.find({
             where: {
                 animal: { id: animalId }
             },
@@ -36,7 +36,7 @@ export class FileRepository extends BaseRepository {
     }
 
     public fetchProfilePicture(animalID: number) {
-        return this.getRepository(File).findOne({
+        return this.findOne({
             where: {
                 animal: {
                     id: animalID
@@ -50,14 +50,13 @@ export class FileRepository extends BaseRepository {
         animalId: number | string
     ) {
         animalId = Number(animalId);
-        const fileRepository = this.getRepository(File);
         return Promise.all(
-            files.map(file =>
-                fileRepository.save({
-                    animal: { id: animalId },
-                    uuid: file.filename.split('.')[0],
-                })
-            )
+            files.map(file => {
+                const f = this.create();
+                f.animalId = animalId;
+                f.uuid = file.filename.split('.')[0];
+                this.save(f);
+            })
         );
     }
 }

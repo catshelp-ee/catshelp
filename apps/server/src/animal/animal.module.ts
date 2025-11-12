@@ -1,5 +1,4 @@
 import { FileService } from '@file/file.service';
-import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FosterHome } from '@user/entities/foster-home.entity';
@@ -44,7 +43,6 @@ import { TreatmentRepository } from './repositories/treatment.repository';
         CharacteristicsService,
         CharacteristicRepository,
         ProfileBuilder,
-        GoogleSheetsService,
         FileService,
         AnimalRepository,
         UserRepository,

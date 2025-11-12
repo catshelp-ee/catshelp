@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { drive_v3, google } from 'googleapis';
 import fs from 'node:fs';
 import path from 'node:path';
-import { GoogleAuthService } from './google-auth.service';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class GoogleDriveService {
   drive: drive_v3.Drive;
   constructor(
-    private readonly googleAuthService: GoogleAuthService
+    private readonly client: OAuth2Client
   ) {
     this.drive = google.drive({
       version: 'v3',
-      auth: this.googleAuthService.getAuth(),
+      auth: client,
     });
   }
 

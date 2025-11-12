@@ -25,6 +25,9 @@ export class Treatment {
     @Column()
     public nextVisitDate: Date;
 
+    @Column()
+    public animalId: number;
+
     @ManyToOne(() => Animal, (animal) => animal.treatments)
     public animal: Animal;
 }

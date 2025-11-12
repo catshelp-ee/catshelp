@@ -15,8 +15,7 @@ export class TreatmentRepository extends BaseRepository<Treatment> {
     /** Get the full treatment history for an animal, including treatment details */
     async getTreatements(animalId: number): Promise<Treatment[]> {
         return this.find({
-            where: { animal: { id: animalId } },
-            relations: ['treatment'],
+            where: { animalId: animalId  }
         });
     }
 }

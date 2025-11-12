@@ -5,7 +5,6 @@ import { AnimalRepository } from '@animal/repositories/animal.repository';
 import { FosterHomeRepository } from '@animal/repositories/foster-home.repository';
 import { RescueRepository } from '@animal/repositories/rescue.repository';
 import { EmailService } from '@auth/email.service';
-import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationService } from '@notification/notification.service';
@@ -13,7 +12,6 @@ import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
 import { AnimalModule } from '../animal/animal.module';
-import { GoogleAuthService } from '../google/google-auth.service';
 import { GoogleModule } from '../google/google.module';
 import { CronController } from './cron.controller';
 import { DeleteExpiredTokensJob } from './jobs/delete-expired-tokens-job';
@@ -37,8 +35,6 @@ import { TodoNotificationJob } from './jobs/todo-notification-job';
         SyncUserDataToDBJob,
         TodoNotificationJob,
         DeleteExpiredTokensJob,
-        GoogleSheetsService,
-        GoogleAuthService,
         RescueRepository,
         AnimalRepository,
         FosterHomeRepository,
@@ -46,6 +42,9 @@ import { TodoNotificationJob } from './jobs/todo-notification-job';
         NotificationService,
         EmailService,
     ],
-    exports: [],
+    exports: [
+        SyncSheetDataToDBJob,
+        SyncUserDataToDBJob
+    ],
 })
 export class CronModule { }

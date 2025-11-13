@@ -1,13 +1,20 @@
 import { RevokedToken } from '@auth/revoked-token.entity';
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
+import { BaseCronJob } from './base-cron-job';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
-export class DeleteExpiredTokensJob {
-  constructor(private dataSource: DataSource) { }
+export class DeleteExpiredTokensJob extends BaseCronJob {
+  constructor(
+    protected dataSource: DataSource,
+    protected moduleRef: ModuleRef,
+  ) {
+    super(dataSource, moduleRef);
+  }
 
   /** Delete all expired revoked tokens */
-  async execute(): Promise<void> {
+  protected async doWork(): Promise<void> {
     const repo: Repository<RevokedToken> = this.dataSource.getRepository(RevokedToken);
 
     await repo.createQueryBuilder()

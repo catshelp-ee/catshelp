@@ -18,6 +18,5 @@ import { UserModule } from '../user/user.module';
 })
 export class CommonModule {
     constructor() {
-        console.log("CommonModule");
     }
 }

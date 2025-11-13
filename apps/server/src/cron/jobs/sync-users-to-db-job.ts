@@ -2,16 +2,27 @@
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@user/user.repository';
+import { BaseCronJob } from './base-cron-job';
+import { DataSource} from 'typeorm';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
-export class SyncUserDataToDBJob {
-    constructor(
-        private readonly googleSheetsService: GoogleSheetsService,
-        private readonly userRepository: UserRepository,
-    ) {
+export class SyncUserDataToDBJob extends BaseCronJob {
+    private userRepository;
 
+    constructor(
+        protected dataSource: DataSource,
+        protected moduleRef: ModuleRef,
+        private readonly googleSheetsService: GoogleSheetsService,
+    ) {
+        super(dataSource, moduleRef);
     }
-    public async syncSheetsToDb() {
+
+    protected async resolveScopeDependencies() { // Create a unique context
+        this.userRepository = await this.moduleRef.resolve(UserRepository, this.contextId);
+    }
+
+    public async doWork() {
         if (!process.env.HOIUKODUDE_SHEETS_ID || !process.env.HOIKUODUDE_TABLE_NAME) {
             console.log("Google hoikukodude sheet id or table name not set. Skipping db sync");
             return;

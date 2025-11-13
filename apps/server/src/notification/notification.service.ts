@@ -17,6 +17,7 @@ export class NotificationService {
   private readonly colours: string[];
 
   constructor(
+    //TODO see ei ole kuidagi notificationitega seotud. Peaks eksisteerima mujal
     private readonly treatmentRepository: TreatmentRepository,
   ) {
     this.notifications = [

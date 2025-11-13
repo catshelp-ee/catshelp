@@ -15,7 +15,6 @@ export class GoogleSheetsService {
 
   constructor(
     private readonly googleAuthService: GoogleAuthService,
-    private readonly animalRepository: AnimalRepository,
   ) {
     this.sheets = google.sheets({
       version: 'v4',
@@ -200,13 +199,9 @@ export class GoogleSheetsService {
     }));
   }
 
-  private async getRow(animalProfile: Profile): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
+  private async getRow(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
     const sheet = await this.getNewSheet();
-
     const sheetRows = sheet.data.sheets![0].data![0].rowData!;
-
-    const animalWithRescue = (await this.animalRepository.getAnimalByIdWithRescue(animalProfile.animalId))!;
-    const animalRescueSequenceNumber = animalWithRescue.animalRescue.rankNr
 
     for (let index = 1; index < sheetRows.length; index++) {
       const row = sheetRows[index];
@@ -221,9 +216,9 @@ export class GoogleSheetsService {
     return null;
   }
 
-  public async updateSheetCells(animalProfile: Profile): Promise<void> {
+  public async updateSheetCells(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<void> {
     try {
-      const sheetRow = await this.getRow(animalProfile);
+      const sheetRow = await this.getRow(animalProfile, animalRescueSequenceNumber);
       if (!sheetRow) {
         return;
       }

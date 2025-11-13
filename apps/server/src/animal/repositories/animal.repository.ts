@@ -1,5 +1,4 @@
 import { Animal } from '@animal/entities/animal.entity';
-import { Rescue } from '@animal/entities/rescue.entity';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { UpdateAnimalDto } from '@server/src/animal/dto/update-animal.dto';
@@ -7,9 +6,6 @@ import { BaseRepository } from '@server/src/common/base.repository';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
-import { AnimalRescueDto } from '../dto/create-animal.dto';
-import { RescueResult } from '../interfaces/rescue-result';
-
 
 @Injectable({ scope: Scope.REQUEST })
 export class AnimalRepository extends BaseRepository<Animal> {

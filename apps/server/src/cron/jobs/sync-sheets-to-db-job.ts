@@ -10,21 +10,35 @@ import sha256 from 'crypto-js/sha256';
 import moment from 'moment';
 import fs from "node:fs";
 import path from "node:path";
+import { DataSource} from 'typeorm';
+import { ModuleRef } from '@nestjs/core';
+import { BaseCronJob } from './base-cron-job';
 
 @Injectable()
-export class SyncSheetDataToDBJob {
+export class SyncSheetDataToDBJob extends BaseCronJob {
+    private rescueRepository: RescueRepository;
+    private animalRepository: AnimalRepository;
+    private characteristicRepository: CharacteristicRepository;
+    private userRepository: UserRepository;
+    private fosterhomeRepository: FosterHomeRepository;
+
     constructor(
+        protected dataSource: DataSource,
+        protected moduleRef: ModuleRef,
         private readonly googleSheetsService: GoogleSheetsService,
-        private readonly rescueRepository: RescueRepository,
-        private readonly animalRepository: AnimalRepository,
-        private readonly characteristicRepository: CharacteristicRepository,
-        private readonly userRepository: UserRepository,
-        private readonly fosterhomeRepository: FosterHomeRepository,
     ) {
-        this.syncSheetsToDb = this.syncSheetsToDb.bind(this);
+        super(dataSource, moduleRef);
     }
 
-    public async syncSheetsToDb() {
+    protected async resolveScopeDependencies() {
+        this.rescueRepository = await this.moduleRef.resolve(RescueRepository, this.contextId);
+        this.animalRepository = await this.moduleRef.resolve(AnimalRepository, this.contextId);
+        this.userRepository = await this.moduleRef.resolve(UserRepository, this.contextId);
+        this.fosterhomeRepository = await this.moduleRef.resolve(FosterHomeRepository, this.contextId);
+        this.characteristicRepository = await this.moduleRef.resolve(CharacteristicRepository, this.contextId);
+    }
+
+    protected async doWork() {
         if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
             console.log("Google cats sheet id or table name not set. Skipping db sync");
             return;
@@ -39,8 +53,8 @@ export class SyncSheetDataToDBJob {
         const previousSheet = this.getPreviousSheetData();
         const formattedSheet = this.formatSheetData(currentSheet);
 
-        this.syncSheetDataToDb(previousSheet, formattedSheet);
-        this.saveCurrentSheetAsPrevious(formattedSheet);
+        await this.syncSheetDataToDb(previousSheet, formattedSheet);
+//        this.saveCurrentSheetAsPrevious(formattedSheet);
     }
 
     private formatSheetData(sheet) {
@@ -146,10 +160,6 @@ export class SyncSheetDataToDBJob {
         const animalRescue = await this.updateAnimalRescue(newData);
         const animal = await this.updateAnimal(newData, animalRescue);
 
-        const animalToAnimalRescueData = {
-            animalRescueId: animalRescue.id,
-            animalId: animal.id
-        };
         await this.updateCharacteristics(newData, animal.id);
 
         const user = await this.updateUser(newData);

@@ -8,6 +8,7 @@ export class EmailService {
   transporter;
 
   constructor(
+    //Animal pole kuidagi meili saatmisega seotud. See service peaks olema mujal.
     private readonly animalService: AnimalService
   ) {
     this.transporter = createTransport({

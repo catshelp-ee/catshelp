@@ -4,19 +4,67 @@ import { Injectable } from "@nestjs/common";
 import { NotificationService } from "@notification/notification.service";
 import { UserRepository } from "@user/user.repository";
 import path from "path";
+import { BaseCronJob } from "./base-cron-job";
+import { DataSource } from "typeorm";
+import { ModuleRef } from "@nestjs/core";
 
 type Tasks = {
     [assignee: string]: string[];
 };
 
 @Injectable()
-export class TodoNotificationJob {
+export class TodoNotificationJob extends BaseCronJob {
+    private userRepository: UserRepository;
+    private animalRepository: AnimalRepository;
+    private notificationService: NotificationService;
+    private emailService: EmailService;
+
     constructor(
-        private readonly notificationService: NotificationService,
-        private readonly animalRepository: AnimalRepository,
-        private readonly emailService: EmailService,
-        private readonly userRepository: UserRepository
-    ) { }
+        protected dataSource: DataSource,
+        protected moduleRef: ModuleRef,
+    ) {
+        super(dataSource, moduleRef);
+    }
+
+    protected async resolveScopeDependencies() {
+        this.animalRepository = await this.moduleRef.resolve(AnimalRepository, this.contextId);
+        this.userRepository = await this.moduleRef.resolve(UserRepository, this.contextId);
+        this.notificationService = await this.moduleRef.resolve(NotificationService, this.contextId);
+        this.emailService = await this.moduleRef.resolve(EmailService, this.contextId);
+    }
+
+    public async doWork() {
+        const users = await this.userRepository.getAllUsers();
+
+        for (let index = 0; index < users.length; index++) {
+            const user = users[index];
+
+            const animals = await this.animalRepository.getAnimalsByUserId(user.id);
+
+            const notifications = await this.notificationService.processNotifications(animals);
+
+            if (notifications.length === 0) {
+                continue;
+            }
+
+            const tasks = {};
+            for (let index = 0; index < notifications.length; index++) {
+                const notification = notifications[index];
+                if (!tasks[notification.assignee]) {
+                    tasks[notification.assignee] = [];
+                }
+                tasks[notification.assignee].push(notification.label);
+            }
+
+
+            this.emailService.sendNotificationToUser(
+                this.createHtmlTemplate(tasks),
+                "Hoiukodu meeldetuletus",
+                [user.email],
+                [{ filename: "email-cat.jpg", path: path.join(__dirname, "./email-cat.jpg"), cid: "email-cat" }]
+            )
+        }
+    }
 
     private renderTasks(tasks: Tasks) {
         let html = "";
@@ -70,37 +118,4 @@ export class TodoNotificationJob {
             </body>
          `
     };
-
-    public async sendNotifications() {
-        const users = await this.userRepository.getAllUsers();
-
-        for (let index = 0; index < users.length; index++) {
-            const user = users[index];
-
-            const animals = await this.animalRepository.getAnimalsByUserId(user.id);
-
-            const notifications = await this.notificationService.processNotifications(animals);
-
-            if (notifications.length === 0) {
-                continue;
-            }
-
-            const tasks = {};
-            for (let index = 0; index < notifications.length; index++) {
-                const notification = notifications[index];
-                if (!tasks[notification.assignee]) {
-                    tasks[notification.assignee] = [];
-                }
-                tasks[notification.assignee].push(notification.label);
-            }
-
-
-            this.emailService.sendNotificationToUser(
-                this.createHtmlTemplate(tasks),
-                "Hoiukodu meeldetuletus",
-                [user.email],
-                [{ filename: "email-cat.jpg", path: path.join(__dirname, "./email-cat.jpg"), cid: "email-cat" }]
-            )
-        }
-    }
 }

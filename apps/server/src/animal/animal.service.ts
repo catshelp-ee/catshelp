@@ -104,8 +104,10 @@ export class AnimalService {
         await this.animalRepository.saveOrUpdateAnimal(animalData);
         await this.rescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
         await this.characteristicsService.updateCharacteristics(updatedAnimalData);
+        const savedAnimalWithRescue = (await this.animalRepository.getAnimalByIdWithRescue(updatedAnimalData.animalId))!;
+        const animalRescueSequenceNumber = savedAnimalWithRescue.animalRescue.rankNr
 
-        this.googleSheetsService.updateSheetCells(updatedAnimalData).then(() => { }, (error) => {
+        this.googleSheetsService.updateSheetCells(updatedAnimalData, animalRescueSequenceNumber).then(() => { }, (error) => {
             console.error("Error saving data to sheets: " + error);
         });
     }

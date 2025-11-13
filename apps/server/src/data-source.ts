@@ -9,8 +9,6 @@ const pathToRoot = process.env.COMMAND_LINE === 'true' ? '../../../.env' : '../.
 const envPath = join(__dirname, pathToRoot);
 dotenv.config({path : envPath});
 
-console.log(__dirname);
-
 //Tsx does not support all functionality atm
 //https://github.com/privatenumber/tsx/issues/740
 export const AppDataSource = new DataSource({

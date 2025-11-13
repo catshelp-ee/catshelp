@@ -17,6 +17,7 @@
     "migration:create": "cross-var npm run typeorm -- migration:create ./apps/server/migrations/$npm_config_name"
   },
   "dependencies": {
+    "@nestjs/schedule": "^6.0.1",
     "cross-env": "^10.1.0",
     "esbuild": "^0.25.11"
   },

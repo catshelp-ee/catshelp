@@ -21,6 +21,7 @@ import { CharacteristicRepository } from './repositories/characteristic.reposito
 import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { TreatmentRepository } from './repositories/treatment.repository';
+import { Characteristic } from './entities/characteristic.entity';
 
 
 @Module({
@@ -29,6 +30,7 @@ import { TreatmentRepository } from './repositories/treatment.repository';
         TypeOrmModule.forFeature([User]),
         TypeOrmModule.forFeature([FosterHome]),
         TypeOrmModule.forFeature([Rescue]),
+        TypeOrmModule.forFeature([Characteristic]),
         FileModule,
         GoogleModule,
         UserModule,

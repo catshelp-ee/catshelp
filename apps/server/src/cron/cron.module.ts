@@ -13,11 +13,12 @@ import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
 import { AnimalModule } from '../animal/animal.module';
 import { GoogleModule } from '../google/google.module';
-import { CronController } from './cron.controller';
 import { DeleteExpiredTokensJob } from './jobs/delete-expired-tokens-job';
 import { SyncSheetDataToDBJob } from './jobs/sync-sheets-to-db-job';
 import { SyncUserDataToDBJob } from './jobs/sync-users-to-db-job';
 import { TodoNotificationJob } from './jobs/todo-notification-job';
+import { CronService } from './cron.service';
+import { CharacteristicRepository } from '../animal/repositories/characteristic.repository';
 
 @Module({
     imports: [
@@ -29,7 +30,7 @@ import { TodoNotificationJob } from './jobs/todo-notification-job';
         AnimalModule,
         GoogleModule,
     ],
-    controllers: [CronController],
+    controllers: [],
     providers: [
         SyncSheetDataToDBJob,
         SyncUserDataToDBJob,
@@ -38,9 +39,11 @@ import { TodoNotificationJob } from './jobs/todo-notification-job';
         RescueRepository,
         AnimalRepository,
         FosterHomeRepository,
+        CharacteristicRepository,
         UserRepository,
         NotificationService,
         EmailService,
+        CronService
     ],
     exports: [
         SyncSheetDataToDBJob,

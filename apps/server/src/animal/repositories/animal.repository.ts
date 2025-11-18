@@ -6,6 +6,7 @@ import { BaseRepository } from '@server/src/common/base.repository';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
+import { Rescue } from '../entities/rescue.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AnimalRepository extends BaseRepository<Animal> {
@@ -35,16 +36,17 @@ export class AnimalRepository extends BaseRepository<Animal> {
     public async getAnimalByIdWithRescue(id: number): Promise<Animal | null> {
         return this.findOne({
             where: { id },
-            relations: ['animalToAnimalRescues', 'animalToAnimalRescues.animalRescue'],
+            relations: ['animalRescue'],
         });
     }
 
     /** Get animal by Rescue ID */
     public async getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal | null> {
-        return this.createQueryBuilder('animal')
-            .innerJoin('animal.animalToAnimalRescues', 'link')
-            .where('link.animalRescueId = :animalRescueId', { animalRescueId })
-            .getOne();
+        return this.dataSource.getRepository(Animal)
+        .createQueryBuilder("animal")
+        .leftJoin("animal.animalRescue", "rescue")
+        .where("rescue.id = :animalRescueId", { animalRescueId })
+        .getOne();
     }
 
     /** Update basic animal profile */

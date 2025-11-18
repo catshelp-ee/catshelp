@@ -61,7 +61,7 @@ export class TodoNotificationJob extends BaseCronJob {
                 this.createHtmlTemplate(tasks),
                 "Hoiukodu meeldetuletus",
                 [user.email],
-                [{ filename: "email-cat.jpg", path: path.join(__dirname, "./email-cat.jpg"), cid: "email-cat" }]
+                [{ filename: "email-cat.jpg", path: path.join(__dirname, "../../assets/email-cat.jpg"), cid: "email-cat" }]
             )
         }
     }

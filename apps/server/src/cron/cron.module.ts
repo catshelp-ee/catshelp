@@ -19,6 +19,8 @@ import { SyncUserDataToDBJob } from './jobs/sync-users-to-db-job';
 import { TodoNotificationJob } from './jobs/todo-notification-job';
 import { CronService } from './cron.service';
 import { CharacteristicRepository } from '../animal/repositories/characteristic.repository';
+import { AnimalToFosterHome } from '../animal/entities/animalToFosterhome.entity';
+import { AnimalToFosterHomeRepository } from '../animal/repositories/animal-to-fosterhome.repository';
 
 @Module({
     imports: [
@@ -27,6 +29,7 @@ import { CharacteristicRepository } from '../animal/repositories/characteristic.
         TypeOrmModule.forFeature([Characteristic]),
         TypeOrmModule.forFeature([FosterHome]),
         TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([AnimalToFosterHome]),
         AnimalModule,
         GoogleModule,
     ],
@@ -40,6 +43,7 @@ import { CharacteristicRepository } from '../animal/repositories/characteristic.
         AnimalRepository,
         FosterHomeRepository,
         CharacteristicRepository,
+        AnimalToFosterHomeRepository,
         UserRepository,
         NotificationService,
         EmailService,

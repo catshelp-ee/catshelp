@@ -13,6 +13,8 @@ import path from "node:path";
 import { DataSource} from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
 import { BaseCronJob } from './base-cron-job';
+import { AnimalToFosterHome } from '@server/src/animal/entities/animalToFosterhome.entity';
+import { AnimalToFosterHomeRepository } from '@server/src/animal/repositories/animal-to-fosterhome.repository';
 
 @Injectable()
 export class SyncSheetDataToDBJob extends BaseCronJob {
@@ -21,6 +23,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     private characteristicRepository: CharacteristicRepository;
     private userRepository: UserRepository;
     private fosterhomeRepository: FosterHomeRepository;
+    private animalToFosterhomeRepository: AnimalToFosterHomeRepository;
 
     constructor(
         protected dataSource: DataSource,
@@ -36,6 +39,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         this.userRepository = await this.moduleRef.resolve(UserRepository, this.contextId);
         this.fosterhomeRepository = await this.moduleRef.resolve(FosterHomeRepository, this.contextId);
         this.characteristicRepository = await this.moduleRef.resolve(CharacteristicRepository, this.contextId);
+        this.animalToFosterhomeRepository = await this.moduleRef.resolve(AnimalToFosterHomeRepository, this.contextId);
     }
 
     protected async doWork() {
@@ -54,7 +58,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         const formattedSheet = this.formatSheetData(currentSheet);
 
         await this.syncSheetDataToDb(previousSheet, formattedSheet);
-//        this.saveCurrentSheetAsPrevious(formattedSheet);
+        this.saveCurrentSheetAsPrevious(formattedSheet);
     }
 
     private formatSheetData(sheet) {
@@ -164,10 +168,11 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
 
         const user = await this.updateUser(newData);
         const fosterHome = await this.updateFosterHome({ userId: user.id });
-        const animalToFosterHomeData = {
-            animalId: animal.id,
-            fosterHomeId: fosterHome.id
+        const animalToFosterHomeData: Partial<AnimalToFosterHome> = {
+            animal: animal,
+            fosterHome: fosterHome
         }
+        const animalToFosterhome = await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
     }
 
     private async updateFosterHome(newData) {

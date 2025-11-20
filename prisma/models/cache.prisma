@@ -1,6 +1,0 @@
-model Cache {
-  keyName   String   @id @map("key_name")
-  value     String   @db.Text
-
-  @@map("cache")
-}

@@ -28,16 +28,13 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      - name: 🛠️ Primsa generate
-        run: npm run copy:prisma
-
       - name: 📁 Prepare release archive
         run: |
           TIMESTAMP=$(date +%Y.%m.%d-%H.%M.%S)
           GIT_SHA=$(git rev-parse --short HEAD)
           RELEASE_NAME=$TIMESTAMP-$GIT_SHA
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-          tar -czf $RELEASE_NAME.tar.gz dist
+          tar -czf $RELEASE_NAME.tar.gz build
 
       - name: 📤 Upload release to server
         uses: appleboy/scp-action@v0.1.4

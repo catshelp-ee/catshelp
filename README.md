@@ -4,7 +4,8 @@
 2. Create the .env file based on the example
 3. You need to manually create the DB at the moment. (Use mariaDb)
     - a docker compose script has been provided in /scripts as well
-4. You have to run the frontend and backend on different instances
+4. Build the app to before running migrations: ```npm run build```
+5. You have to run the frontend and backend on different instances
     - To run the frontend execute ```npm run client```
     - To run the backend execute ```npm run server```
 

@@ -3,10 +3,9 @@ import { join } from 'path';
 import { DataSource } from "typeorm";
 import { PluralSnakeNamingStrategy } from "./plural-naming-strategy";
 
-
-// When running npm script __dirname is apps\server\src folder. When running app, it is set to build/server
-const pathToRoot = process.env.COMMAND_LINE === 'true' ? '../../../.env' : '../../.env';
-const envPath = join(__dirname, pathToRoot);
+const pathToRoot = '../../';
+const envPath = join(__dirname, pathToRoot, '.env');
+const migrationPath = join(__dirname, 'migrations/');
 dotenv.config({path : envPath});
 
 //Tsx does not support all functionality atm
@@ -19,7 +18,7 @@ export const AppDataSource = new DataSource({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     entities: [__dirname + '/**/*.entity.js'],
-    migrations: [__dirname + '/../migrations/*.ts'],
+    migrations: [migrationPath + '*{.ts,.js}'],
     synchronize: false,
     logging: false,
     migrationsRun: false,

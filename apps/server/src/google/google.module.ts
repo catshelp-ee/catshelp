@@ -7,6 +7,7 @@ import { google } from 'googleapis';
 import { GoogleAuthService } from './google-auth.service';
 import { GoogleDriveService } from './google-drive.service';
 import { GoogleSheetsService } from './google-sheets.service';
+import { join } from 'path';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Animal])],
@@ -15,10 +16,13 @@ import { GoogleSheetsService } from './google-sheets.service';
         {
             provide: 'OAUTH2_CLIENT',
             useFactory: async () => {
+                const pathToRoot = '../../../credentials.json';
+                const envPath = join(__dirname, pathToRoot);
+
                 const isProd = process.env.NODE_ENV === 'production';
                 const keyFilePath = isProd
                     ? process.env.PROD_CREDENTIALS_PATH
-                    : 'credentials.json';
+                    : envPath;
                 const auth = new google.auth.GoogleAuth({
                     keyFile: keyFilePath,
                     scopes: [

@@ -97,7 +97,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     }
 
     private getSheetSaveLocation() {
-        const tempDir = path.join(process.cwd(), "./files");
+        const tempDir = path.join(__dirname, '../../../../files');
         const fullPath = path.resolve(tempDir, "previous_sheets_data.txt");
         return fullPath;
     }
@@ -163,7 +163,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     private async updateData(newData) {
         const animalRescue = await this.updateAnimalRescue(newData);
         const animal = await this.updateAnimal(newData, animalRescue);
-
+        //TODO kunagi ei salvestata animalRescue tabelisse maha animal_id-d
         await this.updateCharacteristics(newData, animal.id);
 
         const user = await this.updateUser(newData);
@@ -172,7 +172,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
             animal: animal,
             fosterHome: fosterHome
         }
-        const animalToFosterhome = await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
+        await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
     }
 
     private async updateFosterHome(newData) {

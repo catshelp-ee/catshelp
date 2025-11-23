@@ -5,16 +5,16 @@ import { FosterHomeRepository } from '@animal/repositories/foster-home.repositor
 import { RescueRepository } from '@animal/repositories/rescue.repository';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { AnimalToFosterHome } from '@server/src/animal/entities/animalToFosterhome.entity';
+import { AnimalToFosterHomeRepository } from '@server/src/animal/repositories/animal-to-fosterhome.repository';
 import { UserRepository } from '@user/user.repository';
 import sha256 from 'crypto-js/sha256';
 import moment from 'moment';
 import fs from "node:fs";
 import path from "node:path";
-import { DataSource} from 'typeorm';
-import { ModuleRef } from '@nestjs/core';
+import { DataSource } from 'typeorm';
 import { BaseCronJob } from './base-cron-job';
-import { AnimalToFosterHome } from '@server/src/animal/entities/animalToFosterhome.entity';
-import { AnimalToFosterHomeRepository } from '@server/src/animal/repositories/animal-to-fosterhome.repository';
 
 @Injectable()
 export class SyncSheetDataToDBJob extends BaseCronJob {
@@ -163,11 +163,15 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     private async updateData(newData) {
         const animalRescue = await this.updateAnimalRescue(newData);
         const animal = await this.updateAnimal(newData, animalRescue);
+        animalRescue.animal = animal;
+        await this.rescueRepository.save(animalRescue);
         //TODO kunagi ei salvestata animalRescue tabelisse maha animal_id-d
         await this.updateCharacteristics(newData, animal.id);
 
         const user = await this.updateUser(newData);
         const fosterHome = await this.updateFosterHome({ userId: user.id });
+        user.fosterHome = fosterHome;
+        await this.userRepository.save(user);
         const animalToFosterHomeData: Partial<AnimalToFosterHome> = {
             animal: animal,
             fosterHome: fosterHome
@@ -191,9 +195,16 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     }
 
     private async updateAnimal(newData, animalRescue) {
-        let animal = await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id);
+        const animal = await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id);
+        if (animal) {
+            animal.name = newData['KASSI_NIMI'].formattedValue;
+            animal.birthday = moment(newData['SÜNNIAEG'].formattedValue, 'DD.MM.YYYY').toDate();
+            animal.chipNumber = newData['KIIP'].formattedValue || null;
+            animal.chipRegisteredWithUs = newData['KIIP_LLR-is_MTÜ_nimel-_täidab_registreerija'].formattedValue === 'Jah';
+            return await this.animalRepository.saveOrUpdateAnimal(animal);
+        }
+
         const animalData: Partial<Animal> = {
-            id: animal?.id ?? undefined,
             name: newData['KASSI_NIMI'].formattedValue,
             birthday: moment(newData['SÜNNIAEG'].formattedValue, 'DD.MM.YYYY').toDate(),
             chipNumber: newData['KIIP'].formattedValue || null,

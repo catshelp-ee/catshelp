@@ -42,11 +42,12 @@ export class AnimalRepository extends BaseRepository<Animal> {
 
     /** Get animal by Rescue ID */
     public async getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal | null> {
-        return this.dataSource.getRepository(Animal)
-        .createQueryBuilder("animal")
-        .leftJoin("animal.animalRescue", "rescue")
-        .where("rescue.id = :animalRescueId", { animalRescueId })
-        .getOne();
+        const rescue = await this.dataSource.getRepository(Rescue).findOne({
+            where: { id: animalRescueId },
+            relations: ["animal"],
+        });
+
+        return rescue?.animal ?? null;
     }
 
     /** Update basic animal profile */
@@ -61,15 +62,13 @@ export class AnimalRepository extends BaseRepository<Animal> {
     }
 
     /** Save or update animal */
-    public async saveOrUpdateAnimal(data: Partial<Animal>): Promise<Animal> {
-        if (data.id) {
-            const animal = (await this.findOne({ where: { id: data.id } }))!;
-            Object.assign(animal, data);
-            return this.save(animal);
+    public async saveOrUpdateAnimal(animal: Partial<Animal>): Promise<Animal> {
+        if (animal.id) {
+            return this.save(animal as Animal);
         }
 
-        const animal = this.create(data);
-        return this.save(animal);
+        const newAnimal = this.create(animal);
+        return this.save(newAnimal);
     }
 
     /** Delete animal by ID */

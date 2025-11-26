@@ -42,7 +42,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         this.animalToFosterhomeRepository = await this.moduleRef.resolve(AnimalToFosterHomeRepository, this.contextId);
     }
 
-    protected async doWork() {
+    public async doWork() {
         if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
             console.log("Google cats sheet id or table name not set. Skipping db sync");
             return;
@@ -163,15 +163,12 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     private async updateData(newData) {
         const animalRescue = await this.updateAnimalRescue(newData);
         const animal = await this.updateAnimal(newData, animalRescue);
-        animalRescue.animal = animal;
+        animalRescue.animalId = animal.id;
         await this.rescueRepository.save(animalRescue);
-        //TODO kunagi ei salvestata animalRescue tabelisse maha animal_id-d
         await this.updateCharacteristics(newData, animal.id);
 
         const user = await this.updateUser(newData);
         const fosterHome = await this.updateFosterHome({ userId: user.id });
-        user.fosterHome = fosterHome;
-        await this.userRepository.save(user);
         const animalToFosterHomeData: Partial<AnimalToFosterHome> = {
             animal: animal,
             fosterHome: fosterHome
@@ -196,15 +193,8 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
 
     private async updateAnimal(newData, animalRescue) {
         const animal = await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id);
-        if (animal) {
-            animal.name = newData['KASSI_NIMI'].formattedValue;
-            animal.birthday = moment(newData['SÜNNIAEG'].formattedValue, 'DD.MM.YYYY').toDate();
-            animal.chipNumber = newData['KIIP'].formattedValue || null;
-            animal.chipRegisteredWithUs = newData['KIIP_LLR-is_MTÜ_nimel-_täidab_registreerija'].formattedValue === 'Jah';
-            return await this.animalRepository.saveOrUpdateAnimal(animal);
-        }
-
         const animalData: Partial<Animal> = {
+            id: animal?.id ?? undefined,
             name: newData['KASSI_NIMI'].formattedValue,
             birthday: moment(newData['SÜNNIAEG'].formattedValue, 'DD.MM.YYYY').toDate(),
             chipNumber: newData['KIIP'].formattedValue || null,

@@ -71,6 +71,6 @@ jobs:
             npm run migration:run
 
             # Start server
-            pm2 startOrRestart ${{ env.APP_ROOT }}/liides/pm2.config.js
+            pm2 startOrRestart pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

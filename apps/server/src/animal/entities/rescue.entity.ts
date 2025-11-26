@@ -22,7 +22,10 @@ export class Rescue {
     @Column({ unique: true })
     public rankNr: string;
 
+    @Column()
+    public animalId: number;
+
     @OneToOne(() => Animal, (animal) => animal.animalRescue)
-    @JoinColumn()
+    @JoinColumn({ name: "animal_id" })
     public animal: Animal
 }

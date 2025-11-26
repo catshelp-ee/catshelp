@@ -10,7 +10,7 @@ export class AdminService {
     public async runJob(jobName) {
         switch (jobName) {
             case 'userSync':
-                await this.syncUserDataToDBJob.doWork();
+                await this.syncUserDataToDBJob.run();
                 return;
         }
     }

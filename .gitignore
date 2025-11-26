@@ -5,4 +5,4 @@ credentials.json
 .turbo
 .vscode
 build/*
-apps/server/files/*
+files/*

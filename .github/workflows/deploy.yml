@@ -23,7 +23,7 @@ jobs:
 
       - name: 🏗️ Build frontend & backend
         env:
-          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}       # notice 'vars' keyword here
+          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }} # notice 'vars' keyword here
           VITE_FRONTEND_URL: ${{ vars.VITE_FRONTEND_URL }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
@@ -34,7 +34,7 @@ jobs:
           GIT_SHA=$(git rev-parse --short HEAD)
           RELEASE_NAME=$TIMESTAMP-$GIT_SHA
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-          tar -czf $RELEASE_NAME.tar.gz build
+          tar -czf $RELEASE_NAME.tar.gz build packages
 
       - name: 📤 Upload release to server
         uses: appleboy/scp-action@v0.1.4
@@ -65,7 +65,12 @@ jobs:
             ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }}/dist ${{ env.APP_ROOT }}/liides/dist
 
             # Restart via PM2 (expects ecosystem config in release)
-            cd ${{ env.APP_ROOT }}/liides/dist
+            cd ${{ env.APP_ROOT }}/liides
+
+            # Run migrations
+            npm run migration:run
+
+            # Start server
             pm2 startOrRestart ${{ env.APP_ROOT }}/liides/pm2.config.js
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

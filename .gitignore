@@ -6,3 +6,4 @@ credentials.json
 .vscode
 build/*
 apps/server/files/*
+files/*

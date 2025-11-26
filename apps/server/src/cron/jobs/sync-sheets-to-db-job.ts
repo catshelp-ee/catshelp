@@ -42,7 +42,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         this.animalToFosterhomeRepository = await this.moduleRef.resolve(AnimalToFosterHomeRepository, this.contextId);
     }
 
-    public async doWork() {
+    protected async doWork() {
         if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
             console.log("Google cats sheet id or table name not set. Skipping db sync");
             return;

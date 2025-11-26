@@ -64,7 +64,9 @@ export class AnimalRepository extends BaseRepository<Animal> {
     /** Save or update animal */
     public async saveOrUpdateAnimal(animal: Partial<Animal>): Promise<Animal> {
         if (animal.id) {
-            return this.save(animal as Animal);
+            var existing = await this.findOne({ where: { id: animal.id }});
+            Object.assign(existing as Animal, animal);
+            return this.save(existing);
         }
 
         const newAnimal = this.create(animal);

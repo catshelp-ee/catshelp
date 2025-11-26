@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build:server": "turbo run build --filter=@catshelp/server",
-    "build": "mkdir build && turbo run build",
+    "build": "turbo run build",
     "start:prod": "node build/server/main.js",
     "client": "npm run dev:vite -w @catshelp/client",
     "server": "cross-env DEV_SERVER=true npm run start:dev -w @catshelp/server",

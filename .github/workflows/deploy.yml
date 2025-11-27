@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
           source: "${{ env.RELEASE_NAME }}.tar.gz"
-          target: "${{ env.APP_ROOT }}"
+          target: "${{ env.APP_ROOT }}/liides"
 
       - name: 🚀 Deploy and restart via PM2
         uses: appleboy/ssh-action@v0.1.7

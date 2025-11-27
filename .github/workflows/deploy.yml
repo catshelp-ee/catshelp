@@ -34,7 +34,7 @@ jobs:
           GIT_SHA=$(git rev-parse --short HEAD)
           RELEASE_NAME=$TIMESTAMP-$GIT_SHA
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-          tar -czf $RELEASE_NAME.tar. gz build packages
+          tar -czf $RELEASE_NAME.tar.gz build packages
 
       - name: 📤 Upload release to server
         uses: appleboy/scp-action@v0.1.4

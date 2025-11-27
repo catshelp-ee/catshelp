@@ -12,7 +12,7 @@ jobs:
 
     env:
       APP_ROOT: /data01/virt133730/domeenid/www.catshelp.ee
-      RELEASES_DIR: /data01/virt133730/domeenid/www.catshelp.ee/liides/releases
+      # RELEASES_DIR: /data01/virt133730/domeenid/www.catshelp.ee/liides/releases
 
     steps:
       - name: 🧾 Checkout repository
@@ -23,7 +23,7 @@ jobs:
 
       - name: 🏗️ Build frontend & backend
         env:
-          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }} # notice 'vars' keyword here
+          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}
           VITE_FRONTEND_URL: ${{ vars.VITE_FRONTEND_URL }}
           VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
@@ -34,7 +34,7 @@ jobs:
           GIT_SHA=$(git rev-parse --short HEAD)
           RELEASE_NAME=$TIMESTAMP-$GIT_SHA
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-          tar -czf $RELEASE_NAME.tar.gz build packages
+          tar -czf $RELEASE_NAME.tar. gz build packages
 
       - name: 📤 Upload release to server
         uses: appleboy/scp-action@v0.1.4
@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
           source: "${{ env.RELEASE_NAME }}.tar.gz"
-          target: "${{ env.RELEASES_DIR }}"
+          target: "${{ env.APP_ROOT }}"
 
       - name: 🚀 Deploy and restart via PM2
         uses: appleboy/ssh-action@v0.1.7
@@ -56,16 +56,10 @@ jobs:
           script: |
             set -e
 
-            cd ${{ env.RELEASES_DIR }}
-            mkdir ${{ env.RELEASE_NAME }}
-            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz -C ${{ env.RELEASE_NAME }}
-            rm ${{ env.RELEASE_NAME }}.tar.gz
-
-            # Symlink new release to current
-            ln -sfn ${{ env.RELEASES_DIR }}/${{ env.RELEASE_NAME }}/dist ${{ env.APP_ROOT }}/liides/dist
-
-            # Restart via PM2 (expects ecosystem config in release)
             cd ${{ env.APP_ROOT }}/liides
+            rm -rf build packages
+            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz
+            rm ${{ env.RELEASE_NAME }}.tar.gz
 
             # Run migrations
             npm run migration:run

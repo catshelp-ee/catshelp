@@ -23,8 +23,7 @@ export class FosterHomeRepository extends BaseRepository<FosterHome> {
     /** Find existing foster home by userId or create a new one */
     async saveOrUpdateFosterHome(userId: number): Promise<FosterHome> {
         let fosterHome = await this.findOne({
-            where: { user: { id: userId } },
-            relations: ['user'],
+            where: { userId: userId }
         });
 
         if (!fosterHome) {

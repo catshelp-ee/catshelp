@@ -13,6 +13,8 @@ import { RescueResult } from './interfaces/rescue-result';
 import { AnimalRepository } from './repositories/animal.repository';
 import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
+import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
+import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
 
 @Injectable()
 export class AnimalService {
@@ -24,6 +26,7 @@ export class AnimalService {
         private readonly rescueRepository: RescueRepository,
         private readonly googleSheetsService: GoogleSheetsService,
         private readonly characteristicsService: CharacteristicsService,
+        private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
     ) { }
 
     async getAnimalsByUserId(id: number): Promise<Animal[]> {
@@ -38,12 +41,8 @@ export class AnimalService {
         return this.fosterhomeRepository.saveOrUpdateFosterHome(data.userId);
     }
 
-    public async createAnimal(
-        data: AnimalRescueDto,
-        user: User,
-    ): Promise<RescueResult> {
+    public async createAnimal(data: AnimalRescueDto, user: User): Promise<RescueResult> {
         data.date = new Date();
-
         const animal = await this.animalRepository.saveOrUpdateAnimal({});
 
         const rescueData = {
@@ -56,12 +55,16 @@ export class AnimalService {
         const rescue = await this.rescueRepository.saveOrUpdateAnimalRescue(rescueData);
         data.rankNr = rescue.rankNr;
 
-        await this.saveOrUpdateFosterHome({
+        const fosterHome = await this.saveOrUpdateFosterHome({
             userId: user.id,
         });
 
+        const animalToFosterHomeData: Partial<AnimalToFosterHome> = {
+            animal: animal,
+            fosterHomeId: fosterHome.id
+        }
+        await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
         this.googleSheetsService.addDataToSheet(data, user);
-
         return { animal, rescue };
     }
 

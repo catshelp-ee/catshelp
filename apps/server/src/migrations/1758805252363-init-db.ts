@@ -142,8 +142,8 @@ export class InitDb1758805252363 implements MigrationInterface {
                 active TINYINT(1) NOT NULL DEFAULT '1',
                 treatmentHistoryId INT(11) NOT NULL,
                 PRIMARY KEY (id) USING BTREE,
-                UNIQUE INDEX treatments_treatment_history_id_key (treatment_history_id) USING BTREE,
-                CONSTRAINT treatments_treatmentHistoryId_fkey FOREIGN KEY (treatment_history_id) REFERENCES treatment_history (id) ON UPDATE CASCADE ON DELETE RESTRICT
+                UNIQUE INDEX treatments_treatment_history_id_key (treatmentHistoryId) USING BTREE,
+                CONSTRAINT treatments_treatmentHistoryId_fkey FOREIGN KEY (treatmentHistoryId) REFERENCES treatment_history (id) ON UPDATE CASCADE ON DELETE RESTRICT
             )`);
     }
 

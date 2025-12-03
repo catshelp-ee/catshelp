@@ -20,6 +20,9 @@ export class FosterHome {
     @Column()
     public catshelpMentorId: number;
 
+    @Column()
+    public userId: number;
+
     @OneToOne(() => User, (user) => user.fosterHome)
     @JoinColumn()
     public user: User;

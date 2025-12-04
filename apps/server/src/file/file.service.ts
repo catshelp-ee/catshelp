@@ -6,93 +6,94 @@ import { FileRepository } from './file.repository';
 
 @Injectable()
 export class FileService {
-  constructor(
-    private readonly googleDriveService: GoogleDriveService,
-    private readonly fileRepository: FileRepository,
-  ) { }
+    constructor(
+        private readonly googleDriveService: GoogleDriveService,
+        private readonly fileRepository: FileRepository,
+    ) { }
 
-  private isValidHyperlink = (link: string): boolean => {
-    try {
-      new URL(link);
-      return true;
-    } catch (_error) {
-      return false;
-    }
-  };
+    private isValidHyperlink = (link: string): boolean => {
+        try {
+            new URL(link);
+            return true;
+        } catch (_error) {
+            return false;
+        }
+    };
 
-  public async fetchImagePathsByAnimalId(animalId: number) {
-    const files = await this.fileRepository.getImages(animalId);
-    return files.map(file => {
-      return `/images/${file.uuid}.jpg`;
-    });
-  }
-
-  private normalizeFiles(
-    files: Express.Request['files']
-  ): Express.Multer.File[] {
-    if (!files) return [];
-
-    if (Array.isArray(files)) {
-      return files;
+    //TODO images kaust tekib valesti. rooti ja server kausta. Alati peaks olema root. Tuleb üle kontrollida ka muud kohad.
+    public async fetchImagePathsByAnimalId(animalId: number) {
+        const files = await this.fileRepository.getImages(animalId);
+        return files.map(file => {
+            return `/images/${file.uuid}.jpg`;
+        });
     }
 
-    return Object.values(files).flat();
-  }
+    private normalizeFiles(
+        files: Express.Request['files']
+    ): Express.Multer.File[] {
+        if (!files) return [];
 
-  public async insertImageFilenamesIntoDB(
-    files:
-      | { [fieldname: string]: Express.Multer.File[] }
-      | Express.Multer.File[],
-    animalId: number | string
-  ) {
-    const normalizedFiles = this.normalizeFiles(files);
-    await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
-  }
+        if (Array.isArray(files)) {
+            return files;
+        }
 
-  public fetchProfilePicture(animalID: number) {
-    return this.fileRepository.fetchProfilePicture(animalID);
-  }
-
-  public async processImages(
-    profile: Profile,
-    values: CatSheetsHeaders,
-    ownerName: string
-  ): Promise<void> {
-    const imageLink = values.photo;
-
-    if (!imageLink) {
-      console.warn(`No image`);
-      return;
+        return Object.values(files).flat();
     }
 
-    if (!this.isValidHyperlink(imageLink)) {
-      console.warn(
-        `Skipping image for ${profile.mainInfo.name} due to invalid image link.`
-      );
-      return;
+    public async insertImageFilenamesIntoDB(
+        files:
+            | { [fieldname: string]: Express.Multer.File[] }
+            | Express.Multer.File[],
+        animalId: number | string
+    ) {
+        const normalizedFiles = this.normalizeFiles(files);
+        await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
     }
 
-    const fileId = extractFileId(imageLink);
-    if (!fileId) {
-      console.warn(`Unable to extract fileId from imageLink: ${imageLink}`);
-      return;
+    public fetchProfilePicture(animalID: number) {
+        return this.fileRepository.fetchProfilePicture(animalID);
     }
 
-    await this.downloadProfileImage(profile.mainInfo.name, fileId, ownerName);
-  }
+    public async processImages(
+        profile: Profile,
+        values: CatSheetsHeaders,
+        ownerName: string
+    ): Promise<void> {
+        const imageLink = values.photo;
 
-  public async downloadProfileImage(
-    catName: string,
-    fileId: string,
-    ownerName: string
-  ): Promise<string> {
-    const destinationPath = `./images/${ownerName}/${catName}.png`;
+        if (!imageLink) {
+            console.warn(`No image`);
+            return;
+        }
 
-    try {
-      await this.googleDriveService.downloadImage(fileId, destinationPath);
-      return `images/${ownerName}/${catName}.png`;
-    } catch (e) {
-      return 'missing256x256.png';
+        if (!this.isValidHyperlink(imageLink)) {
+            console.warn(
+                `Skipping image for ${profile.mainInfo.name} due to invalid image link.`
+            );
+            return;
+        }
+
+        const fileId = extractFileId(imageLink);
+        if (!fileId) {
+            console.warn(`Unable to extract fileId from imageLink: ${imageLink}`);
+            return;
+        }
+
+        await this.downloadProfileImage(profile.mainInfo.name, fileId, ownerName);
     }
-  }
+
+    public async downloadProfileImage(
+        catName: string,
+        fileId: string,
+        ownerName: string
+    ): Promise<string> {
+        const destinationPath = `./images/${ownerName}/${catName}.png`;
+
+        try {
+            await this.googleDriveService.downloadImage(fileId, destinationPath);
+            return `images/${ownerName}/${catName}.png`;
+        } catch (e) {
+            return 'missing256x256.png';
+        }
+    }
 }

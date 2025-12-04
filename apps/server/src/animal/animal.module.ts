@@ -22,6 +22,8 @@ import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { TreatmentRepository } from './repositories/treatment.repository';
 import { Characteristic } from './entities/characteristic.entity';
+import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
+import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 
 
 @Module({
@@ -31,6 +33,7 @@ import { Characteristic } from './entities/characteristic.entity';
         TypeOrmModule.forFeature([FosterHome]),
         TypeOrmModule.forFeature([Rescue]),
         TypeOrmModule.forFeature([Characteristic]),
+        TypeOrmModule.forFeature([AnimalToFosterHome]),
         FileModule,
         GoogleModule,
         UserModule,
@@ -52,6 +55,7 @@ import { Characteristic } from './entities/characteristic.entity';
         RescueRepository,
         TreatmentRepository,
         RevokedTokenRepository,
+        AnimalToFosterHomeRepository,
     ],
     exports: [
         ProfileBuilder,
@@ -61,6 +65,7 @@ import { Characteristic } from './entities/characteristic.entity';
         FosterHomeRepository,
         RescueRepository,
         TreatmentRepository,
+        AnimalToFosterHomeRepository,
     ],
 })
 export class AnimalModule { }

@@ -11,6 +11,12 @@ export class AnimalToFosterHome {
     @Column()
     public fosterHomeEndDate: Date;
 
+    @Column()
+    public animalId: number;
+
+    @Column()
+    public fosterHomeId: number;
+
     @ManyToOne(() => Animal, (animal) => animal.animalToFosterHome)
     public animal: Animal
 

@@ -11,14 +11,14 @@
     "build": "turbo run build",
     "start:prod": "node build/server/main.js",
     "client": "npm run dev:vite -w @catshelp/client",
-    "server": "cross-env DEV_SERVER=true npm run start:dev -w @catshelp/server",
+    "server": "npm run start:dev -w @catshelp/server",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
-    "migration:run": "cross-env node ./node_modules/typeorm/cli.js migration:run -d build/server/data-source.js",
+    "migration:run:dev": "ts-node -r tsconfig-paths/register --project apps/server/tsconfig.json ./node_modules/typeorm/cli.js migration:run -d apps/server/src/data-source.ts",
+    "migration:run": "node ./node_modules/typeorm/cli.js migration:run -d build/server/data-source.js",
     "migration:create": "cross-var npm run typeorm -- migration:create ./migrations/$npm_config_name"
   },
   "dependencies": {
     "@nestjs/schedule": "^6.0.1",
-    "cross-env": "^10.1.0",
     "esbuild": "^0.25.11"
   },
   "devDependencies": {

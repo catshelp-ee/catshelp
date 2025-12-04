@@ -7,6 +7,7 @@ import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { AnimalToFosterHome } from '@server/src/animal/entities/animalToFosterhome.entity';
+import { Treatment } from '@server/src/animal/entities/treatment.entity';
 import { AnimalToFosterHomeRepository } from '@server/src/animal/repositories/animal-to-fosterhome.repository';
 import { TreatmentRepository } from '@server/src/animal/repositories/treatment.repository';
 import { UserRepository } from '@user/user.repository';
@@ -177,19 +178,42 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
             fosterHome: fosterHome
         }
         await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
+        await this.updateTreatments(animal, newData);
+    }
 
+    private async updateTreatments(animal: Animal, newData) {
         const treatments = await this.treatmentRepository.getActiveTreatments(animal.id);
         const treatmentMap = Object.fromEntries(
             treatments.map(t => [t.treatmentName, t])
         );
 
-        const treatmentData = {
+        const sheetTreatments = {
             COMPLEX_VACCINE: newData["KOMPLEKSVAKTSIIN_(nt_Feligen_CRP,_Versifel_CVR,_Nobivac_Tricat_Trio)"].formattedValue,
             RABIES_VACCINE: newData["MARUTAUDI_VAKTSIIN_(nt_Feligen_R,_Biocan_R,_Versiguard,_Rabisin_Multi,_Rabisin_R,_Rabigen_Mono,_Purevax_RCP)"].formattedValue,
             DEWORMING_MEDICATION: newData["USSIROHU/_TURJATILGA_KP"].formattedValue
-        }
+        };
 
-        await this.treatmentRepository.saveOrUpdate(animal.id, treatmentData, treatmentMap);
+        for (const key in sheetTreatments) {
+            const visitDate = moment(sheetTreatments[key], 'DD.MM.YYYY');
+
+            if (key in treatmentMap) {
+                const existingTreatment = treatmentMap[key];
+
+                existingTreatment.visitDate = visitDate.toDate();
+                existingTreatment.nextVisitDate = visitDate.add(1, 'y').toDate();
+                await this.treatmentRepository.saveOrUpdate(existingTreatment);
+                continue;
+            }
+
+            const treatmentData: Partial<Treatment> = {
+                treatmentName: key,
+                visitDate: visitDate.toDate(),
+                nextVisitDate: visitDate.add(1, 'y').toDate(),
+                animalId: animal.id
+            };
+
+            await this.treatmentRepository.saveOrUpdate(treatmentData);
+        }
     }
 
     private async updateFosterHome(newData) {

@@ -3,110 +3,189 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Inter";
-  src: local("Inter"),
-    url("../assets/font/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+    font-family: "Inter";
+    src: local("Inter"),
+        url("../assets/font/Inter-VariableFont_opsz,wght.ttf") format("truetype");
 }
 
 @layer utilities {
-  .text-secondary {
-    @apply text-secondaryText;
-  }
+    .text-secondary {
+        @apply text-secondaryText;
+    }
 }
 
 #root {
-  font-family: Inter;
-  height: 100vh;
+    font-family: Inter;
+    height: 100vh;
 }
 
+/* Login */
 .login-background {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #6ac7db;
-  height: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #6ac7db;
+    height: 100%;
 }
 
 .login-background::before {
-  content: "";
-  position: absolute;
-  background-image: url("../assets/login_background.png");
-  background-size: 60% 136%;
-  opacity: 8%;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
+    content: "";
+    position: absolute;
+    background-image: url("../assets/login_background.png");
+    background-size: 60% 136%;
+    opacity: 8%;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
 }
 
 .login-form-box {
-  display: flex;
-  height: 80%;
-  background-image: url("../assets/login_frame_background.png");
-  background-position: center;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  aspect-ratio: 2/1;
-  z-index: 1;
+    display: flex;
+    height: 80%;
+    background-image: url("../assets/login_frame_background.png");
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    aspect-ratio: 2/1;
+    z-index: 1;
 }
 
 .login-form {
-  margin: 10% 4%;
-  width: 40%;
+    margin: 10% 4%;
+    width: 40%;
 }
 
 .login-form h1 {
-  font-size: 36px;
-  font-weight: 500;
+    font-size: 36px;
+    font-weight: 500;
 }
 
 .google-login {
-  margin-top: 60px;
-  margin-bottom: 30px;
+    margin-top: 60px;
+    margin-bottom: 30px;
 }
 
 .email-login {
-  margin-top: 30px;
-  margin-bottom: 30px;
-  display: flex;
-  gap: 10px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
 }
 
 .login-button-container {
-  height: 100%;
-  align-self: center;
-}
-
-.alert-container {
-  position: fixed;
-  width: 100%;
-  padding: 10px 10px;
-  z-index: 2;
-  height: fit-content;
+    height: 100%;
+    align-self: center;
 }
 
 @media (max-width: 768px) {
-  .login-background::before {
-    background-size: 180% 100%;
-  }
+    .login-background::before {
+        background-size: 180% 100%;
+    }
 
-  .login-form-box {
-    background-image: none;
-    background-color: white;
-    aspect-ratio: auto;
-  }
+    .login-form-box {
+        background-image: none;
+        background-color: white;
+        aspect-ratio: auto;
+    }
 
-  .login-form-box {
-    width: 100%;
-  }
+    .login-form-box {
+        width: 100%;
+    }
 
-  .login-form {
-    width: 100%;
-  }
+    .login-form {
+        width: 100%;
+    }
 
-  .email-login {
+    .email-login {
+        flex-direction: column;
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    display: flex;
     flex-direction: column;
-  }
+    width: 15vw;
+    min-width: 328px;
+    height: 89vh;
+}
+
+.sidebar-image {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 22px 0px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    background-color: #30B0C7;
+    flex-grow: 1;
+    height: 100%;
+    border-radius: 0px 20px 20px 0px;
+    padding-top: 48px;
+    justify-content: space-between;
+}
+
+.sidebar-item,
+.sidebar-logout {
+    color: white !important;
+    text-transform: none !important;
+    font-size: 1rem !important;
+    line-height: 1.5rem !important;
+    font-weight: bold !important;
+    width: 100%;
+    padding: 1rem !important;
+    justify-content: flex-start !important;
+}
+
+.sidebar-item {
+    display: flex;
+}
+
+.sidebar-logout {
+    margin-top: 20% !important;
+    margin-bottom: 43% !important;
+}
+
+.sidebar-item:hover,
+.sidebar-logout:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Mobile sidebar overrides */
+.mobile-navbar {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-navbar .sidebar-image {
+    display: none !important;
+}
+
+.mobile-navbar .sidebar-menu {
+    border-radius: 0px;
+}
+
+.mobile-navbar .sidebar {
+    width: 100%;
+}
+
+/* Alerts */
+.alert-container {
+    position: fixed;
+    width: 100%;
+    padding: 10px 10px;
+    z-index: 2;
+    height: fit-content;
+}
+
+/* Main page */
+.page-content {
+    flex-grow: 1;
+    margin-top: 157px;
 }

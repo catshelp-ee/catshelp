@@ -45,7 +45,7 @@ export const AlertProvider: React.FC<AlertContextProvider> = ({ children }) => {
 
   return (
     <AlertContext.Provider value={contextValue}>
-      <div className='alert-container'>
+      <div id="alert-container" className='alert-container'>
         <Stack sx={{ width: '100%' }} spacing={2}>
           {alertMessage.map((alert, index) => (
             <Alert

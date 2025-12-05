@@ -183,7 +183,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
 
     private async updateTreatments(animal: Animal, newData) {
         const treatments = await this.treatmentRepository.getActiveTreatments(animal.id);
-        const treatmentMap = Object.fromEntries(
+        const treatmentNameToTreatmentMap = Object.fromEntries(
             treatments.map(t => [t.treatmentName, t])
         );
 
@@ -193,11 +193,11 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
             DEWORMING_MEDICATION: newData["USSIROHU/_TURJATILGA_KP"].formattedValue
         };
 
-        for (const key in sheetTreatments) {
-            const visitDate = moment(sheetTreatments[key], 'DD.MM.YYYY');
+        for (const treatment in sheetTreatments) {
+            const visitDate = moment(sheetTreatments[treatment], 'DD.MM.YYYY');
 
-            if (key in treatmentMap) {
-                const existingTreatment = treatmentMap[key];
+            if (treatment in treatmentNameToTreatmentMap) {
+                const existingTreatment = treatmentNameToTreatmentMap[treatment];
 
                 existingTreatment.visitDate = visitDate.toDate();
                 existingTreatment.nextVisitDate = visitDate.add(1, 'y').toDate();
@@ -206,7 +206,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
             }
 
             const treatmentData: Partial<Treatment> = {
-                treatmentName: key,
+                treatmentName: treatment,
                 visitDate: visitDate.toDate(),
                 nextVisitDate: visitDate.add(1, 'y').toDate(),
                 animalId: animal.id

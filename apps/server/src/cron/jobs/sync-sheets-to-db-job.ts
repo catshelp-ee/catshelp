@@ -7,7 +7,9 @@ import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { AnimalToFosterHome } from '@server/src/animal/entities/animalToFosterhome.entity';
+import { Treatment } from '@server/src/animal/entities/treatment.entity';
 import { AnimalToFosterHomeRepository } from '@server/src/animal/repositories/animal-to-fosterhome.repository';
+import { TreatmentRepository } from '@server/src/animal/repositories/treatment.repository';
 import { UserRepository } from '@user/user.repository';
 import sha256 from 'crypto-js/sha256';
 import moment from 'moment';
@@ -24,6 +26,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     private userRepository: UserRepository;
     private fosterhomeRepository: FosterHomeRepository;
     private animalToFosterhomeRepository: AnimalToFosterHomeRepository;
+    private treatmentRepository: TreatmentRepository;
 
     constructor(
         protected dataSource: DataSource,
@@ -40,6 +43,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         this.fosterhomeRepository = await this.moduleRef.resolve(FosterHomeRepository, this.contextId);
         this.characteristicRepository = await this.moduleRef.resolve(CharacteristicRepository, this.contextId);
         this.animalToFosterhomeRepository = await this.moduleRef.resolve(AnimalToFosterHomeRepository, this.contextId);
+        this.treatmentRepository = await this.moduleRef.resolve(TreatmentRepository, this.contextId);
     }
 
     protected async doWork() {
@@ -174,6 +178,42 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
             fosterHome: fosterHome
         }
         await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
+        await this.updateTreatments(animal, newData);
+    }
+
+    private async updateTreatments(animal: Animal, newData) {
+        const treatments = await this.treatmentRepository.getActiveTreatments(animal.id);
+        const treatmentNameToTreatmentMap = Object.fromEntries(
+            treatments.map(t => [t.treatmentName, t])
+        );
+
+        const sheetTreatments = {
+            COMPLEX_VACCINE: newData["KOMPLEKSVAKTSIIN_(nt_Feligen_CRP,_Versifel_CVR,_Nobivac_Tricat_Trio)"].formattedValue,
+            RABIES_VACCINE: newData["MARUTAUDI_VAKTSIIN_(nt_Feligen_R,_Biocan_R,_Versiguard,_Rabisin_Multi,_Rabisin_R,_Rabigen_Mono,_Purevax_RCP)"].formattedValue,
+            DEWORMING_MEDICATION: newData["USSIROHU/_TURJATILGA_KP"].formattedValue
+        };
+
+        for (const treatment in sheetTreatments) {
+            const visitDate = moment(sheetTreatments[treatment], 'DD.MM.YYYY');
+
+            if (treatment in treatmentNameToTreatmentMap) {
+                const existingTreatment = treatmentNameToTreatmentMap[treatment];
+
+                existingTreatment.visitDate = visitDate.toDate();
+                existingTreatment.nextVisitDate = visitDate.add(1, 'y').toDate();
+                await this.treatmentRepository.saveOrUpdate(existingTreatment);
+                continue;
+            }
+
+            const treatmentData: Partial<Treatment> = {
+                treatmentName: treatment,
+                visitDate: visitDate.toDate(),
+                nextVisitDate: visitDate.add(1, 'y').toDate(),
+                animalId: animal.id
+            };
+
+            await this.treatmentRepository.saveOrUpdate(treatmentData);
+        }
     }
 
     private async updateFosterHome(newData) {

@@ -12,15 +12,17 @@ import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
 import { AnimalModule } from '../animal/animal.module';
+import { AnimalToFosterHome } from '../animal/entities/animalToFosterhome.entity';
+import { Treatment } from '../animal/entities/treatment.entity';
+import { AnimalToFosterHomeRepository } from '../animal/repositories/animal-to-fosterhome.repository';
+import { CharacteristicRepository } from '../animal/repositories/characteristic.repository';
+import { TreatmentRepository } from '../animal/repositories/treatment.repository';
 import { GoogleModule } from '../google/google.module';
+import { CronService } from './cron.service';
 import { DeleteExpiredTokensJob } from './jobs/delete-expired-tokens-job';
 import { SyncSheetDataToDBJob } from './jobs/sync-sheets-to-db-job';
 import { SyncUserDataToDBJob } from './jobs/sync-users-to-db-job';
 import { TodoNotificationJob } from './jobs/todo-notification-job';
-import { CronService } from './cron.service';
-import { CharacteristicRepository } from '../animal/repositories/characteristic.repository';
-import { AnimalToFosterHome } from '../animal/entities/animalToFosterhome.entity';
-import { AnimalToFosterHomeRepository } from '../animal/repositories/animal-to-fosterhome.repository';
 
 @Module({
     imports: [
@@ -30,6 +32,7 @@ import { AnimalToFosterHomeRepository } from '../animal/repositories/animal-to-f
         TypeOrmModule.forFeature([FosterHome]),
         TypeOrmModule.forFeature([User]),
         TypeOrmModule.forFeature([AnimalToFosterHome]),
+        TypeOrmModule.forFeature([Treatment]),
         AnimalModule,
         GoogleModule,
     ],
@@ -40,6 +43,7 @@ import { AnimalToFosterHomeRepository } from '../animal/repositories/animal-to-f
         TodoNotificationJob,
         DeleteExpiredTokensJob,
         RescueRepository,
+        TreatmentRepository,
         AnimalRepository,
         FosterHomeRepository,
         CharacteristicRepository,

@@ -11,11 +11,30 @@ export class TreatmentRepository extends BaseRepository<Treatment> {
         super(Treatment, dataSource, request);
     }
 
+    public async saveOrUpdate(treatment: Partial<Treatment>) {
+        if (treatment.id) {
+            await this.save(treatment as Treatment);
+            return;
+        }
+
+        const newTreatment = this.create(treatment);
+        await this.save(newTreatment);
+    }
+
+    public async getActiveTreatments(animalId: number): Promise<Treatment[]> {
+        return this.find({
+            where: {
+                animalId: animalId,
+                active: true,
+            }
+        });
+    }
+
 
     /** Get the full treatment history for an animal, including treatment details */
     async getTreatements(animalId: number): Promise<Treatment[]> {
         return this.find({
-            where: { animalId: animalId  }
+            where: { animalId: animalId }
         });
     }
 }

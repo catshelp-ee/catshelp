@@ -16,24 +16,24 @@ dayjs.extend(weekday);
 dayjs.extend(localeData);
 
 function App() {
-  dayjs.locale("et");
-  dayjs().weekday(1);
+    dayjs.locale("et");
+    dayjs().weekday(1);
 
 
-  return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/dashboard"></Navigate>} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route element={<ProtectedRoute />}>
-        <Route element={<PageLayout />}>
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/cat-profile" element={<CatProfile />} />
-          <Route path="/add-cat" element={<AddCatForm />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
+    return (
+        <Routes>
+            <Route path="/" element={<Navigate to="/dashboard"></Navigate>} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route element={<ProtectedRoute />}>
+                <Route element={<PageLayout />}>
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/cat-profile" element={<CatProfile />} />
+                    <Route path="/add-cat" element={<AddCatForm />} />
+                </Route>
+            </Route>
+        </Routes>
+    );
 }
 
 export default App;

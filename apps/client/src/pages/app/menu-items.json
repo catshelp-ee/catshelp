@@ -1,26 +1,26 @@
 {
-  "menu-items": [
-    {
-      "icon": "Check.png",
-      "text": "Kiisude töölaud",
-      "path": "/dashboard"
-    },
-    {
-      "icon": "Document.png",
-      "text": "Kiisu profiil veebis",
-      "path": "/cat-profile"
-    },
-    {
-      "icon": "Document.png",
-      "text": "Lisa kiisu",
-      "path": "/add-cat",
-      "requiredRole": "ADMIN"
-    },
-    {
-      "icon": "Document.png",
-      "text": "Admin töölaud",
-      "path": "/admin",
-      "requiredRole": "ADMIN"
-    }
-  ]
+    "menu-items": [
+        {
+            "icon": "Check.png",
+            "text": "Kiisude töölaud",
+            "path": "/dashboard"
+        },
+        {
+            "icon": "Document.png",
+            "text": "Kiisu profiil veebis",
+            "path": "/cat-profile"
+        },
+        {
+            "icon": "Document.png",
+            "text": "Lisa kiisu",
+            "path": "/add-cat",
+            "requiredRole": "ADMIN"
+        },
+        {
+            "icon": "Document.png",
+            "text": "Admin töölaud",
+            "path": "/admin",
+            "requiredRole": "ADMIN"
+        }
+    ]
 }

@@ -1,19 +1,19 @@
 {
-  "maakonnad": [
-    "HARJU",
-    "HIIU",
-    "IDA-VIRU",
-    "JÕGEVA",
-    "JÄRVA",
-    "LÄÄNE",
-    "LÄÄNE-VIRU",
-    "PÕLVA",
-    "PÄRNU",
-    "RAPLA",
-    "SAARE",
-    "TARTU",
-    "VALGA",
-    "VILJANDI",
-    "VÕRU"
-  ]
+    "maakonnad": [
+        "HARJU",
+        "HIIU",
+        "IDA-VIRU",
+        "JÕGEVA",
+        "JÄRVA",
+        "LÄÄNE",
+        "LÄÄNE-VIRU",
+        "PÕLVA",
+        "PÄRNU",
+        "RAPLA",
+        "SAARE",
+        "TARTU",
+        "VALGA",
+        "VILJANDI",
+        "VÕRU"
+    ]
 }

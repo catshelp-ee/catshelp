@@ -9,19 +9,19 @@ import type { Request } from 'express';
 @Controller('profile')
 @UseGuards(AuthorizationGuard)
 export class ProfileController {
-  constructor(
-    private readonly animalService: AnimalService,
-    private readonly catProfileBuilder: ProfileBuilder,
-  ) { }
+    constructor(
+        private readonly animalService: AnimalService,
+        private readonly catProfileBuilder: ProfileBuilder,
+    ) { }
 
-  @Get()
-  async getProfile(@Req() req: Request) {
-    // Assuming the AuthGuard attaches `req.user`
-    const user = req.user;
+    @Get()
+    async getProfile(@Req() req: Request) {
+        // Assuming the AuthGuard attaches `req.user`
+        const user = req.user;
 
-    const animals = await this.animalService.getAnimalsByUserId(user.id);
-    const profiles = await this.catProfileBuilder.buildProfiles(animals);
+        const animals = await this.animalService.getAnimalsByUserId(user.id);
+        const profiles = await this.catProfileBuilder.buildProfiles(animals);
 
-    return { profiles };
-  }
+        return { profiles };
+    }
 }

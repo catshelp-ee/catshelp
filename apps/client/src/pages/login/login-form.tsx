@@ -74,7 +74,6 @@ const LoginForm: React.FC = () => {
                     {/*<span>Kui proovisid sisse logida, aga ei õnnestunud, aga sinu juures on mõni Cats Helpi kiisu, siis palun </span><a>Registreeri end siin</a>*/}
                 </form>
             </div>
-            <a hidden className="attribution-link" target="_blank" href="https://www.vecteezy.com/free-vector/animals">Background image by Vecteezy</a>
         </div>
     );
 };

@@ -74,7 +74,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
     return (
         <div className="md:mx-12 flex-1">
-            <h1 className="text-2xl text-center md:text-left">
+            <h1 className="dashboard-welcome">
                 Tere tulemast {name}! 😺
             </h1>
             {renderContent()}

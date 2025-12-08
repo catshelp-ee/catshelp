@@ -11,10 +11,7 @@ export const PetAvatar: React.FC<{
     onClick?: () => void;
 }> = ({ data, isSelected, onClick }) => {
     return (
-        <button
-            className="flex flex-col transition-transform hover:scale-105 p-2"
-            onClick={onClick}
-        >
+        <button onClick={onClick}>
             <Avatar
                 src={`/${data.pathToImage}`}
                 alt={`${data.name} pilt`}

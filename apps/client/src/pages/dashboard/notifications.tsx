@@ -6,7 +6,7 @@ interface NotificationsProps {
 const Notifications: React.FC<NotificationsProps> = () => {
     return (
         <div className="md:w-2/3">
-            <h2 className="mb-8 text-left text-base font-bold leading-relaxed text-slate-500">
+            <h2 className="dashboard-heading mb-8 text-left text-base font-bold leading-relaxed text-slate-500">
                 TEATED CATS HELPILT
             </h2>
             <p className="flex-1 p-2 whitespace-pre-line overflow-auto text-left border rounded-xl border-solid border-black border-opacity-20">

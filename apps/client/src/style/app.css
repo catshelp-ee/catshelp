@@ -34,8 +34,8 @@
     content: "";
     position: absolute;
     background-image: url("../assets/login_background.png");
-    background-size: 60% 136%;
-    opacity: 8%;
+    background-size: 80% 80%;
+    opacity: 9%;
     top: 0px;
     left: 0px;
     bottom: 0px;
@@ -186,6 +186,18 @@
 
 /* Main page */
 .page-content {
-    flex-grow: 1;
+    width: 65%;
     margin-top: 157px;
+}
+
+/* Dashboard */
+.dashboard-welcome {
+    font-size: 34px;
+    font-weight: 500;
+    padding-bottom: 30px;
+}
+
+.dashboard-heading {
+    color: #82869e;
+    font-weight: 600;
 }

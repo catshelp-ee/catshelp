@@ -55,7 +55,9 @@ import { TodoNotificationJob } from './jobs/todo-notification-job';
     ],
     exports: [
         SyncSheetDataToDBJob,
-        SyncUserDataToDBJob
+        SyncUserDataToDBJob,
+        TodoNotificationJob,
+        DeleteExpiredTokensJob
     ],
 })
 export class CronModule { }

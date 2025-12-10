@@ -174,9 +174,9 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         const user = await this.updateUser(newData);
         const fosterHome = await this.updateFosterHome({ userId: user.id });
         const animalToFosterHomeData: Partial<AnimalToFosterHome> = {
-            animal: animal,
-            fosterHome: fosterHome
-        }
+            animalId: animal.id,
+            fosterHomeId: fosterHome.id
+        };
         await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
         await this.updateTreatments(animal, newData);
     }

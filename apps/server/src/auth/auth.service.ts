@@ -10,96 +10,96 @@ import { CookieService } from './cookie.service';
 
 @Injectable()
 export class AuthService {
-  private readonly client: OAuth2Client;
-  private readonly jwtSecret: string;
-  private readonly tokenLength: string;
+    private readonly client: OAuth2Client;
+    private readonly jwtSecret: string;
+    private readonly tokenLength: string;
 
-  constructor(
-    private readonly userService: UserService,
-  ) {
-    this.client = new OAuth2Client();
-    this.jwtSecret = process.env.JWT_SECRET!;
-    this.tokenLength = process.env.TOKEN_LENGTH!;
+    constructor(
+        private readonly userService: UserService,
+    ) {
+        this.client = new OAuth2Client();
+        this.jwtSecret = process.env.JWT_SECRET!;
+        this.tokenLength = process.env.TOKEN_LENGTH!;
 
-    if (!this.jwtSecret || !this.tokenLength) {
-      throw new Error(
-        'Missing required environment variables: JWT_SECRET or TOKEN_LENGTH'
-      );
-    }
-  }
-
-  public async authenticateUser(email: string, res: Response): Promise<User | null> {
-    const user = await this.userService.getUserByEmail(email);
-    if (!user) {
-      return null;
+        if (!this.jwtSecret || !this.tokenLength) {
+            throw new Error(
+                'Missing required environment variables: JWT_SECRET or TOKEN_LENGTH'
+            );
+        }
     }
 
-    const token = this.generateJWT(user.id);
-    CookieService.setAuthCookies(res, token);
-    return user;
-  }
+    public async authenticateUser(email: string, res: Response): Promise<User | null> {
+        const user = await this.userService.getUserByEmail(email);
+        if (!user) {
+            return null;
+        }
 
-  public async invalidateToken(token: string): Promise<void> {
-    const decoded = this.decodeJWT(token);
-    if (decoded) {
-      await this.userService.setTokenInvalid(token, decoded);
-    }
-  }
-
-  public async verifyAndRefreshToken(token: string, res: Response): Promise<boolean> {
-    const decodedToken = this.verifyJWT(token);
-    if (!decodedToken) {
-      return false;
+        const token = this.generateJWT(user.id);
+        CookieService.setAuthCookies(res, token);
+        return user;
     }
 
-    if (await this.userService.isTokenInvalid(token)) {
-      return false;
+    public async invalidateToken(token: string): Promise<void> {
+        const decoded = this.decodeJWT(token);
+        if (decoded) {
+            await this.userService.setTokenInvalid(token, decoded);
+        }
     }
 
-    // Invalidate old token and create new one
-    await this.userService.setTokenInvalid(token, decodedToken);
-    const newToken = this.generateJWT(decodedToken.id);
-    CookieService.setAuthCookies(res, newToken);
+    public async verifyAndRefreshToken(token: string, res: Response): Promise<boolean> {
+        const decodedToken = this.verifyJWT(token);
+        if (!decodedToken) {
+            return false;
+        }
 
-    return true;
-  }
+        if (await this.userService.isTokenInvalid(token)) {
+            return false;
+        }
 
-  public async verifyGoogleToken(credential: string, clientId: string): Promise<string | null> {
-    try {
-      const ticket = await this.client.verifyIdToken({
-        idToken: credential,
-        audience: clientId,
-      });
+        // Invalidate old token and create new one
+        await this.userService.setTokenInvalid(token, decodedToken);
+        const newToken = this.generateJWT(decodedToken.id);
+        CookieService.setAuthCookies(res, newToken);
 
-      const payload = ticket.getPayload();
-      return payload?.email || null;
-    } catch (error) {
-      console.error('Google token verification failed:', error);
-      return null;
+        return true;
     }
-  }
 
-  public generateJWT(userId: string | number): string {
-    return jwt.sign({ id: userId }, this.jwtSecret, {
-      expiresIn: this.tokenLength,
-    } as SignOptions);
-  }
+    public async verifyGoogleToken(credential: string, clientId: string): Promise<string | null> {
+        try {
+            const ticket = await this.client.verifyIdToken({
+                idToken: credential,
+                audience: clientId,
+            });
 
-  private verifyJWT(token: string): JWTPayload | null {
-    try {
-      return jwt.verify(token, this.jwtSecret) as JWTPayload;
-    } catch (error) {
-      console.error('JWT verification failed:', error);
-      return null;
+            const payload = ticket.getPayload();
+            return payload?.email || null;
+        } catch (error) {
+            console.error('Google token verification failed:', error);
+            return null;
+        }
     }
-  }
 
-  public decodeJWT(token: string): JWTPayload | null {
-    try {
-      return jwtDecode<JWTPayload>(token);
-    } catch (error) {
-      console.error('JWT decode failed:', error);
-      return null;
+    public generateJWT(userId: string | number): string {
+        return jwt.sign({ id: userId }, this.jwtSecret, {
+            expiresIn: this.tokenLength,
+        } as SignOptions);
     }
-  }
+
+    private verifyJWT(token: string): JWTPayload | null {
+        try {
+            return jwt.verify(token, this.jwtSecret) as JWTPayload;
+        } catch (error) {
+            console.error('JWT verification failed:', error);
+            return null;
+        }
+    }
+
+    public decodeJWT(token: string): JWTPayload | null {
+        try {
+            return jwtDecode<JWTPayload>(token);
+        } catch (error) {
+            console.error('JWT decode failed:', error);
+            return null;
+        }
+    }
 }

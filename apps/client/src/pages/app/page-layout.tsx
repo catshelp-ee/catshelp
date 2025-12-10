@@ -5,44 +5,43 @@ import Sidebar from "./sidebar";
 import HamburgerMenu from "./hamburger-menu";
 import { useIsMobile } from "src/context/is-mobile-context";
 
-interface LayoutProps {}
+interface LayoutProps { }
 
 const PageLayout: React.FC<LayoutProps> = () => {
-  const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-  const isMobile = useIsMobile();
+    const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
+    const isMobile = useIsMobile();
 
-  const MobileView = () => {
-    return (
-      <div className={`flex flex-col h-full items-center ${sidebarIsOpen ? "overflow-hidden" : ""}`}>
-        <Header/>
-        <HamburgerMenu sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
-        <Outlet />
-      </div>
-    )
-  }
+    const MobileView = () => {
+        return (
+            <div className={`flex flex-col h-full items-center ${sidebarIsOpen ? "overflow-hidden" : ""}`}>
+                <Header />
+                <HamburgerMenu sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
+                <Outlet />
+            </div>
+        )
+    }
 
-  const DesktopView = () => {
-    return (
-      <div className="flex flex-col w-full">
-        <Header />
-        <div className="flex">
-          <Sidebar />
-          <div className="w-full">
-            <Outlet />
-          </div>
-        </div>
-      </div>
-    )
-  }
+    const DesktopView = () => {
+        return (
+            <div id="page" className="page">
+                <div className="flex">
+                    <Sidebar />
+                    <div className="page-content">
+                        <Outlet />
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
-  if (isMobile) {
+    if (isMobile) {
+        return (
+            <MobileView />
+        );
+    }
     return (
-      <MobileView />
+        <DesktopView />
     );
-  }
-  return (
-      <DesktopView />
-  );
 };
 
 export default PageLayout;

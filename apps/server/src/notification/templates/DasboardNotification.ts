@@ -3,8 +3,7 @@ export interface DashboardNotification {
   isUrgent(compareDate: Date): boolean;
   shouldShow(triggerDate: Date): boolean;
   getDueDate(currentDate: Date): Date;
-  cellIsEmpty: boolean;
-  dbColumnName: string;
+  name: string;
   buttonText: string;
   redirectURL: string;
 }

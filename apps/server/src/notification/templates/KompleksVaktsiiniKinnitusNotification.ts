@@ -5,9 +5,6 @@ import { DashboardNotification } from './DasboardNotification';
 export default class KompleksVaktsiiniKinnitusNotification
   implements DashboardNotification {
   getText(): string {
-    if (this.cellIsEmpty) {
-      return 'Kompleksvaktsiini info puudub';
-    }
     return 'Broneeri veterinaari juures vaktsineerimise aeg';
   }
 
@@ -27,9 +24,7 @@ export default class KompleksVaktsiiniKinnitusNotification
     return moment(currentDate).add(1, 'y').add(7, 'd').toDate();
   }
 
-  dbColumnName =
-    'KOMPLEKSVAKTSIIN (nt Feligen CRP, Versifel CVR, Nobivac Tricat Trio)';
+  name = "COMPLEX_VACCINE";
   buttonText = 'Broneeri aeg';
   redirectURL = process.env.VACCINE_REDIRECT!;
-  cellIsEmpty = false;
 }

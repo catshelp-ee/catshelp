@@ -35,38 +35,41 @@ export class NotificationService {
 
     const results: Result[] = [];
 
-    for (let index = 0; index < animals.length; index++) {
-      const animal = animals[index];
+    for (let i = 0; i < animals.length; i++) {
+      const animal = animals[i];
 
       const treatments = await this.treatmentRepository.getTreatements(animal.id);
+      const treatmentNameToTreatmentMap = Object.fromEntries(
+        treatments.map(t => [t.treatmentName, t])
+      );
 
-      this.notifications.forEach(notification => {
-        const treatment = treatments.find(treatment => {
-          treatment.treatmentName === notification.dbColumnName
-        });
+      for (let j = 0; j < this.notifications.length; j++) {
+
+        const treatment = treatmentNameToTreatmentMap[this.notifications[j].name];
 
         if (!treatment) {
-          return;
+          continue;
         }
 
+
         const result = this.processNotification(
-          notification,
+          this.notifications[j],
           treatment,
           animal,
-          index
+          i
         );
         if (result) {
           results.push(result);
         }
-      });
-    }
 
+      }
+    }
     return results;
   }
 
   private processNotification(
     notification: DashboardNotification,
-    treatmentHistory: Treatment,
+    treatment: Treatment,
     animal: Animal,
     catColourIndex: number
   ): Result | null {
@@ -82,16 +85,10 @@ export class NotificationService {
       catColour: this.colours[catColourIndex % this.colours.length],
     };
 
-    // Handle empty cell
-    if (!treatmentHistory) {
-      notification.cellIsEmpty = true;
-      return result;
-    }
-
     // Parse and validate date
-    const triggerDate = treatmentHistory.visitDate;
+    const triggerDate = treatment.visitDate;
     if (!triggerDate) {
-      return null;
+      return result;
     }
 
     // Check if notification should be shown
@@ -100,9 +97,8 @@ export class NotificationService {
     }
 
     const dueDate = notification.getDueDate(triggerDate);
-    const isUrgent = notification.isUrgent(dueDate);
 
-    result.urgent = isUrgent;
+    result.urgent = notification.isUrgent(dueDate);;
     result.due = formatEstonianDate(dueDate);
 
     return result;

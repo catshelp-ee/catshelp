@@ -193,8 +193,17 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
             DEWORMING_MEDICATION: newData["USSIROHU/_TURJATILGA_KP"].formattedValue
         };
 
+        let visitDate;
+
         for (const treatment in sheetTreatments) {
-            const visitDate = moment(sheetTreatments[treatment], 'DD.MM.YYYY');
+
+            // If cell in sheets is empty, display the notifcation as if they need to be vaccinated
+            if (sheetTreatments[treatment]) {
+                visitDate = moment(sheetTreatments[treatment], 'DD.MM.YYYY');
+            } else {
+                visitDate = moment().add(-1, 'y');
+            }
+
 
             if (treatment in treatmentNameToTreatmentMap) {
                 const existingTreatment = treatmentNameToTreatmentMap[treatment];

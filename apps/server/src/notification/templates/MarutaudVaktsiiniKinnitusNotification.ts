@@ -5,9 +5,6 @@ import { DashboardNotification } from './DasboardNotification';
 export default class MarutaudVaktsiiniKinnitusNotification
   implements DashboardNotification {
   getText(): string {
-    if (this.cellIsEmpty) {
-      return 'Marutaudi vaktsiini info puudub';
-    }
     return 'Broneeri veterinaari juures marutatudi vaktsineerimise aeg';
   }
 
@@ -27,9 +24,7 @@ export default class MarutaudVaktsiiniKinnitusNotification
     return moment(currentDate).add(1, 'y').add(7, 'd').toDate();
   }
 
-  dbColumnName =
-    'MARUTAUDI VAKTSIIN (nt Feligen R, Biocan R, Versiguard, Rabisin Multi, Rabisin R, Rabigen Mono, Purevax RCP)';
+  name = "RABIES_VACCINE";
   buttonText = 'Broneeri aeg';
   redirectURL = process.env.RABIES_VACCINE_REDIRECT!;
-  cellIsEmpty = false;
 }

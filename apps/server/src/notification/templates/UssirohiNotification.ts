@@ -4,9 +4,6 @@ import { DashboardNotification } from './DasboardNotification';
 
 export default class UssirohiNotification implements DashboardNotification {
   getText(): string {
-    if (this.cellIsEmpty) {
-      return 'Ussirohu info puudub';
-    }
     return 'Anna vähemalt 2 kuud enne vaktsineerimist ussirohi';
   }
 
@@ -26,8 +23,7 @@ export default class UssirohiNotification implements DashboardNotification {
     return moment(currentDate).add(1, 'y').toDate();
   }
 
-  dbColumnName = 'USSIROHU/ TURJATILGA KP';
+  name = "DEWORMING_MEDICATION";
   buttonText = 'Vaata juhendit';
   redirectURL = process.env.WORD_MED_REDIRECT!;
-  cellIsEmpty = false;
 }

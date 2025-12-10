@@ -51,12 +51,14 @@ export class NotificationService {
           continue;
         }
 
+        const catColour = this.colours[i % this.colours.length];
+        const notification = this.notifications[j];
 
         const result = this.processNotification(
-          this.notifications[j],
+          notification,
           treatment,
           animal,
-          i
+          catColour
         );
         if (result) {
           results.push(result);
@@ -71,7 +73,7 @@ export class NotificationService {
     notification: DashboardNotification,
     treatment: Treatment,
     animal: Animal,
-    catColourIndex: number
+    catColour
   ): Result | null {
     const result: Result = {
       label: notification.getText(),
@@ -82,7 +84,7 @@ export class NotificationService {
         redirect: notification.redirectURL,
       },
       urgent: true,
-      catColour: this.colours[catColourIndex % this.colours.length],
+      catColour
     };
 
     // Parse and validate date

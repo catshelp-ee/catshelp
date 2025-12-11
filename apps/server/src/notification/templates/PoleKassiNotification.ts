@@ -17,8 +17,7 @@ export default class PoleKassiNotification implements DashboardNotification {
         return currentDate;
     }
 
-    dbColumnName = '';
+    name = "";
     buttonText = 'Võtke kass';
     redirectURL = process.env.NO_CAT_REDIRECT!;
-    cellIsEmpty = false;
 }

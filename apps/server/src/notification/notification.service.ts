@@ -13,115 +13,115 @@ import UssirohiNotification from './templates/UssirohiNotification';
 
 @Injectable()
 export class NotificationService {
-  private readonly notifications: DashboardNotification[];
-  private readonly colours: string[];
+    private readonly notifications: DashboardNotification[];
+    private readonly colours: string[];
 
-  constructor(
-    //TODO see ei ole kuidagi notificationitega seotud. Peaks eksisteerima mujal
-    private readonly treatmentRepository: TreatmentRepository,
-  ) {
-    this.notifications = [
-      new UssirohiNotification(),
-      new KompleksVaktsiiniKinnitusNotification(),
-      new MarutaudVaktsiiniKinnitusNotification(),
-    ];
-    this.colours = DEFAULT_COLORS;
-  }
-
-  public async processNotifications(animals: Animal[]): Promise<Result[]> {
-    if (animals.length === 0) {
-      return this.createEmptyStateNotification();
+    constructor(
+        //TODO see ei ole kuidagi notificationitega seotud. Peaks eksisteerima mujal
+        private readonly treatmentRepository: TreatmentRepository,
+    ) {
+        this.notifications = [
+            new UssirohiNotification(),
+            new KompleksVaktsiiniKinnitusNotification(),
+            new MarutaudVaktsiiniKinnitusNotification(),
+        ];
+        this.colours = DEFAULT_COLORS;
     }
 
-    const results: Result[] = [];
-
-    for (let i = 0; i < animals.length; i++) {
-      const animal = animals[i];
-
-      const treatments = await this.treatmentRepository.getTreatements(animal.id);
-      const treatmentNameToTreatmentMap = Object.fromEntries(
-        treatments.map(t => [t.treatmentName, t])
-      );
-
-      for (let j = 0; j < this.notifications.length; j++) {
-
-        const treatment = treatmentNameToTreatmentMap[this.notifications[j].name];
-
-        if (!treatment) {
-          continue;
+    public async processNotifications(animals: Animal[]): Promise<Result[]> {
+        if (animals.length === 0) {
+            return this.createEmptyStateNotification();
         }
 
-        const catColour = this.colours[i % this.colours.length];
-        const notification = this.notifications[j];
+        const results: Result[] = [];
 
-        const result = this.processNotification(
-          notification,
-          treatment,
-          animal,
-          catColour
-        );
-        if (result) {
-          results.push(result);
+        for (let i = 0; i < animals.length; i++) {
+            const animal = animals[i];
+
+            const treatments = await this.treatmentRepository.getTreatements(animal.id);
+            const treatmentNameToTreatmentMap = Object.fromEntries(
+                treatments.map(t => [t.treatmentName, t])
+            );
+
+            for (let j = 0; j < this.notifications.length; j++) {
+
+                const treatment = treatmentNameToTreatmentMap[this.notifications[j].name];
+
+                if (!treatment) {
+                    continue;
+                }
+
+                const catColour = this.colours[i % this.colours.length];
+                const notification = this.notifications[j];
+
+                const result = this.processNotification(
+                    notification,
+                    treatment,
+                    animal,
+                    catColour
+                );
+                if (result) {
+                    results.push(result);
+                }
+
+            }
+        }
+        return results;
+    }
+
+    private processNotification(
+        notification: DashboardNotification,
+        treatment: Treatment,
+        animal: Animal,
+        catColour
+    ): Result | null {
+        const result: Result = {
+            label: notification.getText(),
+            assignee: animal.name,
+            due: formatEstonianDate(new Date()),
+            action: {
+                label: notification.buttonText,
+                redirect: notification.redirectURL,
+            },
+            urgent: true,
+            catColour
+        };
+
+        // Parse and validate date
+        const triggerDate = treatment.visitDate;
+        if (!triggerDate) {
+            return result;
         }
 
-      }
-    }
-    return results;
-  }
+        // Check if notification should be shown
+        if (!notification.shouldShow(triggerDate)) {
+            return null;
+        }
 
-  private processNotification(
-    notification: DashboardNotification,
-    treatment: Treatment,
-    animal: Animal,
-    catColour
-  ): Result | null {
-    const result: Result = {
-      label: notification.getText(),
-      assignee: animal.name,
-      due: formatEstonianDate(new Date()),
-      action: {
-        label: notification.buttonText,
-        redirect: notification.redirectURL,
-      },
-      urgent: true,
-      catColour
-    };
+        const dueDate = notification.getDueDate(triggerDate);
 
-    // Parse and validate date
-    const triggerDate = treatment.visitDate;
-    if (!triggerDate) {
-      return result;
+        result.urgent = notification.isUrgent(dueDate);;
+        result.due = formatEstonianDate(dueDate);
+
+        return result;
     }
 
-    // Check if notification should be shown
-    if (!notification.shouldShow(triggerDate)) {
-      return null;
+    private createEmptyStateNotification(): Result[] {
+        const notification = new PoleKassiNotification();
+        const dueDate = new Date();
+
+        return [
+            {
+                label: notification.getText(),
+                assignee: 'Sina ise',
+                due: formatEstonianDate(dueDate),
+                action: {
+                    label: notification.buttonText,
+                    redirect: notification.redirectURL,
+                },
+                urgent: false,
+                catColour: '#000',
+            },
+        ];
     }
-
-    const dueDate = notification.getDueDate(triggerDate);
-
-    result.urgent = notification.isUrgent(dueDate);;
-    result.due = formatEstonianDate(dueDate);
-
-    return result;
-  }
-
-  private createEmptyStateNotification(): Result[] {
-    const notification = new PoleKassiNotification();
-    const dueDate = new Date();
-
-    return [
-      {
-        label: notification.getText(),
-        assignee: 'Sina ise',
-        due: formatEstonianDate(dueDate),
-        action: {
-          label: notification.buttonText,
-          redirect: notification.redirectURL,
-        },
-        urgent: false,
-        catColour: '#000',
-      },
-    ];
-  }
 }

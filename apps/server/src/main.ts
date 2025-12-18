@@ -6,6 +6,13 @@ import "reflect-metadata";
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
+export function getRootPath() {
+    let rootDir = __dirname;
+    while (!rootDir.endsWith("build")) {
+        rootDir = join(rootDir, "..");
+    }
+    return join(rootDir, "..");
+}
 
 function setNodeExceptionHandlers() {
     process.on('unhandledRejection', (reason, promise) => {
@@ -48,5 +55,6 @@ async function bootstrap() {
     await app.listen(port, '0.0.0.0'); // <--- important
     console.log(`🚀 Server running on http://localhost:${port}`);
     console.log(`📦 Serving frontend from: ${clientPath}`);
+    console.log(getRootPath());
 }
 bootstrap();

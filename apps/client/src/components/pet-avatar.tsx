@@ -10,7 +10,6 @@ export const PetAvatar: React.FC<{
     isSelected?: boolean;
     onClick?: () => void;
 }> = ({ data, isSelected, onClick }) => {
-    console.log(data.pathToImage)
     return (
         <button onClick={onClick}>
             <Avatar

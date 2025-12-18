@@ -10,10 +10,11 @@ export const PetAvatar: React.FC<{
     isSelected?: boolean;
     onClick?: () => void;
 }> = ({ data, isSelected, onClick }) => {
+    console.log(data.pathToImage)
     return (
         <button onClick={onClick}>
             <Avatar
-                src={`/${data.pathToImage}`}
+                src={`/images/${data.pathToImage}`}
                 alt={`${data.name} pilt`}
                 sx={{
                     width: 64,

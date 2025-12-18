@@ -38,13 +38,19 @@ async function bootstrap() {
     app.useGlobalFilters(new HttpExceptionFilter());
     app.setGlobalPrefix('api');
 
+    // Serve static images FIRST (before client)
+    app.useStaticAssets(join(getRootPath(), 'images'), {
+        prefix: '/images/',
+    });
+
+
     // Serve static files from build/client
     const clientPath = join(__dirname, '../client');
     app.useStaticAssets(clientPath);
 
     // Handle client-side routing (SPA fallback)
     app.use((req, res, next) => {
-        if (!req.path.startsWith('/api')) {
+        if (!req.path.startsWith('/api') && !req.path.startsWith('/images')) {
             res.sendFile(join(clientPath, 'index.html'));
         } else {
             next();
@@ -55,6 +61,5 @@ async function bootstrap() {
     await app.listen(port, '0.0.0.0'); // <--- important
     console.log(`🚀 Server running on http://localhost:${port}`);
     console.log(`📦 Serving frontend from: ${clientPath}`);
-    console.log(getRootPath());
 }
 bootstrap();

@@ -6,6 +6,13 @@ import "reflect-metadata";
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
+export function getRootPath() {
+    let rootDir = __dirname;
+    while (!rootDir.endsWith("build")) {
+        rootDir = join(rootDir, "..");
+    }
+    return join(rootDir, "..");
+}
 
 function setNodeExceptionHandlers() {
     process.on('unhandledRejection', (reason, promise) => {
@@ -31,13 +38,19 @@ async function bootstrap() {
     app.useGlobalFilters(new HttpExceptionFilter());
     app.setGlobalPrefix('api');
 
+    // Serve static images FIRST (before client)
+    app.useStaticAssets(join(getRootPath(), 'images'), {
+        prefix: '/images/',
+    });
+
+
     // Serve static files from build/client
     const clientPath = join(__dirname, '../client');
     app.useStaticAssets(clientPath);
 
     // Handle client-side routing (SPA fallback)
     app.use((req, res, next) => {
-        if (!req.path.startsWith('/api')) {
+        if (!req.path.startsWith('/api') && !req.path.startsWith('/images')) {
             res.sendFile(join(clientPath, 'index.html'));
         } else {
             next();

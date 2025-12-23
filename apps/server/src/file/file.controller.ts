@@ -13,6 +13,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
+import { getRootPath } from '../main';
 import { FileService } from './file.service';
 
 @Controller('images')
@@ -25,13 +26,13 @@ export class FileController {
     @Post()
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(
-        FilesInterceptor('files', 10, {
+        FilesInterceptor(process.env.VITE_UPLOAD_FIELD_NAME!, Number(process.env.UPLOAD_LIMIT!), {
             storage: diskStorage({
-                destination: path.join(process.cwd(), 'images'),
+                destination: path.join(getRootPath(), 'images'),
                 filename: (req, file, cb) => {
                     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                    const ext = path.extname(file.originalname);
-                    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+                    const [fieldname, ext] = file.originalname.split('.');
+                    cb(null, `${fieldname}-${uniqueSuffix}.${ext}`);
                 },
             }),
         }),

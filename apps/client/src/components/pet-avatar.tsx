@@ -13,7 +13,7 @@ export const PetAvatar: React.FC<{
     return (
         <button onClick={onClick}>
             <Avatar
-                src={`/${data.pathToImage}`}
+                src={`/images/${data.pathToImage}`}
                 alt={`${data.name} pilt`}
                 sx={{
                     width: 64,

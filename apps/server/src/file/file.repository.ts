@@ -47,7 +47,7 @@ export class FileRepository extends BaseRepository<File> {
                 const f = this.create();
                 f.animalId = animalId;
                 f.uuid = file.filename.split('.')[0];
-                this.save(f);
+                return this.save(f);
             })
         );
     }

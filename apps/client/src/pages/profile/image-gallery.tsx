@@ -10,10 +10,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useIsMobile } from "@context/is-mobile-context";
+import axios from "axios";
+import { useAlert } from "@context/alert-context";
 
 interface ImageGalleryProps {
     name?: string;
     images: string[];
+    profilePicture: string;
+    animalId: number;
     isEditMode?: boolean;
     previews?: PreviewImage[];
     setPreviews?: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
@@ -28,12 +32,16 @@ interface PreviewImage {
 const ImageGallery: React.FC<ImageGalleryProps> = ({
     name,
     images,
+    profilePicture,
+    animalId,
     isEditMode = false,
     previews,
     setPreviews,
 }) => {
     const isMobile = useIsMobile();
+    const { showAlert } = useAlert();
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [selectedProfilePicture, setSelectedProfilePicture] = useState<string>(profilePicture);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newPreviews = acceptedFiles.map((file) => ({
@@ -97,6 +105,22 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         </div>
     );
 
+    const setAsProfilePicture = async () => {
+        const updateProfilePictureDTO = { animalId: animalId, fileName: selectedProfilePicture.split(".")[0] };
+
+        const response = await axios.put("/api/animals/profile-picture", updateProfilePictureDTO, {
+            withCredentials: true,
+        });
+
+        if (response.status !== 204) {
+            showAlert('Error', "Andmete uuendamine ebaõnnestus");
+            return;
+        }
+
+        showAlert('Success', "🐈‍⬛ Andmed uuendatud! 🐈‍⬛");
+
+    }
+
     return (
         <div className={`${isMobile ? "w-full mt-8" : "w-1/3"}`}>
             <div className="flex flex-wrap justify-center gap-6 md:gap-8">
@@ -143,13 +167,16 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                         </IconButton>
                     </div>
 
-                    <ImageList cols={5} gap={8}>
+                    <ImageList cols={4} gap={12} className="!p-4">
                         {images.map((image, index) => (
-                            <ImageListItem key={index}>
+                            <ImageListItem key={index} onClick={() => { setSelectedProfilePicture(image) }}
+                                className={`hover:scale-110 hover:cursor-pointer rounded-lg ${selectedProfilePicture === image ? "border-4 border-solid border-[#007AFF]" : ""}`}
+                            >
                                 <img className="rounded" srcSet={`/images/${image}`} src={`/images/${image}`} loading="lazy" />
                             </ImageListItem>
                         ))}
                     </ImageList>
+                    <Button variant="contained" className="m-auto" onClick={setAsProfilePicture}>säti profiilipildiks</Button>
                 </div>
             </Dialog>
         </div>

@@ -24,6 +24,7 @@ import { TreatmentRepository } from './repositories/treatment.repository';
 import { Characteristic } from './entities/characteristic.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
+import { FileRepository } from '../file/file.repository';
 
 
 @Module({
@@ -56,6 +57,7 @@ import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
         TreatmentRepository,
         RevokedTokenRepository,
         AnimalToFosterHomeRepository,
+        FileRepository,
     ],
     exports: [
         ProfileBuilder,
@@ -66,6 +68,7 @@ import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
         RescueRepository,
         TreatmentRepository,
         AnimalToFosterHomeRepository,
+        FileRepository,
     ],
 })
 export class AnimalModule { }

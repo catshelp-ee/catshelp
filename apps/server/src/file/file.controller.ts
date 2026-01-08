@@ -26,7 +26,7 @@ export class FileController {
     @Post()
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(
-        FilesInterceptor(process.env.VITE_UPLOAD_FIELD_NAME!, Number(process.env.UPLOAD_LIMIT!), {
+        FilesInterceptor("files", 10, {
             storage: diskStorage({
                 destination: path.join(getRootPath(), 'images'),
                 filename: (req, file, cb) => {

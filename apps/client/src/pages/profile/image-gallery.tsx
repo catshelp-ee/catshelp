@@ -55,11 +55,11 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     });
 
     const renderPreview = () => (
-        <ImageList cols={2} sx={{ height: '100%', overflowY: 'auto' }}>
+        <ImageList cols={1} sx={{ height: '100%', overflowY: 'auto' }}>
             {previews.map((img, index) => (
                 <ImageListItem key={index} className="relative">
                     <img
-                        className="rounded"
+                        className="p-4 rounded !object-fill"
                         srcSet={img.preview}
                         src={img.preview}
                         loading="lazy"

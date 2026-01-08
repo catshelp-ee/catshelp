@@ -31,10 +31,10 @@ export class ProfileBuilder {
 
         // Fetch images
         profile.images = await this.fileService.fetchImagePathsByAnimalId(animal.id);
-        const profilePicture = await this.fileService.fetchProfilePicture(animal.id);
+        const profilePicture = await this.fileService.getProfilePicture(animal.id);
 
         profile.profilePictureFilename = profilePicture
-            ? `images/${profilePicture.uuid}.jpg`
+            ? `${profilePicture.uuid}.jpg`
             : `missing64x64.png`;
 
         return profile;

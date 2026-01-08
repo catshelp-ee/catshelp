@@ -14,7 +14,10 @@ export class FileRepository extends BaseRepository<File> {
     /** Get the first file associated with an animal (profile picture) */
     async getProfilePicture(animalId: number): Promise<File | null> {
         return this.findOne({
-            where: { animalId: animalId },
+            where: {
+                animalId: animalId,
+                type: "PROFILE-PICTURE"
+            },
         });
     }
 
@@ -29,12 +32,6 @@ export class FileRepository extends BaseRepository<File> {
         return this.find({
             where: { animalId: animalId }
         });
-    }
-
-    public fetchProfilePicture(animalId: number) {
-        return this.findOne({
-            where: { animalId: animalId }
-        })
     }
 
     public async insertImageFilenamesIntoDB(

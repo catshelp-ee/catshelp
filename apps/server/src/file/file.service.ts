@@ -50,8 +50,8 @@ export class FileService {
         await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
     }
 
-    public fetchProfilePicture(animalID: number) {
-        return this.fileRepository.fetchProfilePicture(animalID);
+    public getProfilePicture(animalID: number) {
+        return this.fileRepository.getProfilePicture(animalID);
     }
 
     public async processImages(

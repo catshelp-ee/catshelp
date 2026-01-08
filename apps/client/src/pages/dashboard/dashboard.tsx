@@ -64,7 +64,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
         return (
             <div className="m-4 md:m-0">
                 <span className="md:flex md:mb-8">
-                    <Notifications />
                     <FosterPets pets={pets} />
                 </span>
                 <TodoList todos={todos} />

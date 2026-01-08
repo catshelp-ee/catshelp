@@ -16,8 +16,8 @@ import { useAlert } from "@context/alert-context";
 interface ImageGalleryProps {
     name?: string;
     images: string[];
-    profilePicture: string;
-    animalId: number;
+    profilePictureDTO?: {selectedProfilePicture: string, setSelectedProfilePicture: React.Dispatch<React.SetStateAction<string>>};
+    animalId?: number;
     isEditMode?: boolean;
     previews?: PreviewImage[];
     setPreviews?: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
@@ -32,7 +32,7 @@ interface PreviewImage {
 const ImageGallery: React.FC<ImageGalleryProps> = ({
     name,
     images,
-    profilePicture,
+    profilePictureDTO,
     animalId,
     isEditMode = false,
     previews,
@@ -41,7 +41,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     const isMobile = useIsMobile();
     const { showAlert } = useAlert();
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [selectedProfilePicture, setSelectedProfilePicture] = useState<string>(profilePicture);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newPreviews = acceptedFiles.map((file) => ({
@@ -106,7 +105,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     );
 
     const setAsProfilePicture = async () => {
-        const updateProfilePictureDTO = { animalId: animalId, fileName: selectedProfilePicture.split(".")[0] };
+        const updateProfilePictureDTO = { animalId: animalId, fileName: profilePictureDTO.selectedProfilePicture.split(".")[0] };
 
         const response = await axios.put("/api/animals/profile-picture", updateProfilePictureDTO, {
             withCredentials: true,
@@ -169,14 +168,16 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
                     <ImageList cols={4} gap={12} className="!p-4">
                         {images.map((image, index) => (
-                            <ImageListItem key={index} onClick={() => { setSelectedProfilePicture(image) }}
-                                className={`hover:scale-110 hover:cursor-pointer rounded-lg ${selectedProfilePicture === image ? "border-4 border-solid border-[#007AFF]" : ""}`}
+                            <ImageListItem key={index} onClick={() => { profilePictureDTO.setSelectedProfilePicture(image) }}
+                                className={`${!isEditMode ? "hover:scale-110 hover:cursor-pointer rounded-lg" : ""} ${!isEditMode && profilePictureDTO.selectedProfilePicture === image ? "border-4 border-solid border-[#007AFF]" : ""}`}
                             >
                                 <img className="rounded" srcSet={`/images/${image}`} src={`/images/${image}`} loading="lazy" />
                             </ImageListItem>
                         ))}
                     </ImageList>
-                    <Button variant="contained" className="m-auto" onClick={setAsProfilePicture}>säti profiilipildiks</Button>
+                    {!isEditMode && (
+                        <Button variant="contained" className="m-auto" onClick={setAsProfilePicture}>säti profiilipildiks</Button>
+                    )}
                 </div>
             </Dialog>
         </div>

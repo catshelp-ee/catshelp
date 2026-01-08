@@ -46,6 +46,14 @@ export class FileController {
         }
 
         await this.imageService.insertImageFilenamesIntoDB(files, animalId);
-        return { status: 'success' };
+
+        const fileNames: string[] = [];
+
+        for (let index = 0; index < files.length; index++) {
+            const file = files[index];
+
+            fileNames.push(file.filename);
+        }
+        return fileNames;
     }
 }

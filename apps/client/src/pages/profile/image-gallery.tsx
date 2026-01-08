@@ -103,12 +103,12 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                 <div className="flex flex-col items-center">
                     {images.length > 0 && (
                         <button onClick={() => setIsOpen(true)} className={`w-64 h-64 mb-4`}>
-                            <img src={images[0]} className="w-full h-full rounded-2xl" />
+                            <img src={`/images/${images[0]}`} className="w-full h-full rounded-2xl" />
                         </button>
                     )}
                     {images.length > 1 && (
                         <button className={`relative w-64 h-64 mb-4`} onClick={() => setIsOpen(true)}>
-                            <img className={`w-full h-full rounded-2xl opacity-50`} src={images[0]} alt="More images" />
+                            <img className={`w-full h-full rounded-2xl opacity-50`} src={`/images/${images[0]}`} alt="More images" />
                             <div className="absolute inset-0 text-xl flex items-center justify-center font-bold">
                                 +{images.length - 1} Pilti
                             </div>
@@ -146,7 +146,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                     <ImageList cols={5} gap={8}>
                         {images.map((image, index) => (
                             <ImageListItem key={index}>
-                                <img className="rounded" srcSet={image} src={image} loading="lazy" />
+                                <img className="rounded" srcSet={`/images/${image}`} src={`/images/${image}`} loading="lazy" />
                             </ImageListItem>
                         ))}
                     </ImageList>

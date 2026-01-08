@@ -80,7 +80,8 @@ const EditProfile: React.FC<CatDetailsProps> = ({
         }
 
         if (images.length > 0) {
-            await uploadImages(images, selectedCat.animalId);
+            const newImages = (await uploadImages(images, selectedCat.animalId)).data;
+            tempSelectedCat.images = tempSelectedCat.images.concat(newImages);
         }
 
         try {

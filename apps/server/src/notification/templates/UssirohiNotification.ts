@@ -25,5 +25,5 @@ export default class UssirohiNotification implements DashboardNotification {
 
     name = "DEWORMING_MEDICATION";
     buttonText = 'Vaata juhendit';
-    redirectURL = process.env.WORD_MED_REDIRECT!;
+    redirectURL = process.env.WORM_MED_REDIRECT!;
 }

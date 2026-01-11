@@ -62,20 +62,20 @@ const Dashboard: React.FC<DashboardProps> = () => {
             return <CircularProgress />;
         }
         return (
-            <div className="m-4 md:m-0">
-                <span className="md:flex md:mb-8">
+            <div className="flex flex-col md:m-0">
+                <div className="mx-auto sm:mx-0">
+                    <h1 className="font-medium text-4xl my-6">
+                        Tere tulemast <span className="block sm:inline">{name}! 😺</span>
+                    </h1>
                     <FosterPets pets={pets} />
-                </span>
+                </div>
                 <TodoList todos={todos} />
             </div>
         );
     };
 
     return (
-        <div className="md:mx-12 flex-1">
-            <h1 className="page-heading">
-                Tere tulemast {name}! 😺
-            </h1>
+        <div className="md:mx-12 flex flex-col flex-1">
             {renderContent()}
         </div>
     );

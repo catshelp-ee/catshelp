@@ -161,6 +161,7 @@
 .mobile-navbar {
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .mobile-navbar .sidebar-image {

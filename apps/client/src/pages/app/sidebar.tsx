@@ -7,14 +7,12 @@ import { Link } from "react-router-dom";
 import menuItems from "./menu-items.json";
 
 interface SidebarProps {
-    setView?: React.Dispatch<React.SetStateAction<boolean>>;
+    setSidebarIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
-    const [isNavbarClosed, setIsNavbarClosed] = useState(false);
+const Sidebar: React.FC<SidebarProps> = ({ setSidebarIsOpen }) => {
     const { logout } = useAuth();
     const isMobile = useIsMobile();
-    const animationDelayInMS = 200;
     const { getUser } = useAuth();
     const [user, setUser] = useState(null);
     let menuItemArray = menuItems["menu-items"];
@@ -26,14 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
         }
 
         fetchUser();
-        if (!isNavbarClosed) {
-            return;
-        }
-
-        setTimeout(() => {
-            setView(false);
-        }, animationDelayInMS);
-    }, [isNavbarClosed]);
+    }, []);
 
     const content = (
         <>
@@ -71,7 +62,6 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
     const Navbar = (props) => {
         let classes = `z-10 md:z-auto md:sticky h-screen md:bg-none `;
         if (isMobile) {
-            classes += `${isNavbarClosed ? "animate-slide-left" : "animate-slide-right"}`;
             classes += ' mobile-navbar ';
         }
         return <nav className={classes}>{props.children}</nav>;
@@ -92,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
                             backgroundColor: "#E5E7EB", // Tailwind gray-300
                             "&:hover": { backgroundColor: "#D1D5DB" }, // Hover effect
                         }}
-                        onClick={() => setIsNavbarClosed(true)}
+                        onClick={() => setSidebarIsOpen(false)}
                     >
                         <CloseIcon />
                     </IconButton>

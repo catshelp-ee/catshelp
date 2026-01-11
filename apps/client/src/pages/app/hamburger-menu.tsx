@@ -27,7 +27,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ sidebarIsOpen, setSidebar
                 <MenuIcon />
             </IconButton>
             {sidebarIsOpen && (
-                <Sidebar setView={setSidebarIsOpen} />
+                <Sidebar setSidebarIsOpen={setSidebarIsOpen} />
             )}
         </>
     );

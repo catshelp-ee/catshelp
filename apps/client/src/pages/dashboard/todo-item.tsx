@@ -15,8 +15,6 @@ const TodoItem: React.FC<Todo> = ({
     const [isChecked, setIsChecked] = useState(false);
     const dateColor = urgent ? "text-red-400" : "text-slate-500";
 
-    console.log(action)
-
     return (
         <div className="md:flex">
             <div className="flex items-center md:w-1/2">

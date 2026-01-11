@@ -11,11 +11,7 @@ export class ProfileBuilder {
         private readonly fileService: FileService,
     ) { }
 
-    async buildProfiles(animals: Animal[]) {
-        return Promise.all(animals.map(animal => this.buildProfile(animal)));
-    }
-
-    private async buildProfile(animal: Animal): Promise<Profile | null> {
+    public async buildProfile(animal: Animal): Promise<Profile | null> {
         const profile = createProfile();
 
         profile.animalId = animal.id;

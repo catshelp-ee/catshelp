@@ -37,6 +37,12 @@ export interface CharacteristicsResult {
     textFieldValues: Record<keyof TextFields, string>;
 }
 
+export interface Avatar {
+    id: string;
+    name: string;
+    pathToImage: string;
+}
+
 export interface Profile {
     animalId: number;
     title: string;

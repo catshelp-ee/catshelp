@@ -48,7 +48,7 @@ export class UserRepository extends BaseRepository<User> {
         return this.findOne({ where: { email } });
     }
 
-    async getAnimalsByUserId(id: number): Promise<Animal[]> {
+    async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
         const user = await this.createQueryBuilder('user')
             .leftJoinAndSelect('user.fosterHome', 'fosterHome')
             .leftJoinAndSelect('fosterHome.animalToFosterHome', 'animalToFosterHome')

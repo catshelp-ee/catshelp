@@ -13,6 +13,7 @@ import { User } from '../user/entities/user.entity';
 import { UserModule } from '../user/user.module';
 import { UserRepository } from '../user/user.repository';
 import { ProfileController } from './profile.controller';
+import { DashboardModule } from '../dashboard/dashboard.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { ProfileController } from './profile.controller';
         FileModule,
         UserModule,
         AuthModule,
+        DashboardModule,
     ],
     controllers: [ProfileController],
     providers: [

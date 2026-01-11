@@ -5,6 +5,7 @@ import { Button, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import menuItems from "./menu-items.json";
+import axios from "axios";
 
 interface SidebarProps {
     setView?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,6 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
     const animationDelayInMS = 200;
     const { getUser } = useAuth();
     const [user, setUser] = useState(null);
+    const [profiles, setProfiles] = useState([]);
     let menuItemArray = menuItems["menu-items"];
 
     useEffect(() => {
@@ -35,6 +37,18 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
         }, animationDelayInMS);
     }, [isNavbarClosed]);
 
+    useEffect(() => {
+      async function getProfiles() {
+            const response = await axios.get("/api/profile", {
+                withCredentials: true
+            });
+            setProfiles(response.data.profiles);
+      }
+
+      getProfiles();
+    }, [])
+    
+
     const content = (
         <>
             <div className="sidebar">
@@ -46,12 +60,18 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
                     <div className="sidebar-menu-items">
                         {menuItemArray.filter((element) => {
                             return !element.requiredRole || element.requiredRole === user?.role;
-                        }).map((item, index) => (
-                            <Link to={item.path} key={index} className="sidebar-item">
-                                <img loading="lazy" src={`/${item.icon}`} alt="" className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"/>
-                                {item.text}
-                            </Link>
-                        ))}
+                        }).map((item, index) => { 
+                            let path = item.path
+                            if (item.dynamic && profiles.length > 0){
+                                path += `/${profiles[0].id}`;
+                            }
+                            return (
+                                <Link to={path} key={index} className="sidebar-item">
+                                    <img loading="lazy" src={`/${item.icon}`} alt="" className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"/>
+                                    {item.text}
+                                </Link>
+                            )}
+                        )}
                     </div>
                     <div>
                         <Button

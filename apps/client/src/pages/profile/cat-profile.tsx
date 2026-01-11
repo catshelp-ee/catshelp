@@ -1,4 +1,4 @@
-import { createProfile, Profile } from "@catshelp/types/src";
+import { createProfile, Profile, Avatar } from "@catshelp/types/src";
 import { useAlert } from "@context/alert-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { createContextHook } from "@hooks/create-context-hook";
@@ -9,6 +9,7 @@ import React, { createContext, useEffect, useState } from "react";
 import CatDetails from "./cat-details";
 import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
+import { useParams } from "react-router-dom";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
     const { isLoading, setIsLoading } = useLoading();
@@ -67,37 +68,42 @@ export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
 const CatProfile: React.FC = () => {
     const { showAlert } = useAlert();
-    const [cats, setCats] = useState<Profile[]>([]);
+    const [animalAvatars, setAnimalAvatars] = useState<Avatar[]>([]);
     const [selectedCat, setSelectedCat] = useState<Profile>(createProfile());
     const [isLoading, setIsLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const isMobile = useIsMobile();
+    const params = useParams();
 
     useEffect(() => {
         const loadUserCats = async () => {
             try {
-                const response = await axios.get("/api/profile", {
+                const response = await axios.get(`/api/profile/${params.id}`, {
                     withCredentials: true
                 });
 
-                const catProfiles = response.data.profiles;
-                setCats(catProfiles);
+                const profile = response.data;
+                setSelectedCat(profile);
 
-                if (catProfiles.length > 0) {
-                    setSelectedCat(catProfiles[0]);
-                }
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
-                setCats([]);
             }
         };
+
+        async function getAvatars() {
+            const response = await axios.get("/api/profile", {
+                withCredentials: true
+            });
+            setAnimalAvatars(response.data.profiles);
+        }
 
         const fetchAndSetCatsWithLoading = async () => {
             await isLoadingWrapper(loadUserCats, setIsLoading);
         };
 
         fetchAndSetCatsWithLoading();
+        getAvatars();
     }, []);
 
     const renderContent = () => {
@@ -120,11 +126,11 @@ const CatProfile: React.FC = () => {
         <IsLoadingContext.Provider value={{ isLoading, setIsLoading }} >
             <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
                 <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
-                    <CatProfileHeader cats={cats} />
+                    <CatProfileHeader cats={animalAvatars} />
                     {isLoading && (<CircularProgress />)}
-                    {cats.length !== 0 && (
+                    {animalAvatars.length !== 0 && (
                         <>
-                            <CatSelection cats={cats} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat} />
+                            <CatSelection animalAvatars={animalAvatars} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat} />
                             <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
                                 {renderContent()}
                             </div>

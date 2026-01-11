@@ -22,6 +22,7 @@ export class DashboardService {
 
             data.push({
                 name: animal.name,
+                id: animal.id,
                 pathToImage,
             });
         }

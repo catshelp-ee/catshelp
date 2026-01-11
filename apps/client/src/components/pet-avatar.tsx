@@ -2,19 +2,19 @@ import {
     Avatar,
     Typography,
 } from "@mui/material";
-import { AvatarData } from "@server/animal/interfaces/avatar";
 import React from "react";
 
 export const PetAvatar: React.FC<{
-    data: AvatarData;
+    pathToImage: string;
+    name: string;
     isSelected?: boolean;
     onClick?: () => void;
-}> = ({ data, isSelected, onClick }) => {
+}> = ({ pathToImage, name, isSelected, onClick }) => {
     return (
         <button onClick={onClick}>
             <Avatar
-                src={`/images/${data.pathToImage}`}
-                alt={`${data.name} pilt`}
+                src={`/images/${pathToImage}`}
+                alt={`${name} pilt`}
                 sx={{
                     width: 64,
                     height: 64,
@@ -32,7 +32,7 @@ export const PetAvatar: React.FC<{
                     borderBottom: isSelected ? "4px solid #5DC2D8" : "none",
                 }}
             >
-                {data.name}
+                {name}
             </Typography>
         </button>
     );

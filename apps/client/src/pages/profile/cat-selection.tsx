@@ -1,38 +1,48 @@
-import { Profile } from "@catshelp/types/src";
+import { Profile, Avatar } from "@catshelp/types/src";
 import { PetAvatar } from "@components/pet-avatar";
 import { Stack } from "@mui/material";
+import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface CatSelectionProps {
-    cats: Profile[];
+    animalAvatars: Avatar[];
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile>>;
     setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CatSelection: React.FC<CatSelectionProps> = ({
-    cats,
+    animalAvatars,
     setSelectedCat,
     setIsEditMode,
 }) => {
-    const [selectedCatIndex, setSelectedCatIndex] = useState(0);
+    const navigate = useNavigate();
+    const params = useParams();
+    
 
-    const handleCatSelect = (index: number, cat: Profile) => {
-        if (selectedCatIndex === index) {
+    const handleCatSelect = async (index: number, animalAvatar: Avatar) => {
+        if (animalAvatar.id === Number(params.id)) {
             return;
         }
 
-        setSelectedCatIndex(index);
-        setSelectedCat(cat);
+        const response = await axios.get(`/api/profile/${animalAvatar.id}`, {
+            withCredentials: true
+        });
+
+        navigate(`/cat-profile/${animalAvatar.id}`);
+        setSelectedCat(response.data);
         setIsEditMode(false);
     };
     return (
         <Stack direction="row" spacing={2}>
-            {cats.map((cat, index) => (
-                <PetAvatar key={cat.animalId} onClick={() => {
-                    handleCatSelect(index, cat);
+            {animalAvatars.map((animal, index) => (
+                <PetAvatar key={animal.id} onClick={() => {
+                    handleCatSelect(index, animal);
                 }}
-                    isSelected={selectedCatIndex === index}
-                    data={{ name: cat.mainInfo.name, pathToImage: cat.profilePictureFilename }} />
+                    isSelected={animal.id === Number(params.id)}
+                    name={animal.name}
+                    pathToImage={animal.pathToImage}
+                />
             ))}
         </Stack>
     );

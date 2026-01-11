@@ -8,7 +8,8 @@
         {
             "icon": "Document.png",
             "text": "Kiisu profiil veebis",
-            "path": "/cat-profile"
+            "path": "/cat-profile",
+            "dynamic" : true
         },
         {
             "icon": "Document.png",

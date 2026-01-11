@@ -29,7 +29,7 @@ export class AnimalService {
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
     ) { }
 
-    async getAnimalsByUserId(id: number): Promise<Animal[]> {
+    async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
         return this.userRepository.getAnimalsByUserId(id);
     }
 

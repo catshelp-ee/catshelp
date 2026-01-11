@@ -54,7 +54,7 @@ export class AuthController {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
 
-        res.sendStatus(HttpStatus.OK);
+        res.json({ id: user.id });
     }
 
     @Post('login-email')

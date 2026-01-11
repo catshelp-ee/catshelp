@@ -3,7 +3,7 @@ import { useIsMobile } from "@context/is-mobile-context";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import menuItems from "./menu-items.json";
 import axios from "axios";
 
@@ -17,17 +17,10 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
     const isMobile = useIsMobile();
     const animationDelayInMS = 200;
     const { getUser } = useAuth();
-    const [user, setUser] = useState(null);
-    const [profiles, setProfiles] = useState([]);
+    const [paths, setPaths] = useState([]);
     let menuItemArray = menuItems["menu-items"];
 
     useEffect(() => {
-        async function fetchUser() {
-            const u = await getUser();
-            setUser(u);
-        }
-
-        fetchUser();
         if (!isNavbarClosed) {
             return;
         }
@@ -38,16 +31,63 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
     }, [isNavbarClosed]);
 
     useEffect(() => {
-      async function getProfiles() {
+        const resolveDynamicPath = async (path) => {
+            if (path !== "/cat-profile") {
+                return
+            }
+
             const response = await axios.get("/api/profile", {
                 withCredentials: true
             });
-            setProfiles(response.data.profiles);
-      }
 
-      getProfiles();
+            const profiles = response.data.profiles;
+
+            if (profiles.length === 0) {
+                return;
+            }
+
+            return profiles[0].id;
+
+        }
+
+        const getPaths = async () => {
+            const u = await getUser();
+
+            const allowedRedirects = menuItemArray.filter((element) => { return !element.requiredRole || element.requiredRole === u?.role; });
+            const redirects = [];
+
+            let dynamicPathID;
+            let path;
+            for (let index = 0; index < allowedRedirects.length; index++) {
+                const link = allowedRedirects[index];
+
+                if (link.path === "/dashboard") {
+                    dynamicPathID = u.id;
+                } else {
+                    dynamicPathID = await resolveDynamicPath(link.path);
+                }
+
+                if (link.dynamic) {
+                    path = `${link.path}/${dynamicPathID}`;
+                } else {
+                    path = link.path;
+                }
+
+
+                redirects.push(
+                    <Link to={path} key={index} className="sidebar-item">
+                        <img loading="lazy" src={`/${link.icon}`} alt="" className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]" />
+                        {link.text}
+                    </Link>
+                )
+
+            }
+
+            setPaths(redirects);
+        }
+
+        getPaths();
     }, [])
-    
 
     const content = (
         <>
@@ -58,27 +98,14 @@ const Sidebar: React.FC<SidebarProps> = ({ setView }) => {
 
                 <div className="sidebar-menu">
                     <div className="sidebar-menu-items">
-                        {menuItemArray.filter((element) => {
-                            return !element.requiredRole || element.requiredRole === user?.role;
-                        }).map((item, index) => { 
-                            let path = item.path
-                            if (item.dynamic && profiles.length > 0){
-                                path += `/${profiles[0].id}`;
-                            }
-                            return (
-                                <Link to={path} key={index} className="sidebar-item">
-                                    <img loading="lazy" src={`/${item.icon}`} alt="" className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"/>
-                                    {item.text}
-                                </Link>
-                            )}
-                        )}
+                        {paths}
                     </div>
                     <div>
                         <Button
                             className="sidebar-logout"
                             onClick={logout}>
 
-                            <img loading="lazy" src="/Vector.png" alt="" className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]"/>
+                            <img loading="lazy" src="/Vector.png" alt="" className="mr-8 w-[25px] h-[25px] min-w-[25px] min-h-[25px]" />
                             Logi välja
                         </Button>
                     </div>

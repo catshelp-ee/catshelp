@@ -38,7 +38,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
             setName(user.fullName);
 
             try {
-                const response = await axios.get(`/api/dashboard`);
+                const response = await axios.get(`/api/dashboard/${user.id}`);
                 setPets(response.data.pets);
                 setTodos(response.data.todos);
             } catch (e) {

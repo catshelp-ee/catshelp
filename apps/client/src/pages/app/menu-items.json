@@ -3,7 +3,8 @@
         {
             "icon": "Check.png",
             "text": "Kiisude töölaud",
-            "path": "/dashboard"
+            "path": "/dashboard",
+            "dynamic" : true
         },
         {
             "icon": "Document.png",

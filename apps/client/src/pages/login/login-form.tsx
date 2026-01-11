@@ -15,13 +15,13 @@ const LoginForm: React.FC = () => {
 
     const googleAuthSuccess = async (response: any) => {
         try {
-            await axios.post("/api/auth/login-google", response);
+            const resp = await axios.post("/api/auth/login-google", response);
+            navigate(`/dashboard/${resp.data.id}`);
         } catch (error) {
             showAlert('Error', "Kasutajat ei leitud");
             return;
         }
 
-        navigate(`/dashboard`);
     };
 
     const submitForm = async (e: any) => {

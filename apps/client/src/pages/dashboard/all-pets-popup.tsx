@@ -15,13 +15,13 @@ const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
 
     return (
         <Link
-            to={`/cat-profile`}
+            to={`/cat-profile/${pet.id}`}
             className="flex justify-between items-center px-6 py-3 text-inherit bg-transparent transition-colors duration-200 hover:bg-black/5 focus:bg-black/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             aria-label={`Vaata ${pet.name} profiili`}
         >
             <div className="flex items-center space-x-4">
                 <Avatar
-                    src={`/${pet.pathToImage}`}
+                    src={`/images/${pet.pathToImage}`}
                     alt={`${pet.name} pilt`}
                     sx={{
                         width: 48,

@@ -1,6 +1,6 @@
 import { AnimalService } from '@animal/animal.service';
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { NotificationService } from '@notification/notification.service';
 import type { Request } from 'express';
 import { DashboardService } from './dashboard.service';
@@ -17,9 +17,13 @@ export class DashboardController {
     ) { }
 
     @Get(":id")
-    async getDashboard(@Param("id") id: string) {
+    async getDashboard(@Req() req: Request, @Param("id") id: string) {
         // Assuming your AuthGuard attaches user info to req.user
-        //const userID = req.user.id;
+        const user = req.user;
+
+        if (user.id !== Number(id) && user.role !== "ADMIN"){
+            throw new Error('Unauthorized');
+        }
 
         const animals = await this.animalService.getAnimalsByUserId(id);
         const todos = await this.notificationService.processNotifications(animals);

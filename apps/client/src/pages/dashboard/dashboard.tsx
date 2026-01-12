@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import FosterPets from "./foster-pets";
 import Notifications from "./notifications";
 import TodoList from "./todo-list";
+import {useNavigate, useParams} from "react-router-dom";
 
 export interface Todo {
     label: string;
@@ -30,15 +31,23 @@ const Dashboard: React.FC<DashboardProps> = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { getUser } = useAuth();
     const { showAlert } = useAlert();
-
+    const params = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadDashboardData = async () => {
             const user = await getUser();
-            setName(user.fullName);
 
             try {
-                const response = await axios.get(`/api/dashboard/${user.id}`);
+                const response = await axios.get(`/api/users/${params.id}`);
+                const user = response.data;
+                setName(user.fullName);
+            } catch (e) {
+                navigate(`/dashboard/${user.id}`)
+            }
+
+            try {
+                const response = await axios.get(`/api/dashboard/${params.id}`);
                 setPets(response.data.pets);
                 setTodos(response.data.todos);
             } catch (e) {

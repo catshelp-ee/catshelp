@@ -13,7 +13,7 @@ export class UserRepository extends BaseRepository<User> {
     }
 
     /** Get all users */
-    async getAllUsers(): Promise<User[]> {
+    async getUsers(): Promise<User[]> {
         return this.find();
     }
 

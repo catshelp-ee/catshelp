@@ -13,7 +13,7 @@ export class UserService {
         private readonly revokedTokenRepository: RevokedTokenRepository,
     ) { }
 
-    public async getUser(userId: number | string): Promise<User | null> {
+    public async getUser(userId: number | string): Promise<User> {
         userId = Number(userId);
 
         // Try cache first
@@ -25,11 +25,15 @@ export class UserService {
         const user = await this.getUserById(userId);
 
         if (!user) {
-            return null;
+            throw new Error('User not found');
         }
 
         await this.cacheManager.set(`users:${userId}`, user);
         return user;
+    }
+
+    public async getUsers(): Promise<User[]> {
+        return this.userRepository.getUsers()
     }
 
     public async getUserByEmail(email: string): Promise<User | null> {

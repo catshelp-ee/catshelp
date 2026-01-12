@@ -9,7 +9,8 @@ import React, { createContext, useEffect, useState } from "react";
 import CatDetails from "./cat-details";
 import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {useAuth} from "@context/auth-context";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
     const { isLoading, setIsLoading } = useLoading();
@@ -72,11 +73,15 @@ const CatProfile: React.FC = () => {
     const [selectedCat, setSelectedCat] = useState<Profile>(createProfile());
     const [isLoading, setIsLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
+    const { getUser } = useAuth();
     const isMobile = useIsMobile();
     const params = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadUserCats = async () => {
+            const user = await getUser();
+
             try {
                 const response = await axios.get(`/api/profile/${params.id}`, {
                     withCredentials: true
@@ -87,6 +92,7 @@ const CatProfile: React.FC = () => {
 
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
+                navigate(`/cat-profile/${user.id}`);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
             }
         };

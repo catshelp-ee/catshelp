@@ -34,7 +34,7 @@ export class TodoNotificationJob extends BaseCronJob {
     }
 
     public async doWork() {
-        const users = await this.userRepository.getAllUsers();
+        const users = await this.userRepository.getUsers();
 
         for (let index = 0; index < users.length; index++) {
             const user = users[index];

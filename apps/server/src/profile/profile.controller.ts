@@ -28,7 +28,12 @@ export class ProfileController {
     }
 
     @Get(":id")
-    async getProfile(@Param("id") id: string) {
+    async getProfile(@Req() req: Request, @Param("id") id: string) {
+        const user = req.user;
+        if (user.id !== Number(id) && user.role !== "ADMIN"){
+            throw new Error('Unauthorized');
+        }
+
         const animal = await this.animalService.getAnimalById(id);
 
         if (!animal){

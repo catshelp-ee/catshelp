@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
         }
         let userReq = null;
         try {
-            userReq = await axios.get('/api/user');
+            userReq = await axios.get('/api/users/me');
         } catch (error) {
             showAlert('Error', "Kasutaja andmete pärimine ebaõnnestus");
             return;

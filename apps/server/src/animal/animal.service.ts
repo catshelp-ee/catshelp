@@ -84,7 +84,9 @@ export class AnimalService {
 
     async setAsProfilePicture(updatedProfilePictureDTO: UpdateProfilePictureDTO) {
         const animal = await this.animalRepository.getAnimalById(updatedProfilePictureDTO.animalId);
-        if (!animal) throw new Error('Animal not found');
+        if (!animal){
+            throw new Error('Animal not found');
+        }
 
         return await this.fileRepository.setProfilePicture(animal.id, updatedProfilePictureDTO.fileName);
     }

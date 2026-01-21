@@ -135,7 +135,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
     return (
         <>
             {isMobile && (
-                <ImageGallery animalId={selectedCat.animalId} profilePictureDTO={{selectedProfilePicture, setSelectedProfilePicture}} images={selectedCat?.images || []} />
+                <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} images={selectedCat?.images || []} />
             )}
             <div className={`${isMobile ? "w-full" : "w-2/3"}`}>
                 <CatDetailsHeader
@@ -158,7 +158,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
                 </div>
             </div>
 
-        {!isMobile && <ImageGallery animalId={selectedCat.animalId} profilePictureDTO={{selectedProfilePicture, setSelectedProfilePicture}} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
+        {!isMobile && <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
         </>
     );
 };

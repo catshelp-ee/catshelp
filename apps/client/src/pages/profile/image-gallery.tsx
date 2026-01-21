@@ -16,7 +16,7 @@ import { useAlert } from "@context/alert-context";
 interface ImageGalleryProps {
     name?: string;
     images: string[];
-    profilePictureDTO?: {selectedProfilePicture: string, setSelectedProfilePicture: React.Dispatch<React.SetStateAction<string>>};
+    profilePictureState?: {selectedProfilePicture: string, setSelectedProfilePicture: React.Dispatch<React.SetStateAction<string>>};
     animalId?: number;
     isEditMode?: boolean;
     previews?: PreviewImage[];
@@ -32,7 +32,7 @@ interface PreviewImage {
 const ImageGallery: React.FC<ImageGalleryProps> = ({
     name,
     images,
-    profilePictureDTO,
+    profilePictureState,
     animalId,
     isEditMode = false,
     previews,
@@ -105,9 +105,9 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     );
 
     const setAsProfilePicture = async () => {
-        const updateProfilePictureDTO = { animalId: animalId, fileName: profilePictureDTO.selectedProfilePicture.split(".")[0] };
+        const updateProfilePicture = { animalId: animalId, fileName: profilePictureState.selectedProfilePicture.split(".")[0] };
 
-        const response = await axios.put("/api/animals/profile-picture", updateProfilePictureDTO, {
+        const response = await axios.put("/api/animals/profile-picture", updateProfilePicture, {
             withCredentials: true,
         });
 
@@ -168,8 +168,8 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
                     <ImageList cols={4} gap={12} className="!p-4">
                         {images.map((image, index) => (
-                            <ImageListItem key={index} onClick={() => { profilePictureDTO.setSelectedProfilePicture(image) }}
-                                className={`${!isEditMode ? "hover:scale-110 hover:cursor-pointer rounded-lg" : ""} ${!isEditMode && profilePictureDTO.selectedProfilePicture === image ? "border-4 border-solid border-[#007AFF]" : ""}`}
+                            <ImageListItem key={index} onClick={() => { profilePictureState.setSelectedProfilePicture(image) }}
+                                className={`${isEditMode ? "" : "hover:scale-110 hover:cursor-pointer rounded-lg"} ${isEditMode || profilePictureState.selectedProfilePicture !== image ? "" : "border-4 border-solid border-[#007AFF]"}`}
                             >
                                 <img className="rounded" srcSet={`/images/${image}`} src={`/images/${image}`} loading="lazy" />
                             </ImageListItem>

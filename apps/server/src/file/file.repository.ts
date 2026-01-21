@@ -24,18 +24,15 @@ export class FileRepository extends BaseRepository<File> {
     async setProfilePicture(animalId: number, fileName: string): Promise<File | null> {
         const oldProfilePicture = await this.getProfilePicture(animalId);
         const newProfilePicture = await this.getImage(fileName);
-        if (!newProfilePicture) throw new Error('New image not found');
-
-
-        if (!oldProfilePicture) {
-            newProfilePicture.type = "PROFILE-PICTURE";
-            return this.save(newProfilePicture);
+        if (!newProfilePicture){
+            throw new Error('New image not found');
         }
 
-        oldProfilePicture.type = "";
-        this.save(oldProfilePicture);
-
-        newProfilePicture.type = "PROFILE-PICTURE";
+        if (oldProfilePicture) {
+            oldProfilePicture.type = "";
+            newProfilePicture.type = "PROFILE-PICTURE";
+            this.save(oldProfilePicture);
+        }
         return this.save(newProfilePicture);
     }
 

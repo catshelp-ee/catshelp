@@ -47,9 +47,15 @@ const Dashboard: React.FC<DashboardProps> = () => {
             }
 
             try {
-                const response = await axios.get(`/api/dashboard/${params.id}`);
-                setPets(response.data.pets);
-                setTodos(response.data.todos);
+                const response = await axios.get(`/api/animals/${params.id}/avatars`);
+                setPets(response.data);
+            } catch (e) {
+                showAlert('Error', "Tekkis probleem kasside laadimisega");
+            }
+
+            try {
+                const response = await axios.get(`/api/animals/${params.id}/todos`);
+                setTodos(response.data);
             } catch (e) {
                 showAlert('Error', "Tekkis probleem kasside laadimisega");
             }

@@ -1,7 +1,7 @@
 import { JWTPayload, User } from '@catshelp/types';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '@user/user.service';
-import type { Response } from 'express';
+import type { Response, Request } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
@@ -101,5 +101,12 @@ export class AuthService {
             console.error('JWT decode failed:', error);
             return null;
         }
+    }
+
+    public static checkIfAdmin(req: Request, id: string): boolean {
+        const user = req.user;
+
+        return !(user.id !== Number(id) && user.role !== "ADMIN");
+
     }
 }

@@ -83,7 +83,7 @@ const CatProfile: React.FC = () => {
             const user = await getUser();
 
             try {
-                const response = await axios.get(`/api/profile/${params.id}`, {
+                const response = await axios.get(`/api/animals/${params.id}/profile`, {
                     withCredentials: true
                 });
 

@@ -10,7 +10,6 @@ import { AuthModule } from '../auth/auth.module';
 import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
-import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 
 @Module({
@@ -22,7 +21,7 @@ import { DashboardService } from './dashboard.service';
         UserModule,
         AuthModule,
     ],
-    controllers: [DashboardController],
+    controllers: [],
     providers: [
         DashboardService,
         AnimalService,

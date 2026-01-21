@@ -36,12 +36,12 @@ const CatSelection: React.FC<CatSelectionProps> = ({
     return (
         <Stack direction="row" spacing={2}>
             {animalAvatars.map((animal, index) => (
-                <PetAvatar key={animal.id} onClick={() => {
+                <PetAvatar onClick={() => {
                     handleCatSelect(index, animal);
                 }}
                     isSelected={animal.id === Number(params.id)}
+                    id={animal.id}
                     name={animal.name}
-                    pathToImage={animal.pathToImage}
                 />
             ))}
         </Stack>

@@ -2,19 +2,33 @@ import {
     Avatar,
     Typography,
 } from "@mui/material";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import axios from "axios";
 
 export const PetAvatar: React.FC<{
-    pathToImage: string;
+    id: number | string;
     name: string;
     isSelected?: boolean;
     onClick?: () => void;
-}> = ({ pathToImage, name, isSelected, onClick }) => {
+}> = ({ id, name, isSelected, onClick }) => {
+    const [image, setImage] = useState()
+
+
+    useEffect(() => {
+        const getImage = async () => {
+            const response = await axios.get(`/api/animals/${id}/profile-picture`);
+
+            setImage(response.data);
+        }
+
+        getImage();
+    }, []);
+
     return (
         <button onClick={onClick}>
             <Avatar
-                src={`/images/${pathToImage}`}
-                alt={`${name} pilt`}
+                src={image}
+                alt={`/missing64x64.png`}
                 sx={{
                     width: 64,
                     height: 64,

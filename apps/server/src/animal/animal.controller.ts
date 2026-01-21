@@ -47,6 +47,15 @@ export class AnimalController {
         return this.dashboardService.getAvatars(animals);
     }
 
+    @Get(":id/profile-picture")
+    async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
+        if (!AuthService.checkIfAdmin(req, id)){
+            throw new Error('Unauthorized');
+        }
+
+        return this.animalService.getProfilePicture(id);
+    }
+
     @Get(":id/todos")
     async getTodos(@Req() req: Request, @Param("id") id: string) {
         if (!AuthService.checkIfAdmin(req, id)){

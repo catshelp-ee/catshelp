@@ -1,7 +1,8 @@
 import { Avatar, Typography, useTheme } from "@mui/material";
 import { AvatarData } from "@server/animal/interfaces/avatar";
-import React, { forwardRef } from "react";
+import React, {forwardRef, useEffect, useState} from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 interface AllPetsPopupProps {
     pets: AvatarData[];
@@ -13,6 +14,20 @@ interface AllPetsPopupProps {
 const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
     const theme = useTheme();
 
+    const [image, setImage] = useState()
+
+
+    useEffect(() => {
+        const getImage = async () => {
+            const response = await axios.get(`/api/animals/${pet.id}/profile-picture`);
+
+            setImage(response.data);
+        }
+
+        getImage();
+    }, []);
+
+
     return (
         <Link
             to={`/cat-profile/${pet.id}`}
@@ -21,8 +36,8 @@ const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
         >
             <div className="flex items-center space-x-4">
                 <Avatar
-                    src={`/images/${pet.pathToImage}`}
-                    alt={`${pet.name} pilt`}
+                    src={image}
+                    alt={"/missing64x64.png"}
                     sx={{
                         width: 48,
                         height: 48,

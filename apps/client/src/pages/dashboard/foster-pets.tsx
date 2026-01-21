@@ -62,7 +62,7 @@ const PetsGrid: React.FC<{
                     to={`/cat-profile/${pet.id}`}
                     aria-label={`Vaata ${pet.name} profiili`}
                 >
-                    <PetAvatar name={pet.name} pathToImage={pet.pathToImage} />
+                    <PetAvatar name={pet.name} id={pet.id} />
                 </Link>
             ))
         }

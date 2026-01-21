@@ -8,22 +8,16 @@ import { getRootPath } from '../main';
 @Injectable()
 export class DashboardService {
     constructor(
-        private readonly fileRepository: FileRepository
     ) { }
 
     public async getAvatars(animals: Animal[]): Promise<AvatarData[]> {
         const data: AvatarData[] = [];
-        const rootDir = getRootPath();
         for (let index = 0; index < animals.length; index++) {
             const animal = animals[index];
-            const profilePicture = await this.fileRepository.getProfilePicture(animal.id);
-
-            const pathToImage = profilePicture ? join(rootDir, 'images', `${profilePicture.uuid}.jpg`) : "missing64x64.png";
 
             data.push({
                 name: animal.name,
-                id: animal.id,
-                pathToImage,
+                id: animal.id
             });
         }
 

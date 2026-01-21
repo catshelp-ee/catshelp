@@ -15,6 +15,7 @@ import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
+import {FileService} from "@file/file.service";
 
 @Injectable()
 export class AnimalService {
@@ -27,6 +28,7 @@ export class AnimalService {
         private readonly googleSheetsService: GoogleSheetsService,
         private readonly characteristicsService: CharacteristicsService,
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
+        private readonly fileService: FileService,
     ) { }
 
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
@@ -113,5 +115,9 @@ export class AnimalService {
         this.googleSheetsService.updateSheetCells(updatedAnimalData, animalRescueSequenceNumber).then(() => { }, (error) => {
             console.error("Error saving data to sheets: " + error);
         });
+    }
+
+    public async getProfilePicture(id: number | string) {
+        return this.fileService.fetchProfilePicture(id);
     }
 }

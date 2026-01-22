@@ -120,6 +120,11 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
     }
 
+    const handleSelectProfilePicture = (event) => {
+        const image = event.currentTarget.dataset.image;
+        profilePictureState.setSelectedProfilePicture(image);
+    };
+
     return (
         <div className={`${isMobile ? "w-full mt-8" : "w-1/3"}`}>
             <div className="flex flex-wrap justify-center gap-6 md:gap-8">
@@ -168,10 +173,22 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
                     <ImageList cols={4} gap={12} className="!p-4">
                         {images.map((image, index) => (
-                            <ImageListItem key={index} onClick={() => { profilePictureState.setSelectedProfilePicture(image) }}
-                                className={`${isEditMode ? "" : "hover:scale-110 hover:cursor-pointer rounded-lg"} ${isEditMode || profilePictureState.selectedProfilePicture !== image ? "" : "border-4 border-solid border-[#007AFF]"}`}
+
+                            <ImageListItem
+                                key={index}
+                                data-image={image}
+                                onClick={handleSelectProfilePicture}
+                                className={`${isEditMode ? "" : "hover:scale-110 hover:cursor-pointer rounded-lg"} 
+                                            ${isEditMode || profilePictureState.selectedProfilePicture !== image
+                                            ? ""
+                                            : "border-4 border-solid border-[#007AFF]"}`}
                             >
-                                <img className="rounded" srcSet={`/images/${image}`} src={`/images/${image}`} loading="lazy" />
+                                <img
+                                    className="rounded"
+                                    srcSet={`/images/${image}`}
+                                    src={`/images/${image}`}
+                                    loading="lazy"
+                                />
                             </ImageListItem>
                         ))}
                     </ImageList>

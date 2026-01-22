@@ -129,7 +129,7 @@ const CatProfile: React.FC = () => {
         };
 
         fetchAndSetCatsWithLoading();
-    }, []);
+    }, [url.pathname]);
 
     const renderContent = () => {
         if (isEditMode) {

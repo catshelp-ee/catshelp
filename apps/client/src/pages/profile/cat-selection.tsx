@@ -27,7 +27,7 @@ const CatSelection: React.FC<CatSelectionProps> = ({
         if (url.pathname === "/animals/profiles"){
             setAnimalId(animalAvatars[0].id);
         }
-    }, []);
+    }, [url.pathname, animalAvatars]);
     
 
     const handleCatSelect = async (index: number, animalAvatar: Avatar) => {

@@ -6,7 +6,7 @@ import {
 import AllPetsPopup from "@pages/dashboard/all-pets-popup";
 import { AvatarData } from "@server/animal/interfaces/avatar";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import { PetAvatar } from "src/components/pet-avatar";
 import {useAuth} from "@context/auth-context";
 
@@ -57,10 +57,17 @@ const PetsGrid: React.FC<{
 }> = ({ displayPets, hasMorePets, hiddenCount, onShowMore }) => {
     const { getUser } = useAuth();
     const [userId, setUserId] = useState(null);
+    const params = useParams();
     useEffect(() => {
         const getUserId = async () => {
             const user = await getUser();
-            setUserId(user.id);
+            let id = params.userId as string;
+
+            if (!id) {
+                id = user.id as string;
+            }
+
+            setUserId(id);
         }
 
         getUserId();

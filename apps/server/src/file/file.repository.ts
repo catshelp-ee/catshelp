@@ -31,7 +31,7 @@ export class FileRepository extends BaseRepository<File> {
         });
     }
 
-    public fetchProfilePicture(animalId: number) {
+    public fetchProfilePicture(animalId: number | string) {
         return this.findOne({
             where: { animalId: animalId }
         })

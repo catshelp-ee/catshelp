@@ -1,5 +1,5 @@
 import { EmailService } from '@auth/email.service';
-import { Module } from '@nestjs/common';
+import {forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AnimalModule } from '../animal/animal.module';
 import { AnimalService } from '../animal/animal.service';
@@ -13,15 +13,17 @@ import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
+import {FileModule} from "@file/file.module";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Treatment]),
         TypeOrmModule.forFeature([Animal]),
-        AnimalModule,
+        forwardRef(() => AuthModule),
+        forwardRef(() => AnimalModule),
         GoogleModule,
         UserModule,
-        AuthModule,
+        FileModule
     ],
     controllers: [NotificationController],
     providers: [

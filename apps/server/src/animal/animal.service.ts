@@ -16,6 +16,8 @@ import { RescueRepository } from './repositories/rescue.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
 import {FileService} from "@file/file.service";
+import {AvatarData} from "@animal/interfaces/avatar";
+import {NotificationService} from "@notification/notification.service";
 
 @Injectable()
 export class AnimalService {
@@ -29,6 +31,7 @@ export class AnimalService {
         private readonly characteristicsService: CharacteristicsService,
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
         private readonly fileService: FileService,
+        private readonly notificationService: NotificationService,
     ) { }
 
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
@@ -41,6 +44,10 @@ export class AnimalService {
 
     async saveOrUpdateFosterHome(data: { userId: number }): Promise<FosterHome> {
         return this.fosterhomeRepository.saveOrUpdateFosterHome(data.userId);
+    }
+
+    public async getNotifications(animals){
+        return this.notificationService.processNotifications(animals);
     }
 
     public async createAnimal(data: AnimalRescueDto, user: User): Promise<RescueResult> {
@@ -119,5 +126,19 @@ export class AnimalService {
 
     public async getProfilePicture(id: number | string) {
         return this.fileService.fetchProfilePicture(id);
+    }
+
+    public async getAvatars(animals: Animal[]): Promise<AvatarData[]> {
+        const data: AvatarData[] = [];
+        for (let index = 0; index < animals.length; index++) {
+            const animal = animals[index];
+
+            data.push({
+                name: animal.name,
+                id: animal.id
+            });
+        }
+
+        return data;
     }
 }

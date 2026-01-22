@@ -4,7 +4,7 @@ import { TreatmentRepository } from '@animal/repositories/treatment.repository';
 import { Result } from '@catshelp/types';
 import { formatEstonianDate } from '@catshelp/utils';
 import { Injectable } from '@nestjs/common';
-import { DEFAULT_COLORS } from '../dashboard/constants';
+import { DEFAULT_COLORS } from '@animal/constants';
 import { DashboardNotification } from './templates/DasboardNotification';
 import KompleksVaktsiiniKinnitusNotification from './templates/KompleksVaktsiiniKinnitusNotification';
 import MarutaudVaktsiiniKinnitusNotification from './templates/MarutaudVaktsiiniKinnitusNotification';

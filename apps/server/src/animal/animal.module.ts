@@ -1,5 +1,5 @@
 import { FileService } from '@file/file.service';
-import { Module } from '@nestjs/common';
+import {forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
@@ -24,6 +24,7 @@ import { TreatmentRepository } from './repositories/treatment.repository';
 import { Characteristic } from './entities/characteristic.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
+import {NotificationModule} from "@notification/notification.module";
 
 
 @Module({
@@ -35,6 +36,7 @@ import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
         TypeOrmModule.forFeature([Characteristic]),
         TypeOrmModule.forFeature([AnimalToFosterHome]),
         FileModule,
+        NotificationModule,
         GoogleModule,
         UserModule,
         AuthModule,

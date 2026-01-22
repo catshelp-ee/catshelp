@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import FosterPets from "./foster-pets";
 import Notifications from "./notifications";
 import TodoList from "./todo-list";
-import {useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 export interface Todo {
     label: string;
@@ -33,32 +33,36 @@ const Dashboard: React.FC<DashboardProps> = () => {
     const { showAlert } = useAlert();
     const params = useParams();
     const navigate = useNavigate();
+    const url = useLocation();
 
     useEffect(() => {
         const loadDashboardData = async () => {
             const user = await getUser();
 
+            const userId = url.pathname === "/animals" ? user.id : params.userId;
+
             try {
-                const response = await axios.get(`/api/users/${params.id}`);
+                const response = await axios.get(`/api/users/${userId}`);
                 const user = response.data;
                 setName(user.fullName);
             } catch (e) {
-                navigate(`/dashboard/${user.id}`)
+                navigate(`/animals/${user.id}`)
             }
 
             try {
-                const response = await axios.get(`/api/animals/${params.id}/avatars`);
+                const response = await axios.get(`/api/animals/${userId}/avatars`);
                 setPets(response.data);
             } catch (e) {
                 showAlert('Error', "Tekkis probleem kasside laadimisega");
             }
 
             try {
-                const response = await axios.get(`/api/animals/${params.id}/todos`);
+                const response = await axios.get(`/api/animals/${userId}/todos`);
                 setTodos(response.data);
             } catch (e) {
                 showAlert('Error', "Tekkis probleem kasside laadimisega");
             }
+
         };
 
         //TODO SEE MANUAALNE LOADING ASI TULEB ÜMBER TEHA

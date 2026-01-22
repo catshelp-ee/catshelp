@@ -3,13 +3,13 @@
         {
             "icon": "Check.png",
             "text": "Kiisude töölaud",
-            "path": "/dashboard",
+            "path": "/animals",
             "dynamic" : true
         },
         {
             "icon": "Document.png",
             "text": "Kiisu profiil veebis",
-            "path": "/cat-profile",
+            "path": "/animals/profiles",
             "dynamic" : true
         },
         {

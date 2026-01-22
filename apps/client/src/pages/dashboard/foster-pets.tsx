@@ -8,6 +8,7 @@ import { AvatarData } from "@server/animal/interfaces/avatar";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { PetAvatar } from "src/components/pet-avatar";
+import {useAuth} from "@context/auth-context";
 
 interface FosterPetsProps {
     pets: AvatarData[];
@@ -53,23 +54,35 @@ const PetsGrid: React.FC<{
     hasMorePets: boolean;
     hiddenCount: number;
     onShowMore: () => void;
-}> = ({ displayPets, hasMorePets, hiddenCount, onShowMore }) => (
-    <div className="flex justify-start space-x-3 px-8 relative" >
-        {
-            displayPets.map((pet, id) => (
-                <Link
-                    key={id}
-                    to={`/cat-profile/${pet.id}`}
-                    aria-label={`Vaata ${pet.name} profiili`}
-                >
-                    <PetAvatar name={pet.name} id={pet.id} />
-                </Link>
-            ))
+}> = ({ displayPets, hasMorePets, hiddenCount, onShowMore }) => {
+    const { getUser } = useAuth();
+    const [userId, setUserId] = useState(null);
+    useEffect(() => {
+        const getUserId = async () => {
+            const user = await getUser();
+            setUserId(user.id);
         }
 
-        {hasMorePets && <ShowMoreButton count={hiddenCount} onClick={onShowMore} />}
-    </div >
-);
+        getUserId();
+    }, []);
+    return(
+        <div className="flex justify-start space-x-3 px-8 relative" >
+            {
+                displayPets.map((pet, id) => (
+                    <Link
+                        key={id}
+                        to={`/animals/${userId}/profiles/${pet.id}`}
+                        aria-label={`Vaata ${pet.name} profiili`}
+                    >
+                        <PetAvatar name={pet.name} id={pet.id} />
+                    </Link>
+                ))
+            }
+
+            {hasMorePets && <ShowMoreButton count={hiddenCount} onClick={onShowMore} />}
+        </div >
+    );
+}
 
 const usePopupManager = () => {
     const [isOpen, setIsOpen] = useState(false);

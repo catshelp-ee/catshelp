@@ -5,8 +5,6 @@ import { AnimalService } from './animal.service';
 import type { AnimalRescueDto } from './dto/create-animal.dto';
 import { UpdateAnimalDto } from './dto/update-animal.dto';
 import {ProfileBuilder} from "@animal/profile-builder.service";
-import {DashboardService} from "@dashboard/dashboard.service";
-import {NotificationService} from "@notification/notification.service";
 import {AuthService} from "@auth/auth.service";
 
 @Controller('animals')
@@ -15,26 +13,34 @@ export class AnimalController {
     constructor(
         private readonly animalService: AnimalService,
         private readonly catProfileBuilder: ProfileBuilder,
-        private readonly dashboardService: DashboardService,
-        private readonly notificationService: NotificationService,
     ) { }
 
-    @Get(":id/profile")
-    async getProfile(@Req() req: Request, @Param("id") id: string) {
+    @Get(":userId/profiles")
+    async getProfiles(@Req() req: Request, @Param('userId') userId: string) {
         const user = req.user;
-        if (user.id !== Number(id) && user.role !== "ADMIN"){
+        if (user.id !== Number(userId) && user.role !== "ADMIN"){
+            throw new Error('Unauthorized');
+        }
+        const animals = await this.animalService.getAnimalsByUserId(userId);
+        const profiles = await this.animalService.getAvatars(animals);
+
+        return { profiles };
+    }
+
+    @Get(":userId/profiles/:animalId")
+    async getProfile(@Req() req: Request, @Param("userId") userId: string, @Param("animalId") animalId: string) {
+        const user = req.user;
+        if (user.id !== Number(userId) && user.role !== "ADMIN"){
             throw new Error('Unauthorized');
         }
 
-        const animal = await this.animalService.getAnimalById(id);
+        const animal = await this.animalService.getAnimalById(animalId);
 
         if (!animal){
             throw new Error("No animal found");
         }
 
-        const profile = await this.catProfileBuilder.buildProfile(animal);
-
-        return profile;
+        return this.catProfileBuilder.buildProfile(animal);
     }
 
     @Get(":id/avatars")
@@ -44,7 +50,7 @@ export class AnimalController {
         }
 
         const animals = await this.animalService.getAnimalsByUserId(id);
-        return this.dashboardService.getAvatars(animals);
+        return this.animalService.getAvatars(animals);
     }
 
     @Get(":id/profile-picture")
@@ -63,7 +69,7 @@ export class AnimalController {
         }
 
         const animals = await this.animalService.getAnimalsByUserId(id);
-        return this.notificationService.processNotifications(animals);
+        return this.animalService.getNotifications(animals);
     }
 
     @Put()

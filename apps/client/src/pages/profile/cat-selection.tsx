@@ -2,8 +2,9 @@ import { Profile, Avatar } from "@catshelp/types/src";
 import { PetAvatar } from "@components/pet-avatar";
 import { Stack } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {useAuth} from "@context/auth-context";
 
 interface CatSelectionProps {
     animalAvatars: Avatar[];
@@ -18,20 +19,35 @@ const CatSelection: React.FC<CatSelectionProps> = ({
 }) => {
     const navigate = useNavigate();
     const params = useParams();
+    const url = useLocation()
+    const { getUser } = useAuth();
+    const [animalId, setAnimalId] = useState(params.animalId);
+
+    useEffect(() => {
+        if (url.pathname === "/animals/profiles"){
+            setAnimalId(animalAvatars[0].id);
+        }
+    }, []);
     
 
     const handleCatSelect = async (index: number, animalAvatar: Avatar) => {
-        if (animalAvatar.id === Number(params.id)) {
+        if (animalAvatar.id == params.animalId) {
             return;
         }
 
-        const response = await axios.get(`/api/profile/${animalAvatar.id}`, {
+        let userId = params.userId;
+        if (url.pathname === "/animals/profiles"){
+            userId = (await getUser()).id as string;
+        }
+
+        const response = await axios.get(`/api/animals/${userId}/profiles/${animalAvatar.id}`, {
             withCredentials: true
         });
 
-        navigate(`/cat-profile/${animalAvatar.id}`);
+        navigate(`/animals/${userId}/profiles/${animalAvatar.id}`);
         setSelectedCat(response.data);
         setIsEditMode(false);
+        setAnimalId(animalAvatar.id);
     };
     return (
         <Stack direction="row" spacing={2}>
@@ -39,7 +55,7 @@ const CatSelection: React.FC<CatSelectionProps> = ({
                 <PetAvatar onClick={() => {
                     handleCatSelect(index, animal);
                 }}
-                    isSelected={animal.id === Number(params.id)}
+                    isSelected={animal.id == animalId}
                     id={animal.id}
                     name={animal.name}
                 />

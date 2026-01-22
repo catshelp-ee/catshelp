@@ -9,7 +9,7 @@ import React, { createContext, useEffect, useState } from "react";
 import CatDetails from "./cat-details";
 import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
-import {useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "@context/auth-context";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
@@ -77,13 +77,24 @@ const CatProfile: React.FC = () => {
     const isMobile = useIsMobile();
     const params = useParams();
     const navigate = useNavigate();
+    const url = useLocation();
+
 
     useEffect(() => {
         const loadUserCats = async () => {
             const user = await getUser();
 
+            const avatars = await getAvatars();
+
+            let userId = params.userId;
+            let animalId = params.animalId;
+            if (url.pathname === "/animals/profiles"){
+                userId = user.id as string;
+                animalId = avatars[0].id;
+            }
+
             try {
-                const response = await axios.get(`/api/animals/${params.id}/profile`, {
+                const response = await axios.get(`/api/animals/${userId}/profiles/${animalId}`, {
                     withCredentials: true
                 });
 
@@ -92,16 +103,25 @@ const CatProfile: React.FC = () => {
 
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
-                navigate(`/cat-profile/${user.id}`);
+                navigate(`/animals/${user.id}`);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
             }
         };
 
         async function getAvatars() {
-            const response = await axios.get("/api/profile", {
+            const user = await getUser();
+
+            const userId = url.pathname === "/animals/profiles" ? user.id : params.userId;
+
+            const response = await axios.get(`/api/animals/${userId}/avatars`, {
                 withCredentials: true
             });
-            setAnimalAvatars(response.data.profiles);
+
+
+            const profiles = response.data;
+
+            setAnimalAvatars(profiles);
+            return profiles;
         }
 
         const fetchAndSetCatsWithLoading = async () => {
@@ -109,7 +129,6 @@ const CatProfile: React.FC = () => {
         };
 
         fetchAndSetCatsWithLoading();
-        getAvatars();
     }, []);
 
     const renderContent = () => {

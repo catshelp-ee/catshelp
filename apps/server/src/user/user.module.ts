@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
+import {UsersController} from "@user/users.controller";
 
 @Module({
     imports: [
@@ -18,7 +19,8 @@ import { UserService } from './user.service';
         }),
     ],
     controllers: [
-        UserController
+        UserController,
+        UsersController
     ],
     providers: [
         UserService,

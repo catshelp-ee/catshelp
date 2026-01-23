@@ -9,7 +9,7 @@ import React, { createContext, useEffect, useState } from "react";
 import CatDetails from "./cat-details";
 import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "@context/auth-context";
 import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
 
@@ -78,56 +78,40 @@ const CatProfile: React.FC = () => {
     const isMobile = useIsMobile();
     const params = useParams();
     const navigate = useNavigate();
-    const url = useLocation();
-
 
     useEffect(() => {
-
-        const getProfile = async (userId: string, animalId: string) : Promise<Profile> => {
-            const response = await axios.get(`/api/users/${userId}/animals/${animalId}/profile`, {
-                withCredentials: true
-            });
-
-            return response.data;
-        }
-
-        const getUserAnimalSummaries = async (userId): Promise<AnimalSummary[]> => {
-            const response = await axios.get(`/api/users/${userId}/animals`);
-
-            return response.data;
-        }
-
         const loadUserCats = async () => {
             const user = await getUser();
 
-            let userId = params.userId;
-            let animalId = params.animalId;
-            if (url.pathname === "/users/animals/profile"){
-                userId = user.id as string;
-            }
-            const summaries = await getUserAnimalSummaries(userId);
-            if (url.pathname === "/users/animals/profile"){
-                animalId = summaries[0].id as string;
-            }
-            setAnimalAvatars(summaries);
-
             try {
-                const profile = await getProfile(userId, animalId);
+                const response = await axios.get(`/api/animals/${params.id}/profile`, {
+                    withCredentials: true
+                });
+
+                const profile = response.data;
                 setSelectedCat(profile);
 
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
-                navigate(`/users/${user.id}`);
+                navigate(`/cat-profile/${user.id}`);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
             }
         };
+
+        async function getAvatars() {
+            const response = await axios.get("/api/profile", {
+                withCredentials: true
+            });
+            setAnimalAvatars(response.data.profiles);
+        }
 
         const fetchAndSetCatsWithLoading = async () => {
             await isLoadingWrapper(loadUserCats, setIsLoading);
         };
 
         fetchAndSetCatsWithLoading();
-    }, [url.pathname]);
+        getAvatars();
+    }, []);
 
     const renderContent = () => {
         if (isEditMode) {

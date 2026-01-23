@@ -103,10 +103,15 @@ export class AuthService {
         }
     }
 
+    /**
+     * Returns true if user is admin, false otherwise
+     * @param req
+     * @param id
+     */
     public static checkIfAdmin(req: Request, id: string): boolean {
         const user = req.user;
 
-        return !(user.id !== Number(id) && user.role !== "ADMIN");
+        return user.id == Number(id) && user.role == "ADMIN";
 
     }
 }

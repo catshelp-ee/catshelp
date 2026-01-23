@@ -30,10 +30,6 @@ export class AnimalController {
 
     @Get(":id/profile-picture")
     async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
-        if (!AuthService.checkIfAdmin(req, id)){
-            throw new Error('Unauthorized');
-        }
-
         return this.animalService.getProfilePicture(id);
     }
 

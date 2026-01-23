@@ -78,7 +78,7 @@ const PetsGrid: React.FC<{
                 displayPets.map((pet, id) => (
                     <Link
                         key={id}
-                        to={`/animals/${userId}/profiles/${pet.id}`}
+                        to={`/users/${userId}/animals/${pet.id}/profile`}
                         aria-label={`Vaata ${pet.name} profiili`}
                     >
                         <PetAvatar name={pet.name} id={pet.id}/>

@@ -11,6 +11,7 @@ import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "@context/auth-context";
+import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
     const { isLoading, setIsLoading } = useLoading();
@@ -69,7 +70,7 @@ export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
 const CatProfile: React.FC = () => {
     const { showAlert } = useAlert();
-    const [animalAvatars, setAnimalAvatars] = useState<Avatar[]>([]);
+    const [animalAvatars, setAnimalAvatars] = useState<AnimalSummary[]>([]);
     const [selectedCat, setSelectedCat] = useState<Profile>(createProfile());
     const [isLoading, setIsLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -81,48 +82,45 @@ const CatProfile: React.FC = () => {
 
 
     useEffect(() => {
+
+        const getProfile = async (userId: string, animalId: string) : Promise<Profile> => {
+            const response = await axios.get(`/api/users/${userId}/animals/${animalId}/profile`, {
+                withCredentials: true
+            });
+
+            return response.data;
+        }
+
+        const getUserAnimalSummaries = async (userId): Promise<AnimalSummary[]> => {
+            const response = await axios.get(`/api/users/${userId}/animals`);
+
+            return response.data;
+        }
+
         const loadUserCats = async () => {
             const user = await getUser();
 
-            const avatars = await getAvatars();
-
             let userId = params.userId;
             let animalId = params.animalId;
-            if (url.pathname === "/animals/profiles"){
+            if (url.pathname === "/users/animals/profile"){
                 userId = user.id as string;
-                animalId = avatars[0].id;
             }
+            const summaries = await getUserAnimalSummaries(userId);
+            if (url.pathname === "/users/animals/profile"){
+                animalId = summaries[0].id as string;
+            }
+            setAnimalAvatars(summaries);
 
             try {
-                const response = await axios.get(`/api/animals/${userId}/profiles/${animalId}`, {
-                    withCredentials: true
-                });
-
-                const profile = response.data;
+                const profile = await getProfile(userId, animalId);
                 setSelectedCat(profile);
 
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
-                navigate(`/animals/${user.id}`);
+                navigate(`/users/${user.id}`);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
             }
         };
-
-        async function getAvatars() {
-            const user = await getUser();
-
-            const userId = url.pathname === "/animals/profiles" ? user.id : params.userId;
-
-            const response = await axios.get(`/api/animals/${userId}/avatars`, {
-                withCredentials: true
-            });
-
-
-            const profiles = response.data;
-
-            setAnimalAvatars(profiles);
-            return profiles;
-        }
 
         const fetchAndSetCatsWithLoading = async () => {
             await isLoadingWrapper(loadUserCats, setIsLoading);

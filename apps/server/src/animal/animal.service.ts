@@ -19,6 +19,8 @@ import {FileService} from "@file/file.service";
 import {NotificationService} from "@notification/notification.service";
 import {AnimalSummaryDto} from "@animal/dto/animal-summary.dto";
 import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
+import {ProfileBuilder} from "@animal/profile-builder.service";
+import {AnimalProfileDto} from "@user/dtos/animal-profile.dto";
 
 @Injectable()
 export class AnimalService {
@@ -33,6 +35,7 @@ export class AnimalService {
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
         private readonly fileService: FileService,
         private readonly notificationService: NotificationService,
+        private readonly profileBuilder: ProfileBuilder,
     ) { }
 
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
@@ -41,6 +44,10 @@ export class AnimalService {
 
     public getAnimalById(id: number | string) {
         return this.animalRepository.getAnimalById(id);
+    }
+
+    public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
+        return this.profileBuilder.buildProfile(animal);
     }
 
     async saveOrUpdateFosterHome(data: { userId: number }): Promise<FosterHome> {

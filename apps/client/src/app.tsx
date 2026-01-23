@@ -29,8 +29,8 @@ function App() {
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/users" element={<Dashboard />} />
                     <Route path="/users/:userId" element={<Dashboard />} />
-                    <Route path="/animals/:userId/profiles/:animalId" element={<CatProfile />} />
-                    <Route path="/animals/profiles" element={<CatProfile />} />
+                    <Route path="/users/animals/profile" element={<CatProfile />} />
+                    <Route path="/users/:userId/animals/:animalId/profile" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />
                 </Route>
             </Route>

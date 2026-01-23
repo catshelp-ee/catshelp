@@ -5,9 +5,10 @@ import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "@context/auth-context";
+import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
 
 interface CatSelectionProps {
-    animalAvatars: Avatar[];
+    animalAvatars: AnimalSummary[];
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile>>;
     setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -24,30 +25,39 @@ const CatSelection: React.FC<CatSelectionProps> = ({
     const [animalId, setAnimalId] = useState(params.animalId);
 
     useEffect(() => {
-        if (url.pathname === "/animals/profiles"){
-            setAnimalId(animalAvatars[0].id);
+        if (url.pathname === "/users/animals/profile"){
+            setAnimalId(animalAvatars[0].id as string);
         }
     }, [url.pathname, animalAvatars]);
-    
 
-    const handleCatSelect = async (index: number, animalAvatar: Avatar) => {
+    const getProfile = async (userId: number | string, animalId: number | string): Promise<Profile> => {
+        const response = await axios.get(`/api/users/${userId}/animals/${animalId}/profile`, {
+            withCredentials: true
+        });
+
+        return response.data;
+    }
+
+    const handleCatSelect = async (index: number, animalAvatar: AnimalSummary) => {
         if (animalAvatar.id == params.animalId) {
             return;
         }
 
         let userId = params.userId;
-        if (url.pathname === "/animals/profiles"){
+        if (url.pathname === "/users/animals/profile"){
             userId = (await getUser()).id as string;
         }
 
-        const response = await axios.get(`/api/animals/${userId}/profiles/${animalAvatar.id}`, {
-            withCredentials: true
-        });
+        try {
+            const profile = await getProfile(userId, animalAvatar.id);
+            setAnimalId(profile.animalId as string);
+            setSelectedCat(profile);
+            setIsEditMode(false);
 
-        navigate(`/animals/${userId}/profiles/${animalAvatar.id}`);
-        setSelectedCat(response.data);
-        setIsEditMode(false);
-        setAnimalId(animalAvatar.id);
+            navigate(`/users/${userId}/animals/${animalAvatar.id}/profile`);
+        } catch (e) {
+            return;
+        }
     };
     return (
         <Stack direction="row" spacing={2}>

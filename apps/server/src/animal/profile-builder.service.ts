@@ -2,7 +2,8 @@ import { createProfile, Profile } from '@catshelp/types';
 import { FileService } from '@file/file.service';
 import { Injectable } from '@nestjs/common';
 import { CharacteristicsService } from './characteristics.service';
-import { Animal } from './entities/animal.entity'; // TypeORM entity
+import { Animal } from './entities/animal.entity';
+import { AnimalProfileDto } from "@user/dtos/animal-profile.dto";
 
 @Injectable()
 export class ProfileBuilder {
@@ -11,7 +12,7 @@ export class ProfileBuilder {
         private readonly fileService: FileService,
     ) { }
 
-    public async buildProfile(animal: Animal): Promise<Profile | null> {
+    public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
         const profile = createProfile();
 
         profile.animalId = animal.id;
@@ -29,9 +30,7 @@ export class ProfileBuilder {
         profile.images = await this.fileService.fetchImagePathsByAnimalId(animal.id);
         const profilePicture = await this.fileService.fetchProfilePicture(animal.id);
 
-        profile.profilePictureFilename = profilePicture
-            ? `images/${profilePicture.uuid}.jpg`
-            : `missing64x64.png`;
+        profile.profilePictureFilename = profilePicture ? `images/${profilePicture.uuid}.jpg` : "";
 
         return profile;
     }

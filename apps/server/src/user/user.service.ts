@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import {AnimalService} from "@animal/animal.service";
 import {AnimalSummaryDto} from "@animal/dto/animal-summary.dto";
+import {AnimalProfileDto} from "@user/dtos/animal-profile.dto";
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,16 @@ export class UserService {
         private readonly revokedTokenRepository: RevokedTokenRepository,
         private readonly animalService: AnimalService,
     ) { }
+
+    public async getProfiles(animalId: number | string): Promise<AnimalProfileDto | null> {
+        const animal = await this.animalService.getAnimalById(animalId);
+
+        if (!animal){
+            throw new Error("No animal found");
+        }
+
+        return this.animalService.buildProfile(animal);
+    }
 
     public async getAnimals(id: string): Promise<AnimalSummaryDto[]> {
         const animals = await this.animalService.getAnimalsByUserId(id);

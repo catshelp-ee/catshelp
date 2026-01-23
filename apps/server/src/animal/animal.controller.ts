@@ -28,22 +28,6 @@ export class AnimalController {
         return { profiles };
     }
 
-    @Get(":userId/profiles/:animalId")
-    async getProfile(@Req() req: Request, @Param("userId") userId: string, @Param("animalId") animalId: string) {
-        const user = req.user;
-        if (user.id !== Number(userId) && user.role !== "ADMIN"){
-            throw new Error('Unauthorized');
-        }
-
-        const animal = await this.animalService.getAnimalById(animalId);
-
-        if (!animal){
-            throw new Error("No animal found");
-        }
-
-        return this.catProfileBuilder.buildProfile(animal);
-    }
-
     @Get(":id/profile-picture")
     async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
         if (!AuthService.checkIfAdmin(req, id)){

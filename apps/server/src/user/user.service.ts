@@ -3,6 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
+import {AnimalService} from "@animal/animal.service";
+import {AnimalSummaryDto} from "@animal/dto/animal-summary.dto";
 
 @Injectable()
 export class UserService {
@@ -11,7 +13,13 @@ export class UserService {
         private cacheManager: Cache,
         private readonly userRepository: UserRepository,
         private readonly revokedTokenRepository: RevokedTokenRepository,
+        private readonly animalService: AnimalService,
     ) { }
+
+    public async getAnimals(id: string): Promise<AnimalSummaryDto[]> {
+        const animals = await this.animalService.getAnimalsByUserId(id);
+        return this.animalService.getAnimalSummaries(animals);
+    }
 
     public async getUser(userId: number | string): Promise<User> {
         userId = Number(userId);

@@ -27,8 +27,8 @@ function App() {
             <Route element={<ProtectedRoute />}>
                 <Route element={<PageLayout />}>
                     <Route path="/admin" element={<Admin />} />
-                    <Route path="/animals/:userId" element={<Dashboard />} />
-                    <Route path="/animals" element={<Dashboard />} />
+                    <Route path="/users" element={<Dashboard />} />
+                    <Route path="/users/:userId" element={<Dashboard />} />
                     <Route path="/animals/:userId/profiles/:animalId" element={<CatProfile />} />
                     <Route path="/animals/profiles" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />

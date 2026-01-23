@@ -1,17 +1,17 @@
-import { Avatar, Typography, useTheme } from "@mui/material";
-import { AvatarData } from "@server/animal/interfaces/avatar";
+import {Avatar, Typography, useTheme} from "@mui/material";
+import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
 import React, {forwardRef, useEffect, useState} from "react";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import axios from "axios";
 
 interface AllPetsPopupProps {
-    pets: AvatarData[];
+    pets: AnimalSummary[];
     onClose?: () => void;
     isOpen?: boolean;
 }
 
 // Individual Pet Item Component
-const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
+const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
     const theme = useTheme();
 
     const [image, setImage] = useState()
@@ -63,7 +63,7 @@ const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
 };
 
 // Popup Header Component
-const PopupHeader: React.FC<{ totalCount: number }> = ({ totalCount }) => {
+const PopupHeader: React.FC<{ totalCount: number }> = ({totalCount}) => {
     const theme = useTheme();
 
     return (
@@ -83,7 +83,7 @@ const PopupHeader: React.FC<{ totalCount: number }> = ({ totalCount }) => {
 };
 
 const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
-    ({ pets, onClose, isOpen }, ref) => {
+    ({pets, onClose, isOpen}, ref) => {
         const theme = useTheme();
 
         if (!isOpen) {
@@ -101,11 +101,11 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
                     boxShadow: theme.shadows[8]
                 }}
             >
-                <PopupHeader totalCount={pets.length} />
+                <PopupHeader totalCount={pets.length}/>
 
                 <div className="flex-1 overflow-y-scroll">
                     {pets.map((pet, id) => (
-                        <PetItem key={id} pet={pet} />
+                        <PetItem key={id} pet={pet}/>
                     ))}
                 </div>
 

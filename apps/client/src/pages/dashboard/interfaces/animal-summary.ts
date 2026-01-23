@@ -1,4 +1,4 @@
-export interface AvatarData {
+export interface AnimalSummary {
     name: string;
     id: number;
 }

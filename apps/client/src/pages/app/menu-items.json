@@ -3,7 +3,7 @@
         {
             "icon": "Check.png",
             "text": "Kiisude töölaud",
-            "path": "/animals",
+            "path": "/users",
             "dynamic" : true
         },
         {

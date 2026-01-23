@@ -6,6 +6,7 @@ import type { AnimalRescueDto } from './dto/create-animal.dto';
 import { UpdateAnimalDto } from './dto/update-animal.dto';
 import {ProfileBuilder} from "@animal/profile-builder.service";
 import {AuthService} from "@auth/auth.service";
+import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
 
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
@@ -22,7 +23,7 @@ export class AnimalController {
             throw new Error('Unauthorized');
         }
         const animals = await this.animalService.getAnimalsByUserId(userId);
-        const profiles = await this.animalService.getAvatars(animals);
+        const profiles = await this.animalService.getAnimalSummaries(animals);
 
         return { profiles };
     }
@@ -43,16 +44,6 @@ export class AnimalController {
         return this.catProfileBuilder.buildProfile(animal);
     }
 
-    @Get(":id/avatars")
-    async getAvatars(@Req() req: Request, @Param("id") id: string) {
-        if (!AuthService.checkIfAdmin(req, id)){
-            throw new Error('Unauthorized');
-        }
-
-        const animals = await this.animalService.getAnimalsByUserId(id);
-        return this.animalService.getAvatars(animals);
-    }
-
     @Get(":id/profile-picture")
     async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
         if (!AuthService.checkIfAdmin(req, id)){
@@ -62,13 +53,14 @@ export class AnimalController {
         return this.animalService.getProfilePicture(id);
     }
 
-    @Get(":id/todos")
-    async getTodos(@Req() req: Request, @Param("id") id: string) {
-        if (!AuthService.checkIfAdmin(req, id)){
+    @Get(":animalId/todos")
+    async getAnimalTodos(@Req() req: Request, @Param("animalId") id: string): Promise<AnimalTodoDto[]> {
+        const user = req.user;
+        if (user.role !== "ADMIN"){
             throw new Error('Unauthorized');
         }
 
-        const animals = await this.animalService.getAnimalsByUserId(id);
+        const animals = await this.animalService.getAnimalById(id);
         return this.animalService.getNotifications(animals);
     }
 

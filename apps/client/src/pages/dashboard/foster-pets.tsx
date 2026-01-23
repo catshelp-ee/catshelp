@@ -4,20 +4,20 @@ import {
     useTheme,
 } from "@mui/material";
 import AllPetsPopup from "@pages/dashboard/all-pets-popup";
-import { AvatarData } from "@server/animal/interfaces/avatar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Link, useLocation, useParams} from "react-router-dom";
-import { PetAvatar } from "src/components/pet-avatar";
+import {PetAvatar} from "src/components/pet-avatar";
 import {useAuth} from "@context/auth-context";
 
 interface FosterPetsProps {
-    pets: AvatarData[];
+    pets: AnimalSummary[];
 }
 
 const ShowMoreButton: React.FC<{
     count: number;
     onClick: () => void;
-}> = ({ count, onClick }) => {
+}> = ({count, onClick}) => {
     const theme = useTheme();
 
     return (
@@ -50,12 +50,12 @@ const ShowMoreButton: React.FC<{
 };
 
 const PetsGrid: React.FC<{
-    displayPets: AvatarData[];
+    displayPets: AnimalSummary[];
     hasMorePets: boolean;
     hiddenCount: number;
     onShowMore: () => void;
-}> = ({ displayPets, hasMorePets, hiddenCount, onShowMore }) => {
-    const { getUser } = useAuth();
+}> = ({displayPets, hasMorePets, hiddenCount, onShowMore}) => {
+    const {getUser} = useAuth();
     const [userId, setUserId] = useState(null);
     const params = useParams();
     useEffect(() => {
@@ -72,8 +72,8 @@ const PetsGrid: React.FC<{
 
         getUserId();
     }, []);
-    return(
-        <div className="flex justify-start space-x-3 px-8 relative" >
+    return (
+        <div className="flex justify-start space-x-3 px-8 relative">
             {
                 displayPets.map((pet, id) => (
                     <Link
@@ -81,13 +81,13 @@ const PetsGrid: React.FC<{
                         to={`/animals/${userId}/profiles/${pet.id}`}
                         aria-label={`Vaata ${pet.name} profiili`}
                     >
-                        <PetAvatar name={pet.name} id={pet.id} />
+                        <PetAvatar name={pet.name} id={pet.id}/>
                     </Link>
                 ))
             }
 
-            {hasMorePets && <ShowMoreButton count={hiddenCount} onClick={onShowMore} />}
-        </div >
+            {hasMorePets && <ShowMoreButton count={hiddenCount} onClick={onShowMore}/>}
+        </div>
     );
 }
 
@@ -132,12 +132,12 @@ const usePopupManager = () => {
     const openPopup = useCallback(() => setIsOpen(true), []);
     const closePopup = useCallback(() => setIsOpen(false), []);
 
-    return { isOpen, popupRef, openPopup, closePopup };
+    return {isOpen, popupRef, openPopup, closePopup};
 };
 
-const FosterPets: React.FC<FosterPetsProps> = ({ pets }) => {
+const FosterPets: React.FC<FosterPetsProps> = ({pets}) => {
     const MAX_VISIBLE_PETS = 2;
-    const { isOpen, popupRef, openPopup, closePopup } = usePopupManager();
+    const {isOpen, popupRef, openPopup, closePopup} = usePopupManager();
 
     const displayPets = pets.slice(0, MAX_VISIBLE_PETS);
     const hiddenCount = Math.max(0, pets.length - MAX_VISIBLE_PETS);

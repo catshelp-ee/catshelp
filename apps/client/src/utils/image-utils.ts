@@ -80,11 +80,11 @@ export const uploadImages = async (files: File[], animalId: number) => {
 
     // Append each file to the FormData object
     resizedImages.forEach((file: File) => {
-        formData.append(import.meta.env.VITE_UPLOAD_FIELD_NAME, file);
+        formData.append("files", file);
     });
     formData.append('animalId', animalId);
     try {
-        await axios.post('/api/images', formData, {
+        return axios.post('/api/images', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

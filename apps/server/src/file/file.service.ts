@@ -24,7 +24,7 @@ export class FileService {
     public async fetchImagePathsByAnimalId(animalId: number) {
         const files = await this.fileRepository.getImages(animalId);
         return files.map(file => {
-            return `/images/${file.uuid}.jpg`;
+            return `${file.uuid}.jpg`;
         });
     }
 
@@ -51,7 +51,7 @@ export class FileService {
     }
 
     public fetchProfilePicture(animalID: number | string) {
-        return this.fileRepository.fetchProfilePicture(animalID);
+        return this.fileRepository.getProfilePicture(animalID);
     }
 
     public async processImages(

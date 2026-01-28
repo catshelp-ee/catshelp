@@ -36,7 +36,9 @@ const TodoItem: React.FC<Todo> = ({
                     {assignee}
                 </span>
                 <span>
-                    <MyButton>{action.label}</MyButton>
+                    <MyButton>
+                        <a href={action.redirect} target="_blank">{action.label}</a>
+                    </MyButton>
                 </span>
             </div>
         </div>

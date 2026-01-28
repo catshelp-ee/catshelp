@@ -145,7 +145,7 @@ const FosterPets: React.FC<FosterPetsProps> = ({pets}) => {
 
     return (
         <div className="md:flex-1 relative">
-            <h2 className="dashboard-heading mb-8 text-base font-bold leading-relaxed px-8 text-slate-500">
+            <h2 className="dashboard-heading mb-2 text-base font-bold leading-relaxed text-slate-500">
                 SINU HOIULOOMAD
             </h2>
 

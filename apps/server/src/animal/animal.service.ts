@@ -15,12 +15,14 @@ import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
-import {FileService} from "@file/file.service";
-import {NotificationService} from "@notification/notification.service";
-import {AnimalSummaryDto} from "@animal/dto/animal-summary.dto";
-import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
-import {ProfileBuilder} from "@animal/profile-builder.service";
-import {AnimalProfileDto} from "@user/dtos/animal-profile.dto";
+import { FileService } from "@file/file.service";
+import { NotificationService } from "@notification/notification.service";
+import { AnimalSummaryDto } from "@animal/dto/animal-summary.dto";
+import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
+import { ProfileBuilder } from "@animal/profile-builder.service";
+import { AnimalProfileDto } from "@user/dtos/animal-profile.dto";
+import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
+import { FileRepository } from '../file/file.repository';
 
 @Injectable()
 export class AnimalService {
@@ -36,6 +38,7 @@ export class AnimalService {
         private readonly fileService: FileService,
         private readonly notificationService: NotificationService,
         private readonly profileBuilder: ProfileBuilder,
+        private readonly fileRepository: FileRepository,
     ) { }
 
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
@@ -93,6 +96,16 @@ export class AnimalService {
         animal.description = updatedAnimalData.description;
 
         return this.animalRepository.save(animal);
+    }
+
+
+    async setAsProfilePicture(updatedProfilePictureDTO: UpdateProfilePictureDTO) {
+        const animal = await this.animalRepository.getAnimalById(updatedProfilePictureDTO.animalId);
+        if (!animal){
+            throw new Error('Animal not found');
+        }
+
+        return await this.fileRepository.setProfilePicture(animal.id, updatedProfilePictureDTO.fileName);
     }
 
     async updateAnimalAdmin(updatedAnimalData: Profile) {

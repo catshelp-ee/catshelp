@@ -4,16 +4,13 @@ import type { Request } from 'express';
 import { AnimalService } from './animal.service';
 import type { AnimalRescueDto } from './dto/create-animal.dto';
 import { UpdateAnimalDto } from './dto/update-animal.dto';
-import {ProfileBuilder} from "@animal/profile-builder.service";
-import {AuthService} from "@auth/auth.service";
-import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
+import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
 
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
 export class AnimalController {
     constructor(
-        private readonly animalService: AnimalService,
-        private readonly catProfileBuilder: ProfileBuilder,
+        private readonly animalService: AnimalService
     ) { }
 
     @Get(":userId/profiles")

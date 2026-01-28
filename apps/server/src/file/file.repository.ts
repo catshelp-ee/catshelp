@@ -14,14 +14,38 @@ export class FileRepository extends BaseRepository<File> {
     /** Get the first file associated with an animal (profile picture) */
     async getProfilePicture(animalId: number): Promise<File | null> {
         return this.findOne({
-            where: { animalId: animalId },
+            where: {
+                animalId: animalId,
+                type: "PROFILE-PICTURE"
+            },
         });
+    }
+
+    async setProfilePicture(animalId: number, fileName: string): Promise<File | null> {
+        const oldProfilePicture = await this.getProfilePicture(animalId);
+        const newProfilePicture = await this.getImage(fileName);
+        if (!newProfilePicture){
+            throw new Error('New image not found');
+        }
+
+        if (oldProfilePicture) {
+            oldProfilePicture.type = "";
+            newProfilePicture.type = "PROFILE-PICTURE";
+            this.save(oldProfilePicture);
+        }
+        return this.save(newProfilePicture);
     }
 
     /** Optional: fetch all files for an animal */
     async getFilesByAnimalId(animalId: number): Promise<File[]> {
         return this.find({
             where: { animalId: animalId },
+        });
+    }
+
+    async getImage(fileName: string) {
+        return this.findOne({
+            where: { uuid: fileName }
         });
     }
 
@@ -34,7 +58,7 @@ export class FileRepository extends BaseRepository<File> {
     public fetchProfilePicture(animalId: number | string) {
         return this.findOne({
             where: { animalId: animalId }
-        })
+        });
     }
 
     public async insertImageFilenamesIntoDB(

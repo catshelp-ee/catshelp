@@ -11,8 +11,7 @@ import TodoList from "./todo-list";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {AnimalTodo} from "@pages/dashboard/interfaces/animal-todo";
 
-interface DashboardProps {
-}
+interface DashboardProps { }
 
 const Dashboard: React.FC<DashboardProps> = () => {
     const [pets, setPets] = useState<AnimalSummary[]>([]);
@@ -68,7 +67,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
             } catch (e) {
                 showAlert('Error', "Tekkis probleem kasside laadimisega");
             }
-
         };
 
         //TODO SEE MANUAALNE LOADING ASI TULEB ÜMBER TEHA
@@ -79,8 +77,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
         // Usage
         fetchDashboardWithLoading();
 
-        return () => {
-        };
+        return () => { };
     }, []);
 
     const renderContent = () => {
@@ -88,21 +85,20 @@ const Dashboard: React.FC<DashboardProps> = () => {
             return <CircularProgress/>;
         }
         return (
-            <div className="m-4 md:m-0">
-                <span className="md:flex md:mb-8">
-                    <Notifications/>
-                    <FosterPets pets={pets}/>
-                </span>
-                <TodoList todos={todos}/>
+            <div className="flex flex-col md:m-0">
+                <div className="mx-auto sm:mx-0">
+                    <h1 className="font-medium text-4xl my-6">
+                        Tere tulemast <span className="block sm:inline">{name}! 😺</span>
+                    </h1>
+                    <FosterPets pets={pets} />
+                </div>
+                <TodoList todos={todos} />
             </div>
         );
     };
 
     return (
-        <div className="md:mx-12 flex-1">
-            <h1 className="page-heading">
-                Tere tulemast {name}! 😺
-            </h1>
+        <div className="md:mx-12 flex flex-col flex-1">
             {renderContent()}
         </div>
     );

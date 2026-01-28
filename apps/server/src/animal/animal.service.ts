@@ -15,6 +15,8 @@ import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
+import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
+import { FileRepository } from '../file/file.repository';
 
 @Injectable()
 export class AnimalService {
@@ -27,6 +29,7 @@ export class AnimalService {
         private readonly googleSheetsService: GoogleSheetsService,
         private readonly characteristicsService: CharacteristicsService,
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
+        private readonly fileRepository: FileRepository,
     ) { }
 
     async getAnimalsByUserId(id: number): Promise<Animal[]> {
@@ -76,6 +79,16 @@ export class AnimalService {
         animal.description = updatedAnimalData.description;
 
         return this.animalRepository.save(animal);
+    }
+
+
+    async setAsProfilePicture(updatedProfilePictureDTO: UpdateProfilePictureDTO) {
+        const animal = await this.animalRepository.getAnimalById(updatedProfilePictureDTO.animalId);
+        if (!animal){
+            throw new Error('Animal not found');
+        }
+
+        return await this.fileRepository.setProfilePicture(animal.id, updatedProfilePictureDTO.fileName);
     }
 
     async updateAnimalAdmin(updatedAnimalData: Profile) {

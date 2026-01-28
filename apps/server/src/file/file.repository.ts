@@ -14,8 +14,26 @@ export class FileRepository extends BaseRepository<File> {
     /** Get the first file associated with an animal (profile picture) */
     async getProfilePicture(animalId: number): Promise<File | null> {
         return this.findOne({
-            where: { animalId: animalId },
+            where: {
+                animalId: animalId,
+                type: "PROFILE-PICTURE"
+            },
         });
+    }
+
+    async setProfilePicture(animalId: number, fileName: string): Promise<File | null> {
+        const oldProfilePicture = await this.getProfilePicture(animalId);
+        const newProfilePicture = await this.getImage(fileName);
+        if (!newProfilePicture){
+            throw new Error('New image not found');
+        }
+
+        if (oldProfilePicture) {
+            oldProfilePicture.type = "";
+            newProfilePicture.type = "PROFILE-PICTURE";
+            this.save(oldProfilePicture);
+        }
+        return this.save(newProfilePicture);
     }
 
     /** Optional: fetch all files for an animal */
@@ -25,16 +43,16 @@ export class FileRepository extends BaseRepository<File> {
         });
     }
 
+    async getImage(fileName: string) {
+        return this.findOne({
+            where: { uuid: fileName }
+        });
+    }
+
     async getImages(animalId: number) {
         return this.find({
             where: { animalId: animalId }
         });
-    }
-
-    public fetchProfilePicture(animalId: number) {
-        return this.findOne({
-            where: { animalId: animalId }
-        })
     }
 
     public async insertImageFilenamesIntoDB(

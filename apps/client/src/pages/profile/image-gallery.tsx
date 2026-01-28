@@ -10,10 +10,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useIsMobile } from "@context/is-mobile-context";
+import axios from "axios";
+import { useAlert } from "@context/alert-context";
 
 interface ImageGalleryProps {
     name?: string;
     images: string[];
+    profilePictureState?: {selectedProfilePicture: string, setSelectedProfilePicture: React.Dispatch<React.SetStateAction<string>>};
+    animalId?: number;
     isEditMode?: boolean;
     previews?: PreviewImage[];
     setPreviews?: React.Dispatch<React.SetStateAction<PreviewImage[]>>;
@@ -28,11 +32,14 @@ interface PreviewImage {
 const ImageGallery: React.FC<ImageGalleryProps> = ({
     name,
     images,
+    profilePictureState,
+    animalId,
     isEditMode = false,
     previews,
     setPreviews,
 }) => {
     const isMobile = useIsMobile();
+    const { showAlert } = useAlert();
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -55,11 +62,11 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     });
 
     const renderPreview = () => (
-        <ImageList cols={2} sx={{ height: '100%', overflowY: 'auto' }}>
+        <ImageList cols={1} sx={{ height: '100%', overflowY: 'auto' }}>
             {previews.map((img, index) => (
                 <ImageListItem key={index} className="relative">
                     <img
-                        className="rounded"
+                        className="p-4 rounded !object-fill"
                         srcSet={img.preview}
                         src={img.preview}
                         loading="lazy"
@@ -97,18 +104,39 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         </div>
     );
 
+    const setAsProfilePicture = async () => {
+        const updateProfilePicture = { animalId: animalId, fileName: profilePictureState.selectedProfilePicture.split(".")[0] };
+
+        const response = await axios.put("/api/animals/profile-picture", updateProfilePicture, {
+            withCredentials: true,
+        });
+
+        if (response.status !== 204) {
+            showAlert('Error', "Andmete uuendamine ebaõnnestus");
+            return;
+        }
+
+        showAlert('Success', "🐈‍⬛ Andmed uuendatud! 🐈‍⬛");
+
+    }
+
+    const handleSelectProfilePicture = (event) => {
+        const image = event.currentTarget.dataset.image;
+        profilePictureState.setSelectedProfilePicture(image);
+    };
+
     return (
         <div className={`${isMobile ? "w-full mt-8" : "w-1/3"}`}>
             <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                 <div className="flex flex-col items-center">
                     {images.length > 0 && (
                         <button onClick={() => setIsOpen(true)} className={`w-64 h-64 mb-4`}>
-                            <img src={images[0]} className="w-full h-full rounded-2xl" />
+                            <img src={`/images/${images[0]}`} className="w-full h-full rounded-2xl" />
                         </button>
                     )}
                     {images.length > 1 && (
                         <button className={`relative w-64 h-64 mb-4`} onClick={() => setIsOpen(true)}>
-                            <img className={`w-full h-full rounded-2xl opacity-50`} src={images[0]} alt="More images" />
+                            <img className={`w-full h-full rounded-2xl opacity-50`} src={`/images/${images[0]}`} alt="More images" />
                             <div className="absolute inset-0 text-xl flex items-center justify-center font-bold">
                                 +{images.length - 1} Pilti
                             </div>
@@ -143,13 +171,30 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                         </IconButton>
                     </div>
 
-                    <ImageList cols={5} gap={8}>
+                    <ImageList cols={4} gap={12} className="!p-4">
                         {images.map((image, index) => (
-                            <ImageListItem key={index}>
-                                <img className="rounded" srcSet={image} src={image} loading="lazy" />
+
+                            <ImageListItem
+                                key={index}
+                                data-image={image}
+                                onClick={handleSelectProfilePicture}
+                                className={`${isEditMode ? "" : "hover:scale-110 hover:cursor-pointer rounded-lg"} 
+                                            ${isEditMode || profilePictureState.selectedProfilePicture !== image
+                                            ? ""
+                                            : "border-4 border-solid border-[#007AFF]"}`}
+                            >
+                                <img
+                                    className="rounded"
+                                    srcSet={`/images/${image}`}
+                                    src={`/images/${image}`}
+                                    loading="lazy"
+                                />
                             </ImageListItem>
                         ))}
                     </ImageList>
+                    {!isEditMode && (
+                        <Button variant="contained" className="m-auto" onClick={setAsProfilePicture}>säti profiilipildiks</Button>
+                    )}
                 </div>
             </Dialog>
         </div>

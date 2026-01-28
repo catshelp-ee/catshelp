@@ -3,7 +3,7 @@ import { calculateAge, isFutureDate } from "@catshelp/utils/src";
 import { useIsMobile } from "@context/is-mobile-context";
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ImageGallery from "./image-gallery";
 
 interface CatDetailsProps {
@@ -98,6 +98,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
 }) => {
     const handleEditClick = () => setIsEditMode(true);
     const isMobile = useIsMobile();
+    const [selectedProfilePicture, setSelectedProfilePicture] = useState<string>(selectedCat.profilePictureFilename);
 
     const capitalize = str => {
         if (!str) {
@@ -126,10 +127,15 @@ const CatDetails: React.FC<CatDetailsProps> = ({
         "Kuidas ta sobiks toa- või õuekassikas?": selectedCat.characteristics.selectFields.suitabilityForIndoorOrOutdoor
     } as const;
 
+    useEffect(() => {
+        selectedCat.profilePictureFilename = selectedProfilePicture;
+    }, [selectedProfilePicture])
+    
+
     return (
         <>
             {isMobile && (
-                <ImageGallery images={selectedCat?.images || []} />
+                <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} images={selectedCat?.images || []} />
             )}
             <div className={`${isMobile ? "w-full" : "w-2/3"}`}>
                 <CatDetailsHeader
@@ -152,7 +158,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
                 </div>
             </div>
 
-            {!isMobile && <ImageGallery name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
+        {!isMobile && <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
         </>
     );
 };

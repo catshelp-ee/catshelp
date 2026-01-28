@@ -2,7 +2,6 @@ import { Animal } from '@animal/entities/animal.entity';
 import { AvatarData } from '@animal/interfaces/avatar';
 import { FileRepository } from '@file/file.repository';
 import { Injectable } from '@nestjs/common';
-import { join } from 'path';
 import { getRootPath } from '../main';
 
 @Injectable()
@@ -18,7 +17,7 @@ export class DashboardService {
             const animal = animals[index];
             const profilePicture = await this.fileRepository.getProfilePicture(animal.id);
 
-            const pathToImage = profilePicture ? join(rootDir, 'images', `${profilePicture.uuid}.jpg`) : "missing64x64.png";
+            const pathToImage = profilePicture ? `${profilePicture.uuid}.jpg` : "missing64x64.png";
 
             data.push({
                 name: animal.name,

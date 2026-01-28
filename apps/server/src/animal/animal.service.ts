@@ -1,4 +1,4 @@
-import { Profile } from '@catshelp/types';
+import {createProfile, Profile } from '@catshelp/types';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
@@ -19,7 +19,6 @@ import { FileService } from "@file/file.service";
 import { NotificationService } from "@notification/notification.service";
 import { AnimalSummaryDto } from "@animal/dto/animal-summary.dto";
 import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
-import { ProfileBuilder } from "@animal/profile-builder.service";
 import { AnimalProfileDto } from "@user/dtos/animal-profile.dto";
 import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
 import { FileRepository } from '../file/file.repository';
@@ -37,7 +36,6 @@ export class AnimalService {
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
         private readonly fileService: FileService,
         private readonly notificationService: NotificationService,
-        private readonly profileBuilder: ProfileBuilder,
         private readonly fileRepository: FileRepository,
     ) { }
 
@@ -47,10 +45,6 @@ export class AnimalService {
 
     public getAnimalById(id: number | string) {
         return this.animalRepository.getAnimalById(id);
-    }
-
-    public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
-        return this.profileBuilder.buildProfile(animal);
     }
 
     async saveOrUpdateFosterHome(data: { userId: number }): Promise<FosterHome> {
@@ -145,6 +139,11 @@ export class AnimalService {
         });
     }
 
+    public async getImages(animalId: number) {
+        return this.fileService.fetchImagePathsByAnimalId(animalId);
+
+    }
+
     public async getProfilePicture(id: number | string) {
         return this.fileService.fetchProfilePicture(id);
     }
@@ -161,5 +160,28 @@ export class AnimalService {
         }
 
         return data;
+    }
+
+    public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
+        const profile = createProfile();
+
+        profile.animalId = animal.id;
+        profile.mainInfo.name = animal.name;
+        profile.title = animal.profileTitle;
+        profile.description = animal.description;
+        profile.mainInfo.microchip = animal.chipNumber;
+        profile.mainInfo.microchipRegisteredInLLR = animal.chipRegisteredWithUs;
+        profile.mainInfo.birthDate = animal.birthday;
+
+        // Get characteristics using service (can be transactional if service uses @Transactional or EntityManager)
+        profile.characteristics = await this.characteristicsService.getCharacteristics(animal.id);
+
+        // Fetch images
+        profile.images = await this.getImages(animal.id);
+        const profilePicture = await this.getProfilePicture(animal.id);
+
+        profile.profilePictureFilename = profilePicture ? `images/${profilePicture.uuid}.jpg` : "";
+
+        return profile;
     }
 }

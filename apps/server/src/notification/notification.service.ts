@@ -40,12 +40,12 @@ export class NotificationService {
         for (let j = 0; j < this.notifications.length; j++) {
 
             const treatment = treatmentNameToTreatmentMap[this.notifications[j].name];
-
+``
             if (!treatment) {
                 continue;
             }
 
-            const catColour = this.colours[0];
+            const catColour = "#000000";
             const notification = this.notifications[j];
 
             const todo = this.processNotification(

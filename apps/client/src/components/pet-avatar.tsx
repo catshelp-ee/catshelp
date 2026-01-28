@@ -11,14 +11,15 @@ export const PetAvatar: React.FC<{
     isSelected?: boolean;
     onClick?: () => void;
 }> = ({ id, name, isSelected, onClick }) => {
-    const [image, setImage] = useState()
+    const [image, setImage] = useState("")
 
 
     useEffect(() => {
+        // this looks stupid. why not include the profile image in the animal object???
         const getImage = async () => {
             const response = await axios.get(`/api/animals/${id}/profile-picture`);
 
-            setImage(response.data);
+            setImage(`/images/${response.data.uuid}.jpg`);
         }
 
         getImage();

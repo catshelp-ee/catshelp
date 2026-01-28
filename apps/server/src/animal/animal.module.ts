@@ -1,5 +1,5 @@
 import { FileService } from '@file/file.service';
-import {forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
@@ -10,12 +10,10 @@ import { FileModule } from '../file/file.module';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
 import { AnimalController } from './animal.controller';
-import { AddRescueController } from './add-rescue.controller';
 import { AnimalService } from './animal.service';
 import { CharacteristicsService } from './characteristics.service';
 import { Animal } from './entities/animal.entity';
 import { Rescue } from './entities/rescue.entity';
-import { ProfileBuilder } from './profile-builder.service';
 import { AnimalRepository } from './repositories/animal.repository';
 import { CharacteristicRepository } from './repositories/characteristic.repository';
 import { FosterHomeRepository } from './repositories/foster-home.repository';
@@ -44,13 +42,11 @@ import { FileRepository } from '../file/file.repository';
     ],
     controllers: [
         AnimalController,
-        AddRescueController
     ],
     providers: [
         AnimalService,
         CharacteristicsService,
         CharacteristicRepository,
-        ProfileBuilder,
         FileService,
         AnimalRepository,
         UserRepository,
@@ -62,7 +58,6 @@ import { FileRepository } from '../file/file.repository';
         FileRepository,
     ],
     exports: [
-        ProfileBuilder,
         AnimalService,
         CharacteristicsService,
         CharacteristicRepository,

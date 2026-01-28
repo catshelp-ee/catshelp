@@ -15,6 +15,8 @@ import { CookieService } from './cookie.service';
 import { EmailService } from './email.service';
 import { RevokedToken } from './revoked-token.entity';
 import { RevokedTokenRepository } from './revoked-token.repository';
+import {NotificationModule} from "@notification/notification.module";
+import {FileModule} from "@file/file.module";
 
 @Module({
     imports: [
@@ -22,8 +24,10 @@ import { RevokedTokenRepository } from './revoked-token.repository';
         TypeOrmModule.forFeature([User]),
         TypeOrmModule.forFeature([RevokedToken]),
         forwardRef(() => AnimalModule),
+        forwardRef(() => NotificationModule),
         GoogleModule,
         UserModule,
+        FileModule,
     ],
     controllers: [
         AuthController

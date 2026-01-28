@@ -7,6 +7,7 @@ import path from "path";
 import { BaseCronJob } from "./base-cron-job";
 import { DataSource } from "typeorm";
 import { ModuleRef } from "@nestjs/core";
+import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
 
 type Tasks = {
     [assignee: string]: string[];
@@ -34,14 +35,20 @@ export class TodoNotificationJob extends BaseCronJob {
     }
 
     public async doWork() {
-        const users = await this.userRepository.getAllUsers();
+        const users = await this.userRepository.getUsers();
 
         for (let index = 0; index < users.length; index++) {
             const user = users[index];
 
             const animals = await this.animalRepository.getAnimalsByUserId(user.id);
 
-            const notifications = await this.notificationService.processNotifications(animals);
+            const notifications: AnimalTodoDto[] = [];
+
+            for (let i = 0; i < animals.length; i++) {
+                const todos = await this.notificationService.processNotifications(animals[i]);
+
+                notifications.push(...todos);
+            }
 
             if (notifications.length === 0) {
                 continue;

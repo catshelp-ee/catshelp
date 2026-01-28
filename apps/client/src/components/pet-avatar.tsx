@@ -2,19 +2,34 @@ import {
     Avatar,
     Typography,
 } from "@mui/material";
-import { AvatarData } from "@server/animal/interfaces/avatar";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import axios from "axios";
 
 export const PetAvatar: React.FC<{
-    data: AvatarData;
+    id: number | string;
+    name: string;
     isSelected?: boolean;
     onClick?: () => void;
-}> = ({ data, isSelected, onClick }) => {
+}> = ({ id, name, isSelected, onClick }) => {
+    const [image, setImage] = useState("")
+
+
+    useEffect(() => {
+        // this looks stupid. why not include the profile image in the animal object???
+        const getImage = async () => {
+            const response = await axios.get(`/api/animals/${id}/profile-picture`);
+
+            setImage(`/images/${response.data.uuid}.jpg`);
+        }
+
+        getImage();
+    }, []);
+
     return (
         <button onClick={onClick}>
             <Avatar
-                src={`/images/${data.pathToImage}`}
-                alt={`${data.name} pilt`}
+                src={image}
+                alt={`/missing64x64.png`}
                 sx={{
                     width: 64,
                     height: 64,
@@ -32,7 +47,7 @@ export const PetAvatar: React.FC<{
                     borderBottom: isSelected ? "4px solid #5DC2D8" : "none",
                 }}
             >
-                {data.name}
+                {name}
             </Typography>
         </button>
     );

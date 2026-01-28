@@ -1,4 +1,4 @@
-import { Profile } from '@catshelp/types';
+import {createProfile, Profile } from '@catshelp/types';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
@@ -15,6 +15,11 @@ import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
+import { FileService } from "@file/file.service";
+import { NotificationService } from "@notification/notification.service";
+import { AnimalSummaryDto } from "@animal/dto/animal-summary.dto";
+import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
+import { AnimalProfileDto } from "@user/dtos/animal-profile.dto";
 import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
 import { FileRepository } from '../file/file.repository';
 
@@ -29,10 +34,12 @@ export class AnimalService {
         private readonly googleSheetsService: GoogleSheetsService,
         private readonly characteristicsService: CharacteristicsService,
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
+        private readonly fileService: FileService,
+        private readonly notificationService: NotificationService,
         private readonly fileRepository: FileRepository,
     ) { }
 
-    async getAnimalsByUserId(id: number): Promise<Animal[]> {
+    async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
         return this.userRepository.getAnimalsByUserId(id);
     }
 
@@ -42,6 +49,10 @@ export class AnimalService {
 
     async saveOrUpdateFosterHome(data: { userId: number }): Promise<FosterHome> {
         return this.fosterhomeRepository.saveOrUpdateFosterHome(data.userId);
+    }
+
+    public async getNotifications(animals): Promise<AnimalTodoDto[]> {
+        return this.notificationService.processNotifications(animals);
     }
 
     public async createAnimal(data: AnimalRescueDto, user: User): Promise<RescueResult> {
@@ -126,5 +137,51 @@ export class AnimalService {
         this.googleSheetsService.updateSheetCells(updatedAnimalData, animalRescueSequenceNumber).then(() => { }, (error) => {
             console.error("Error saving data to sheets: " + error);
         });
+    }
+
+    public async getImages(animalId: number) {
+        return this.fileService.fetchImagePathsByAnimalId(animalId);
+
+    }
+
+    public async getProfilePicture(id: number | string) {
+        return this.fileService.fetchProfilePicture(id);
+    }
+
+    public async getAnimalSummaries(animals: Animal[]): Promise<AnimalSummaryDto[]> {
+        const data: AnimalSummaryDto[] = [];
+        for (let index = 0; index < animals.length; index++) {
+            const animal = animals[index];
+
+            data.push({
+                id: animal.id,
+                name: animal.name
+            });
+        }
+
+        return data;
+    }
+
+    public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
+        const profile = createProfile();
+
+        profile.animalId = animal.id;
+        profile.mainInfo.name = animal.name;
+        profile.title = animal.profileTitle;
+        profile.description = animal.description;
+        profile.mainInfo.microchip = animal.chipNumber;
+        profile.mainInfo.microchipRegisteredInLLR = animal.chipRegisteredWithUs;
+        profile.mainInfo.birthDate = animal.birthday;
+
+        // Get characteristics using service (can be transactional if service uses @Transactional or EntityManager)
+        profile.characteristics = await this.characteristicsService.getCharacteristics(animal.id);
+
+        // Fetch images
+        profile.images = await this.getImages(animal.id);
+        const profilePicture = await this.getProfilePicture(animal.id);
+
+        profile.profilePictureFilename = profilePicture ? `images/${profilePicture.uuid}.jpg` : "";
+
+        return profile;
     }
 }

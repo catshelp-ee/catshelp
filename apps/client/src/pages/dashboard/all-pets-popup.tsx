@@ -1,28 +1,43 @@
-import { Avatar, Typography, useTheme } from "@mui/material";
-import { AvatarData } from "@server/animal/interfaces/avatar";
-import React, { forwardRef } from "react";
-import { Link } from "react-router-dom";
+import {Avatar, Typography, useTheme} from "@mui/material";
+import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import React, {forwardRef, useEffect, useState} from "react";
+import {Link} from "react-router-dom";
+import axios from "axios";
 
 interface AllPetsPopupProps {
-    pets: AvatarData[];
+    pets: AnimalSummary[];
     onClose?: () => void;
     isOpen?: boolean;
 }
 
 // Individual Pet Item Component
-const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
+const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
     const theme = useTheme();
+
+    const [image, setImage] = useState()
+
+
+    useEffect(() => {
+        const getImage = async () => {
+            const response = await axios.get(`/api/animals/${pet.id}/profile-picture`);
+
+            setImage(response.data);
+        }
+
+        getImage();
+    }, []);
+
 
     return (
         <Link
-            to={`/cat-profile`}
+            to={`/cat-profile/${pet.id}`}
             className="flex justify-between items-center px-6 py-3 text-inherit bg-transparent transition-colors duration-200 hover:bg-black/5 focus:bg-black/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             aria-label={`Vaata ${pet.name} profiili`}
         >
             <div className="flex items-center space-x-4">
                 <Avatar
-                    src={`/${pet.pathToImage}`}
-                    alt={`${pet.name} pilt`}
+                    src={image}
+                    alt={"/missing64x64.png"}
                     sx={{
                         width: 48,
                         height: 48,
@@ -48,7 +63,7 @@ const PetItem: React.FC<{ pet: AvatarData }> = ({ pet }) => {
 };
 
 // Popup Header Component
-const PopupHeader: React.FC<{ totalCount: number }> = ({ totalCount }) => {
+const PopupHeader: React.FC<{ totalCount: number }> = ({totalCount}) => {
     const theme = useTheme();
 
     return (
@@ -68,7 +83,7 @@ const PopupHeader: React.FC<{ totalCount: number }> = ({ totalCount }) => {
 };
 
 const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
-    ({ pets, onClose, isOpen }, ref) => {
+    ({pets, onClose, isOpen}, ref) => {
         const theme = useTheme();
 
         if (!isOpen) {
@@ -86,11 +101,11 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
                     boxShadow: theme.shadows[8]
                 }}
             >
-                <PopupHeader totalCount={pets.length} />
+                <PopupHeader totalCount={pets.length}/>
 
                 <div className="flex-1 overflow-y-scroll">
                     {pets.map((pet, id) => (
-                        <PetItem key={id} pet={pet} />
+                        <PetItem key={id} pet={pet}/>
                     ))}
                 </div>
 

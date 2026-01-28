@@ -4,12 +4,13 @@ import { TreatmentRepository } from '@animal/repositories/treatment.repository';
 import { Result } from '@catshelp/types';
 import { formatEstonianDate } from '@catshelp/utils';
 import { Injectable } from '@nestjs/common';
-import { DEFAULT_COLORS } from '../dashboard/constants';
+import { DEFAULT_COLORS } from '@animal/constants';
 import { DashboardNotification } from './templates/DasboardNotification';
 import KompleksVaktsiiniKinnitusNotification from './templates/KompleksVaktsiiniKinnitusNotification';
 import MarutaudVaktsiiniKinnitusNotification from './templates/MarutaudVaktsiiniKinnitusNotification';
 import PoleKassiNotification from './templates/PoleKassiNotification';
 import UssirohiNotification from './templates/UssirohiNotification';
+import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
 
 @Injectable()
 export class NotificationService {
@@ -28,45 +29,37 @@ export class NotificationService {
         this.colours = DEFAULT_COLORS;
     }
 
-    public async processNotifications(animals: Animal[]): Promise<Result[]> {
-        if (animals.length === 0) {
-            return this.createEmptyStateNotification();
-        }
+    public async processNotifications(animal: Animal): Promise<AnimalTodoDto[]> {
+        const todos: AnimalTodoDto[] = [];
 
-        const results: Result[] = [];
+        const treatments = await this.treatmentRepository.getTreatements(animal.id);
+        const treatmentNameToTreatmentMap = Object.fromEntries(
+            treatments.map(t => [t.treatmentName, t])
+        );
 
-        for (let i = 0; i < animals.length; i++) {
-            const animal = animals[i];
+        for (let j = 0; j < this.notifications.length; j++) {
 
-            const treatments = await this.treatmentRepository.getTreatements(animal.id);
-            const treatmentNameToTreatmentMap = Object.fromEntries(
-                treatments.map(t => [t.treatmentName, t])
-            );
-
-            for (let j = 0; j < this.notifications.length; j++) {
-
-                const treatment = treatmentNameToTreatmentMap[this.notifications[j].name];
-
-                if (!treatment) {
-                    continue;
-                }
-
-                const catColour = this.colours[i % this.colours.length];
-                const notification = this.notifications[j];
-
-                const result = this.processNotification(
-                    notification,
-                    treatment,
-                    animal,
-                    catColour
-                );
-                if (result) {
-                    results.push(result);
-                }
-
+            const treatment = treatmentNameToTreatmentMap[this.notifications[j].name];
+``
+            if (!treatment) {
+                continue;
             }
+
+            const catColour = "#000000";
+            const notification = this.notifications[j];
+
+            const todo = this.processNotification(
+                notification,
+                treatment,
+                animal,
+                catColour
+            );
+            if (todo) {
+                todos.push(todo);
+            }
+
         }
-        return results;
+        return todos;
     }
 
     private processNotification(
@@ -74,8 +67,8 @@ export class NotificationService {
         treatment: Treatment,
         animal: Animal,
         catColour
-    ): Result | null {
-        const result: Result = {
+    ): AnimalTodoDto | null {
+        const todo: AnimalTodoDto = {
             label: notification.getText(),
             assignee: animal.name,
             due: formatEstonianDate(new Date()),
@@ -90,7 +83,7 @@ export class NotificationService {
         // Parse and validate date
         const triggerDate = treatment.visitDate;
         if (!triggerDate) {
-            return result;
+            return todo;
         }
 
         // Check if notification should be shown
@@ -100,10 +93,10 @@ export class NotificationService {
 
         const dueDate = notification.getDueDate(triggerDate);
 
-        result.urgent = notification.isUrgent(dueDate);;
-        result.due = formatEstonianDate(dueDate);
+        todo.urgent = notification.isUrgent(dueDate);;
+        todo.due = formatEstonianDate(dueDate);
 
-        return result;
+        return todo;
     }
 
     private createEmptyStateNotification(): Result[] {

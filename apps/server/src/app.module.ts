@@ -13,12 +13,10 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { TransactionInterceptor } from './common/interceptors/transaction.interceptor';
 import { AuthorizationGuard } from './common/middleware/authorization.guard';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { AppDataSource } from './data-source';
 import { FileModule } from './file/file.module';
 import { GoogleModule } from './google/google.module';
 import { NotificationModule } from './notification/notification.module';
-import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 
 const pathToEnv = join(__dirname, '../../.env');
@@ -54,11 +52,9 @@ const pathToEnv = join(__dirname, '../../.env');
         AnimalModule,
         AuthModule,
         CronModule,
-        DashboardModule,
         FileModule,
         GoogleModule,
         NotificationModule,
-        ProfileModule,
         UserModule,
         CommonModule,
     ],

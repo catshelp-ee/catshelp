@@ -3,6 +3,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
+import {AnimalService} from "@animal/animal.service";
+import {AnimalSummaryDto} from "@animal/dto/animal-summary.dto";
+import {AnimalProfileDto} from "@user/dtos/animal-profile.dto";
 
 @Injectable()
 export class UserService {
@@ -11,9 +14,25 @@ export class UserService {
         private cacheManager: Cache,
         private readonly userRepository: UserRepository,
         private readonly revokedTokenRepository: RevokedTokenRepository,
+        private readonly animalService: AnimalService,
     ) { }
 
-    public async getUser(userId: number | string): Promise<User | null> {
+    public async getProfiles(animalId: number | string): Promise<AnimalProfileDto | null> {
+        const animal = await this.animalService.getAnimalById(animalId);
+
+        if (!animal){
+            throw new Error("No animal found");
+        }
+
+        return this.animalService.buildProfile(animal);
+    }
+
+    public async getAnimals(id: string): Promise<AnimalSummaryDto[]> {
+        const animals = await this.animalService.getAnimalsByUserId(id);
+        return this.animalService.getAnimalSummaries(animals);
+    }
+
+    public async getUser(userId: number | string): Promise<User> {
         userId = Number(userId);
 
         // Try cache first
@@ -25,11 +44,15 @@ export class UserService {
         const user = await this.getUserById(userId);
 
         if (!user) {
-            return null;
+            throw new Error('User not found');
         }
 
         await this.cacheManager.set(`users:${userId}`, user);
         return user;
+    }
+
+    public async getUsers(): Promise<User[]> {
+        return this.userRepository.getUsers()
     }
 
     public async getUserByEmail(email: string): Promise<User | null> {

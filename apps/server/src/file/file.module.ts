@@ -14,7 +14,6 @@ import { GoogleModule } from '../google/google.module';
     imports: [
         TypeOrmModule.forFeature([File]),
         forwardRef(() => UserModule),
-        forwardRef(() => AuthModule),
         GoogleModule
     ],
     controllers: [

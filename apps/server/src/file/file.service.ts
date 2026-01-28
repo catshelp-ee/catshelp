@@ -50,7 +50,7 @@ export class FileService {
         await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
     }
 
-    public getProfilePicture(animalID: number) {
+    public fetchProfilePicture(animalID: number | string) {
         return this.fileRepository.getProfilePicture(animalID);
     }
 

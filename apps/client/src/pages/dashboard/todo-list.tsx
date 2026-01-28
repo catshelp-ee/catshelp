@@ -1,12 +1,12 @@
 import React from "react";
 import TodoItem from "./todo-item";
-import { Todo } from "./dashboard";
+import {AnimalTodo} from "@pages/dashboard/interfaces/animal-todo";
 
 interface TodoListProps {
-    todos: Todo[];
+    todos: AnimalTodo[];
 }
 
-const TodoList: React.FC<TodoListProps> = ({ todos }) => {
+const TodoList: React.FC<TodoListProps> = ({todos}) => {
     return (
         <div className="p-2 md:p-4 border border-solid border-black border-opacity-20 border-slate-500 rounded-2xl">
             <h2 className="dashboard-heading">SINU TEGEMISTE MEELESPEA</h2>

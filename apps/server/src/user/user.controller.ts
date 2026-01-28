@@ -12,10 +12,11 @@ import { User } from './entities/user.entity';
 @Controller('user')
 @UseGuards(AuthorizationGuard)
 export class UserController {
-    constructor() { }
+    constructor(
+    ) { }
 
     @Get()
-    async getUserData(@Req() req: Request): Promise<User> {
+    async getCurrentUser(@Req() req: Request): Promise<User> {
         const user = req.user;
 
         if (!user) {

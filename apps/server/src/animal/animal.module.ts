@@ -10,12 +10,10 @@ import { FileModule } from '../file/file.module';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
 import { AnimalController } from './animal.controller';
-import { AddRescueController } from './add-rescue.controller';
 import { AnimalService } from './animal.service';
 import { CharacteristicsService } from './characteristics.service';
 import { Animal } from './entities/animal.entity';
 import { Rescue } from './entities/rescue.entity';
-import { ProfileBuilder } from './profile-builder.service';
 import { AnimalRepository } from './repositories/animal.repository';
 import { CharacteristicRepository } from './repositories/characteristic.repository';
 import { FosterHomeRepository } from './repositories/foster-home.repository';
@@ -24,6 +22,7 @@ import { TreatmentRepository } from './repositories/treatment.repository';
 import { Characteristic } from './entities/characteristic.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
+import { NotificationModule } from "@notification/notification.module";
 import { FileRepository } from '../file/file.repository';
 
 
@@ -36,19 +35,18 @@ import { FileRepository } from '../file/file.repository';
         TypeOrmModule.forFeature([Characteristic]),
         TypeOrmModule.forFeature([AnimalToFosterHome]),
         FileModule,
+        NotificationModule,
         GoogleModule,
         UserModule,
         AuthModule,
     ],
     controllers: [
         AnimalController,
-        AddRescueController
     ],
     providers: [
         AnimalService,
         CharacteristicsService,
         CharacteristicRepository,
-        ProfileBuilder,
         FileService,
         AnimalRepository,
         UserRepository,
@@ -60,7 +58,6 @@ import { FileRepository } from '../file/file.repository';
         FileRepository,
     ],
     exports: [
-        ProfileBuilder,
         AnimalService,
         CharacteristicsService,
         CharacteristicRepository,

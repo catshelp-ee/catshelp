@@ -53,7 +53,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
             try {
                 const animalSummaries = await getUserAnimalSummaries(userId);
-                console.log(animalSummaries);
                 setPets(animalSummaries);
 
                 const userTodos: AnimalTodo[] = [];
@@ -79,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
         fetchDashboardWithLoading();
 
         return () => { };
-    }, []);
+    }, [url.pathname]);
 
     const renderContent = () => {
         if (isLoading) {

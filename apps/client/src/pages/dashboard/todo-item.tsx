@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import MyButton from "src/components/button";
 import CatSvg from "@assets/cat-svg";
-import { Todo } from "./dashboard";
+import {AnimalTodo} from "@pages/dashboard/interfaces/animal-todo";
 
-const TodoItem: React.FC<Todo> = ({
+const TodoItem: React.FC<AnimalTodo> = ({
     label,
     due,
     assignee,

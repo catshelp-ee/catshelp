@@ -22,6 +22,8 @@ import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
 import { AnimalProfileDto } from "@user/dtos/animal-profile.dto";
 import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
 import { FileRepository } from '../file/file.repository';
+import {getRootPath} from "@server/src/main";
+import {join} from "path";
 
 @Injectable()
 export class AnimalService {
@@ -153,10 +155,15 @@ export class AnimalService {
         for (let index = 0; index < animals.length; index++) {
             const animal = animals[index];
 
+            const profilePicture = await this.getProfilePicture(animal.id);
+
+            const pathToProfilePicture = profilePicture ? join('/images', `${profilePicture.uuid}.jpg`) : "/missing64x64.png";
+
             data.push({
                 id: animal.id,
-                name: animal.name
-            });
+                name: animal.name,
+                pathToProfilePicture
+            } as AnimalSummaryDto);
         }
 
         return data;

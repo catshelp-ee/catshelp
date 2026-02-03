@@ -145,12 +145,13 @@ export class AnimalService {
     }
 
     private async getDefaultProfilePicture() {
-        return 'missing64x64.png';
+        return '/missing64x64.png';
     }
 
     public async getProfilePicture(id: number | string) {
         try {
-            return this.fileService.fetchProfilePicture(id);
+            const file = await this.fileRepository.getProfilePicture(id);
+            return join('/images', `${file?.uuid}.jpg`);
         } catch (error) {
             return this.getDefaultProfilePicture();
         }
@@ -161,14 +162,10 @@ export class AnimalService {
         for (let index = 0; index < animals.length; index++) {
             const animal = animals[index];
 
-            const profilePicture = await this.getProfilePicture(animal.id);
-
-            const pathToProfilePicture = profilePicture ? join('/images', `${profilePicture.uuid}.jpg`) : "/missing64x64.png";
-
             data.push({
                 id: animal.id,
                 name: animal.name,
-                pathToProfilePicture
+                pathToProfilePicture: await this.getProfilePicture(animal.id)
             } as AnimalSummaryDto);
         }
 

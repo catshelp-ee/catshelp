@@ -50,7 +50,7 @@ export class FileService {
         await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
     }
 
-    public async fetchProfilePicture(animalID: number | string) {
+    public async getProfilePicture(animalID: number | string) {
         const pfp = await this.fileRepository.getProfilePicture(animalID);
         if (!pfp) {
             throw new NotFoundException(`Profile picture not found for animal ${animalID}`);

@@ -150,7 +150,7 @@ export class AnimalService {
 
     public async getProfilePicture(id: number | string) {
         try {
-            const file = await this.fileRepository.getProfilePicture(id);
+            const file = await this.fileService.getProfilePicture(id);
             return join('/images', `${file?.uuid}.jpg`);
         } catch (error) {
             return this.getDefaultProfilePicture();

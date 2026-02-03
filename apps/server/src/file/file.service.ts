@@ -1,7 +1,7 @@
 import { CatSheetsHeaders, Profile } from '@catshelp/types';
 import { extractFileId } from '@common/utils/google-utils';
 import { GoogleDriveService } from '@google/google-drive.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileRepository } from './file.repository';
 
 @Injectable()
@@ -50,8 +50,12 @@ export class FileService {
         await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
     }
 
-    public fetchProfilePicture(animalID: number | string) {
-        return this.fileRepository.getProfilePicture(animalID);
+    public async fetchProfilePicture(animalID: number | string) {
+        const pfp = await this.fileRepository.getProfilePicture(animalID);
+        if (!pfp) {
+            throw new NotFoundException(`Profile picture not found for animal ${animalID}`);
+        }
+        return pfp;
     }
 
     public async processImages(

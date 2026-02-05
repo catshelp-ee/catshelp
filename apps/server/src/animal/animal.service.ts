@@ -144,7 +144,7 @@ export class AnimalService {
         return this.fileService.fetchImagePathsByAnimalId(animalId);
     }
 
-    private async getDefaultProfilePicture() {
+    private getDefaultProfilePicture() {
         return '/missing64x64.png';
     }
 

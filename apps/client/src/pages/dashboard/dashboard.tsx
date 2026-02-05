@@ -9,8 +9,9 @@ import FosterPets from "./foster-pets";
 import Notifications from "./notifications";
 import TodoList from "./todo-list";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {AnimalTodo} from "@pages/dashboard/interfaces/animal-todo";
 import {AnimalTodo} from "@interfaces/animal-todo";
+import {animalsApi} from "@api/animals.service";
+import {usersApi} from "@api/users.service";
 
 interface DashboardProps { }
 
@@ -26,41 +27,27 @@ const Dashboard: React.FC<DashboardProps> = () => {
     const url = useLocation();
 
     useEffect(() => {
-
-        const getUserAnimalSummaries = async (userId): Promise<AnimalSummary[]> => {
-            const response = await axios.get(`/api/users/${userId}/animals`);
-
-            return response.data;
-        }
-
-        const getAnimalTodos = async (animalId): Promise<AnimalTodo[]> => {
-            const response = await axios.get(`/api/animals/${animalId}/todos`);
-
-            return response.data;
-        }
-
         const loadDashboardData = async () => {
             const user = await getUser();
 
-            const userId = url.pathname === "/users" ? user.id : params.userId;
+            const userId: number = url.pathname === "/users" ? user.id : Number(params.userId);
 
             try {
-                const response = await axios.get(`/api/users/${userId}`);
-                const user = response.data;
+                const user = await usersApi.getUser(userId);
                 setName(user.fullName);
             } catch (e) {
                 navigate(`/users/${user.id}`)
             }
 
             try {
-                const animalSummaries = await getUserAnimalSummaries(userId);
+                const animalSummaries = await usersApi.getUserAnimals(userId);
                 setPets(animalSummaries);
 
                 const userTodos: AnimalTodo[] = [];
                 for (let i = 0; i < animalSummaries.length; i++) {
                     const animalSummary = animalSummaries[i];
 
-                    const todos = await getAnimalTodos(animalSummary.id);
+                    const todos = await animalsApi.getTodos(animalSummary.id);
                     userTodos.push(...todos);
                 }
                 setTodos(userTodos);

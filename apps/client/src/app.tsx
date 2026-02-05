@@ -19,15 +19,14 @@ function App() {
     dayjs.locale("et");
     dayjs().weekday(1);
 
-
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="/dashboard"></Navigate>} />
+            <Route path="/" element={<Navigate to={HOME}></Navigate>} />
             <Route path="/login" element={<LoginForm />} />
             <Route element={<ProtectedRoute />}>
                 <Route element={<PageLayout />}>
                     <Route path="/admin" element={<Admin />} />
-                    <Route path="/users" element={<Dashboard />} />
+                    <Route path={HOME} element={<Dashboard />} />
                     <Route path="/users/:userId" element={<Dashboard />} />
                     <Route path="/cat-profile/:id" element={<CatProfile />} />
                     <Route path="/users/animals/profile" element={<CatProfile />} />
@@ -40,3 +39,4 @@ function App() {
 }
 
 export default App;
+export const HOME = "/users";

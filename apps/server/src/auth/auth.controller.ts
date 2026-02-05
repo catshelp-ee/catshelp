@@ -106,6 +106,6 @@ export class AuthController {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
 
-        res.redirect('/dashboard');
+        res.redirect('/users');
     }
 }

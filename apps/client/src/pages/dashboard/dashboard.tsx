@@ -78,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
         fetchDashboardWithLoading();
 
         return () => { };
-    }, []);
+    }, [url.pathname]);
 
     const renderContent = () => {
         if (isLoading) {
@@ -90,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
                     <h1 className="font-medium text-4xl my-6">
                         Tere tulemast <span className="block sm:inline">{name}! 😺</span>
                     </h1>
-                    <FosterPets pets={pets} />
+                    <FosterPets  pets={pets} />
                 </div>
                 <TodoList todos={todos} />
             </div>

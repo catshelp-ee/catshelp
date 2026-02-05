@@ -1,4 +1,4 @@
-import {createProfile, Profile } from '@catshelp/types';
+import { createProfile, Profile } from '@catshelp/types';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
@@ -15,13 +15,15 @@ import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
 import { AnimalToFosterHome } from './entities/animalToFosterhome.entity';
 import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhome.repository';
-import { FileService } from "@file/file.service";
-import { NotificationService } from "@notification/notification.service";
-import { AnimalSummaryDto } from "@animal/dto/animal-summary.dto";
-import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
-import { AnimalProfileDto } from "@user/dtos/animal-profile.dto";
+import { FileService } from '@file/file.service';
+import { NotificationService } from '@notification/notification.service';
+import { AnimalSummaryDto } from '@animal/dto/animal-summary.dto';
+import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
+import { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
 import { FileRepository } from '../file/file.repository';
+import { getRootPath } from '@server/src/main';
+import { join } from 'path';
 
 @Injectable()
 export class AnimalService {
@@ -117,7 +119,6 @@ export class AnimalService {
             description: updatedAnimalData.description,
         };
 
-
         const animalRescue = animalWithRescue.animalRescue;
 
         const animalRescueData = {
@@ -141,11 +142,19 @@ export class AnimalService {
 
     public async getImages(animalId: number) {
         return this.fileService.fetchImagePathsByAnimalId(animalId);
+    }
 
+    private getDefaultProfilePicture() {
+        return '/missing64x64.png';
     }
 
     public async getProfilePicture(id: number | string) {
-        return this.fileService.fetchProfilePicture(id);
+        try {
+            const file = await this.fileService.getProfilePicture(id);
+            return join('/images', `${file?.uuid}.jpg`);
+        } catch (error) {
+            return this.getDefaultProfilePicture();
+        }
     }
 
     public async getAnimalSummaries(animals: Animal[]): Promise<AnimalSummaryDto[]> {
@@ -155,8 +164,9 @@ export class AnimalService {
 
             data.push({
                 id: animal.id,
-                name: animal.name
-            });
+                name: animal.name,
+                pathToProfilePicture: await this.getProfilePicture(animal.id)
+            } as AnimalSummaryDto);
         }
 
         return data;
@@ -178,9 +188,7 @@ export class AnimalService {
 
         // Fetch images
         profile.images = await this.getImages(animal.id);
-        const profilePicture = await this.getProfilePicture(animal.id);
-
-        profile.profilePictureFilename = profilePicture ? `images/${profilePicture.uuid}.jpg` : "";
+        profile.profilePictureFilename = await this.getProfilePicture(animal.id);
 
         return profile;
     }

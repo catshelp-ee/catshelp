@@ -14,20 +14,6 @@ interface AllPetsPopupProps {
 const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
     const theme = useTheme();
 
-    const [image, setImage] = useState()
-
-
-    useEffect(() => {
-        const getImage = async () => {
-            const response = await axios.get(`/api/animals/${pet.id}/profile-picture`);
-
-            setImage(response.data);
-        }
-
-        getImage();
-    }, []);
-
-
     return (
         <Link
             to={`/cat-profile/${pet.id}`}
@@ -36,8 +22,8 @@ const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
         >
             <div className="flex items-center space-x-4">
                 <Avatar
-                    src={image}
-                    alt={"/missing64x64.png"}
+                    src={pet.pathToProfilePicture}
+                    alt={pet.name}
                     sx={{
                         width: 48,
                         height: 48,

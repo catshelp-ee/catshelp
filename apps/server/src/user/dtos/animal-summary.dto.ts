@@ -1,5 +1,5 @@
 export interface AnimalSummaryDto {
-    id: number;
     name: string;
+    id: number;
     pathToProfilePicture: string;
 }

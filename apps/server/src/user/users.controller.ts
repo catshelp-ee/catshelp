@@ -26,7 +26,7 @@ export class UsersController {
 
     @Get(':userId/animals')
     public async getAnimalsForUser(@Req() req: Request, @Param('userId') userId: string): Promise<AnimalSummaryDto[]> {
-        if (!AuthService.checkIfAdmin(req, userId)){
+        if (!AuthService.checkAuth(req, userId)){
             throw new Error('Unauthorized');
         }
 
@@ -35,7 +35,7 @@ export class UsersController {
 
     @Get(":userId/animals/:animalId/profile")
     async getProfile(@Req() req: Request, @Param("userId") userId: string, @Param("animalId") animalId: string) {
-        if (!AuthService.checkIfAdmin(req, userId)){
+        if (!AuthService.checkAuth(req, userId)){
             throw new Error('Unauthorized');
         }
 

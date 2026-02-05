@@ -12,6 +12,9 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "paths": {
+            "@interfaces/*": [
+                "src/interfaces/*"
+            ],
             "@components/*": [
                 "src/components/*"
             ],

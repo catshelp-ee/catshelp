@@ -2,7 +2,7 @@ import {useAlert} from "@context/alert-context";
 import {useAuth} from "@context/auth-context";
 import {isLoadingWrapper} from "@hooks/is-loading";
 import {CircularProgress} from "@mui/material";
-import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import {AnimalSummary} from "@interfaces/animal-summary";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 import FosterPets from "./foster-pets";
@@ -10,6 +10,7 @@ import Notifications from "./notifications";
 import TodoList from "./todo-list";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {AnimalTodo} from "@pages/dashboard/interfaces/animal-todo";
+import {AnimalTodo} from "@interfaces/animal-todo";
 
 interface DashboardProps { }
 

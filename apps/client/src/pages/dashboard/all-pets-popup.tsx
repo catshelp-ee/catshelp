@@ -1,5 +1,5 @@
 import {Avatar, Typography, useTheme} from "@mui/material";
-import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import {AnimalSummary} from "@interfaces/animal-summary";
 import React, {forwardRef, useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import axios from "axios";

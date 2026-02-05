@@ -4,7 +4,7 @@ import {
     useTheme,
 } from "@mui/material";
 import AllPetsPopup from "@pages/dashboard/all-pets-popup";
-import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import {AnimalSummary} from "@interfaces/animal-summary";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Link, useLocation, useParams} from "react-router-dom";
 import {PetAvatar} from "src/components/pet-avatar";

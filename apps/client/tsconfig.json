@@ -12,6 +12,12 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "paths": {
+            "@api/*" : [
+                "src/services/api/*"
+            ],
+            "@interfaces/*": [
+                "src/interfaces/*"
+            ],
             "@components/*": [
                 "src/components/*"
             ],

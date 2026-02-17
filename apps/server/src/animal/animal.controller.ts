@@ -13,7 +13,7 @@ export class AnimalController {
         private readonly animalService: AnimalService
     ) { }
 
-    @Get(":userId/profiles")
+    @Get("profiles/users/:userId")
     async getProfiles(@Req() req: Request, @Param('userId') userId: string) {
         const user = req.user;
         if (user.id !== Number(userId) && user.role !== "ADMIN"){
@@ -25,13 +25,18 @@ export class AnimalController {
         return { profiles };
     }
 
+    @Get(":id/profile")
+    async getProfile(@Req() req: Request, @Param("id") id: string) {
+        return this.animalService.getProfile(id);
+    }
+
     @Get(":id/profile-picture")
     async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
         return this.animalService.getProfilePicture(id);
     }
 
-    @Get(":animalId/todos")
-    async getAnimalTodos(@Req() req: Request, @Param("animalId") id: string): Promise<AnimalTodoDto[]> {
+    @Get(":id/todos")
+    async getAnimalTodos(@Req() req: Request, @Param("id") id: string): Promise<AnimalTodoDto[]> {
         const user = req.user;
         if (user.role !== "ADMIN"){
             throw new Error('Unauthorized');

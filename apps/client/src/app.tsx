@@ -4,6 +4,7 @@ import PageLayout from "@pages/app/page-layout";
 import Dashboard from "@pages/dashboard/dashboard";
 import LoginForm from "@pages/login/login-form";
 import CatProfile from "@pages/profile/cat-profile";
+import CatProfileList from "@pages/profile/cat-profile-list";
 import ProtectedRoute from "@pages/protected-route";
 import "@style/app.css";
 import dayjs from "dayjs";
@@ -28,9 +29,8 @@ function App() {
                     <Route path="/admin" element={<Admin />} />
                     <Route path={HOME} element={<Dashboard />} />
                     <Route path="/users/:userId" element={<Dashboard />} />
-                    <Route path="/cat-profile/:id" element={<CatProfile />} />
-                    <Route path="/users/animals/profile" element={<CatProfile />} />
-                    <Route path="/users/:userId/animals/:animalId/profile" element={<CatProfile />} />
+                    <Route path="/cat-profiles" element={<CatProfileList />} />
+                    <Route path="/cat-profiles/:id" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />
                 </Route>
             </Route>

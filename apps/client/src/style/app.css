@@ -202,3 +202,26 @@
     color: #82869e;
     font-weight: 600;
 }
+
+.profile-section {
+    margin-top: 24px;
+    border-radius: 8px;
+    border: solid;
+    border-color: rgba(0, 0, 0, 0.1);
+    border-width: 1px;
+    display: flex;
+    flex-direction: column;
+    padding:24px
+}
+
+.section-header {
+
+}
+
+.section-label {
+    
+}
+
+.section-value {
+
+}

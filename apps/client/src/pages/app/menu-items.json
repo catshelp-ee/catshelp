@@ -9,7 +9,7 @@
         {
             "icon": "Document.png",
             "text": "Kiisu profiil veebis",
-            "path": "/cat-profile",
+            "path": "/cat-profiles",
             "dynamic" : true
         },
         {

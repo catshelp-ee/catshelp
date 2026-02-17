@@ -1,77 +1,106 @@
 import { Profile } from "@catshelp/types/src";
 import { calculateAge, isFutureDate } from "@catshelp/utils/src";
 import { useIsMobile } from "@context/is-mobile-context";
-import EditIcon from '@mui/icons-material/Edit';
-import { IconButton, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ImageGallery from "./image-gallery";
 
 interface CatDetailsProps {
     selectedCat: Profile;
-    setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CatDetailsHeader: React.FC<{
     title: string;
-    onEditClick: () => void;
-}> = ({ title, onEditClick }) => (
-    <div className="mb-16">
-        <h1 className="text-secondary">PEALKIRI:</h1>
-        <span className="flex justify-between">
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <IconButton
-                onClick={onEditClick}
-                sx={{
-                    width: "96px",
-                    backgroundColor: "#007AFF",
-                    borderRadius: "8px",
-                    color: "#FFF",
-                    "&:hover": {
-                        backgroundColor: "#3696ff",
-                    },
-
-                }}
-            >
-                <EditIcon /> {/* default is 24 */}
-            </IconButton>
+}> = ({ title }) => (
+    <div className="profile-section">
+        <h4 className="section-header">PEALKIRI</h4>
+        <span className="section-value">
+            {title}
         </span>
     </div>
 );
 
 const CatDescription: React.FC<{ description: string }> = ({ description }) => (
-    <div className="mb-16">
-        <h1 className="text-secondary">LOOMA KIRJELDUS:</h1>
+    <div className="profile-section">
+        <h4 className="section-header">LOOMA KIRJELDUS</h4>
         <Typography sx={{ textAlign: "justify" }}>{description}</Typography>
     </div>
 );
 
-const CatProfileField: React.FC<{
-    label: string;
-    value: string | string[] | Date | null;
-}> = ({ label, value }) => {
+const CatProfile: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
 
-    const renderContent = () => {
-        if (Array.isArray(value)) {
-            return value.join(", ");
-        } else if (value instanceof Date) {
-            return Date.toString()
+    const capitalize = str => {
+        if (!str) {
+            return ""
         }
-        return value;
-    }
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+    };
 
     return (
-        <div>
-            <h2 className="font-bold">{label}</h2>
-            <Typography variant="body1">
-                {renderContent()}
-            </Typography>
+        <div className="profile-section">
+            <h4 className="section-header">LOOMA PROFIIL</h4>
+            
+            <span className="section-label">Kassi sugu</span>
+            <span className="section-value">{capitalize(selectedCat.characteristics.textFields.gender)}</span>
+
+            <span className="section-label">Kassi vanus</span>
+            <span className="section-value">{calculateAge(selectedCat.mainInfo.birthDate)}</span>
+
+            <span className="section-label">Kassi välimus</span>
+            <span className="section-value">{
+                [
+                    selectedCat.characteristics.selectFields.coatColour,
+                    selectedCat.characteristics.selectFields.coatLength
+                ].filter(Boolean).join(' ')}
+            </span>
+
+            <span className="section-label">Kassi asukoht</span>
+            <span className="section-value">{selectedCat.mainInfo.location}</span>
+
+            <div className="seperator">TODO</div>
+
+
+            <span className="section-label">Mis protseduurid hoiulisel tehtud on?</span>
+            <span className="section-value">{extractProcedures(selectedCat)}</span>
+
+            <span className="section-label">Lõigatud</span>
+            <span className="section-value">TODO</span>
+
+            <span className="section-label">Kui kassil esineb krooniline haigus, vajab eritoitu või on vigastus palun kirjuta siia sellest</span>
+            <span className="section-value">{selectedCat.characteristics.textFields.chronicConditions}</span>
+
+            <span className="section-label">Kui kaua on kass hoiukodus/kassitoas viibinud?</span>
+            <span className="section-value">{selectedCat.characteristics.textFields.fosterStayDuration}</span>
+
+            <div className="seperator">TODO</div>
+
+
+            <span className="section-label">Iseloom</span>
+            <span className="section-value">{selectedCat.characteristics.multiselectFields.personality.join(", ")}</span>
+
+            <span className="section-label">Kassile meeldib</span>
+            <span className="section-value">{selectedCat.characteristics.multiselectFields.likes.join(", ")}</span>
+
+            <span className="section-label">Kirjelda kassi mõne iseloomustava lausega (nt milline on kiisu argipäev)</span>
+            <span className="section-value">{selectedCat.characteristics.textFields.description}</span>
+
+            <span className="section-label">Kuidas suhtub teistesse kassidesse?</span>
+            <span className="section-value">{selectedCat.characteristics.selectFields.attitudeTowardsCats}</span>
+
+            <span className="section-label">Kuidas suhtub koertesse?</span>
+            <span className="section-value">{selectedCat.characteristics.selectFields.attitudeTowardsDogs}</span>
+
+            <span className="section-label">Kuidas suhtub lastesse?</span>
+            <span className="section-value">{selectedCat.characteristics.selectFields.attitudeTowardsChildren}</span>
+
+            <span className="section-label">Kuidas ta sobiks toa- või õuekassikas?</span>
+            <span className="section-value">{selectedCat.characteristics.selectFields.suitabilityForIndoorOrOutdoor}</span>
         </div>
-    )
-}
+    );
+};
 
 const extractProcedures = (profile: Profile): string => {
     const procedures = [];
-
 
     if (!profile.characteristics.textFields.gender.split(' ')[0].endsWith('mata')) {
         procedures.push("Lõigatud");
@@ -94,9 +123,7 @@ const extractProcedures = (profile: Profile): string => {
 
 const CatDetails: React.FC<CatDetailsProps> = ({
     selectedCat,
-    setIsEditMode,
 }) => {
-    const handleEditClick = () => setIsEditMode(true);
     const isMobile = useIsMobile();
     const [selectedProfilePicture, setSelectedProfilePicture] = useState<string>(selectedCat.profilePictureFilename);
 
@@ -139,23 +166,12 @@ const CatDetails: React.FC<CatDetailsProps> = ({
             )}
             <div className={`${isMobile ? "w-full" : "w-2/3"}`}>
                 <CatDetailsHeader
-                    title={selectedCat?.title || ""}
-                    onEditClick={handleEditClick}
+                    title={selectedCat?.mainInfo.name || ""}
                 />
 
                 <CatDescription description={selectedCat?.description || ""} />
 
-                <div className="flex flex-col gap-4">
-                    <h1 className="text-secondary">LOOMA PROFIIL:</h1>
-                    {Object.entries(FIELD_LABELS).map(([label, value], index) => {
-                        return (
-                            <CatProfileField
-                                key={index}
-                                label={label}
-                                value={value}
-                            />)
-                    })}
-                </div>
+                <CatProfile selectedCat={selectedCat}/>
             </div>
 
         {!isMobile && <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}

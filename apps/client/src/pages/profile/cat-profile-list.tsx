@@ -1,4 +1,3 @@
-import { createProfile, Profile, Avatar } from "@catshelp/types/src";
 import { useAlert } from "@context/alert-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { createContextHook } from "@hooks/create-context-hook";
@@ -6,8 +5,8 @@ import { isLoadingWrapper } from "@hooks/is-loading";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
-import CatDetails from "./cat-details";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@context/auth-context";
 
 interface LoadingContextType {
     isLoading: boolean;
@@ -17,22 +16,23 @@ interface LoadingContextType {
 const IsLoadingContext = createContext<LoadingContextType | undefined>(undefined);
 export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
-const CatProfile: React.FC = () => {
+const CatProfileList: React.FC = () => {
     const { showAlert } = useAlert();
-    const [selectedCat, setSelectedCat] = useState<Profile>(createProfile());
     const [isLoading, setIsLoading] = useState(false);
+    const [animals, setAnimals] = useState([]);
+    const { getUser } = useAuth();
     const isMobile = useIsMobile();
-    const params = useParams();
 
     useEffect(() => {
-        const loadCat = async () => {
+        const loadUserCats = async () => {
+            const user = await getUser();
+
             try {
-                const response = await axios.get(`/api/animals/${params.id}/profile/`, {
+                const response = await axios.get(`/api/animals/profiles/users/${user.id}`, {
                     withCredentials: true
                 });
 
-                const profile = response.data;
-                setSelectedCat(profile);
+                setAnimals(response.data.profiles);
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
@@ -40,10 +40,11 @@ const CatProfile: React.FC = () => {
         };
 
         const fetchAndSetCatsWithLoading = async () => {
-            await isLoadingWrapper(loadCat, setIsLoading);
+            await isLoadingWrapper(loadUserCats, setIsLoading);
         };
 
         fetchAndSetCatsWithLoading();
+
     }, []);
 
     return (
@@ -51,11 +52,24 @@ const CatProfile: React.FC = () => {
             <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
                 <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
                     {isLoading && (<CircularProgress />)}
-                    {selectedCat != null && (<CatDetails selectedCat={selectedCat} />)}
+                    <ul>
+                        {
+                            animals.length !== 0 && (animals.map(animal =>
+                                <li>
+                                    <Link
+                                        key={animal.id}
+                                        to={`/cat-profiles/${animal.id}`}
+                                        aria-label={`Vaata ${animal.name} profiili`}
+                                    >
+                                        {animal.name}
+                                    </Link>
+                                </li>))
+                        }
+                    </ul>
                 </div>
             </div>
         </IsLoadingContext.Provider>
     );
 };
 
-export default CatProfile;
+export default CatProfileList;

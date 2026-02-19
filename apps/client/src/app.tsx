@@ -1,10 +1,10 @@
 import AddCatForm from "@pages/add-cat/add-cat-form";
 import Admin from "@pages/admin/admin";
+import AdminCatProfile from "@pages/admin/admin-cat-profile";
 import PageLayout from "@pages/app/page-layout";
 import Dashboard from "@pages/dashboard/dashboard";
 import LoginForm from "@pages/login/login-form";
 import CatProfile from "@pages/profile/cat-profile";
-import CatProfileList from "@pages/profile/cat-profile-list";
 import ProtectedRoute from "@pages/protected-route";
 import "@style/app.css";
 import dayjs from "dayjs";
@@ -27,10 +27,10 @@ function App() {
             <Route element={<ProtectedRoute />}>
                 <Route element={<PageLayout />}>
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
                     <Route path={HOME} element={<Dashboard />} />
                     <Route path="/users/:userId" element={<Dashboard />} />
-                    <Route path="/cat-profiles" element={<CatProfileList />} />
-                    <Route path="/cat-profiles/:id" element={<CatProfile />} />
+                    <Route path="/cat-profiles" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />
                 </Route>
             </Route>

@@ -16,7 +16,7 @@ interface LoadingContextType {
 const IsLoadingContext = createContext<LoadingContextType | undefined>(undefined);
 export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
 
-const CatProfileList: React.FC = () => {
+const AdminCatList: React.FC = () => {
     const { showAlert } = useAlert();
     const [isLoading, setIsLoading] = useState(false);
     const [animals, setAnimals] = useState([]);
@@ -58,7 +58,7 @@ const CatProfileList: React.FC = () => {
                                 <li>
                                     <Link
                                         key={animal.id}
-                                        to={`/cat-profiles/${animal.id}`}
+                                        to={`/admin-cat-profile/${animal.id}`}
                                         aria-label={`Vaata ${animal.name} profiili`}
                                     >
                                         {animal.name}
@@ -72,4 +72,4 @@ const CatProfileList: React.FC = () => {
     );
 };
 
-export default CatProfileList;
+export default AdminCatList;

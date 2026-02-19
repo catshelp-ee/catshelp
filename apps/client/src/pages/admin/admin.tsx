@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Select, MenuItem, InputLabel, SelectChangeEvent } from "@mui/material";
+import AdminCatList from "./admin-cat-list";
 
 interface AdminProps { }
 
@@ -63,6 +64,9 @@ const Admin: React.FC<AdminProps> = () => {
             <Button onClick={(e) => runJob()}>
                 Käivita
             </Button>
+            <div>
+                <AdminCatList></AdminCatList>
+            </div>
         </div>
     );
 };

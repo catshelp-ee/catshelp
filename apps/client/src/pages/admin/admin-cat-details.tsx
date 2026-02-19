@@ -26,7 +26,7 @@ const CatDescription: React.FC<{ description: string }> = ({ description }) => (
     </div>
 );
 
-const CatProfile: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+const CatDetails: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
 
     const capitalize = str => {
         if (!str) {
@@ -120,7 +120,7 @@ const extractProcedures = (profile: Profile): string => {
     return procedures.join(', ');
 }
 
-const CatDetails: React.FC<CatDetailsProps> = ({
+const AdminCatDetails: React.FC<CatDetailsProps> = ({
     selectedCat,
 }) => {
     const isMobile = useIsMobile();
@@ -164,12 +164,12 @@ const CatDetails: React.FC<CatDetailsProps> = ({
                 <CatDetailsHeader
                     title={selectedCat?.mainInfo.name || ""}
                 />
-
                 <CatDescription description={selectedCat?.description || ""} />
-                <CatProfile selectedCat={selectedCat}/>
+
+                <CatDetails selectedCat={selectedCat}/>
             </div>
         </>
     );
 };
 
-export default CatDetails;
+export default AdminCatDetails;

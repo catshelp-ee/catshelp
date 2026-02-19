@@ -14,7 +14,7 @@ export class AnimalController {
     ) { }
 
     @Get("profiles/users/:userId")
-    async getProfiles(@Req() req: Request, @Param('userId') userId: string) {
+    async getProfilesByUser(@Req() req: Request, @Param('userId') userId: string) {
         const user = req.user;
         if (user.id !== Number(userId) && user.role !== "ADMIN"){
             throw new Error('Unauthorized');
@@ -28,6 +28,14 @@ export class AnimalController {
     @Get(":id/profile")
     async getProfile(@Req() req: Request, @Param("id") id: string) {
         return this.animalService.getProfile(id);
+    }
+
+    @Get("profiles")
+    async getProfiles(@Req() req: Request, @Param("id") id: string) {
+        const user = req.user;
+        const animals = await this.animalService.getAnimalsByUserId(user.id);
+        const profiles = await this.animalService.getAnimalSummaries(animals);
+        return { profiles };
     }
 
     @Get(":id/profile-picture")

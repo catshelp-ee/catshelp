@@ -3,6 +3,7 @@ import { calculateAge, isFutureDate } from "@catshelp/utils/src";
 import { useIsMobile } from "@context/is-mobile-context";
 import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import ImageGallery from "./image-gallery";
 
 interface CatDetailsProps {
     selectedCat: Profile;
@@ -160,6 +161,9 @@ const CatDetails: React.FC<CatDetailsProps> = ({
 
     return (
         <>
+            {isMobile && (
+                <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} images={selectedCat?.images || []} />
+            )}
             <div className={`${isMobile ? "w-full" : "w-2/3"}`}>
                 <CatDetailsHeader
                     title={selectedCat?.mainInfo.name || ""}
@@ -168,6 +172,7 @@ const CatDetails: React.FC<CatDetailsProps> = ({
                 <CatDescription description={selectedCat?.description || ""} />
                 <CatProfile selectedCat={selectedCat}/>
             </div>
+            {!isMobile && <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
         </>
     );
 };

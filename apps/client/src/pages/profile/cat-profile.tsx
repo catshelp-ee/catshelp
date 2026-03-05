@@ -11,7 +11,7 @@ import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
 import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "@context/auth-context";
-import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import {AnimalSummary} from "@interfaces/animal-summary";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
     const { isLoading, setIsLoading } = useLoading();

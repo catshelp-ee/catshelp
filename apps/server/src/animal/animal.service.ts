@@ -41,6 +41,16 @@ export class AnimalService {
         private readonly fileRepository: FileRepository,
     ) { }
 
+    public async getProfile(animalId: number | string): Promise<AnimalProfileDto | null> {
+        const animal = await this.getAnimalById(animalId);
+
+        if (!animal){
+            throw new Error("No animal found");
+        }
+
+        return this.buildProfile(animal);
+    }
+
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
         return this.userRepository.getAnimalsByUserId(id);
     }

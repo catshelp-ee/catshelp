@@ -1,5 +1,6 @@
 import AddCatForm from "@pages/add-cat/add-cat-form";
 import Admin from "@pages/admin/admin";
+import AdminCatProfile from "@pages/admin/admin-cat-profile";
 import PageLayout from "@pages/app/page-layout";
 import Dashboard from "@pages/dashboard/dashboard";
 import LoginForm from "@pages/login/login-form";
@@ -26,11 +27,10 @@ function App() {
             <Route element={<ProtectedRoute />}>
                 <Route element={<PageLayout />}>
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
                     <Route path={HOME} element={<Dashboard />} />
                     <Route path="/users/:userId" element={<Dashboard />} />
-                    <Route path="/cat-profile/:id" element={<CatProfile />} />
-                    <Route path="/users/animals/profile" element={<CatProfile />} />
-                    <Route path="/users/:userId/animals/:animalId/profile" element={<CatProfile />} />
+                    <Route path="/cat-profiles" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />
                 </Route>
             </Route>

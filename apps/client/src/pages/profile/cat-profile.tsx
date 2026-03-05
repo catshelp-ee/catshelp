@@ -1,20 +1,21 @@
-import { createProfile, Profile, Avatar } from "@catshelp/types/src";
+import { Profile, ProfileHeader } from "@catshelp/types/src";
 import { useAlert } from "@context/alert-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import { createContextHook } from "@hooks/create-context-hook";
 import { isLoadingWrapper } from "@hooks/is-loading";
-import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
 import CatDetails from "./cat-details";
+import ProfileTabs from "./profile-tabs";
 import CatSelection from "./cat-selection";
 import EditProfile from "./edit-profile";
-import {useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "@context/auth-context";
-import {AnimalSummary} from "@interfaces/animal-summary";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@context/auth-context";
+import { AnimalSummary } from "@interfaces/animal-summary";
+
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
-    const { isLoading, setIsLoading } = useLoading();
+    //SELLE STIILID ON VALED
     const isMobile = useIsMobile();
     if (isMobile) {
         return (
@@ -22,7 +23,7 @@ const CatProfileHeader = ({ cats }: { cats: any }) => {
                 <section className="flex items-center my-4">
                     <h1 className="text-2xl mr-4 ">Kiisude profiilid veebis 😺</h1>
                 </section>
-                {cats.length === 0 && !isLoading ? (
+                {cats.length === 0 ? (
                     <>
                         <h1 className="text-xl my-12">Oota, kus mu nunnud on? 😺</h1>
                         <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
@@ -42,7 +43,7 @@ const CatProfileHeader = ({ cats }: { cats: any }) => {
             <section className="flex my-4 items-center">
                 <h1 className="text-6xl">Kiisude profiilid veebis 😺</h1>
             </section>
-            {cats.length === 0 && !isLoading ? (
+            {cats.length === 0 ? (
                 <>
                     <h1 className="text-4xl my-12">Oota, kus mu nunnud on? 😺</h1>
                     <p className="text-2xl">Sa pole veel kellelegi kodu pakkunud, ehk pakud 😉</p>
@@ -60,92 +61,45 @@ const CatProfileHeader = ({ cats }: { cats: any }) => {
     );
 };
 
-interface LoadingContextType {
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const IsLoadingContext = createContext<LoadingContextType | undefined>(undefined);
-export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
-
 const CatProfile: React.FC = () => {
     const { showAlert } = useAlert();
-    const [animalAvatars, setAnimalAvatars] = useState<AnimalSummary[]>([]);
-    const [selectedCat, setSelectedCat] = useState<Profile>(createProfile());
-    const [isLoading, setIsLoading] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const { getUser } = useAuth();
+    const [cats, setCats] = useState<ProfileHeader[]>([]);
+    const [selectedCat, setSelectedCat] = useState<Profile>(null);
     const isMobile = useIsMobile();
-    const params = useParams();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const loadUserCats = async () => {
-            const user = await getUser();
-
             try {
-                const response = await axios.get(`/api/animals/${params.id}/profile`, {
+                const response = await axios.get("/api/animals/profiles", {
                     withCredentials: true
                 });
 
-                const profile = response.data;
-                setSelectedCat(profile);
-
+                const catProfiles = response.data.profiles;
+                setCats(catProfiles);
             } catch (error) {
                 console.error("Error loading cat profiles:", error);
-                navigate(`/cat-profile/${user.id}`);
                 showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
+                setCats([]);
             }
         };
 
-        async function getAvatars() {
-            const response = await axios.get("/api/profile", {
-                withCredentials: true
-            });
-            setAnimalAvatars(response.data.profiles);
-        }
-
-        const fetchAndSetCatsWithLoading = async () => {
-            await isLoadingWrapper(loadUserCats, setIsLoading);
-        };
-
-        fetchAndSetCatsWithLoading();
-        getAvatars();
+        loadUserCats();
     }, []);
 
-    const renderContent = () => {
-        if (isEditMode) {
-            return (
-                <EditProfile
-                    setIsEditMode={setIsEditMode}
-                    selectedCat={selectedCat}
-                    setSelectedCat={setSelectedCat}
-                />
-            );
-        }
-
-        return (
-            <CatDetails selectedCat={selectedCat} setIsEditMode={setIsEditMode} />
-        );
-    };
-
     return (
-        <IsLoadingContext.Provider value={{ isLoading, setIsLoading }} >
-            <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
-                <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
-                    <CatProfileHeader cats={animalAvatars} />
-                    {isLoading && (<CircularProgress />)}
-                    {animalAvatars.length !== 0 && (
-                        <>
-                            <CatSelection animalAvatars={animalAvatars} setIsEditMode={setIsEditMode} setSelectedCat={setSelectedCat} />
-                            <div className={`${isMobile ? "" : "flex my-4 border-2 rounded-lg p-4"} ${isEditMode ? "flex-col" : ""}`}>
-                                {renderContent()}
-                            </div>
-                        </>
-                    )}
-                </div>
+        <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-12"}`}>
+            <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
+
+                <CatProfileHeader cats={cats} />
+
+                {cats.length !== 0 && (
+                    <>
+                        <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
+                        {selectedCat && <CatDetails selectedCat={selectedCat} />}
+                    </>
+                )}
             </div>
-        </IsLoadingContext.Provider>
+        </div>
     );
 };
 

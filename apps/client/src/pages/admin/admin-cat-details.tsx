@@ -3,7 +3,6 @@ import { calculateAge, isFutureDate } from "@catshelp/utils/src";
 import { useIsMobile } from "@context/is-mobile-context";
 import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ImageGallery from "./image-gallery";
 
 interface CatDetailsProps {
     selectedCat: Profile;
@@ -27,7 +26,7 @@ const CatDescription: React.FC<{ description: string }> = ({ description }) => (
     </div>
 );
 
-const CatProfile: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+const CatDetails: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
 
     const capitalize = str => {
         if (!str) {
@@ -121,7 +120,7 @@ const extractProcedures = (profile: Profile): string => {
     return procedures.join(', ');
 }
 
-const CatDetails: React.FC<CatDetailsProps> = ({
+const AdminCatDetails: React.FC<CatDetailsProps> = ({
     selectedCat,
 }) => {
     const isMobile = useIsMobile();
@@ -161,20 +160,16 @@ const CatDetails: React.FC<CatDetailsProps> = ({
 
     return (
         <>
-            {isMobile && (
-                <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} images={selectedCat?.images || []} />
-            )}
             <div className={`${isMobile ? "w-full" : "w-2/3"}`}>
                 <CatDetailsHeader
                     title={selectedCat?.mainInfo.name || ""}
                 />
-
                 <CatDescription description={selectedCat?.description || ""} />
-                <CatProfile selectedCat={selectedCat}/>
+
+                <CatDetails selectedCat={selectedCat}/>
             </div>
-            {!isMobile && <ImageGallery animalId={selectedCat.animalId} profilePictureState={{selectedProfilePicture, setSelectedProfilePicture}} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
         </>
     );
 };
 
-export default CatDetails;
+export default AdminCatDetails;

@@ -56,9 +56,8 @@ export interface Profile {
 }
 
 export interface ProfileHeader {
-    animalId: number | string,
-    title: string,
-    description: string
+    id: number,
+    name: string
 }
 
 export function createProfile(): Profile {

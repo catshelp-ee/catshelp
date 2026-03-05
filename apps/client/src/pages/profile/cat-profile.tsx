@@ -7,6 +7,12 @@ import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
 import CatDetails from "./cat-details";
 import ProfileTabs from "./profile-tabs";
+import CatSelection from "./cat-selection";
+import EditProfile from "./edit-profile";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@context/auth-context";
+import { AnimalSummary } from "@interfaces/animal-summary";
+
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
     //SELLE STIILID ON VALED

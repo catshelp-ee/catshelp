@@ -5,7 +5,7 @@ import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "@context/auth-context";
-import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import {AnimalSummary} from "@interfaces/animal-summary";
 
 interface CatSelectionProps {
     animalAvatars: AnimalSummary[];

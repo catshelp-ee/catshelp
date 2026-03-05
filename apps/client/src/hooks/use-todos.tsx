@@ -14,6 +14,9 @@ export function useTodos(animals: AnimalSummary[]) {
             return;
         }
 
+        // Prevent state updates after component unmounts
+        // Example: User navigates away at 100ms, API returns at 500ms
+        // Without this check, setTodos() would run on unmounted component → warning/error
         let isMounted = true;
 
         const fetchTodos = async () => {

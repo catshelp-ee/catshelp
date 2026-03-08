@@ -8,6 +8,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { PostHogProviderWrapper } from "./analytics/post-hog-provider-wrapper";
 import App from "./app";
+import {LanguageProvider} from "@context/language-context";
 
 createRoot(document.getElementById("root")!).render(
     <PostHogProviderWrapper>
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root")!).render(
                     <AlertProvider>
                         <AuthProvider>
                             <IsMobileProvider>
-                                <App />
+                                <LanguageProvider>
+                                    <App />
+                                </LanguageProvider>
                             </IsMobileProvider>
                         </AuthProvider>
                     </AlertProvider>

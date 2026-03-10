@@ -1,4 +1,4 @@
-import { useAuth } from "@context/auth-context";
+/*import { useAuth } from "@context/auth-context";
 import { useIsMobile } from "@context/is-mobile-context";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button, IconButton } from "@mui/material";
@@ -16,6 +16,8 @@ const Sidebar: React.FC<SidebarProps> = ({ setSidebarIsOpen }) => {
     const { getUser } = useAuth();
     const [user, setUser] = useState(null);
     let menuItemArray = menuItems["menu-items"];
+
+
 
     useEffect(() => {
         async function fetchUser() {
@@ -103,5 +105,106 @@ const Sidebar: React.FC<SidebarProps> = ({ setSidebarIsOpen }) => {
         </Navbar>
     );
 };
+*/
+
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+
+const translations = {
+    nav: {
+        dashboard: { et: 'Töölaud', en: 'Dashboard', ru: 'Панель' },
+        catProfile: { et: 'Kassi profiil', en: 'Cat Profile', ru: 'Профиль кота' },
+        medical: { et: 'Tervis ja kliinikud', en: 'Medical & Clinics', ru: 'Здоровье и клиники' },
+    },
+}
+
+import { LayoutDashboard, Cat, Heart } from 'lucide-react';
+import {useEffect} from "react";
+
+type Screen = 'dashboard' | 'cat-profile' | 'medical';
+
+interface NavigationProps {
+    currentScreen: Screen;
+    onNavigate: (screen: Screen) => void;
+    isAdmin?: boolean;
+    onSwitchToAdmin?: () => void;
+}
+
+export function Sidebar() {
+
+    const navigate = useNavigate();
+    const url = useLocation();
+
+    const navItems = [
+        {
+            id: 'dashboard' as Screen,
+            label: translations.nav.dashboard.et,
+            icon: LayoutDashboard,
+            path: "/users"
+        },
+        {
+            id: 'cat-profile' as Screen,
+            label: translations.nav.catProfile.et,
+            icon: Cat,
+            path: "/cat-profile"
+        },
+        /*
+        {
+            id: 'medical' as Screen,
+            label: translations.nav.medical.et,
+            icon: Heart,
+        },
+         */
+    ];
+
+    return (
+        <>
+            {/* Desktop sidebar */}
+            <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto">
+                <nav className="p-4 space-y-1">
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = url.pathname.includes(item.path);
+
+                        return (
+                            <button
+                                key={item.id}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                                    isActive
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                                onClick={() => {
+                                    navigate(item.path)
+                                }}
+                            >
+                                <Icon className={`w-5 h-5 text-gray-500`} />
+                                <span className="font-medium">{item.label}</span>
+                            </button>
+                        );
+                    })}
+                </nav>
+            </aside>
+
+            {/* Mobile bottom navigation */}
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-inset-bottom">
+                <div className="flex items-center justify-around px-2 py-2">
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+
+                        return (
+                            <button
+                                key={item.id}
+                                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors text-gray-600`}
+                            >
+                                <Icon className={`w-5 h-5 text-gray-500`} />
+                                <span className="text-xs font-medium">{item.label}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </nav>
+        </>
+    );
+}
 
 export default Sidebar;

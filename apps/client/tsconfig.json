@@ -15,6 +15,9 @@
             "@api/*" : [
                 "src/services/api/*"
             ],
+            "@app-types/*": [
+                "src/types/*"
+            ],
             "@interfaces/*": [
                 "src/interfaces/*"
             ],
@@ -35,9 +38,6 @@
             ],
             "@style/*": [
                 "src/style/*"
-            ],
-            "@types/*": [
-                "types/*"
             ],
             "@utils/*": [
                 "utils/*"

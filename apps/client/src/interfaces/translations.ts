@@ -1,5 +1,7 @@
 import type {Language} from '../context/language-context';
 
+
+
 export const translations = {
     // Navigation
     nav: {
@@ -7,6 +9,12 @@ export const translations = {
         catProfile: {et: 'Kassi profiil', en: 'Cat Profile', ru: 'Профиль кота'},
         medical: {et: 'Tervis ja kliinikud', en: 'Medical & Clinics', ru: 'Здоровье и клиники'},
         logout: {et: "Logi välja", en: "Log out", ru: "выходить"}
+    },
+
+    // App mode
+    mode: {
+        foster: {et: 'Hoiukodu', en: 'Foster', ru: 'Передержка'},
+        admin: {et: 'Admin', en: 'Admin', ru: 'Админ'},
     },
 
     // Top bar

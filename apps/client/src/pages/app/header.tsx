@@ -4,21 +4,13 @@ import {Language, useLanguage} from '@context/language-context';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 import {translations} from "@interfaces/translations";
 import {useAuth} from "@context/auth-context";
-
-type AppMode = 'admin' | 'foster';
+import {AppMode, LANGUAGES} from "@app-types/translations";
 
 interface HeaderProps {
     appMode: AppMode;
     setAppMode: Dispatch<SetStateAction<AppMode>>;
     isAdmin: boolean;
 }
-
-const LANGUAGES: Language[] = ['et', 'en', 'ru'];
-
-const MODE_LABELS = {
-    foster: {et: 'Hoiukodu', en: 'Foster', ru: 'Передержка'},
-    admin: {et: 'Admin', en: 'Admin', ru: 'Админ'},
-};
 
 const tabButtonClass = (isActive: boolean) =>
     `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
@@ -37,11 +29,11 @@ const ModeSwitcher = ({appMode, setAppMode, language}: ModeSwitcherProps) => (
     <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
         <button onClick={() => setAppMode('foster')} className={tabButtonClass(appMode === 'foster')}>
             <Heart className="w-3.5 h-3.5"/>
-            <span className="hidden sm:inline">{translate(MODE_LABELS.foster, language)}</span>
+            <span className="hidden sm:inline">{translate(translations.mode.foster, language)}</span>
         </button>
         <button onClick={() => setAppMode('admin')} className={tabButtonClass(appMode === 'admin')}>
             <Shield className="w-3.5 h-3.5"/>
-            <span className="hidden sm:inline">{translate(MODE_LABELS.admin, language)}</span>
+            <span className="hidden sm:inline">{translate(translations.mode.admin, language)}</span>
         </button>
     </div>
 );
@@ -65,10 +57,10 @@ const LanguageSwitcher = ({language, setLanguage}: LanguageSwitcherProps) => (
     </div>
 );
 
-const UserAvatar = ({language}: {language: Language | undefined}) => {
+const UserAvatar = ({language}: { language: Language | undefined }) => {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const { logout } = useAuth();
+    const {logout} = useAuth();
 
 
     useEffect(() => {
@@ -90,11 +82,12 @@ const UserAvatar = ({language}: {language: Language | undefined}) => {
                 aria-haspopup="true"
                 aria-expanded={isOpen}
             >
-                <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600"/>
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                <div
+                    className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
                     <button
                         onClick={logout}
                         className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -120,7 +113,7 @@ const Logo = () => (
 );
 
 const Header = ({appMode, isAdmin, setAppMode}: HeaderProps) => {
-    const { language, setLanguage } = useLanguage();
+    const {language, setLanguage} = useLanguage();
     const isFosterMode = appMode === 'foster';
 
     return (

@@ -1,7 +1,3 @@
-import type {Language} from '../context/language-context';
-
-
-
 export const translations = {
     // Navigation
     nav: {
@@ -140,7 +136,8 @@ export const translations = {
     addFirstVisit: {et: 'Lisa esimene külastus', en: 'Add first visit', ru: 'Добавить первый визит'},
     addVetVisit: {et: 'Lisa veterinaarkülastus', en: 'Add vet visit', ru: 'Добавить визит'},
     bookAndRegister: {
-        et: 'Broneeri aeg ja registreeri siin',
+        et: 'Broneeri aeg ja registreimport {translations} from "../../translations/translations";
+eri siin',
         en: 'Book and register here',
         ru: 'Запишитесь и зарегистрируйте здесь'
     },
@@ -160,8 +157,3 @@ export const translations = {
     notDone: {et: 'Tegemata', en: 'Not done', ru: 'Не сделано'},
     needsInfo: {et: 'Vajab infot', en: 'Needs info', ru: 'Нужна информация'},
 };
-
-export function translate(key: any, lang: Language): string {
-    if (!key) return '';
-    return key[lang] || key.en || '';
-}

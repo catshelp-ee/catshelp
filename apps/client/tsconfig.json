@@ -15,6 +15,12 @@
             "@api/*" : [
                 "src/services/api/*"
             ],
+            "@translations/*": [
+                "src/translations/*"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
             "@app-types/*": [
                 "src/types/*"
             ],

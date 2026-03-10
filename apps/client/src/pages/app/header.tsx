@@ -1,16 +1,12 @@
 import {Shield, User, Heart} from 'lucide-react';
-import {translate} from '@interfaces/translations';
-import {Language, useLanguage} from '@context/language-context';
+import {useLanguage} from '@context/language-context';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
-import {translations} from "@interfaces/translations";
 import {useAuth} from "@context/auth-context";
-import {AppMode, LANGUAGES} from "@app-types/translations";
-
-interface HeaderProps {
-    appMode: AppMode;
-    setAppMode: Dispatch<SetStateAction<AppMode>>;
-    isAdmin: boolean;
-}
+import {useTranslation} from "@hooks/useTranslation";
+import {AppMode} from "@app-types/app";
+import {translations} from "@translations/translations";
+import {Language} from "@app-types/language";
+import {LANGUAGES} from "@config/app";
 
 const tabButtonClass = (isActive: boolean) =>
     `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
@@ -22,25 +18,28 @@ const tabButtonClass = (isActive: boolean) =>
 interface ModeSwitcherProps {
     appMode: AppMode;
     setAppMode: Dispatch<SetStateAction<AppMode>>;
-    language: Language | undefined;
 }
 
-const ModeSwitcher = ({appMode, setAppMode, language}: ModeSwitcherProps) => (
-    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-        <button onClick={() => setAppMode('foster')} className={tabButtonClass(appMode === 'foster')}>
-            <Heart className="w-3.5 h-3.5"/>
-            <span className="hidden sm:inline">{translate(translations.mode.foster, language)}</span>
-        </button>
-        <button onClick={() => setAppMode('admin')} className={tabButtonClass(appMode === 'admin')}>
-            <Shield className="w-3.5 h-3.5"/>
-            <span className="hidden sm:inline">{translate(translations.mode.admin, language)}</span>
-        </button>
-    </div>
-);
+const ModeSwitcher = ({appMode, setAppMode}: ModeSwitcherProps) => {
+    const {t} = useTranslation();
+
+    return (
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <button onClick={() => setAppMode('foster')} className={tabButtonClass(appMode === 'foster')}>
+                <Heart className="w-3.5 h-3.5"/>
+                <span className="hidden sm:inline">{t(translations.mode.foster)}</span>
+            </button>
+            <button onClick={() => setAppMode('admin')} className={tabButtonClass(appMode === 'admin')}>
+                <Shield className="w-3.5 h-3.5"/>
+                <span className="hidden sm:inline">{t(translations.mode.admin)}</span>
+            </button>
+        </div>
+    );
+}
 
 interface LanguageSwitcherProps {
-    language: Language | undefined;
-    setLanguage: Dispatch<SetStateAction<Language | undefined>>;
+    language: Language;
+    setLanguage: Dispatch<SetStateAction<Language>>;
 }
 
 const LanguageSwitcher = ({language, setLanguage}: LanguageSwitcherProps) => (
@@ -57,10 +56,14 @@ const LanguageSwitcher = ({language, setLanguage}: LanguageSwitcherProps) => (
     </div>
 );
 
-const UserAvatar = ({language}: { language: Language | undefined }) => {
+interface UserAvatarProps {
+    onLogout: () => void
+}
+
+const UserAvatar = ({onLogout}: UserAvatarProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const {logout} = useAuth();
+    const {t} = useTranslation();
 
 
     useEffect(() => {
@@ -89,10 +92,10 @@ const UserAvatar = ({language}: { language: Language | undefined }) => {
                 <div
                     className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
                     <button
-                        onClick={logout}
+                        onClick={onLogout}
                         className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                        {translate(translations.nav.logout, language)}
+                        {t(translations.nav.logout)}
                     </button>
                 </div>
             )}
@@ -112,8 +115,15 @@ const Logo = () => (
     </div>
 );
 
+interface HeaderProps {
+    appMode: AppMode;
+    setAppMode: Dispatch<SetStateAction<AppMode>>;
+    isAdmin: boolean;
+}
+
 const Header = ({appMode, isAdmin, setAppMode}: HeaderProps) => {
     const {language, setLanguage} = useLanguage();
+    const {logout} = useAuth();
     const isFosterMode = appMode === 'foster';
 
     return (
@@ -125,12 +135,12 @@ const Header = ({appMode, isAdmin, setAppMode}: HeaderProps) => {
 
                     <div className="flex items-center gap-2">
                         {isAdmin && (
-                            <ModeSwitcher appMode={appMode} setAppMode={setAppMode} language={language}/>
+                            <ModeSwitcher appMode={appMode} setAppMode={setAppMode}/>
                         )}
                         {isFosterMode && (
                             <LanguageSwitcher language={language} setLanguage={setLanguage}/>
                         )}
-                        {isFosterMode && <UserAvatar language={language}/>}
+                        {isFosterMode && <UserAvatar onLogout={logout}/>}
                     </div>
 
                 </div>

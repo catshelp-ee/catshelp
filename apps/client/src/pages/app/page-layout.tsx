@@ -16,7 +16,9 @@ const PageLayout: React.FC<LayoutProps> = () => {
             <div className={`flex flex-col h-full items-center ${sidebarIsOpen ? "overflow-hidden" : ""}`}>
                 <Header />
                 <HamburgerMenu sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
-                <Outlet />
+                <div className="page-content">
+                    <Outlet />
+                </div>
             </div>
         )
     }

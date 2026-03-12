@@ -1,4 +1,4 @@
-import { createProfile, Profile } from '@catshelp/types';
+import { createProfile, Profile, PersonalityInfo, createPersonalityInfo } from '@catshelp/types';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
@@ -22,7 +22,7 @@ import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
 import { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
 import { FileRepository } from '../file/file.repository';
-import { getRootPath } from '@server/src/main';
+import { Characteristic } from './entities/characteristic.entity';
 import { join } from 'path';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class AnimalService {
     ) { }
 
     public async getProfile(animalId: number | string): Promise<AnimalProfileDto | null> {
-        const animal = await this.getAnimalById(animalId);
+        const animal = await this.animalRepository.getAnimalByIdWithRescue(Number(animalId));
 
         if (!animal){
             throw new Error("No animal found");
@@ -123,18 +123,18 @@ export class AnimalService {
             name: updatedAnimalData.mainInfo.name,
             birthday: updatedAnimalData.mainInfo.birthDate ?? undefined,
             chipNumber: updatedAnimalData.mainInfo.microchip,
-            chipRegisteredWithUs: updatedAnimalData.mainInfo.microchipRegisteredInLLR,
-            profileTitle: updatedAnimalData.title,
+            //chipRegisteredWithUs: updatedAnimalData.mainInfo.microchipRegisteredInLLR, TODO
+            //profileTitle: updatedAnimalData.title, TODO kas on vaja
             status: animalWithRescue.status,
-            description: updatedAnimalData.description,
+            description: updatedAnimalData.mainInfo.description,
         };
 
         const animalRescue = animalWithRescue.animalRescue;
 
         const animalRescueData = {
             rankNr: animalRescue.rankNr,
-            rescueDate: updatedAnimalData.animalRescueInfo.rescueDate ?? undefined,
-            locationNotes: updatedAnimalData.animalRescueInfo.rescueLocation,
+            rescueDate: updatedAnimalData.mainInfo.rescueDate ?? undefined,
+            locationNotes: updatedAnimalData.mainInfo.rescueStory,
             state: animalRescue.state,
             address: animalRescue.address
         };
@@ -183,23 +183,72 @@ export class AnimalService {
     }
 
     public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
-        const profile = createProfile();
+        const profile = {} as AnimalProfileDto;
+        const characteristicsMap = await this.getCharacteristicMap(animal.id);
 
         profile.animalId = animal.id;
-        profile.mainInfo.name = animal.name;
-        profile.title = animal.profileTitle;
-        profile.description = animal.description;
-        profile.mainInfo.microchip = animal.chipNumber;
-        profile.mainInfo.microchipRegisteredInLLR = animal.chipRegisteredWithUs;
-        profile.mainInfo.birthDate = animal.birthday;
-
-        // Get characteristics using service (can be transactional if service uses @Transactional or EntityManager)
-        profile.characteristics = await this.characteristicsService.getCharacteristics(animal.id);
+        const mainInfo = {
+            name: animal.name,
+            rankNr: animal.animalRescue?.rankNr ?? '',
+            birthDate: animal.birthday,
+            rescueDate: animal.animalRescue?.rescueDate ?? '',
+            gender: characteristicsMap['gender']?.value ?? '',
+            coatColor: characteristicsMap['coatColour']?.value ?? '',
+            coatLength: characteristicsMap['coatLength']?.value ?? '',
+            location: 'TODO',
+            microchip: animal.chipNumber,
+            fosterStayDuration: 'TODO',
+            chronicConditions: 'TODO',
+            description: animal.description,
+            rescueStory: animal.animalRescue?.locationNotes
+        }
+        profile.mainInfo = mainInfo;
+        
+        const personalityInfo = {} as PersonalityInfo;
+        profile.personalityInfo = personalityInfo;
 
         // Fetch images
         profile.images = await this.getImages(animal.id);
-        profile.profilePictureFilename = await this.getProfilePicture(animal.id);
 
         return profile;
+    }
+
+    private async getCharacteristicMap(animalId): Promise<Record<string, Characteristic>> {
+        const characteristics = await this.characteristicsService.getCharacteristics(animalId);
+        const characteristicsMap: Record<string, Characteristic> = {};
+
+        for (const characteristic of characteristics) {
+            characteristicsMap[characteristic.type] = characteristic;
+        }
+        return characteristicsMap;
+    }
+
+    private createPersonalityInfo(characteristics: Characteristic[]) {
+        const personalityInfo = createPersonalityInfo();
+
+
+        /* TODO
+        characteristicsInfo.multiselectFields.behaviorTraits = characteristicsMap["BEHAVIOUR_TRAITS"]?.value?.split(",") ?? [];
+        characteristicsInfo.multiselectFields.likes = characteristicsMap["LIKES"]?.value?.split(",") ?? [];
+        characteristicsInfo.multiselectFields.personality = characteristicsMap["PERSONALITY"]?.value?.split(",") ?? [];
+
+        characteristicsInfo.selectFields.attitudeTowardsCats = characteristicsMap["ATTITUDE_TOWARDS_CATS"]?.value ?? "";
+        characteristicsInfo.selectFields.attitudeTowardsChildren = characteristicsMap["ATTITUDE_TOWARDS_CHILDREN"]?.value ?? "";
+        characteristicsInfo.selectFields.attitudeTowardsDogs = characteristicsMap["ATTITUDE_TOWARDS_DOGS"]?.value ?? "";
+        characteristicsInfo.selectFields.coatColour = characteristicsMap["COAT_COLOUR"]?.value ?? "";
+        characteristicsInfo.selectFields.coatLength = characteristicsMap["COAT_LENGTH"]?.value ?? "";
+        characteristicsInfo.selectFields.suitabilityForIndoorOrOutdoor = characteristicsMap["SUITABILITY_FOR_INDOOR_OR_OUTDOOR"]?.value ?? "";
+
+        characteristicsInfo.textFields.additionalNotes = characteristicsMap["ADDITIONAL_NOTES"]?.value ?? "";
+        characteristicsInfo.textFields.chronicConditions = characteristicsMap["CHRONIC_CONDITIONS"]?.value ?? "";
+        characteristicsInfo.textFields.description = characteristicsMap["DESCRIPTION"]?.value ?? "";
+        characteristicsInfo.textFields.fosterStayDuration = characteristicsMap["FOSTER_STAY_DURATION"]?.value ?? "";
+        characteristicsInfo.textFields.rescueStory = characteristicsMap["RESCUE_STORY"]?.value ?? "";
+        characteristicsInfo.textFields.specialRequirementsForNewFamily = characteristicsMap["SPECIAL_REQUIREMENTS_FOR_NEW_FAMILY"]?.value ?? "";
+        characteristicsInfo.textFields.gender = characteristicsMap["GENDER"]?.value ?? "";
+        characteristicsInfo.textFields.spayedOrNeutered = characteristicsMap["SPAYED_OR_NEUTERED"]?.value ?? "";
+        */
+
+        return personalityInfo;
     }
 }

@@ -1,66 +1,62 @@
 export interface AnimalProfileDto {
     animalId: number;
-    title: string;
-    description: string;
-    profilePictureFilename: string;
     images: string[];
-    mainInfo: MainInfo;
-    vaccineInfo: VaccineInfo;
-    animalRescueInfo: AnimalRescueInfo;
-    characteristics: CharacteristicsInfo;
+    mainInfo: MainInfoDto;
+    personalityInfo: PersonalityInfoDto;
 }
 
-interface MainInfo {
+interface MainInfoDto {
     name: string;
+    rankNr: string;
     birthDate: Date | null;
-    microchip: string;
-    microchipRegisteredInLLR: boolean;
-    location: string;
-}
-
-interface VaccineInfo {
-    complexVaccine: Date | null;
-    nextComplexVaccineDate: Date | null;
-    rabiesVaccine: Date | null;
-    nextRabiesVaccineDate: Date | null;
-    dewormingOrFleaTreatmentDate: Date | null;
-    dewormingOrFleaTreatmentName: string;
-}
-
-interface AnimalRescueInfo {
-    rescueLocation: string;
     rescueDate: Date | null;
-}
-
-export interface MultiselectFields {
-    personality: string[];
-    likes: string[];
-    behaviorTraits: string[];
-}
-
-
-export interface SelectFields {
-    attitudeTowardsCats: string;
-    attitudeTowardsDogs: string;
-    attitudeTowardsChildren: string;
-    suitabilityForIndoorOrOutdoor: string;
-    coatColour: string;
-    coatLength: string;
-}
-
-export interface TextFields {
     gender: string;
-    spayedOrNeutered: string;
-    chronicConditions: string;
+    coatColor: string;
+    coatLength: string;
+    location: string;
+    microchip: string;
     fosterStayDuration: string;
-    rescueStory: string;
+    chronicConditions: string;
     description: string;
-    specialRequirementsForNewFamily: string;
-    additionalNotes: string;
+    rescueStory: string;
 }
 
-export interface CharacteristicsInfo {
-    textFields: TextFields;
-    selectFields: SelectFields;
-    multiselectFields: MultiselectFields;
+interface PersonalityInfoDto {
+    bold: boolean,
+    shy: boolean,
+    active: boolean,
+    veryActive: boolean,
+    calm: boolean,
+    friendly: boolean,
+    grumpy: boolean,
+    vocal: boolean,
+    dislikesTouching: boolean,
+    sociable: boolean,
+    aloof: boolean,
+    goodAppetite: boolean,
+    curious: boolean,
+    playful: boolean,
+    stressed: boolean,
+    sensitive: boolean,
+    peaceful: boolean,
+    selfish: boolean,
+    hisses: boolean,
+    beingInLap: boolean,
+    sleepsCuddling: boolean,
+    likesPetting: boolean,
+    likesAttention: boolean,
+    likesPlayingWithPeople: boolean,
+    likesPlayingAlone: boolean,
+    usesLitterbox: boolean,
+    usesScratchingpost: boolean,
+    selectiveWithFood: boolean,
+    adaptable: boolean,
+    scratchesFurniture: boolean,
+    trusting: boolean,
+    description: string,
+    attitudeTowardsCats: string,
+    attitudeTowardsDogs: string,
+    attitudeTowardsChildren: string,
+    suitabilityForIndoorOrOutdoor: string,
+    specialRequirementsForNewFamily: string
 }

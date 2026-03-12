@@ -133,6 +133,7 @@ export class GoogleSheetsService {
     private updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
         const values = this.sheetsRowToObject(row.values!);
 
+        /* TODO
         values.catName = animalProfile.mainInfo.name;
         values.microchip = animalProfile.mainInfo.microchip;
         values.microchipRegisteredInLLR = animalProfile.mainInfo.microchipRegisteredInLLR
@@ -153,6 +154,7 @@ export class GoogleSheetsService {
         values.nextRabiesDate = this.formatDate(animalProfile.vaccineInfo.nextRabiesVaccineDate);
         values.dewormingOrFleaTreatmentName = animalProfile.vaccineInfo.dewormingOrFleaTreatmentName;
         values.dewormingOrFleaTreatmentDate = this.formatDate(animalProfile.vaccineInfo.dewormingOrFleaTreatmentDate);
+        */
 
         return values;
     }

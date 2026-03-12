@@ -43,7 +43,7 @@ const Admin: React.FC<AdminProps> = () => {
     };
 
     return (
-        <div className="md:mx-12 flex-1">
+        <div className="flex-1">
             <p className="page-heading">
                 Admin töölaud
             </p>

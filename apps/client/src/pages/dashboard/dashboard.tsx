@@ -98,7 +98,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     };
 
     return (
-        <div className="md:mx-12 flex flex-col flex-1">
+        <div className="flex flex-col flex-1">
             {renderContent()}
         </div>
     );

@@ -68,17 +68,13 @@ const ProfileTab: React.FC<TabProps> = ({
     }, [activeTab]);
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-            <div className="flex border-b border-gray-200">
+        <div className="profile-tab-container">
+            <div className="flex">
                 {cats.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => handleTabChange(tab)}
-                        className={`flex-1 px-6 py-3 text-sm font-medium transition-colors capitalize ${activeTab === tab.id
-                            ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                            }`}
-                    >
+                        className={`profile-tab ${activeTab === tab.id ? 'profile-tab-active' : ''}`}>
                         {tab.name}
                     </button>
                 ))}

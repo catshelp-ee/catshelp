@@ -107,27 +107,11 @@ const Sidebar: React.FC<SidebarProps> = ({ setSidebarIsOpen }) => {
 };
 */
 
-import {useLocation, useNavigate, useParams} from "react-router-dom";
-
-const translations = {
-    nav: {
-        dashboard: { et: 'Töölaud', en: 'Dashboard', ru: 'Панель' },
-        catProfile: { et: 'Kassi profiil', en: 'Cat Profile', ru: 'Профиль кота' },
-        medical: { et: 'Tervis ja kliinikud', en: 'Medical & Clinics', ru: 'Здоровье и клиники' },
-    },
-}
+import {useLocation, useNavigate} from "react-router-dom";
 
 import { LayoutDashboard, Cat, Heart } from 'lucide-react';
-import {useEffect} from "react";
-
-type Screen = 'dashboard' | 'cat-profile' | 'medical';
-
-interface NavigationProps {
-    currentScreen: Screen;
-    onNavigate: (screen: Screen) => void;
-    isAdmin?: boolean;
-    onSwitchToAdmin?: () => void;
-}
+import {translations} from "@translations/translations";
+import type {Screen} from "@config/app";
 
 export function Sidebar() {
 
@@ -147,13 +131,11 @@ export function Sidebar() {
             icon: Cat,
             path: "/cat-profile"
         },
-        /*
         {
             id: 'medical' as Screen,
             label: translations.nav.medical.et,
             icon: Heart,
         },
-         */
     ];
 
     return (

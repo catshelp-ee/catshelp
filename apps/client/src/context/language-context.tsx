@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, ReactNode} from 'react';
-import {Language} from "@app-types/language";
+import {Language} from "@config/app";
 
 interface LanguageContextType {
     language: Language;

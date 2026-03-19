@@ -3,9 +3,9 @@ import {useLanguage} from '@context/language-context';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 import {useAuth} from "@context/auth-context";
 import {useTranslation} from "@hooks/useTranslation";
-import {AppMode} from "@app-types/app";
+import {AppMode} from "@config/app";
 import {translations} from "@translations/translations";
-import {Language} from "@app-types/language";
+import {Language} from "@config/app";
 import {LANGUAGES} from "@config/app";
 
 const tabButtonClass = (isActive: boolean) =>

@@ -136,8 +136,7 @@ export const translations = {
     addFirstVisit: {et: 'Lisa esimene külastus', en: 'Add first visit', ru: 'Добавить первый визит'},
     addVetVisit: {et: 'Lisa veterinaarkülastus', en: 'Add vet visit', ru: 'Добавить визит'},
     bookAndRegister: {
-        et: 'Broneeri aeg ja registreimport {translations} from "../../translations/translations";
-eri siin',
+        et: 'Broneeri aeg ja registreeri siin',
         en: 'Book and register here',
         ru: 'Запишитесь и зарегистрируйте здесь'
     },

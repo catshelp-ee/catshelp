@@ -5,12 +5,9 @@ import Header from './header';
 import HamburgerMenu from "./hamburger-menu";
 import { useIsMobile } from "src/context/is-mobile-context";
 import {useAuth} from "@context/auth-context";
+import {AppMode, checkIfAdmin} from "@config/app";
 
-type AppMode = 'admin' | 'foster';
-
-interface LayoutProps { }
-
-const PageLayout: React.FC<LayoutProps> = () => {
+const PageLayout = () => {
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
     const isMobile = useIsMobile();
     const { getUser } = useAuth();
@@ -19,17 +16,7 @@ const PageLayout: React.FC<LayoutProps> = () => {
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        const checkIfAdmin = async () => {
-            const user = await getUser();
-
-            if (user.role !== "ADMIN"){
-                return;
-            }
-
-            setIsAdmin(true);
-        }
-
-        checkIfAdmin();
+        checkIfAdmin(getUser, setIsAdmin);
     }, [getUser]);
 
 

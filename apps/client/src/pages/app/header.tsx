@@ -108,13 +108,10 @@ const UserAvatar = ({onLogout}: UserAvatarProps) => {
 };
 
 const Logo = () => (
-    <div className="flex items-center gap-3">
-        <div
-            className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-            <span className="text-white text-lg">🐱</span>
-        </div>
+    <div className="flex items-center gap-3 h-full">
+        <img src="header.png" className="h-3/4"  alt=""/>
         <div>
-            <div className="text-base font-semibold text-gray-900">Cats Help Portal</div>
+            <div className="text-base font-semibold text-gray-900">Cats Help Hoiukoduportaal</div>
         </div>
     </div>
 );
@@ -132,22 +129,20 @@ const Header = ({appMode, isAdmin, setAppMode}: HeaderProps) => {
 
     return (
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="flex items-center justify-between h-16">
+            <div className="flex items-center justify-between h-16 px-4 sm:px-6">
 
-                    <Logo/>
+                <Logo/>
 
-                    <div className="flex items-center gap-2">
-                        {isAdmin && (
-                            <ModeSwitcher appMode={appMode} setAppMode={setAppMode}/>
-                        )}
-                        {isFosterMode && (
-                            <LanguageSwitcher language={language} setLanguage={setLanguage}/>
-                        )}
-                        {isFosterMode && <UserAvatar onLogout={logout}/>}
-                    </div>
-
+                <div className="flex items-center gap-2">
+                    {isAdmin && (
+                        <ModeSwitcher appMode={appMode} setAppMode={setAppMode}/>
+                    )}
+                    {isFosterMode && (
+                        <LanguageSwitcher language={language} setLanguage={setLanguage}/>
+                    )}
+                    {isFosterMode && <UserAvatar onLogout={logout}/>}
                 </div>
+
             </div>
         </nav>
     );

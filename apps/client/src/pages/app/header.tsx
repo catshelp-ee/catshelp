@@ -1,4 +1,4 @@
-import {Shield, User, Heart} from 'lucide-react';
+import {Shield, User, Heart, LogOut} from 'lucide-react';
 import {useLanguage} from '@context/language-context';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 import {useAuth} from "@context/auth-context";
@@ -7,6 +7,7 @@ import {AppMode} from "@config/app";
 import {translations} from "@translations/translations";
 import {Language} from "@config/app";
 import {LANGUAGES} from "@config/app";
+import {useUser} from "@hooks/use-user";
 
 const tabButtonClass = (isActive: boolean) =>
     `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
@@ -64,6 +65,7 @@ const UserAvatar = ({onLogout}: UserAvatarProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const {t} = useTranslation();
+    const {user, loading, error} = useUser();
 
 
     useEffect(() => {
@@ -89,13 +91,15 @@ const UserAvatar = ({onLogout}: UserAvatarProps) => {
             </button>
 
             {isOpen && (
-                <div
-                    className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                <div className="absolute flex flex-col right-0 mt-1 p-2 w-52 max-w-72 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                    <span>{user.role}</span>
+                    <span className="text-xs text-secondary mb-4 break-all">{user.email}</span>
+                    <hr />
                     <button
                         onClick={onLogout}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="flex gap-2 mt-4 p-2 text-sm text-red-700"
                     >
-                        {t(translations.nav.logout)}
+                        <LogOut /> {t(translations.nav.logout)}
                     </button>
                 </div>
             )}

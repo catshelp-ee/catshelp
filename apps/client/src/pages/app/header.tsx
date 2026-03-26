@@ -2,7 +2,7 @@ import {Shield, User, Heart, LogOut} from 'lucide-react';
 import {useLanguage} from '@context/language-context';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 import {useAuth} from "@context/auth-context";
-import {useTranslation} from "@hooks/useTranslation";
+import {useTranslation} from "@hooks/use-translation";
 import {AppMode} from "@config/app";
 import {translations} from "@translations/translations";
 import {Language} from "@config/app";

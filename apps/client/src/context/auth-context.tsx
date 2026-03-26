@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 type AuthContext = {
     getUser: () => Promise<User>;
     logout: () => void;
+    checkIfAdmin: () => boolean;
 };
 
 type AuthContextProvider = {
@@ -16,7 +17,8 @@ type AuthContextProvider = {
 
 export const AuthContext = createContext<AuthContext>({
     getUser: () => { return null },
-    logout: () => { }
+    logout: () => { },
+    checkIfAdmin: () => { return null }
 });
 
 export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
@@ -53,9 +55,21 @@ export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
         navigate("/login");
     };
 
+    const checkIfAdmin = async () => {
+        const user = await getUser();
+
+        if (user.role !== "ADMIN"){
+            return false;
+        }
+
+        return true;
+
+    }
+
     const value = {
         getUser,
-        logout
+        logout,
+        checkIfAdmin
     };
 
     return (

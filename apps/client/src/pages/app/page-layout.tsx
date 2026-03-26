@@ -5,19 +5,23 @@ import Header from './header';
 import HamburgerMenu from "./hamburger-menu";
 import { useIsMobile } from "src/context/is-mobile-context";
 import {useAuth} from "@context/auth-context";
-import {AppMode, checkIfAdmin} from "@config/app";
+import {AppMode} from "@config/app";
 
 const PageLayout = () => {
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
     const isMobile = useIsMobile();
-    const { getUser } = useAuth();
+    const { checkIfAdmin } = useAuth();
 
     const [appMode, setAppMode] = useState<AppMode>('foster');
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        checkIfAdmin(getUser, setIsAdmin);
-    }, [getUser]);
+        if (!checkIfAdmin()) {
+            return;
+        }
+
+        setIsAdmin(true);
+    }, [checkIfAdmin]);
 
 
     const MobileView = () => {

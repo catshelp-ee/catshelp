@@ -112,28 +112,31 @@ import {useLocation, useNavigate} from "react-router-dom";
 import { LayoutDashboard, Cat, Heart } from 'lucide-react';
 import {translations} from "@translations/translations";
 import type {Screen} from "@config/app";
+import {useLanguage} from "@context/language-context";
+import {useTranslation} from "@hooks/use-translation";
 
 export function Sidebar() {
 
     const navigate = useNavigate();
     const url = useLocation();
+    const { t } = useTranslation();
 
     const navItems = [
         {
             id: 'dashboard' as Screen,
-            label: translations.nav.dashboard.et,
+            label: t(translations.nav.dashboard),
             icon: LayoutDashboard,
             path: "/users"
         },
         {
             id: 'cat-profile' as Screen,
-            label: translations.nav.catProfile.et,
+            label: t(translations.nav.catProfile),
             icon: Cat,
             path: "/cat-profile"
         },
         {
             id: 'medical' as Screen,
-            label: translations.nav.medical.et,
+            label: t(translations.nav.medical),
             icon: Heart,
         },
     ];

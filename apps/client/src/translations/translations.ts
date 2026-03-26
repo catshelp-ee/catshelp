@@ -1,6 +1,7 @@
 export const translations = {
     // Navigation
     nav: {
+        title: {et: "CatsHelp hoiukoduportaal", en: "CatsHelp foster home portal", ru: "CatsHelp Портал передержки" },
         dashboard: {et: 'Töölaud', en: 'Dashboard', ru: 'Панель'},
         catProfile: {et: 'Kassi profiil', en: 'Cat Profile', ru: 'Профиль кота'},
         medical: {et: 'Tervis ja kliinikud', en: 'Medical & Clinics', ru: 'Здоровье и клиники'},

@@ -107,14 +107,18 @@ const UserAvatar = ({onLogout}: UserAvatarProps) => {
     );
 };
 
-const Logo = () => (
-    <div className="flex items-center gap-3 h-full">
-        <img src="header.png" className="h-3/4"  alt=""/>
-        <div>
-            <div className="text-base font-semibold text-gray-900">Cats Help Hoiukoduportaal</div>
+const Logo = () => {
+    const {t} = useTranslation();
+
+    return (
+        <div className="flex items-center gap-3 h-full">
+            <img src="header.png" className="h-3/4" alt=""/>
+            <div>
+                <div className="text-base font-semibold text-gray-900">{t(translations.nav.title)}</div>
+            </div>
         </div>
-    </div>
-);
+    );
+}
 
 interface HeaderProps {
     appMode: AppMode;

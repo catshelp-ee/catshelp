@@ -5,7 +5,11 @@ export const translations = {
         dashboard: {et: 'Töölaud', en: 'Dashboard', ru: 'Панель'},
         catProfile: {et: 'Kassi profiil', en: 'Cat Profile', ru: 'Профиль кота'},
         medical: {et: 'Tervis ja kliinikud', en: 'Medical & Clinics', ru: 'Здоровье и клиники'},
-        logout: {et: "Logi välja", en: "Log out", ru: "выходить"}
+        logout: {et: "Logi välja", en: "Log out", ru: "выходить"},
+        role: {
+          ADMIN: {et: "Admin", en: "Admin", ru: "Админ"},
+          FOSTER: {et: "Hoiukodu", en: "Fosterhome", ru: "Передержка"}
+        }
     },
 
     // App mode

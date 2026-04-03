@@ -58,12 +58,7 @@ export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
     const checkIfAdmin = async () => {
         const user = await getUser();
 
-        if (user.role !== "ADMIN"){
-            return false;
-        }
-
-        return true;
-
+        return user.role === "ADMIN";
     }
 
     const value = {

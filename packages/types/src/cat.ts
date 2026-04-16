@@ -64,7 +64,7 @@ interface MainInfo {
     birthDate: Date | null;
     rescueDate: Date | null;
     gender: string;
-    coatColor: string;
+    coatColour: string;
     coatLength: string;
     location: string;
     microchip: string;
@@ -72,6 +72,11 @@ interface MainInfo {
     chronicConditions: string;
     description: string;
     rescueStory: string;
+    status: string;
+    chipRegisteredWithUs: boolean;
+    specialRequirementsForNewFamily: string;
+    additionalNotes: string;
+    spayedOrNeutered: string;
 }
 
 function createMainInfo(): MainInfo {
@@ -81,14 +86,19 @@ function createMainInfo(): MainInfo {
         birthDate: null,
         rescueDate: null,
         gender: '',
-        coatColor: '',
+        coatColour: '',
         coatLength: '',
         microchip: '',
         location: '',
         fosterStayDuration: '',
         chronicConditions: '',
         description: '',
-        rescueStory: ''
+        rescueStory: '',
+        status: '',
+        chipRegisteredWithUs: false,
+        specialRequirementsForNewFamily: '',
+        additionalNotes: '',
+        spayedOrNeutered: '',
     };
 }
 
@@ -112,7 +122,7 @@ export interface PersonalityInfo {
     peaceful: boolean;
     selfish: boolean;
     hisses: boolean;
-    beingInLap: boolean;
+    beingOnLap: boolean;
     sleepsCuddling: boolean;
     likesPetting: boolean;
     likesAttention: boolean;
@@ -129,7 +139,6 @@ export interface PersonalityInfo {
     attitudeTowardsDogs: string;
     attitudeTowardsChildren: string;
     suitabilityForIndoorOrOutdoor: string;
-    specialRequirementsForNewFamily: string;
 }
 
 export function createPersonalityInfo(): PersonalityInfo {
@@ -153,7 +162,7 @@ export function createPersonalityInfo(): PersonalityInfo {
         peaceful: false,
         selfish: false,
         hisses: false,
-        beingInLap: false,
+        beingOnLap: false,
         sleepsCuddling: false,
         likesPetting: false,
         likesAttention: false,
@@ -170,6 +179,5 @@ export function createPersonalityInfo(): PersonalityInfo {
         attitudeTowardsDogs: '',
         attitudeTowardsChildren: '',
         suitabilityForIndoorOrOutdoor: '',
-        specialRequirementsForNewFamily: ''
     };
 }

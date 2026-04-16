@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
-import MyButton from "src/components/button";
+import { Button } from "src/components/button";
 import CatSvg from "@assets/cat-svg";
 import {AnimalTodo} from "@pages/dashboard/interfaces/animal-todo";
 
@@ -14,7 +14,7 @@ const TodoItem: React.FC<AnimalTodo> = ({
 }) => {
     const [isChecked, setIsChecked] = useState(false);
     const dateColor = urgent ? "text-red-400" : "text-slate-500";
-
+    //TODO siia lisa tagasu myButton
     return (
         <div className="md:flex">
             <div className="flex items-center md:w-1/2">
@@ -36,9 +36,9 @@ const TodoItem: React.FC<AnimalTodo> = ({
                     {assignee}
                 </span>
                 <span>
-                    <MyButton>
+                    <Button>
                         <a href={action.redirect} target="_blank">{action.label}</a>
-                    </MyButton>
+                    </Button>
                 </span>
             </div>
         </div>

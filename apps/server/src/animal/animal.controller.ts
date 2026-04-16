@@ -3,8 +3,8 @@ import { Body, Controller, Get, HttpCode, Param, Post, Put, Req, UseGuards } fro
 import type { Request } from 'express';
 import { AnimalService } from './animal.service';
 import type { AnimalRescueDto } from './dto/create-animal.dto';
-import { UpdateAnimalDto } from './dto/update-animal.dto';
 import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
+import type { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
@@ -56,7 +56,7 @@ export class AnimalController {
 
     @Put()
     @HttpCode(204)
-    async updateAnimal(@Body() updateAnimalData: UpdateAnimalDto) {
+    async updateAnimal(@Body() updateAnimalData: AnimalProfileDto) {
         await this.animalService.updateAnimal(updateAnimalData);
     }
 

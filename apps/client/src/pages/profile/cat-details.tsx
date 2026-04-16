@@ -1,56 +1,60 @@
 import { Profile } from "@catshelp/types/src";
 import { formatEstonianDate } from "@catshelp/utils/src";
 import { useIsMobile } from "@context/is-mobile-context";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ImageGallery from "./image-gallery";
 import { Label } from "@components/label";
 import { Input } from "@components/input";
 import { Textarea } from "@components/textarea";
 import { Checkbox } from "@components/checkbox";
+import { Button } from "@components/button";
+import { Save } from "lucide-react";
+import axios from "axios";
+import { useAlert } from "@context/alert-context";
 
 interface CatDetailsProps {
     selectedCat: Profile;
 }
 
-const personalityOptions = [
-    { et: 'Julge', en: 'Bold', ru: 'Смелый' },
-    { et: 'Arg', en: 'Shy', ru: 'Застенчивый' },
-    { et: 'Aktiivne', en: 'Active', ru: 'Активный' },
-    { et: 'Väga aktiivne', en: 'Very active', ru: 'Очень активный' },
-    { et: 'Rahulik', en: 'Calm', ru: 'Спокойный' },
-    { et: 'Sõbralik', en: 'Friendly', ru: 'Дружелюбный' },
-    { et: 'Pahur', en: 'Grumpy', ru: 'Ворчливый' },
-    { et: 'Hellik', en: 'Vocal', ru: 'Разговорчивый' },
-    { et: 'Ei lase puudutada ennast', en: 'Doesn\'t allow touching', ru: 'Не позволяет прикасаться' },
-    { et: 'Seltsiv', en: 'Sociable', ru: 'Общительный' },
-    { et: 'Omaette hoidev', en: 'Aloof', ru: 'Отстраненный' },
-    { et: 'Hea isuga', en: 'Good appetite', ru: 'Хороший аппетит' },
-    { et: 'Uudishimulik', en: 'Curious', ru: 'Любопытный' },
-    { et: 'Mänguline', en: 'Playful', ru: 'Игривый' },
-    { et: 'Stressis', en: 'Stressed', ru: 'В стрессе' },
-    { et: 'Õrnahingeline', en: 'Sensitive', ru: 'Чувствительный' },
-    { et: 'Rahumeelne', en: 'Peaceful', ru: 'Миролюбивый' },
-    { et: 'Isekas', en: 'Selfish', ru: 'Эгоистичный' },
-    { et: 'Sisiseb palju', en: 'Purrs a lot', ru: 'Много мурлычет' },
-];
+const personalityOptions = {
+    'bold': { et: 'Julge', en: 'Bold', ru: 'Смелый' },
+    'shy': { et: 'Arg', en: 'Shy', ru: 'Застенчивый' },
+    'active': { et: 'Aktiivne', en: 'Active', ru: 'Активный' },
+    'veryActive': { et: 'Väga aktiivne', en: 'Very active', ru: 'Очень активный' },
+    'calm': { et: 'Rahulik', en: 'Calm', ru: 'Спокойный' },
+    'friendly': { et: 'Sõbralik', en: 'Friendly', ru: 'Дружелюбный' },
+    'grumpy': { et: 'Pahur', en: 'Grumpy', ru: 'Ворчливый' },
+    'vocal': { et: 'Hellik', en: 'Vocal', ru: 'Разговорчивый' },
+    'dislikesTouching': { et: 'Ei lase puudutada ennast', en: 'Doesn\'t allow touching', ru: 'Не позволяет прикасаться' },
+    'sociable': { et: 'Seltsiv', en: 'Sociable', ru: 'Общительный' },
+    'aloof': { et: 'Omaette hoidev', en: 'Aloof', ru: 'Отстраненный' },
+    'goodAppetite': { et: 'Hea isuga', en: 'Good appetite', ru: 'Хороший аппетит' },
+    'curious': { et: 'Uudishimulik', en: 'Curious', ru: 'Любопытный' },
+    'playful': { et: 'Mänguline', en: 'Playful', ru: 'Игривый' },
+    'stressed': { et: 'Stressis', en: 'Stressed', ru: 'В стрессе' },
+    'sensitive': { et: 'Õrnahingeline', en: 'Sensitive', ru: 'Чувствительный' },
+    'peaceful': { et: 'Rahumeelne', en: 'Peaceful', ru: 'Миролюбивый' },
+    'selfish': { et: 'Isekas', en: 'Selfish', ru: 'Эгоистичный' },
+    'hisses': { et: 'Sisiseb palju', en: 'Purrs a lot', ru: 'Много мурлычет' },
+};
 
-const likesOptions = [
-    { et: 'Süles olla', en: 'Being on lap', ru: 'Сидеть на коленях' },
-    { et: 'Kaisus magada', en: 'Sleep cuddling', ru: 'Спать в обнимку' },
-    { et: 'Pai saada', en: 'Getting petted', ru: 'Получать ласку' },
-    { et: 'Palju tähelepanu', en: 'Lots of attention', ru: 'Много внимания' },
-    { et: 'Mängida mänguasjadega inimesega', en: 'Play with toys with human', ru: 'Играть с игрушками с человеком' },
-    { et: 'Mängida mänguasjadega üksinda', en: 'Play with toys alone', ru: 'Играть с игрушками одна' },
-];
+const likesOptions = {
+    'beingOnLap': { et: 'Süles olla', en: 'Being on lap', ru: 'Сидеть на коленях' },
+    'sleepsCuddling': { et: 'Kaisus magada', en: 'Sleep cuddling', ru: 'Спать в обнимку' },
+    'likesPetting': { et: 'Pai saada', en: 'Getting petted', ru: 'Получать ласку' },
+    'likesAttention': { et: 'Palju tähelepanu', en: 'Lots of attention', ru: 'Много внимания' },
+    'likesPlayingWithPeople': { et: 'Mängida mänguasjadega inimesega', en: 'Play with toys with human', ru: 'Играть с игрушками с человеком' },
+    'likesPlayingAlone': { et: 'Mängida mänguasjadega üksinda', en: 'Play with toys alone', ru: 'Играть с игрушками одна' },
+};
 
-const habitsOptions = [
-    { et: 'Kasutab liivakasti hästi', en: 'Uses litter box well', ru: 'Хорошо использует лоток' },
-    { et: 'Kasutab kratsimispuud hästi', en: 'Uses scratching post well', ru: 'Хорошо использует когтеточку' },
-    { et: 'On valikuline toiduga, pirtsutab', en: 'Picky with food, splashes', ru: 'Привередлив с едой, разбрасывает' },
-    { et: 'Harjub kiirelt uue kohaga', en: 'Adapts quickly to new place', ru: 'Быстро привыкает к новому месту' },
-    { et: 'Kipub kratsima muud mööblit', en: 'Tends to scratch other furniture', ru: 'Склонен царапать другую мебель' },
-    { et: 'Usaldab inimesi kiiresti', en: 'Trusts people quickly', ru: 'Быстро доверяет людям' },
-];
+const habitsOptions = {
+    'usesLitterbox': { et: 'Kasutab liivakasti hästi', en: 'Uses litter box well', ru: 'Хорошо использует лоток' },
+    'usesScratchingpost': { et: 'Kasutab kratsimispuud hästi', en: 'Uses scratching post well', ru: 'Хорошо использует когтеточку' },
+    'selectiveWithFood': { et: 'On valikuline toiduga, pirtsutab', en: 'Picky with food, splashes', ru: 'Привередлив с едой, разбрасывает' },
+    'adaptable': { et: 'Harjub kiirelt uue kohaga', en: 'Adapts quickly to new place', ru: 'Быстро привыкает к новому месту' },
+    'scratchesFurniture': { et: 'Kipub kratsima muud mööblit', en: 'Tends to scratch other furniture', ru: 'Склонен царапать другую мебель' },
+    'trusting': { et: 'Usaldab inimesi kiiresti', en: 'Trusts people quickly', ru: 'Быстро доверяет людям' },
+};
 
 const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => (
     <div className="profile-section">
@@ -67,7 +71,10 @@ const CatBlogPost: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => (
     </div>
 );
 
-const CatMainInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+const CatMainInfo: React.FC<{
+    selectedCat: Profile,
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
+}> = ({ selectedCat, setSelectedCat }) => {
     return (
         <div className="profile-section">
             <h2 className="section-header">Põhiandmed</h2>
@@ -86,7 +93,7 @@ const CatMainInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
                 </div>
                 <div>
                     <p className="section-label">Värv</p>
-                    <p className="section-value">{selectedCat.mainInfo.coatColor}</p>
+                    <p className="section-value">{selectedCat.mainInfo.coatColour}</p>
                 </div>
                 <div>
                     <p className="section-label">Karva pikkus</p>
@@ -159,7 +166,13 @@ const CatMainInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
     );
 };
 
-const CatPersonalityInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+const CatPersonalityInfo: React.FC<{
+    selectedCat: Profile,
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
+}> = ({ selectedCat, setSelectedCat }) => {
+    const setValue = (key: string, value: string | boolean) => {
+        setSelectedCat({ ...selectedCat, personalityInfo: { ...selectedCat.personalityInfo, [key]: value } });
+    };
     return (
         <div className="profile-section">
             <h2 className="section-header">Iseloom ja Sobivus</h2>
@@ -171,16 +184,16 @@ const CatPersonalityInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat })
                     </Label>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                        {personalityOptions.map((option) => (
+                        {Object.keys(personalityOptions).map((key) => (
                             <label
-                                key={option.en}
-                                className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer"
+                                key={key}
+                                className="flex items-center gap-2 p-2 rounded-sm hover:bg-gray-50 cursor-pointer"
                             >
                                 <Checkbox
-                                    checked={selectedCat.personalityInfo[option.en]}
-                                    onCheckedChange={() => { }}
+                                    checked={selectedCat.personalityInfo[key]}
+                                    onCheckedChange={(value) => { setValue(key, value) }}
                                 />
-                                <span className="text-sm">{option.et}</span>
+                                <span className="text-sm">{personalityOptions[key].et}</span>
                             </label>
                         ))}
                     </div>
@@ -190,17 +203,17 @@ const CatPersonalityInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat })
                         Kassile meeldib
                     </Label>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                        {likesOptions.map((option) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {Object.keys(likesOptions).map((key) => (
                             <label
-                                key={option.en}
+                                key={key}
                                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer"
                             >
                                 <Checkbox
-                                    checked={selectedCat.personalityInfo[option.en]}
-                                    onCheckedChange={() => { }}
+                                    checked={selectedCat.personalityInfo[key]}
+                                    onCheckedChange={(value) => { setValue(key, value) }}
                                 />
-                                <span className="text-sm">{option.et}</span>
+                                <span className="text-sm">{likesOptions[key].et}</span>
                             </label>
                         ))}
                     </div>
@@ -210,91 +223,56 @@ const CatPersonalityInfo: React.FC<{ selectedCat: Profile }> = ({ selectedCat })
                         Harjumused ja käitumine
                     </Label>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                        {habitsOptions.map((option) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {Object.keys(habitsOptions).map((key) => (
                             <label
-                                key={option.en}
+                                key={key}
                                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer"
                             >
                                 <Checkbox
-                                    checked={selectedCat.personalityInfo[option.en]}
-                                    onCheckedChange={() => { }}
+                                    checked={selectedCat.personalityInfo[key]}
+                                    onCheckedChange={(value) => { setValue(key, value) }}
                                 />
-                                <span className="text-sm">{option.et}</span>
+                                <span className="text-sm">{habitsOptions[key].et}</span>
                             </label>
                         ))}
                     </div>
+                </div>
+                <div>
+                    <Label htmlFor="dailyDescription">
+                        Kirjelda kassi mõne iseloomustava lausega
+                    </Label>
+
+                    <Textarea
+                        id="dailyDescription"
+                        value={selectedCat.personalityInfo.description || ''}
+                        onChange={(e) => { }}
+                        rows={3}
+                        placeholder={'Nt milline on kiisu argipäev'}
+                        className="resize-y"
+                    />
                 </div>
             </div>
         </div>
     );
 };
 
-const extractProcedures = (profile: Profile): string => {
-
-    const procedures = [];
-    /*
-    if (!profile.characteristics.textFields.gender.split(' ')[0].endsWith('mata')) {
-        procedures.push("Lõigatud");
-    }
-
-    if (isFutureDate(profile.vaccineInfo.nextComplexVaccineDate)) {
-        procedures.push('Kompleksvaktsiin');
-    }
-
-    if (isFutureDate(profile.vaccineInfo.nextRabiesVaccineDate)) {
-        procedures.push('Marutaudi vaktsiin');
-    }
-
-    if (profile.vaccineInfo.dewormingOrFleaTreatmentDate) {
-        procedures.push('Ussirohi');
-    }
-        */
-
-    return procedures.join(', ');
-
-}
-
 const CatDetails: React.FC<CatDetailsProps> = ({
     selectedCat,
+    setSelectedCat
 }) => {
     const isMobile = useIsMobile();
+    const { showAlert } = useAlert();
 
-    const capitalize = str => {
-        if (!str) {
-            return ""
+    const handleSave = async () => {
+        if (selectedCat) {
+            await axios.put("/api/animals", selectedCat).then(() => {
+                showAlert('Success', "Andmed uuendatud!");
+            }).catch((error) => {
+                showAlert('Error', "Andmete uuendamine ebaõnnestus");
+            })
         }
-        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
     };
-
-    /*
-    const FIELD_LABELS = {
-        "Kassi sugu": capitalize(selectedCat.characteristics.textFields.gender),
-        "Kassi vanus": calculateAge(selectedCat.mainInfo.birthDate),
-        "Kassi välimus": [
-            selectedCat.characteristics.selectFields.coatColour,
-            selectedCat.characteristics.selectFields.coatLength
-        ].filter(Boolean).join(' '),
-        "Kassi asukoht": selectedCat.mainInfo.location,
-        "Mis protseduurid hoiulisel tehtud on?": extractProcedures(selectedCat),
-        "Kui kassil esineb krooniline haigus, vajab eritoitu või on vigastus palun kirjuta siia sellest": selectedCat.characteristics.textFields.chronicConditions,
-        "Kui kaua on kass hoiukodus/kassitoas viibinud?": selectedCat.characteristics.textFields.fosterStayDuration,
-        "Iseloom": selectedCat.characteristics.multiselectFields.personality.join(", "),
-        "Kassile meeldib": selectedCat.characteristics.multiselectFields.likes.join(", "),
-        "Kirjelda kassi mõne iseloomustava lausega (nt milline on kiisu argipäev)": selectedCat.characteristics.textFields.description,
-        "Kuidas suhtub teistesse kassidesse?": selectedCat.characteristics.selectFields.attitudeTowardsCats,
-        "Kuidas suhtub koertesse?": selectedCat.characteristics.selectFields.attitudeTowardsDogs,
-        "Kuidas suhtub lastesse?": selectedCat.characteristics.selectFields.attitudeTowardsChildren,
-        "Kuidas ta sobiks toa- või õuekassikas?": selectedCat.characteristics.selectFields.suitabilityForIndoorOrOutdoor
-    } as const;
-     */
-
-    /*
-    useEffect(() => {
-        selectedCat.profilePictureFilename = selectedProfilePicture;
-    }, [selectedProfilePicture])
-    */
-
 
     return (
         <>
@@ -307,8 +285,23 @@ const CatDetails: React.FC<CatDetailsProps> = ({
                 />
 
                 <CatBlogPost selectedCat={selectedCat} />
-                <CatMainInfo selectedCat={selectedCat} />
-                <CatPersonalityInfo selectedCat={selectedCat} />
+                <CatMainInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
+                <CatPersonalityInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
+
+                <div className="sticky bottom-20 lg:bottom-6 z-10">
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-4">
+                        <Button
+                            onClick={handleSave}
+                            disabled={!selectedCat}
+                            className="w-full"
+                            size="lg"
+                        >
+                            <Save className="w-4 h-4 mr-2" />
+                            Salvesta ja uuenda veebis
+                        </Button>
+                    </div>
+                </div>
+
             </div>
             {!isMobile && <ImageGallery animalId={selectedCat.animalId} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
         </>

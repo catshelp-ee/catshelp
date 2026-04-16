@@ -11,7 +11,7 @@ interface MainInfoDto {
     birthDate: Date | null;
     rescueDate: Date | null;
     gender: string;
-    coatColor: string;
+    coatColour: string;
     coatLength: string;
     location: string;
     microchip: string;
@@ -19,6 +19,11 @@ interface MainInfoDto {
     chronicConditions: string;
     description: string;
     rescueStory: string;
+    status: string;
+    chipRegisteredWithUs: boolean;
+    specialRequirementsForNewFamily: string;
+    additionalNotes: string;
+    spayedOrNeutered: string;
 }
 
 interface PersonalityInfoDto {
@@ -41,7 +46,7 @@ interface PersonalityInfoDto {
     peaceful: boolean,
     selfish: boolean,
     hisses: boolean,
-    beingInLap: boolean,
+    beingOnLap: boolean,
     sleepsCuddling: boolean,
     likesPetting: boolean,
     likesAttention: boolean,
@@ -58,5 +63,4 @@ interface PersonalityInfoDto {
     attitudeTowardsDogs: string,
     attitudeTowardsChildren: string,
     suitabilityForIndoorOrOutdoor: string,
-    specialRequirementsForNewFamily: string
 }

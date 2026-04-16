@@ -37,7 +37,7 @@ const CatProfile: React.FC = () => {
                 {cats.length !== 0 && (
                     <>
                         <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
-                        {selectedCat && <CatDetails selectedCat={selectedCat} />}
+                        {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat}/>}
                     </>
                 )}
             </div>

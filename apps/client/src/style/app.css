@@ -114,8 +114,8 @@
   @apply text-secondaryText;
 }
 
-#root {
-    height: 100vh;
+#container {
+    height: 100%;
 }
 
 .page {

@@ -39,4 +39,4 @@ function App() {
 }
 
 export default App;
-export const HOME = "/users";
+export const HOME = "/dashboard";

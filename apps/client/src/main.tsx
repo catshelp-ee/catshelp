@@ -10,7 +10,7 @@ import { PostHogProviderWrapper } from "./analytics/post-hog-provider-wrapper";
 import App from "./app";
 import {LanguageProvider} from "@context/language-context";
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("container")!).render(
     <PostHogProviderWrapper>
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">

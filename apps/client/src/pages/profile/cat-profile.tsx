@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import CatDetails from "./cat-details";
 import ProfileTabs from "./profile-tabs";
 
+
 const CatProfile: React.FC = () => {
     const { showAlert } = useAlert();
     const [cats, setCats] = useState<ProfileHeader[]>([]);
@@ -37,7 +38,7 @@ const CatProfile: React.FC = () => {
                 {cats.length !== 0 && (
                     <>
                         <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
-                        {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat}/>}
+                        {selectedCat && <CatDetails selectedCat={selectedCat}/>}
                     </>
                 )}
             </div>

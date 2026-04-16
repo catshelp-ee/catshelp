@@ -12,6 +12,21 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "paths": {
+            "@api/*" : [
+                "src/services/api/*"
+            ],
+            "@translations/*": [
+                "src/translations/*"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
+            "@app-types/*": [
+                "src/types/*"
+            ],
+            "@interfaces/*": [
+                "src/interfaces/*"
+            ],
             "@components/*": [
                 "src/components/*"
             ],
@@ -29,9 +44,6 @@
             ],
             "@style/*": [
                 "src/style/*"
-            ],
-            "@types/*": [
-                "types/*"
             ],
             "@utils/*": [
                 "utils/*"

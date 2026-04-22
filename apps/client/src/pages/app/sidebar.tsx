@@ -1,9 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
 
 import { LayoutDashboard, Cat, Heart } from 'lucide-react';
-import {translations} from "@translations/translations";
 import type {Screen} from "@config/app";
-import {useLanguage} from "@context/language-context";
 import {useTranslation} from "@hooks/use-translation";
 
 export function Sidebar() {
@@ -15,19 +13,19 @@ export function Sidebar() {
     const navItems = [
         {
             id: 'dashboard' as Screen,
-            label: t(translations.nav.dashboard),
+            label: t("nav.dashboard"),
             icon: LayoutDashboard,
             path: "/users"
         },
         {
             id: 'cat-profile' as Screen,
-            label: t(translations.nav.catProfile),
+            label: t("nav.catProfile"),
             icon: Cat,
             path: "/cat-profile"
         },
         {
             id: 'medical' as Screen,
-            label: t(translations.nav.medical),
+            label: t("nav.medical"),
             icon: Heart,
         },
     ];

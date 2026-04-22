@@ -1,10 +1,10 @@
 import { Profile } from "@catshelp/types/src";
 import { calculateAge, isFutureDate } from "@catshelp/utils/src";
-import { useIsMobile } from "@context/is-mobile-context";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ImageGallery from "./image-gallery";
+import ImageGallery from "./image-gallery.tsx";
 
 interface CatDetailsProps {
     selectedCat: Profile;

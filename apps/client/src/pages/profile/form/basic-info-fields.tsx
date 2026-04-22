@@ -1,4 +1,4 @@
-import { Profile } from "@catshelp/types/src";
+import { Profile } from "@catshelp/types/src/index.ts";
 import {
     FormControl,
     FormControlLabel,
@@ -11,8 +11,8 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 import React from "react";
-import { COAT_COLOURS, COAT_LENGTHS } from "./form-data";
-import ResponsiveMultiSelect from "./responsive-multi-select";
+import { COAT_COLOURS, COAT_LENGTHS } from "./form-data.ts";
+import ResponsiveMultiSelect from "./responsive-multi-select.tsx";
 
 interface BasicInfoFieldsProps {
     tempSelectedCat: Profile;

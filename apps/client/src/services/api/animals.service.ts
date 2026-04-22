@@ -1,5 +1,5 @@
 import axios from "axios";
-import {AnimalTodo} from "@interfaces/animal-todo";
+import {AnimalTodo} from "@interfaces/animal-todo.ts";
 
 export const animalsApi = {
     getTodos: (animalId: number): Promise<AnimalTodo[]> =>

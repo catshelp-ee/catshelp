@@ -1,9 +1,10 @@
+//TODO
 import {
     Avatar,
     Typography,
 } from "@mui/material";
 import React from "react";
-import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary";
+import {AnimalSummary} from "@pages/dashboard/interfaces/animal-summary.tsx";
 
 export const PetAvatar: React.FC<{
     data: AnimalSummary;

@@ -9,9 +9,9 @@ import {
     Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useIsMobile } from "@context/is-mobile-context";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
 import axios from "axios";
-import { useAlert } from "@context/alert-context";
+import { useAlert } from "@context/alert-context.tsx";
 
 interface ImageGalleryProps {
     name?: string;

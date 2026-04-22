@@ -1,6 +1,6 @@
 import React from "react";
-import TodoItem from "./todo-item";
-import {AnimalTodo} from "@interfaces/animal-todo";
+import TodoItem from "./todo-item.tsx";
+import {AnimalTodo} from "@interfaces/animal-todo.ts";
 
 interface TodoListProps {
     todos: AnimalTodo[];

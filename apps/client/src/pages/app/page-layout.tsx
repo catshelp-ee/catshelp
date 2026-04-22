@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./sidebar";
-import Header from './header';
-import HamburgerMenu from "./hamburger-menu";
-import { useIsMobile } from "src/context/is-mobile-context";
-import {useAuth} from "@context/auth-context";
-import {AppMode} from "@config/app";
+import Sidebar from "./sidebar.tsx";
+import Header from './header.tsx';
+import HamburgerMenu from "./hamburger-menu.tsx";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
+import {useAuth} from "@context/auth-context.tsx";
+import {AppMode} from "@config/app.ts";
 
 const PageLayout = () => {
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false);

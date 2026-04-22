@@ -1,4 +1,4 @@
-import { Profile } from "@catshelp/types/src";
+import { Profile } from "@catshelp/types/src/index.ts";
 import { TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";

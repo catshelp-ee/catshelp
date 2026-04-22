@@ -1,6 +1,6 @@
-import {useLanguage} from "@context/language-context";
-import {translate} from "@translations/translate";
-import { translations } from "@translations/translations";
+import {useLanguage} from "@context/language-context.tsx";
+import {translate} from "@translations/translate.ts";
+import { translations } from "@translations/translations.ts";
 
 export function useTranslation() {
     const {language} = useLanguage();

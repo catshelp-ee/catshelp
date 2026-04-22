@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
-import {usersApi} from "@api/users.service";
-import {UserResponse} from "@interfaces/user-response";
+import {usersApi} from "@api/users.service.ts";
+import {UserResponse} from "@interfaces/user-response.ts";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "@context/auth-context";
+import {useAuth} from "@context/auth-context.tsx";
 
 export function useUser() {
     const [user, setUser] = useState<UserResponse | null>(null);

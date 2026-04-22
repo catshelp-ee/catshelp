@@ -14,8 +14,11 @@ export class Animal {
     @Column()
     public name: string;
 
-    @Column()
-    public birthday: Date;
+    @Column({
+        type: "date",
+        nullable: true
+    })
+    public birthday: Date | null;
 
     @Column()
     public profileTitle: string;
@@ -31,6 +34,12 @@ export class Animal {
 
     @Column({ default: false })
     public chipRegisteredWithUs: boolean;
+
+    @Column()
+    public requirementsForNewFamily: string;
+
+    @Column()
+    public additionalNotes: string;
 
     @OneToMany(() => File, (file) => file.animal)
     public files: File[];

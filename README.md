@@ -14,7 +14,8 @@ Github automatically deploys it to zone via a pipeline.
 
 # Migrations
 Creating a migration script:
-```npm run migration:create --name=test```
+```npm run migration:create:unix --name=test```
+```npm run migration:create:windows --name=test```
 
 Migrating scripts:
 ```npm run migration:run```

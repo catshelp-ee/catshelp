@@ -1,8 +1,9 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Animal } from "./animal.entity";
+import { IRescue } from "@catshelp/types";
 
 @Entity("animal_rescues")
-export class Rescue {
+export class Rescue implements IRescue {
 
     @PrimaryGeneratedColumn()
     public id: number;

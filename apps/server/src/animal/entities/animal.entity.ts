@@ -4,9 +4,10 @@ import { AnimalToFosterHome } from "./animalToFosterhome.entity";
 import { Characteristic } from "./characteristic.entity";
 import { Rescue } from "./rescue.entity";
 import { Treatment } from "./treatment.entity";
+import { IAnimal } from "@catshelp/types";
 
 @Entity("animals")
-export class Animal {
+export class Animal implements IAnimal {
 
     @PrimaryGeneratedColumn()
     public id: number;

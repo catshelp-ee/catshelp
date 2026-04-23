@@ -1,6 +1,6 @@
 {
     "name": "catshelp",
-    "packageManager": "npm@11.12.1",
+    "packageManager": "npm@11.13.0",
     "private": true,
     "workspaces": [
         "packages/*",

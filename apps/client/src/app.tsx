@@ -1,10 +1,10 @@
-import AddCatForm from "@pages/add-cat/add-cat-form";
-import Admin from "@pages/admin/admin";
-import PageLayout from "@pages/app/page-layout";
-import Dashboard from "@pages/dashboard/dashboard";
-import LoginForm from "@pages/login/login-form";
-import CatProfile from "@pages/profile/cat-profile";
-import ProtectedRoute from "@pages/protected-route";
+import AddCatForm from "@pages/add-cat/add-cat-form.tsx";
+import Admin from "@pages/admin/admin.tsx";
+import PageLayout from "@pages/app/page-layout.tsx";
+import Dashboard from "@pages/dashboard/dashboard.tsx";
+import LoginForm from "@pages/login/login-form.tsx";
+import CatProfile from "@pages/profile/cat-profile.tsx";
+import ProtectedRoute from "@pages/protected-route.tsx";
 import "@style/app.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";

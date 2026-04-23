@@ -1,4 +1,4 @@
-import { useMediaQuery } from "@hooks/use-media-query";
+import { useMediaQuery } from "@hooks/use-media-query.tsx";
 import { createContext, useContext } from "react";
 
 const IsMobileContext = createContext<boolean>(false);

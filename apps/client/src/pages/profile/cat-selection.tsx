@@ -1,11 +1,11 @@
-import { Profile, Avatar } from "@catshelp/types/src";
-import { PetAvatar } from "@components/pet-avatar";
+import { Profile } from "@catshelp/types/src/index.ts";
+import { PetAvatar } from "@components/pet-avatar.tsx";
 import { Stack } from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "@context/auth-context";
-import {AnimalSummary} from "@interfaces/animal-summary";
+import {useAuth} from "@context/auth-context.tsx";
+import {AnimalSummary} from "@interfaces/animal-summary.ts";
 
 interface CatSelectionProps {
     animalAvatars: AnimalSummary[];

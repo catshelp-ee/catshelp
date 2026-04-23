@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import {AnimalSummary} from "@interfaces/animal-summary";
-import {usersApi} from "@api/users.service";
-import {useUser} from "@hooks/use-user";
-import {useAlert} from "@context/alert-context";
+import {AnimalSummary} from "@interfaces/animal-summary.ts";
+import {usersApi} from "@api/users.service.ts";
+import {useUser} from "@hooks/use-user.tsx";
+import {useAlert} from "@context/alert-context.tsx";
 
 export function useAnimals() {
     const [animals, setAnimals] = useState<AnimalSummary[]>([]);

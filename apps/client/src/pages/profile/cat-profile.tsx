@@ -1,17 +1,17 @@
-import { createProfile, Profile, Avatar } from "@catshelp/types/src";
-import { useAlert } from "@context/alert-context";
-import { useIsMobile } from "@context/is-mobile-context";
-import { createContextHook } from "@hooks/create-context-hook";
-import { isLoadingWrapper } from "@hooks/is-loading";
+import { createProfile, Profile, Avatar } from "@catshelp/types/src/index.ts";
+import { useAlert } from "@context/alert-context.tsx";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
+import { createContextHook } from "@hooks/create-context-hook.tsx";
+import { isLoadingWrapper } from "@hooks/is-loading.tsx";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
-import CatDetails from "./cat-details";
-import CatSelection from "./cat-selection";
-import EditProfile from "./edit-profile";
+import CatDetails from "./cat-details.tsx";
+import CatSelection from "./cat-selection.tsx";
+import EditProfile from "./edit-profile.tsx";
 import {useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "@context/auth-context";
-import {AnimalSummary} from "@interfaces/animal-summary";
+import {useAuth} from "@context/auth-context.tsx";
+import {AnimalSummary} from "@interfaces/animal-summary.ts";
 
 const CatProfileHeader = ({ cats }: { cats: any }) => {
     const { isLoading, setIsLoading } = useLoading();

@@ -1,8 +1,8 @@
 import {useLocation, useNavigate} from "react-router-dom";
 
 import { LayoutDashboard, Cat, Heart } from 'lucide-react';
-import type {Screen} from "@config/app";
-import {useTranslation} from "@hooks/use-translation";
+import type {Screen} from "@config/app.ts";
+import {useTranslation} from "@hooks/use-translation.tsx";
 
 export function Sidebar() {
 

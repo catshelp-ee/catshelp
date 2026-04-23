@@ -40,7 +40,7 @@ export class GoogleDriveService {
                     .on('error', reject);
             });
         } catch (e) {
-            throw new Error(`failed to download image with ID ${fileId}\n`, e);
+            throw new Error(`failed to download image with ID ${fileId}`, { cause: e });
         }
     }
 }

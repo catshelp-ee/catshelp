@@ -11,8 +11,8 @@ import React from "react";
 import {
     FIELD_VALUES,
     MULTISELECT_FIELD_VALUES
-} from "./form-data";
-import ResponsiveMultiSelect from "./responsive-multi-select";
+} from "./form-data.ts";
+import ResponsiveMultiSelect from "./responsive-multi-select.tsx";
 
 interface DynamicFormFieldsProps {
     tempSelectedCat: Profile;

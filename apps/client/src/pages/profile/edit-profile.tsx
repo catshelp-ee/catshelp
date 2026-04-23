@@ -1,7 +1,7 @@
-import { Profile, ProfileHeader } from "@catshelp/types/src";
-import { useAlert } from "@context/alert-context";
-import { useIsMobile } from "@context/is-mobile-context";
-import { useCatForm } from "@hooks/use-cat-form";
+import { Profile, ProfileHeader } from "@catshelp/types/src/index.ts";
+import { useAlert } from "@context/alert-context.tsx";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
+import { useCatForm } from "@hooks/use-cat-form.tsx";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { AccordionDetails, Button, IconButton, TextField, Typography } from "@mui/material";
@@ -9,11 +9,11 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import axios from "axios";
 import React, { useState } from "react";
-import { uploadImages } from "src/utils/image-utils";
-import { BasicInfoFields } from "./form/basic-info-fields";
-import { DynamicFormFields } from "./form/dynamic-form-fields";
-import { VaccinationFields } from "./form/vaccination-fields";
-import ImageGallery from "./image-gallery";
+import { uploadImages } from "@utils/image-utils.ts";
+import { BasicInfoFields } from "./form/basic-info-fields.tsx";
+import { DynamicFormFields } from "./form/dynamic-form-fields.tsx";
+import { VaccinationFields } from "./form/vaccination-fields.tsx";
+import ImageGallery from "./image-gallery.tsx";
 
 
 interface CatDetailsProps {

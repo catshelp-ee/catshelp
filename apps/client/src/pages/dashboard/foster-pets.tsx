@@ -3,12 +3,13 @@ import {
     Tooltip,
     useTheme,
 } from "@mui/material";
-import AllPetsPopup from "@pages/dashboard/all-pets-popup";
-import {AnimalSummary} from "@interfaces/animal-summary";
+import AllPetsPopup from "@pages/dashboard/all-pets-popup.tsx";
+import {AnimalSummary} from "@interfaces/animal-summary.ts";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Link, useLocation, useParams} from "react-router-dom";
+//TODO
 import {PetAvatar} from "src/components/pet-avatar";
-import {useAuth} from "@context/auth-context";
+import {useAuth} from "@context/auth-context.tsx";
 
 interface FosterPetsProps {
     pets: AnimalSummary[];

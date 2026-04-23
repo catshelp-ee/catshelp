@@ -85,7 +85,7 @@ export class GoogleSheetsService {
             });
             return sheetData;
         } catch (e) {
-            throw new Error('Error fetching sheet: ', e);
+            throw new Error('Error fetching sheet: ', { cause: e });
         }
     }
 
@@ -99,7 +99,7 @@ export class GoogleSheetsService {
             });
             return sheetData;
         } catch (e) {
-            throw new Error('Error fetching sheet: ', e);
+            throw new Error('Error fetching sheet: ', { cause: e });
         }
     }
 
@@ -236,7 +236,7 @@ export class GoogleSheetsService {
             await this.executeSheetUpdate(updateRequests);
         } catch (error) {
             console.error('Error updating sheet cells:', error);
-            throw new Error(`Failed to update sheet cells: ${error.message}`);
+            throw new Error('Failed to update sheet cells', { cause: error });
         }
     }
 
@@ -273,7 +273,7 @@ export class GoogleSheetsService {
                 requestBody: { requests: updateRequests },
             });
         } catch (error) {
-            throw new Error(`Sheet update failed: ${error.message}`);
+            throw new Error('Sheet update failed', { cause: error });
         }
     }
 }

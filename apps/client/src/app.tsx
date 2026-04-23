@@ -1,16 +1,16 @@
-import AddCatForm from "@pages/add-cat/add-cat-form";
-import Admin from "@pages/admin/admin";
-import AdminCatProfile from "@pages/admin/admin-cat-profile";
-import PageLayout from "@pages/app/page-layout";
-import Dashboard from "@pages/dashboard/dashboard";
-import LoginForm from "@pages/login/login-form";
-import CatProfile from "@pages/profile/cat-profile";
-import ProtectedRoute from "@pages/protected-route";
+import AddCatForm from "@pages/add-cat/add-cat-form.tsx";
+import Admin from "@pages/admin/admin.tsx";
+import AdminCatProfile from "@pages/admin/admin-cat-profile.tsx";
+import PageLayout from "@pages/app/page-layout.tsx";
+import Dashboard from "@pages/dashboard/dashboard.tsx";
+import LoginForm from "@pages/login/login-form.tsx";
+import CatProfile from "@pages/profile/cat-profile.tsx";
+import ProtectedRoute from "@pages/protected-route.tsx";
 import "@style/app.css";
 import dayjs from "dayjs";
 import "dayjs/locale/et.js";
-import localeData from "dayjs/plugin/localeData";
-import weekday from "dayjs/plugin/weekday";
+import localeData from "dayjs/plugin/localeData.js";
+import weekday from "dayjs/plugin/weekday.js";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 dayjs.extend(weekday);

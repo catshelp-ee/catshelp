@@ -1,12 +1,12 @@
 import {Shield, User, Heart, LogOut} from 'lucide-react';
-import {useLanguage} from '@context/language-context';
+import {useLanguage} from '@context/language-context.tsx';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
-import {useAuth} from "@context/auth-context";
-import {useTranslation} from "@hooks/use-translation";
-import {AppMode} from "@config/app";
-import {Language} from "@config/app";
-import {LANGUAGES} from "@config/app";
-import {useUser} from "@hooks/use-user";
+import {useAuth} from "@context/auth-context.tsx";
+import {useTranslation} from "@hooks/use-translation.tsx";
+import {AppMode} from "@config/app.ts";
+import {Language} from "@config/app.ts";
+import {LANGUAGES} from "@config/app.ts";
+import {useUser} from "@hooks/use-user.tsx";
 
 const tabButtonClass = (isActive: boolean) =>
     `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${

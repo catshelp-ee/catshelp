@@ -1,5 +1,5 @@
-import { useAlert } from "@context/alert-context";
-import { useAuth } from "@context/auth-context";
+import { useAlert } from "@context/alert-context.tsx";
+import { useAuth } from "@context/auth-context.tsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import React, { useEffect, useState } from "react";

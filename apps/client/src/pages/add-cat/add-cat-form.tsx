@@ -8,12 +8,12 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
-import { useAlert } from "@context/alert-context";
-import States from "./states.json";
+import { useAlert } from "@context/alert-context.tsx";
+import States from "./states.json" with { type: "json" };
 import React, { useEffect, useState } from "react";
-import { resizeImages, uploadImages } from "src/utils/image-utils";
+import { resizeImages, uploadImages } from "@utils/image-utils.ts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@context/auth-context";
+import { useAuth } from "@context/auth-context.tsx";
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",

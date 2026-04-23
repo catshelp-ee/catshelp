@@ -1,10 +1,10 @@
-import { Profile, ProfileHeader } from "@catshelp/types/src";
-import { useAlert } from "@context/alert-context";
-import { useIsMobile } from "@context/is-mobile-context";
+import { Profile, ProfileHeader } from "@catshelp/types/src/index.ts";
+import { useAlert } from "@context/alert-context.tsx";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import CatDetails from "./cat-details";
-import ProfileTabs from "./profile-tabs";
+import CatDetails from "./cat-details.tsx";
+import ProfileTabs from "./profile-tabs.tsx";
 
 
 const CatProfile: React.FC = () => {

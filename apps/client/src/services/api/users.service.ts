@@ -1,6 +1,6 @@
-import {AnimalSummary} from "@interfaces/animal-summary";
+import {AnimalSummary} from "@interfaces/animal-summary.ts";
 import axios from "axios";
-import {UserResponse} from "@interfaces/user-response";
+import {UserResponse} from "@interfaces/user-response.ts";
 
 export const usersApi = {
     getUser: (userId: number): Promise<UserResponse> =>

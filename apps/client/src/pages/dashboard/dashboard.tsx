@@ -1,7 +1,7 @@
 import React from "react";
-import { useAnimals } from "@hooks/use-animals";
-import { useTodos } from "@hooks/use-todos";
-import { useUser } from "@hooks/use-user";
+import { useAnimals } from "@hooks/use-animals.tsx";
+import { useTodos } from "@hooks/use-todos.tsx";
+import { useUser } from "@hooks/use-user.tsx";
 
 
 const Dashboard = () => {

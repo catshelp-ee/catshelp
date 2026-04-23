@@ -2,54 +2,56 @@
     "compilerOptions": {
         "jsx": "react-jsx",
         "target": "ES2022",
-        "module": "ESNext",
-        "moduleResolution": "node",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "rootDir": "./src",
         "outDir": "./dist",
-        "baseUrl": "./",
         "paths": {
             "@api/*" : [
-                "src/services/api/*"
+                "./src/services/api/*"
             ],
             "@translations/*": [
-                "src/translations/*"
+                "./src/translations/*"
             ],
             "@config/*": [
-                "src/config/*"
+                "./src/config/*"
             ],
             "@app-types/*": [
-                "src/types/*"
+                "./src/types/*"
             ],
             "@interfaces/*": [
-                "src/interfaces/*"
+                "./src/interfaces/*"
             ],
             "@components/*": [
-                "src/components/*"
+                "./src/components/*"
             ],
             "@analytics/*": [
-                "src/analytics/*"
+                "./src/analytics/*"
             ],
             "@assets/*": [
-                "src/assets/*"
+                "./src/assets/*"
             ],
             "@context/*": [
-                "src/context/*"
+                "./src/context/*"
             ],
             "@pages/*": [
-                "src/pages/*"
+                "./src/pages/*"
             ],
             "@style/*": [
-                "src/style/*"
+                "./src/style/*"
             ],
             "@utils/*": [
-                "utils/*"
+                "./src/utils/*"
             ],
             "@hooks/*": [
-                "src/hooks/*"
+                "./src/hooks/*"
             ],
             "@server/*": [
                 "../server/src/*"

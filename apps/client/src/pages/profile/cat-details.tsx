@@ -1,16 +1,16 @@
-import { Profile } from "@catshelp/types/src";
-import { formatEstonianDate } from "@catshelp/utils/src";
-import { useIsMobile } from "@context/is-mobile-context";
+import { Profile } from "@catshelp/types/src/index.ts";
+import { formatEstonianDate } from "@catshelp/utils/src/index.ts";
+import { useIsMobile } from "@context/is-mobile-context.tsx";
 import React, { useState } from "react";
-import ImageGallery from "./image-gallery";
-import { Label } from "@components/label";
-import { Input } from "@components/input";
-import { Textarea } from "@components/textarea";
-import { Checkbox } from "@components/checkbox";
-import { Button } from "@components/button";
+import ImageGallery from "./image-gallery.tsx";
+import { Label } from "@components/label.tsx";
+import { Input } from "@components/input.tsx";
+import { Textarea } from "@components/textarea.tsx";
+import { Checkbox } from "@components/checkbox.tsx";
+import { Button } from "@components/button.tsx";
 import { Save } from "lucide-react";
 import axios from "axios";
-import { useAlert } from "@context/alert-context";
+import { useAlert } from "@context/alert-context.tsx";
 
 interface CatDetailsProps {
     selectedCat: Profile;

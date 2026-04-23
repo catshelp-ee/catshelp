@@ -26,3 +26,7 @@ Migrating scripts:
 1. Create the debug configuration. Example in project root
 2. Run frontend through commandline with ```npm run client```
 3. Run the debugger
+
+
+# Random info
+hookified is explicitly added to server/package.json because some npm bug. It won't get it as a subdependency for a package and error occurs on startup.

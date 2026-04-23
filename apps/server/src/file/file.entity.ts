@@ -1,8 +1,9 @@
 import { Animal } from "@animal/entities/animal.entity";
+import { IFile } from "@catshelp/types";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("files")
-export class File {
+export class File implements IFile {
 
     @PrimaryGeneratedColumn()
     public id: number;

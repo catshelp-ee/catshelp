@@ -79,7 +79,7 @@ const AddCatForm = () => {
     };
     //Pildid ei salvestu korrektselt hetkel.
     return (
-        <div className="md:mx-12">
+        <div>
             <div className="flex flex-col">
                 <h1 className="text-6xl my-4">Lisa uus kass</h1>
                 <form

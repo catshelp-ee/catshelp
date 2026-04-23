@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Select, MenuItem, InputLabel, SelectChangeEvent } from "@mui/material";
+import AdminCatList from "./admin-cat-list";
 
 interface AdminProps { }
 
@@ -42,7 +43,7 @@ const Admin: React.FC<AdminProps> = () => {
     };
 
     return (
-        <div className="md:mx-12 flex-1">
+        <div className="flex-1">
             <p className="page-heading">
                 Admin töölaud
             </p>
@@ -63,6 +64,9 @@ const Admin: React.FC<AdminProps> = () => {
             <Button onClick={(e) => runJob()}>
                 Käivita
             </Button>
+            <div>
+                <AdminCatList></AdminCatList>
+            </div>
         </div>
     );
 };

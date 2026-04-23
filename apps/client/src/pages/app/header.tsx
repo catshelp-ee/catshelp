@@ -91,8 +91,8 @@ const UserAvatar = ({onLogout}: UserAvatarProps) => {
 
             {isOpen && (
                 <div className="absolute flex flex-col right-0 mt-1 p-2 w-52 max-w-72 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                    <span>{t("nav.role." + user.role)}</span>
-                    <span className="text-xs text-secondary mb-4 break-all">{user.email}</span>
+                    <span>{t("nav.role." + user?.role)}</span>
+                    <span className="text-xs text-secondary mb-4 break-all">{user?.email}</span>
                     <hr />
                     <button
                         onClick={onLogout}

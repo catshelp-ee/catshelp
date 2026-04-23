@@ -1,4 +1,4 @@
-import { createProfile, Profile } from '@catshelp/types';
+import { Profile, PersonalityInfo, createPersonalityInfo } from '@catshelp/types';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
@@ -7,7 +7,6 @@ import { UserRepository } from '@user/user.repository';
 import { DataSource } from 'typeorm';
 import { CharacteristicsService } from './characteristics.service';
 import { AnimalRescueDto } from './dto/create-animal.dto';
-import { UpdateAnimalDto } from './dto/update-animal.dto';
 import { Animal } from './entities/animal.entity';
 import { RescueResult } from './interfaces/rescue-result';
 import { AnimalRepository } from './repositories/animal.repository';
@@ -22,7 +21,7 @@ import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
 import { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
 import { FileRepository } from '../file/file.repository';
-import { getRootPath } from '@server/src/main';
+import { Characteristic } from './entities/characteristic.entity';
 import { join } from 'path';
 
 @Injectable()
@@ -40,6 +39,16 @@ export class AnimalService {
         private readonly notificationService: NotificationService,
         private readonly fileRepository: FileRepository,
     ) { }
+
+    public async getProfile(animalId: number | string): Promise<AnimalProfileDto | null> {
+        const animal = await this.animalRepository.getAnimalByIdWithRescue(Number(animalId));
+
+        if (!animal){
+            throw new Error("No animal found");
+        }
+
+        return this.buildProfile(animal);
+    }
 
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
         return this.userRepository.getAnimalsByUserId(id);
@@ -84,12 +93,23 @@ export class AnimalService {
         return { animal, rescue };
     }
 
-    async updateAnimal(updatedAnimalData: UpdateAnimalDto) {
+    async updateAnimal(updatedAnimalData: AnimalProfileDto) {
         const animal = await this.animalRepository.getAnimalById(updatedAnimalData.animalId);
-        if (!animal) throw new Error('Animal not found');
+        if (!animal) {
+            throw new Error('Animal not found');
+        }
 
-        animal.profileTitle = updatedAnimalData.title;
-        animal.description = updatedAnimalData.description;
+        animal.name = updatedAnimalData.mainInfo.name;
+        animal.birthday = updatedAnimalData.mainInfo.birthDate;
+        animal.profileTitle = updatedAnimalData.mainInfo.name;
+        animal.status = updatedAnimalData.mainInfo.status;
+        animal.chipNumber = updatedAnimalData.mainInfo.microchip;
+        animal.chipRegisteredWithUs = updatedAnimalData.mainInfo.chipRegisteredWithUs;
+        animal.description = updatedAnimalData.mainInfo.description;
+        animal.requirementsForNewFamily = updatedAnimalData.mainInfo.specialRequirementsForNewFamily;
+        animal.additionalNotes = updatedAnimalData.mainInfo.additionalNotes;
+
+        await this.characteristicsService.updateCharacteristics(updatedAnimalData);
 
         return this.animalRepository.save(animal);
     }
@@ -113,18 +133,18 @@ export class AnimalService {
             name: updatedAnimalData.mainInfo.name,
             birthday: updatedAnimalData.mainInfo.birthDate ?? undefined,
             chipNumber: updatedAnimalData.mainInfo.microchip,
-            chipRegisteredWithUs: updatedAnimalData.mainInfo.microchipRegisteredInLLR,
-            profileTitle: updatedAnimalData.title,
+            //chipRegisteredWithUs: updatedAnimalData.mainInfo.microchipRegisteredInLLR, TODO
+            //profileTitle: updatedAnimalData.title, TODO kas on vaja
             status: animalWithRescue.status,
-            description: updatedAnimalData.description,
+            description: updatedAnimalData.mainInfo.description,
         };
 
         const animalRescue = animalWithRescue.animalRescue;
 
         const animalRescueData = {
             rankNr: animalRescue.rankNr,
-            rescueDate: updatedAnimalData.animalRescueInfo.rescueDate ?? undefined,
-            locationNotes: updatedAnimalData.animalRescueInfo.rescueLocation,
+            rescueDate: updatedAnimalData.mainInfo.rescueDate ?? undefined,
+            locationNotes: updatedAnimalData.mainInfo.rescueStory,
             state: animalRescue.state,
             address: animalRescue.address
         };
@@ -173,23 +193,92 @@ export class AnimalService {
     }
 
     public async buildProfile(animal: Animal): Promise<AnimalProfileDto | null> {
-        const profile = createProfile();
+        const profile = {} as AnimalProfileDto;
+        const characteristicsMap = await this.getCharacteristicMap(animal.id);
 
         profile.animalId = animal.id;
-        profile.mainInfo.name = animal.name;
-        profile.title = animal.profileTitle;
-        profile.description = animal.description;
-        profile.mainInfo.microchip = animal.chipNumber;
-        profile.mainInfo.microchipRegisteredInLLR = animal.chipRegisteredWithUs;
-        profile.mainInfo.birthDate = animal.birthday;
-
-        // Get characteristics using service (can be transactional if service uses @Transactional or EntityManager)
-        profile.characteristics = await this.characteristicsService.getCharacteristics(animal.id);
+        profile.mainInfo = this.createMainInfo(animal, characteristicsMap);        
+        profile.personalityInfo = this.createPersonalityInfo(characteristicsMap);
 
         // Fetch images
         profile.images = await this.getImages(animal.id);
-        profile.profilePictureFilename = await this.getProfilePicture(animal.id);
 
         return profile;
+    }
+
+    private async getCharacteristicMap(animalId): Promise<Record<string, Characteristic>> {
+        const characteristics = await this.characteristicsService.getCharacteristics(animalId);
+        const characteristicsMap: Record<string, Characteristic> = {};
+
+        for (const characteristic of characteristics) {
+            characteristicsMap[characteristic.type] = characteristic;
+        }
+        return characteristicsMap;
+    }
+
+    private createMainInfo(animal: Animal, characteristicsMap: Record<string, Characteristic>) {
+        const mainInfo = {
+            name: animal.name,
+            rankNr: animal.animalRescue?.rankNr ?? '',
+            birthDate: animal.birthday,
+            rescueDate: animal.animalRescue?.rescueDate ?? '',
+            gender: characteristicsMap['gender']?.value ?? '',
+            coatColour: characteristicsMap['coatColour']?.value ?? '',
+            coatLength: characteristicsMap['coatLength']?.value ?? '',
+            location: 'TODO',
+            microchip: animal.chipNumber,
+            fosterStayDuration: 'TODO',
+            chronicConditions: 'TODO',
+            description: animal.description,
+            rescueStory: animal.animalRescue?.locationNotes,
+            status: animal.status,
+            chipRegisteredWithUs: animal.chipRegisteredWithUs,
+            specialRequirementsForNewFamily: animal.requirementsForNewFamily,
+            additionalNotes: animal.additionalNotes,
+            spayedOrNeutered: characteristicsMap['spayedOrNeutered']?.value ?? '',
+        };
+        return mainInfo;
+    }
+
+    private createPersonalityInfo(characteristicsMap: Record<string, Characteristic>) {
+        const personalityInfo = {
+            bold: characteristicsMap["bold"]?.value === 'true',
+            shy: characteristicsMap["shy"]?.value === 'true',
+            active: characteristicsMap["active"]?.value === 'true',
+            veryActive: characteristicsMap["veryActive"]?.value === 'true',
+            calm: characteristicsMap["calm"]?.value === 'true',
+            friendly: characteristicsMap["friendly"]?.value === 'true',
+            grumpy: characteristicsMap["grumpy"]?.value === 'true',
+            vocal: characteristicsMap["vocal"]?.value === 'true',
+            dislikesTouching: characteristicsMap["dislikesTouching"]?.value === 'true',
+            sociable: characteristicsMap["sociable"]?.value === 'true',
+            aloof: characteristicsMap["aloof"]?.value === 'true',
+            goodAppetite: characteristicsMap["goodAppetite"]?.value === 'true',
+            curious: characteristicsMap["curious"]?.value === 'true',
+            playful: characteristicsMap["playful"]?.value === 'true',
+            stressed: characteristicsMap["stressed"]?.value === 'true',
+            sensitive: characteristicsMap["sensitive"]?.value === 'true',
+            peaceful: characteristicsMap["peaceful"]?.value === 'true',
+            selfish: characteristicsMap["selfish"]?.value === 'true',
+            hisses: characteristicsMap["hisses"]?.value === 'true',
+            beingOnLap: characteristicsMap["beingOnLap"]?.value === 'true',
+            sleepsCuddling: characteristicsMap["sleepsCuddling"]?.value === 'true',
+            likesPetting: characteristicsMap["likesPetting"]?.value === 'true',
+            likesAttention: characteristicsMap["likesAttention"]?.value === 'true',
+            likesPlayingWithPeople: characteristicsMap["likesPlayingWithPeople"]?.value === 'true',
+            likesPlayingAlone: characteristicsMap["likesPlayingAlone"]?.value === 'true',
+            usesLitterbox: characteristicsMap["usesLitterbox"]?.value === 'true',
+            usesScratchingpost: characteristicsMap["usesScratchingpost"]?.value === 'true',
+            selectiveWithFood: characteristicsMap["selectiveWithFood"]?.value === 'true',
+            adaptable: characteristicsMap["adaptable"]?.value === 'true',
+            scratchesFurniture: characteristicsMap["scratchesFurniture"]?.value === 'true',
+            trusting: characteristicsMap["trusting"]?.value === 'true',
+            description: characteristicsMap["description"]?.value ?? '',
+            attitudeTowardsCats: characteristicsMap["attitudeTowardsCats"]?.value ?? '',
+            attitudeTowardsDogs: characteristicsMap["attitudeTowardsDogs"]?.value ?? '',
+            attitudeTowardsChildren: characteristicsMap["attitudeTowardsChildren"]?.value ?? '',
+            suitabilityForIndoorOrOutdoor: characteristicsMap["suitabilityForIndoorOrOutdoor"]?.value ?? '',
+        }
+        return personalityInfo;
     }
 }

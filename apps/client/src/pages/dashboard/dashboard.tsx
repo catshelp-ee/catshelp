@@ -13,7 +13,8 @@ const Dashboard = () => {
     const error = userError || animalsError || todosError;
 
     return (
-        <div className="">
+        <div className="flex flex-col flex-1">
+            TEST
         </div>
     );
 };

@@ -17,7 +17,7 @@ const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
     return (
         <Link
             to={`/cat-profile/${pet.id}`}
-            className="flex justify-between items-center px-6 py-3 text-inherit bg-transparent transition-colors duration-200 hover:bg-black/5 focus:bg-black/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+            className="flex justify-between items-center px-6 py-3 text-inherit bg-transparent transition-colors duration-200 hover:bg-black/5 focus:bg-black/5 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-blue-500"
             aria-label={`Vaata ${pet.name} profiili`}
         >
             <div className="flex items-center space-x-4">
@@ -99,7 +99,7 @@ const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
                     <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
                         <button
                             onClick={onClose}
-                            className="w-full py-2 px-4 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                            className="w-full py-2 px-4 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
                             aria-label="Sulge popup"
                         >
                             Sulge

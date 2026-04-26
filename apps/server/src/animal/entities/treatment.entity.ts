@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Animal } from "./animal.entity";
+import { ITreatment } from "@catshelp/types";
 
 @Entity("treatments")
-export class Treatment {
+export class Treatment implements ITreatment {
 
     @PrimaryGeneratedColumn()
     public id: number;

@@ -1,9 +1,10 @@
 import { AnimalToFosterHome } from "@animal/entities/animalToFosterhome.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
+import { IFosterHome } from "@catshelp/types";
 
 @Entity("foster_homes")
-export class FosterHome {
+export class FosterHome  implements IFosterHome {
 
     @PrimaryGeneratedColumn()
     public id: number;

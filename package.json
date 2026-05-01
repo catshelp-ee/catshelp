@@ -7,13 +7,15 @@
         "apps/*"
     ],
     "scripts": {
+        "lint": "turbo run lint",
+        "lint:fix": "turbo run lint:fix",
         "build:server": "turbo run build --filter=@catshelp/server --force",
         "build": "turbo run build --force",
         "start:prod": "node build/server/main.js",
         "client": "npm run dev:vite -w @catshelp/client",
         "server": "npm run start:dev -w @catshelp/server",
         "typeorm": "ts-node ./node_modules/typeorm/cli.js",
-        "migration:run:dev": "ts-node -r tsconfig-paths/register --project apps/server/tsconfig.json ./node_modules/typeorm/cli.js migration:run -d apps/server/src/data-source.ts ------- DOES NOT WORK ATM -------", 
+        "migration:run:dev": "ts-node -r tsconfig-paths/register --project apps/server/tsconfig.json ./node_modules/typeorm/cli.js migration:run -d apps/server/src/data-source.ts ------- DOES NOT WORK ATM -------",
         "migration:run": "node ./node_modules/typeorm/cli.js migration:run -d build/server/data-source.js",
         "migration:create:windows": "npm run typeorm -- migration:create apps/server/src/migrations/%npm_config_name%",
         "migration:create:unix": "npm run typeorm -- migration:create apps/server/src/migrations/$npm_config_name"
@@ -23,6 +25,12 @@
         "esbuild": "^0.28.0"
     },
     "devDependencies": {
-        "turbo": "^2.9.6"
+        "@eslint/js": "^10.0.1",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.5",
+        "globals": "^17.5.0",
+        "prettier": "^3.8.3",
+        "turbo": "^2.9.6",
+        "typescript-eslint": "^8.59.1"
     }
 }

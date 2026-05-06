@@ -327,7 +327,7 @@ const CatDetails: React.FC<{
                 </div>
 
             </div>
-            {!isMobile && <ImageGallery animalId={selectedCat.animalId} name={selectedCat.mainInfo.name} images={selectedCat?.images || []} />}
+            {!isMobile && <ImageGallery animalId={selectedCat.animalId} name={selectedCat.mainInfo.name} images={[]} />}
         </>
     );
 };

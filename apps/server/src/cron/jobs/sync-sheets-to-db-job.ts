@@ -101,6 +101,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     }
 
     private getSheetSaveLocation() {
+        //potensiaalne probleem
         const tempDir = path.join(__dirname, '../../../../files');
         const fullPath = path.resolve(tempDir, "previous_sheets_data.txt");
         return fullPath;

@@ -89,7 +89,7 @@ export class AnimalService {
             fosterHomeId: fosterHome.id
         }
         await this.animalToFosterhomeRepository.saveOrUpdate(animalToFosterHomeData);
-        this.googleSheetsService.addDataToSheet(data, user);
+        this.googleSheetsService.addNewAnimalDataToSheet(data, user);
         return { animal, rescue };
     }
 
@@ -108,12 +108,30 @@ export class AnimalService {
         animal.description = updatedAnimalData.mainInfo.description;
         animal.requirementsForNewFamily = updatedAnimalData.mainInfo.specialRequirementsForNewFamily;
         animal.additionalNotes = updatedAnimalData.mainInfo.additionalNotes;
+        animal.chronicConditions = updatedAnimalData.mainInfo.chronicConditions;
+        const updatedAnimal = await this.animalRepository.save(animal);
 
         await this.characteristicsService.updateCharacteristics(updatedAnimalData);
 
-        return this.animalRepository.save(animal);
-    }
+        const animalWithRescue = (await this.animalRepository.getAnimalByIdWithRescue(updatedAnimalData.animalId))!
+        const animalRescue = animalWithRescue.animalRescue;
+        const animalRescueData = {
+            rankNr: animalRescue.rankNr,
+            rescueDate: updatedAnimalData.mainInfo.rescueDate ?? undefined,
+            locationNotes: updatedAnimalData.mainInfo.rescueStory,
+            state: animalRescue.state,
+            address: animalRescue.address
+        };
+        await this.rescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
 
+        /*
+        VAJAB VEEL TEGEMIST
+        this.googleSheetsService.updateSheetCells(updatedAnimalData, animalRescue.rankNr).then(() => { }, (error) => {
+            console.error("Error saving data to sheets: " + error);
+        });
+        */
+        return updatedAnimal;
+    }
 
     async setAsProfilePicture(updatedProfilePictureDTO: UpdateProfilePictureDTO) {
         const animal = await this.animalRepository.getAnimalById(updatedProfilePictureDTO.animalId);
@@ -122,42 +140,6 @@ export class AnimalService {
         }
 
         return await this.fileRepository.setProfilePicture(animal.id, updatedProfilePictureDTO.fileName);
-    }
-
-    async updateAnimalAdmin(updatedAnimalData: Profile) {
-        const animalWithRescue = (await this.animalRepository.getAnimalByIdWithRescue(updatedAnimalData.animalId))!
-
-        const animal = new Animal();
-        const animalData = {
-            id: updatedAnimalData.animalId,
-            name: updatedAnimalData.mainInfo.name,
-            birthday: updatedAnimalData.mainInfo.birthDate ?? undefined,
-            chipNumber: updatedAnimalData.mainInfo.microchip,
-            //chipRegisteredWithUs: updatedAnimalData.mainInfo.microchipRegisteredInLLR, TODO
-            //profileTitle: updatedAnimalData.title, TODO kas on vaja
-            status: animalWithRescue.status,
-            description: updatedAnimalData.mainInfo.description,
-        };
-
-        const animalRescue = animalWithRescue.animalRescue;
-
-        const animalRescueData = {
-            rankNr: animalRescue.rankNr,
-            rescueDate: updatedAnimalData.mainInfo.rescueDate ?? undefined,
-            locationNotes: updatedAnimalData.mainInfo.rescueStory,
-            state: animalRescue.state,
-            address: animalRescue.address
-        };
-
-        await this.animalRepository.saveOrUpdateAnimal(animalData);
-        await this.rescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
-        await this.characteristicsService.updateCharacteristics(updatedAnimalData);
-        const savedAnimalWithRescue = (await this.animalRepository.getAnimalByIdWithRescue(updatedAnimalData.animalId))!;
-        const animalRescueSequenceNumber = savedAnimalWithRescue.animalRescue.rankNr
-
-        this.googleSheetsService.updateSheetCells(updatedAnimalData, animalRescueSequenceNumber).then(() => { }, (error) => {
-            console.error("Error saving data to sheets: " + error);
-        });
     }
 
     public async getImages(animalId: number) {
@@ -225,10 +207,10 @@ export class AnimalService {
             gender: characteristicsMap['gender']?.value ?? '',
             coatColour: characteristicsMap['coatColour']?.value ?? '',
             coatLength: characteristicsMap['coatLength']?.value ?? '',
-            location: 'TODO',
+            location: animal.animalRescue?.address ?? '',
             microchip: animal.chipNumber,
             fosterStayDuration: 'TODO',
-            chronicConditions: 'TODO',
+            chronicConditions: animal.chronicConditions,
             description: animal.description,
             rescueStory: animal.animalRescue?.locationNotes,
             status: animal.status,

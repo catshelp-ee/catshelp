@@ -1,11 +1,11 @@
-import { Profile, ProfileHeader } from "@catshelp/types/src";
+import { Profile, ProfileHeader } from "@catshelp/types/src/index.ts";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useAlert } from "@context/alert-context";
+import { useAlert } from "@context/alert-context.tsx";
 
 interface TabProps {
     cats: ProfileHeader[];
-    setSelectedCat: React.Dispatch<React.SetStateAction<Profile>>;
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>;
 }
 
 const ProfileTab: React.FC<TabProps> = ({

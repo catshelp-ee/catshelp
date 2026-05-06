@@ -56,15 +56,19 @@ export const parseEstonianDate = (dateString: string): Date | null => {
     }
 };
 
-export const formatEstonianDate = (date: Date | string, format?: string | null): string => {
+export const formatDate = (date: Date | string | null, format?: string | null): string => {
     if (!date) {
         return '';
     }
     if (typeof date == 'string') {
-        if (format) {
-            return moment(date).format(format);
+        const momentDate = moment(date);
+        if (!momentDate.isValid()) {
+            return '';
         }
-        date = moment(date).toDate();
+        date = momentDate.toDate();
+    }
+    if (format) {
+        return moment(date).format(format);
     }
     return date.toLocaleDateString('et-EE');
 };

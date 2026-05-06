@@ -10,7 +10,6 @@ export class AddNewColumnsToAnimal1775664256463 implements MigrationInterface {
         await queryRunner.query(`
             ALTER TABLE animals ADD COLUMN additional_notes TEXT;
         `);
-
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

@@ -1,5 +1,5 @@
 import { Profile } from "@catshelp/types/src/index.ts";
-import { formatEstonianDate } from "@catshelp/utils/src/index.ts";
+import { formatDate } from "@catshelp/utils/src/index.ts";
 import { useIsMobile } from "@context/is-mobile-context.tsx";
 import React, { useState } from "react";
 import ImageGallery from "./image-gallery.tsx";
@@ -11,10 +11,6 @@ import { Button } from "@components/button.tsx";
 import { Save } from "lucide-react";
 import axios from "axios";
 import { useAlert } from "@context/alert-context.tsx";
-
-interface CatDetailsProps {
-    selectedCat: Profile;
-}
 
 const personalityOptions = {
     'bold': { et: 'Julge', en: 'Bold', ru: 'Смелый' },
@@ -75,17 +71,23 @@ const CatMainInfo: React.FC<{
     selectedCat: Profile,
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
 }> = ({ selectedCat, setSelectedCat }) => {
+
+    const setValue = (key: string, value: string | boolean) => {
+        const updatedCatInfo = { ...selectedCat, mainInfo: { ...selectedCat.mainInfo, [key]: value } };
+        setSelectedCat(updatedCatInfo);
+    };
+
     return (
         <div className="profile-section">
             <h2 className="section-header">Põhiandmed</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                     <p className="section-label">Sünniaeg</p>
-                    <p className="section-value">{formatEstonianDate(selectedCat.mainInfo.birthDate, 'YYYY-MM-DD')}</p>
+                    <p className="section-value">{formatDate(selectedCat.mainInfo.birthDate, 'YYYY-MM-DD')}</p>
                 </div>
                 <div>
                     <p className="section-label">Päästmiskuupäev</p>
-                    <p className="section-value">{formatEstonianDate(selectedCat.mainInfo.rescueDate, 'YYYY-MM-DD')}</p>
+                    <p className="section-value">{formatDate(selectedCat.mainInfo.rescueDate, 'YYYY-MM-DD')}</p>
                 </div>
                 <div>
                     <p className="section-label">Sugu</p>
@@ -128,7 +130,7 @@ const CatMainInfo: React.FC<{
                     <Input
                         id="chronicIllness"
                         value={selectedCat.mainInfo.chronicConditions || ''}
-                        onChange={(e) => { }}
+                        onChange={(e) => { setValue('chronicConditions', e.target.value) }}
                         placeholder='Kui pole, jäta tühjaks'
                     />
                 </div>
@@ -139,8 +141,8 @@ const CatMainInfo: React.FC<{
                     </Label>
                     <Textarea
                         id="notes"
-                        value={selectedCat.mainInfo.description || ''}
-                        onChange={(e) => { }}
+                        value={selectedCat.mainInfo.additionalNotes || ''}
+                        onChange={(e) => { setValue('additionalNotes', e.target.value) }}
                         rows={2}
                         placeholder='Täiendavad märkmed'
                         className="resize-y"
@@ -154,7 +156,7 @@ const CatMainInfo: React.FC<{
                     <Textarea
                         id="rescueStory"
                         value={selectedCat.mainInfo.rescueStory || ''}
-                        onChange={(e) => { }}
+                        onChange={(e) => { setValue('rescueStory', e.target.value) }}
                         rows={3}
                         placeholder='Kirjelda, kuidas kass meie MTÜ hoole alla sattus'
                         className="resize-y"
@@ -171,7 +173,12 @@ const CatPersonalityInfo: React.FC<{
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
 }> = ({ selectedCat, setSelectedCat }) => {
     const setValue = (key: string, value: string | boolean) => {
-        setSelectedCat({ ...selectedCat, personalityInfo: { ...selectedCat.personalityInfo, [key]: value } });
+        const updatedCatInfo = { ...selectedCat, personalityInfo: { ...selectedCat.personalityInfo, [key]: value } };
+        setSelectedCat(updatedCatInfo);
+    };
+    const setMainInfoValue = (key: string, value: string) => {
+        const updatedCatInfo = { ...selectedCat, mainInfo: { ...selectedCat.mainInfo, [key]: value } };
+        setSelectedCat(updatedCatInfo);
     };
     return (
         <div className="profile-section">
@@ -245,10 +252,24 @@ const CatPersonalityInfo: React.FC<{
 
                     <Textarea
                         id="dailyDescription"
-                        value={selectedCat.personalityInfo.description || ''}
-                        onChange={(e) => { }}
+                        value={selectedCat.mainInfo.description || ''}
+                        onChange={(e) => { setMainInfoValue('description', e.target.value) }}
                         rows={3}
                         placeholder={'Nt milline on kiisu argipäev'}
+                        className="resize-y"
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="specialRequirements">
+                        Erisoovid uuele perele
+                    </Label>
+
+                    <Textarea
+                        id="specialRequirements"
+                        value={selectedCat.mainInfo.specialRequirementsForNewFamily || ''}
+                        onChange={(e) => { setMainInfoValue('specialRequirementsForNewFamily', e.target.value) }}
+                        rows={3}
+                        placeholder={'Nt vajab kõrvale kassi, ilma lasteta pere, rahulikuma eluviisiga pere, kass vajab suurt tähelepanu jne'}
                         className="resize-y"
                     />
                 </div>
@@ -257,7 +278,10 @@ const CatPersonalityInfo: React.FC<{
     );
 };
 
-const CatDetails: React.FC<CatDetailsProps> = ({
+const CatDetails: React.FC<{
+    selectedCat: Profile,
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
+}> = ({
     selectedCat,
     setSelectedCat
 }) => {

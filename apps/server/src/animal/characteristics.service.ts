@@ -18,7 +18,7 @@ export class CharacteristicsService {
         const personalityInfo = updatedAnimalData.personalityInfo;
         const mainInfo = updatedAnimalData.mainInfo;
         const animalId = updatedAnimalData.animalId;
-        
+        //TODO should not do it like this
         await Promise.all([
             this.saveOrUpdateCharacteristic(animalId, 'bold', personalityInfo.bold),
             this.saveOrUpdateCharacteristic(animalId, 'shy', personalityInfo.shy),

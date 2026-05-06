@@ -2,7 +2,7 @@ import { Animal } from '@animal/entities/animal.entity';
 import { Treatment } from '@animal/entities/treatment.entity';
 import { TreatmentRepository } from '@animal/repositories/treatment.repository';
 import { Result } from '@catshelp/types';
-import { formatEstonianDate } from '@catshelp/utils';
+import { formatDate } from '@catshelp/utils';
 import { Injectable } from '@nestjs/common';
 import { DEFAULT_COLORS } from '@animal/constants';
 import { DashboardNotification } from './templates/DasboardNotification';
@@ -71,7 +71,7 @@ export class NotificationService {
         const todo: AnimalTodoDto = {
             label: notification.getText(),
             assignee: animal.name,
-            due: formatEstonianDate(new Date()),
+            due: formatDate(new Date()),
             action: {
                 label: notification.buttonText,
                 redirect: notification.redirectURL,
@@ -94,7 +94,7 @@ export class NotificationService {
         const dueDate = notification.getDueDate(triggerDate);
 
         todo.urgent = notification.isUrgent(dueDate);;
-        todo.due = formatEstonianDate(dueDate);
+        todo.due = formatDate(dueDate);
 
         return todo;
     }
@@ -107,7 +107,7 @@ export class NotificationService {
             {
                 label: notification.getText(),
                 assignee: 'Sina ise',
-                due: formatEstonianDate(dueDate),
+                due: formatDate(dueDate),
                 action: {
                     label: notification.buttonText,
                     redirect: notification.redirectURL,

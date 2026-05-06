@@ -10,7 +10,7 @@ import ProfileTabs from "./profile-tabs.tsx";
 const CatProfile: React.FC = () => {
     const { showAlert } = useAlert();
     const [cats, setCats] = useState<ProfileHeader[]>([]);
-    const [selectedCat, setSelectedCat] = useState<Profile>(null);
+    const [selectedCat, setSelectedCat] = useState<Profile | null>(null);
     const isMobile = useIsMobile();
 
     useEffect(() => {
@@ -38,7 +38,7 @@ const CatProfile: React.FC = () => {
                 {cats.length !== 0 && (
                     <>
                         <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
-                        {selectedCat && <CatDetails selectedCat={selectedCat}/>}
+                        {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat}/>}
                     </>
                 )}
             </div>

@@ -1,5 +1,4 @@
-//TODO
-import { Profile } from "@catshelp/types/src";
+import { Profile } from "@catshelp/types/src/index.ts";
 import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 

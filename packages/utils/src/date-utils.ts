@@ -56,6 +56,19 @@ export const parseEstonianDate = (dateString: string): Date | null => {
     }
 };
 
-export const formatEstonianDate = (date: Date): string => {
+export const formatDate = (date: Date | string | null, format?: string | null): string => {
+    if (!date) {
+        return '';
+    }
+    if (typeof date == 'string') {
+        const momentDate = moment(date);
+        if (!momentDate.isValid()) {
+            return '';
+        }
+        date = momentDate.toDate();
+    }
+    if (format) {
+        return moment(date).format(format);
+    }
     return date.toLocaleDateString('et-EE');
 };

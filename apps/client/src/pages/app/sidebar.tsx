@@ -15,13 +15,13 @@ export function Sidebar() {
             id: 'dashboard' as Screen,
             label: t("nav.dashboard"),
             icon: LayoutDashboard,
-            path: "/users"
+            path: "/dashboard"
         },
         {
             id: 'cat-profile' as Screen,
             label: t("nav.catProfile"),
             icon: Cat,
-            path: "/cat-profile"
+            path: "/cat-profiles"
         },
         {
             id: 'medical' as Screen,
@@ -37,7 +37,8 @@ export function Sidebar() {
                 <nav className="p-4 space-y-1">
                     {navItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = url.pathname.includes(item.path);
+                        const path = item.path ?? '';
+                        const isActive = path && url.pathname.includes(path);
 
                         return (
                             <button
@@ -48,7 +49,7 @@ export function Sidebar() {
                                         : 'text-gray-700 hover:bg-gray-50'
                                 }`}
                                 onClick={() => {
-                                    navigate(item.path)
+                                    navigate(path);
                                 }}
                             >
                                 <Icon className={`w-5 h-5 text-gray-500`} />

@@ -41,6 +41,9 @@ export class Animal {
     @Column()
     public additionalNotes: string;
 
+    @Column("text")
+    public chronicConditions: string;
+
     @OneToMany(() => File, (file) => file.animal)
     public files: File[];
 

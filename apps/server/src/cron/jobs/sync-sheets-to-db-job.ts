@@ -101,6 +101,7 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     }
 
     private getSheetSaveLocation() {
+        //potensiaalne probleem
         const tempDir = path.join(__dirname, '../../../../files');
         const fullPath = path.resolve(tempDir, "previous_sheets_data.txt");
         return fullPath;
@@ -155,8 +156,11 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
         }
     }
 
-    private async deleteData(oldData) {
-        const animalRescue = (await this.rescueRepository.getAnimalRescueByRankNr(oldData['jarjekorraNr'].formattedValue))!;
+    private async deleteData(oldJarjekorraNr) {
+        const animalRescue = (await this.rescueRepository.getAnimalRescueByRankNr(oldJarjekorraNr))!;
+        if (!animalRescue) {
+            return;
+        }
         const animal = (await this.animalRepository.getAnimalByAnimalRescueId(animalRescue.id))!;
 
         await this.characteristicRepository.deleteAllCharacteristicsByAnimalId(animal.id);
@@ -165,6 +169,9 @@ export class SyncSheetDataToDBJob extends BaseCronJob {
     }
 
     private async updateData(newData) {
+        if (!newData['jarjekorraNr'] || !newData['jarjekorraNr'].formattedValue) {
+            return;
+        }
         const animalRescue = await this.updateAnimalRescue(newData);
         const animal = await this.updateAnimal(newData, animalRescue);
         animalRescue.animalId = animal.id;

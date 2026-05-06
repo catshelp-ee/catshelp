@@ -33,15 +33,6 @@ export class UsersController {
         return this.userService.getAnimals(userId);
     }
 
-    @Get(":userId/animals/:animalId/profile")
-    async getProfile(@Req() req: Request, @Param("userId") userId: string, @Param("animalId") animalId: string) {
-        if (!AuthService.checkAuth(req, userId)){
-            throw new Error('Unauthorized');
-        }
-
-        return this.userService.getProfiles(animalId);
-    }
-
     @Get(":id")
     async getUser(@Req() req: Request, @Param("id") id: string): Promise<User> {
         const user = req.user;

@@ -1,122 +1,180 @@
 @import 'tailwindcss';
 
 @font-face {
-  font-family: 'Inter';
-  src:
-    local('Inter'),
-    url('../assets/font/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    font-family: 'Inter';
+    src:
+        local('Inter'),
+        url('../assets/font/Inter-VariableFont_opsz,wght.ttf') format('truetype');
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-ring: var(--ring);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-input-background: var(--input-background);
+    --color-ring: var(--ring);
 }
 
 @theme {
-  --font-sans: 'Inter', sans-serif;
+    --font-sans: 'Inter', sans-serif;
 
-  --animate-slide-down: slideDown 0.3s ease-in;
-  --animate-slide-up: slideUp 0.3s ease-out;
-  --animate-slide-right: slideRight 0.2s linear forwards;
-  --animate-slide-left: slideLeft 0.2s linear forwards;
+    --animate-slide-down: slideDown 0.3s ease-in;
+    --animate-slide-up: slideUp 0.3s ease-out;
+    --animate-slide-right: slideRight 0.2s linear forwards;
+    --animate-slide-left: slideLeft 0.2s linear forwards;
 
-  --color-secondaryText: #82869e;
+    --color-secondaryText: #82869e;
 
-  @keyframes slideDown {
-    0% {
-      transform: translate(-50%, -80%);
-      opacity: 0;
+    @keyframes slideDown {
+        0% {
+            transform: translate(-50%, -80%);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
     }
-    100% {
-      transform: translate(-50%, 0);
-      opacity: 1;
+
+    @keyframes slideUp {
+        0% {
+            transform: translateX(0) translateY(0);
+        }
+
+        100% {
+            transform: translateX(0) translateY(-100%);
+        }
     }
-  }
-  @keyframes slideUp {
-    0% {
-      transform: translateX(0) translateY(0);
+
+    @keyframes slideLeft {
+        0% {
+            width: 100%;
+        }
+
+        100% {
+            width: 0;
+        }
     }
-    100% {
-      transform: translateX(0) translateY(-100%);
+
+    @keyframes slideRight {
+        0% {
+            width: 25%;
+        }
+
+        100% {
+            width: 100%;
+        }
     }
-  }
-  @keyframes slideLeft {
-    0% {
-      width: 100%;
-    }
-    100% {
-      width: 0;
-    }
-  }
-  @keyframes slideRight {
-    0% {
-      width: 25%;
-    }
-    100% {
-      width: 100%;
-    }
-  }
+}
+
+body {
+    height: 100vh;
 }
 
 :root {
-  --background: #fff;
-  --foreground: oklch(.145 0 0);
-  --card: #fff;
-  --card-foreground: oklch(.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(.95 .0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #fff;
-  --border: #0000001a;
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: oklch(.708 0 0);
-  --radius: .625rem;
-  --color-gray-50: oklch(98.5% .002 247.839)
+    --background: #fff;
+    --foreground: oklch(.145 0 0);
+    --card: #fff;
+    --card-foreground: oklch(.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(.145 0 0);
+    --primary: #030213;
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(.95 .0058 264.53);
+    --secondary-foreground: #030213;
+    --muted: #ececf0;
+    --muted-foreground: #717182;
+    --accent: #e9ebef;
+    --accent-foreground: #030213;
+    --destructive: #d4183d;
+    --destructive-foreground: #fff;
+    --border: #0000001a;
+    --input: transparent;
+    --input-background: #f3f3f5;
+    --switch-background: #cbced4;
+    --font-weight-medium: 500;
+    --font-weight-normal: 400;
+    --ring: oklch(.708 0 0);
+    --radius: .625rem;
+    --color-gray-50: oklch(98.5% .002 247.839)
 }
 
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
 }
 
 @utility text-secondary {
-  @apply text-secondaryText;
+    @apply text-secondaryText;
 }
 
-#root {
-    font-family: Inter;
-    height: 100vh;
+:root {
+    --background: #fff;
+    --foreground: oklch(.145 0 0);
+    --card: #fff;
+    --card-foreground: oklch(.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(.145 0 0);
+    --primary: #030213;
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(.95 .0058 264.53);
+    --secondary-foreground: #030213;
+    --muted: #ececf0;
+    --muted-foreground: #717182;
+    --accent: #e9ebef;
+    --accent-foreground: #030213;
+    --destructive: #d4183d;
+    --destructive-foreground: #fff;
+    --border: #0000001a;
+    --input: transparent;
+    --input-background: #f3f3f5;
+    --switch-background: #cbced4;
+    --font-weight-medium: 500;
+    --font-weight-normal: 400;
+    --ring: oklch(.708 0 0);
+    --radius: .625rem;
+    --color-gray-50: oklch(98.5% .002 247.839)
+}
+
+@layer base {
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
+}
+
+@utility text-secondary {
+    @apply text-secondaryText;
+}
+
+#container {
+    height: 100%;
+}
+
+.page {
+    background-color: var(--color-gray-50);
 }
 
 /* Login */
@@ -287,8 +345,17 @@
 
 /* Main page */
 .page-content {
-    width: 65%;
+    width: 100%;
     margin-top: 157px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+@media (max-width: 768px) {
+    .page-content {
+        margin-top: 0px;
+        padding-top: 16px
+    }
 }
 
 /* Dashboard */
@@ -301,4 +368,75 @@
 .dashboard-heading {
     color: #82869e;
     font-weight: 600;
+}
+
+.profile-section {
+    margin: 24px 0px;
+    border-radius: 8px;
+    border: solid;
+    border-color: rgba(0, 0, 0, 0.1);
+    border-width: 1px;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    background-color: white;
+}
+
+.profile-title {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    margin-bottom: 8px;
+}
+
+.profile-title-label {
+    color: oklch(0.446 0.03 256.802);
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 12px;
+}
+
+.profile-tab-container {
+    width: 100%;
+    display: flex;
+    border-bottom: 1px solid oklab(0.708 0 0 / 0.5);
+}
+
+.profile-tab {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    padding: 12px 16px;
+    color: oklch(0.446 0.03 256.802);
+    border-bottom: 2px solid white;
+}
+
+.profile-tab:hover {
+    border-bottom: 2px solid oklab(0.708 0 0 / 0.5);
+    color: oklch(.21 .034 264.665);
+}
+
+.profile-tab-active {
+    border-bottom: 2px solid oklch(0.546 0.245 262.881) !important;
+    color: oklch(0.546 0.245 262.881);
+}
+
+.section-header {
+    color: oklch(0.21 0.034 264.665);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+    margin-bottom: 16px;
+}
+
+.section-label {
+    color: oklch(0.446 0.03 256.802);
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 4px;
+}
+
+.section-value {
+    font-size: 14px;
+    line-height: 20px;
 }

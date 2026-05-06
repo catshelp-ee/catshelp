@@ -14,7 +14,7 @@ export class AnimalRepository extends BaseRepository<Animal> {
         super(Animal, dataSource, request);
     }
 
-    public getAnimalById(id: number | string) {
+    public getAnimalById(id: number | string): Promise<Animal | null> {
         return this.findOne({
             where: { id: Number(id) }
         });

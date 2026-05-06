@@ -6,12 +6,11 @@ import { User } from '@user/entities/user.entity';
 import { google, sheets_v4 } from 'googleapis';
 import moment from 'moment';
 import { GoogleAuthService } from './google-auth.service';
+import { formatDate } from '@catshelp/utils';
 
 @Injectable()
 export class GoogleSheetsService {
     sheets: sheets_v4.Sheets;
-    sheetID: string;
-    sheetTable: string;
 
     constructor(
         private readonly googleAuthService: GoogleAuthService,
@@ -20,17 +19,43 @@ export class GoogleSheetsService {
             version: 'v4',
             auth: this.googleAuthService.getAuth(),
         });
-
-        if (!process.env.CATS_SHEETS_ID || !process.env.CATS_TABLE_NAME) {
-            throw new Error('Missing CATS_SHEETS_ID or CATS_TABLE_NAME from env');
-        }
-
-        //TODO see vajab natuke ümber tegemist. hetkel on enamik funktsioone eeldusega, et tegemist saab olla ainult kassi andmetega.
-        this.sheetID = process.env.CATS_SHEETS_ID!;
-        this.sheetTable = process.env.CATS_TABLE_NAME!;
     }
 
-    /**
+    public async getSheetData(sheetId, sheetTable) {
+        try {
+            const sheetData = await this.sheets.spreadsheets.get({
+                auth: this.googleAuthService.getAuth(),
+                spreadsheetId: sheetId,
+                ranges: [sheetTable],
+                includeGridData: true,
+            });
+            return sheetData;
+        } catch (e) {
+            throw new Error('Error fetching sheet: ', { cause: e });
+        }
+    }
+
+    public async addNewAnimalDataToSheet(data: AnimalRescueDto, user: User) {
+        const row = new Array(30).fill('');
+        row[0] = data.rankNr!;
+        row[1] = data.rankNr!;
+        row[7] = user.fullName;
+        row[17] = formatDate(new Date());
+        row[20] = `${data.state}, ${data.location}`;
+        row[30] = data.notes;
+
+        await this.sheets.spreadsheets.values.append({
+            auth: this.googleAuthService.getAuth(),
+            spreadsheetId: process.env.CATS_SHEETS_ID!,
+            range: process.env.CATS_TABLE_NAME!,
+            valueInputOption: 'RAW',
+            requestBody: {
+                values: [row],
+            },
+        });
+    }
+
+        /**
    * Alternative function if you have the values in the exact order of your original interface
    * @param values - Array of 30 values in the exact order of the Header interface
    * @returns Object with English property names and corresponding values
@@ -71,68 +96,10 @@ export class GoogleSheetsService {
         }
     }
 
-    private formatEstonianDate = (date: Date): string => {
-        return date.toLocaleDateString('et-EE');
-    };
-
-    private async getNewSheet() {
-        try {
-            const sheetData = await this.sheets.spreadsheets.get({
-                auth: this.googleAuthService.getAuth(),
-                spreadsheetId: this.sheetID,
-                ranges: [this.sheetTable],
-                includeGridData: true,
-            });
-            return sheetData;
-        } catch (e) {
-            throw new Error('Error fetching sheet: ', { cause: e });
-        }
-    }
-
-    public async getSheetData(sheetId, sheetTable) {
-        try {
-            const sheetData = await this.sheets.spreadsheets.get({
-                auth: this.googleAuthService.getAuth(),
-                spreadsheetId: sheetId,
-                ranges: [sheetTable],
-                includeGridData: true,
-            });
-            return sheetData;
-        } catch (e) {
-            throw new Error('Error fetching sheet: ', { cause: e });
-        }
-    }
-
-    public async addDataToSheet(data: AnimalRescueDto, user: User) {
-        const row = new Array(30).fill('');
-        row[0] = data.rankNr!;
-        row[1] = data.rankNr!;
-        row[7] = user.fullName;
-        row[17] = this.formatEstonianDate(new Date());
-        row[20] = `${data.state}, ${data.location}`;
-        row[30] = data.notes;
-
-        await this.sheets.spreadsheets.values.append({
-            auth: this.googleAuthService.getAuth(),
-            spreadsheetId: this.sheetID,
-            range: this.sheetTable,
-            valueInputOption: 'RAW',
-            requestBody: {
-                values: [row],
-            },
-        });
-    }
-
-    private formatDate(date: Date | string | null | undefined): string {
-        if (!date) return '';
-
-        const m = moment(date);
-        return m.isValid() ? m.format('DD.MM.YYYY') : '';
-    }
-
     private updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
         const values = this.sheetsRowToObject(row.values!);
 
+        /* TODO
         values.catName = animalProfile.mainInfo.name;
         values.microchip = animalProfile.mainInfo.microchip;
         values.microchipRegisteredInLLR = animalProfile.mainInfo.microchipRegisteredInLLR
@@ -153,6 +120,7 @@ export class GoogleSheetsService {
         values.nextRabiesDate = this.formatDate(animalProfile.vaccineInfo.nextRabiesVaccineDate);
         values.dewormingOrFleaTreatmentName = animalProfile.vaccineInfo.dewormingOrFleaTreatmentName;
         values.dewormingOrFleaTreatmentDate = this.formatDate(animalProfile.vaccineInfo.dewormingOrFleaTreatmentDate);
+        */
 
         return values;
     }
@@ -200,7 +168,7 @@ export class GoogleSheetsService {
     }
 
     private async getRow(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
-        const sheet = await this.getNewSheet();
+        const sheet = await this.getSheetData(process.env.CATS_SHEETS_ID!, process.env.CATS_TABLE_NAME!);
         const sheetRows = sheet.data.sheets![0].data![0].rowData!;
 
         for (let index = 1; index < sheetRows.length; index++) {
@@ -231,7 +199,7 @@ export class GoogleSheetsService {
                 sheetId
             );
 
-            await this.executeSheetUpdate(updateRequests);
+            await this.executeSheetUpdate(updateRequests, process.env.CATS_SHEETS_ID!);
         } catch (error) {
             console.error('Error updating sheet cells:', error);
             throw new Error('Failed to update sheet cells', { cause: error });
@@ -260,14 +228,14 @@ export class GoogleSheetsService {
         return updateRequests;
     }
 
-    private async executeSheetUpdate(updateRequests: sheets_v4.Schema$Request[]): Promise<void> {
+    private async executeSheetUpdate(updateRequests: sheets_v4.Schema$Request[], sheetId: string): Promise<void> {
         if (!updateRequests.length) {
             throw new Error('No update requests provided');
         }
 
         try {
             await this.sheets.spreadsheets.batchUpdate({
-                spreadsheetId: this.sheetID,
+                spreadsheetId: sheetId,
                 requestBody: { requests: updateRequests },
             });
         } catch (error) {

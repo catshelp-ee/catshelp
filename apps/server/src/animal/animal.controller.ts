@@ -3,8 +3,8 @@ import { Body, Controller, Get, HttpCode, Param, Post, Put, Req, UseGuards } fro
 import type { Request } from 'express';
 import { AnimalService } from './animal.service';
 import type { AnimalRescueDto } from './dto/create-animal.dto';
-import { UpdateAnimalDto } from './dto/update-animal.dto';
 import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
+import type { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
@@ -13,8 +13,8 @@ export class AnimalController {
         private readonly animalService: AnimalService
     ) { }
 
-    @Get(":userId/profiles")
-    async getProfiles(@Req() req: Request, @Param('userId') userId: string) {
+    @Get("profiles/users/:userId")
+    async getProfilesByUser(@Req() req: Request, @Param('userId') userId: string) {
         const user = req.user;
         if (user.id !== Number(userId) && user.role !== "ADMIN"){
             throw new Error('Unauthorized');
@@ -25,13 +25,26 @@ export class AnimalController {
         return { profiles };
     }
 
+    @Get(":id/profile")
+    async getProfile(@Req() req: Request, @Param("id") id: string) {
+        return this.animalService.getProfile(id);
+    }
+
+    @Get("profiles")
+    async getProfiles(@Req() req: Request, @Param("id") id: string) {
+        const user = req.user;
+        const animals = await this.animalService.getAnimalsByUserId(user.id);
+        const profiles = await this.animalService.getAnimalSummaries(animals);
+        return { profiles };
+    }
+
     @Get(":id/profile-picture")
     async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
         return this.animalService.getProfilePicture(id);
     }
 
-    @Get(":animalId/todos")
-    async getAnimalTodos(@Req() req: Request, @Param("animalId") id: string): Promise<AnimalTodoDto[]> {
+    @Get(":id/todos")
+    async getAnimalTodos(@Req() req: Request, @Param("id") id: string): Promise<AnimalTodoDto[]> {
         const user = req.user;
         if (user.role !== "ADMIN"){
             throw new Error('Unauthorized');
@@ -43,7 +56,7 @@ export class AnimalController {
 
     @Put()
     @HttpCode(204)
-    async updateAnimal(@Body() updateAnimalData: UpdateAnimalDto) {
+    async updateAnimal(@Body() updateAnimalData: AnimalProfileDto) {
         await this.animalService.updateAnimal(updateAnimalData);
     }
 

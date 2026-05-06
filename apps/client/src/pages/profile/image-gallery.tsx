@@ -66,7 +66,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
             {previews.map((img, index) => (
                 <ImageListItem key={index} className="relative">
                     <img
-                        className="p-4 rounded !object-fill"
+                        className="p-4 rounded-sm object-fill!"
                         srcSet={img.preview}
                         src={img.preview}
                         loading="lazy"
@@ -171,7 +171,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                         </IconButton>
                     </div>
 
-                    <ImageList cols={4} gap={12} className="!p-4">
+                    <ImageList cols={4} gap={12} className="p-4!">
                         {images.map((image, index) => (
 
                             <ImageListItem
@@ -184,7 +184,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                                             : "border-4 border-solid border-[#007AFF]"}`}
                             >
                                 <img
-                                    className="rounded"
+                                    className="rounded-sm"
                                     srcSet={`/images/${image}`}
                                     src={`/images/${image}`}
                                     loading="lazy"

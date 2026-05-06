@@ -1,10 +1,8 @@
 import { AnimalRescueDto } from '@animal/dto/create-animal.dto';
-import { AnimalRepository } from '@animal/repositories/animal.repository';
-import { CatSheetsHeaders, Profile } from '@catshelp/types';
+import { Profile } from '@catshelp/types';
 import { Injectable } from '@nestjs/common';
 import { User } from '@user/entities/user.entity';
 import { google, sheets_v4 } from 'googleapis';
-import moment from 'moment';
 import { GoogleAuthService } from './google-auth.service';
 import { formatDate } from '@catshelp/utils';
 
@@ -55,119 +53,87 @@ export class GoogleSheetsService {
         });
     }
 
-        /**
-   * Alternative function if you have the values in the exact order of your original interface
-   * @param values - Array of 30 values in the exact order of the Header interface
-   * @returns Object with English property names and corresponding values
-   */
-    private sheetsRowToObject(row: sheets_v4.Schema$CellData[]): CatSheetsHeaders {
+    private createUserEnteredValue(value: string): sheets_v4.Schema$CellData {
         return {
-            catName: row[0].formattedValue,
-            rescueSequenceNumber: row[1].formattedValue,
-            overOneYear: row[2].formattedValue,
-            underOneYear: row[3].formattedValue,
-            contractNumber: row[4].formattedValue,
-            status: row[5].formattedValue,
-            location: row[6].formattedValue,
-            shelterOrClinicName: row[7].formattedValue,
-            mentor: row[8].formattedValue,
-            birthDate: row[9].formattedValue,
-            gender: row[10].formattedValue,
-            catColor: row[11].formattedValue,
-            furLength: row[12].formattedValue,
-            additionalNotes: row[13].formattedValue,
-            microchip: row[14].formattedValue,
-            microchipRegisteredInLLR: row[15].formattedValue,
-            photo: row[16].formattedValue,
-            rescueOrBirthDate: row[17].formattedValue,
-            arrivalAtShelterDate: row[18].formattedValue,
-            adoptionDate: row[19].formattedValue,
-            findingLocation: row[20].formattedValue,
-            lastPostedOnFacebook: row[21].formattedValue,
-            lastPostedOnWebsite: row[22].formattedValue,
-            spayedOrNeutered: row[23].formattedValue,
-            complexVaccine: row[24].formattedValue,
-            nextVaccineDate: row[25].formattedValue,
-            rabiesVaccine: row[26].formattedValue,
-            nextRabiesDate: row[27].formattedValue,
-            dewormingOrFleaTreatmentDate: row[28].formattedValue,
-            dewormingOrFleaTreatmentName: row[29].formattedValue,
-            other: row[30].formattedValue,
-        }
+            userEnteredValue: {
+                stringValue: value ?? ''
+            }
+        };
     }
 
-    private updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
-        const values = this.sheetsRowToObject(row.values!);
+    private getUpdatedCellData(row: sheets_v4.Schema$RowData, animalProfile: Profile) : sheets_v4.Schema$CellData[] {
+        if (!row.values) {
+            return [];
+        }
+        const values: sheets_v4.Schema$CellData[] = [];
 
-        /* TODO
-        values.catName = animalProfile.mainInfo.name;
-        values.microchip = animalProfile.mainInfo.microchip;
-        values.microchipRegisteredInLLR = animalProfile.mainInfo.microchipRegisteredInLLR
-            ? 'Jah'
-            : 'Ei';
-        values.birthDate = this.formatDate(animalProfile.mainInfo.birthDate);
-
-        values.catColor = animalProfile.characteristics.selectFields.coatColour;
-        values.furLength = animalProfile.characteristics.selectFields.coatLength;
-        values.gender = animalProfile.characteristics.textFields.gender;
-        values.spayedOrNeutered = animalProfile.characteristics.textFields.spayedOrNeutered.endsWith('mata') ? "EI" : "JAH";
-
-        values.findingLocation = animalProfile.animalRescueInfo.rescueLocation;
-
-        values.complexVaccine = this.formatDate(animalProfile.vaccineInfo.complexVaccine);
-        values.nextVaccineDate = this.formatDate(animalProfile.vaccineInfo.nextComplexVaccineDate);
-        values.rabiesVaccine = this.formatDate(animalProfile.vaccineInfo.rabiesVaccine);
-        values.nextRabiesDate = this.formatDate(animalProfile.vaccineInfo.nextRabiesVaccineDate);
-        values.dewormingOrFleaTreatmentName = animalProfile.vaccineInfo.dewormingOrFleaTreatmentName;
-        values.dewormingOrFleaTreatmentDate = this.formatDate(animalProfile.vaccineInfo.dewormingOrFleaTreatmentDate);
-        */
+        //NAME
+        values[0] = this.createUserEnteredValue(animalProfile.mainInfo.name);
+        //RESCUE SEQUENCE NUMBER
+        values[1] = this.createUserEnteredValue(animalProfile.mainInfo.rankNr);
+        //OVER ONE YEAR
+        values[2] = this.createUserEnteredValue(row[2].formattedValue);
+        //UNDER ONE YEAR
+        values[3] = this.createUserEnteredValue(row[3].formattedValue);
+        //CONTRACT NUMBER
+        values[4] = this.createUserEnteredValue(row[4].formattedValue);
+        //STATUS
+        values[5] = this.createUserEnteredValue(animalProfile.mainInfo.status);
+        //LOCATION
+        values[6] = this.createUserEnteredValue(animalProfile.mainInfo.location);
+        //SHELTER OR CLINIC NAME
+        values[7] = this.createUserEnteredValue(row[7].formattedValue);
+        //MENTOR
+        values[8] = this.createUserEnteredValue(row[8].formattedValue);
+        //BIRTH DATE
+        values[9] = this.createUserEnteredValue(formatDate(animalProfile.mainInfo.birthDate));
+        //GENDER
+        values[10] = this.createUserEnteredValue(animalProfile.mainInfo.gender);
+        //COAT COLOR
+        values[11] = this.createUserEnteredValue(animalProfile.mainInfo.coatColour);
+        //FUR LENGTH
+        values[12] = this.createUserEnteredValue(animalProfile.mainInfo.coatLength);
+        //ADDITIONAL NOTES
+        values[13] = this.createUserEnteredValue(animalProfile.mainInfo.additionalNotes);
+        //MICROCHIP
+        values[14] = this.createUserEnteredValue(animalProfile.mainInfo.microchip);
+        //MICROCHIP REGISTERED IN LLR
+        values[15] = this.createUserEnteredValue(animalProfile.mainInfo.chipRegisteredWithUs ? 'Jah' : 'Ei');
+        //PHOTO
+        values[16] = this.createUserEnteredValue(row[16].formattedValue);
+        //RESCUE DATE
+        values[17] = this.createUserEnteredValue(formatDate(animalProfile.mainInfo.rescueDate));
+        //ARRIVAL AT SHELTER DATE
+        values[18] = this.createUserEnteredValue(row[18].formattedValue);
+        //ADOPTION DATE
+        values[19] = this.createUserEnteredValue(row[19].formattedValue);
+        //FINDING LOCATION
+        values[20] = this.createUserEnteredValue(row[20].formattedValue);
+        //LAST POSTED ON FACEBOOK
+        values[21] = this.createUserEnteredValue(row[21].formattedValue);
+        //LAST POSTED ON WEBSITE
+        values[22] = this.createUserEnteredValue(row[22].formattedValue);
+        //SPAYED OR NEUTERED
+        values[23] = this.createUserEnteredValue(animalProfile.mainInfo.spayedOrNeutered ? 'Jah' : 'Ei');
+        //COMPLEX VACCINE
+        values[24] = this.createUserEnteredValue(row[24].formattedValue);
+        //NEXT VACCINE DATE
+        values[25] = this.createUserEnteredValue(row[25].formattedValue);
+        //RABIES VACCINE
+        values[26] = this.createUserEnteredValue(row[26].formattedValue);
+        //NEXT RABIES DATE
+        values[27] = this.createUserEnteredValue(row[27].formattedValue);
+        //DEWORMING OR FLEA TREATMENT DATE
+        values[28] = this.createUserEnteredValue(row[28].formattedValue);
+        //DEWORMING OR FLEA TREATMENT NAME
+        values[29] = this.createUserEnteredValue(row[29].formattedValue);
+        //OTHER
+        values[30] = this.createUserEnteredValue(animalProfile.mainInfo.additionalNotes);
 
         return values;
     }
 
-    private convertAnimalToCellDataArray(animal: CatSheetsHeaders): sheets_v4.Schema$CellData[] {
-        const orderedKeys: (keyof CatSheetsHeaders)[] = [
-            'catName',
-            'rescueSequenceNumber',
-            'overOneYear',
-            'underOneYear',
-            'contractNumber',
-            'status',
-            'location',
-            'shelterOrClinicName',
-            'mentor',
-            'birthDate',
-            'gender',
-            'catColor',
-            'furLength',
-            'additionalNotes',
-            'microchip',
-            'microchipRegisteredInLLR',
-            'photo',
-            'rescueOrBirthDate',
-            'arrivalAtShelterDate',
-            'adoptionDate',
-            'findingLocation',
-            'lastPostedOnFacebook',
-            'lastPostedOnWebsite',
-            'spayedOrNeutered',
-            'complexVaccine',
-            'nextVaccineDate',
-            'rabiesVaccine',
-            'nextRabiesDate',
-            'dewormingOrFleaTreatmentDate',
-            'dewormingOrFleaTreatmentName',
-            'other',
-        ];
-
-        return orderedKeys.map(key => ({
-            userEnteredValue: {
-                stringValue: String(animal[key] ?? ''),
-            },
-        }));
-    }
-
-    private async getRow(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
+    private async getRow(animalRescueSequenceNumber: string): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
         const sheet = await this.getSheetData(process.env.CATS_SHEETS_ID!, process.env.CATS_TABLE_NAME!);
         const sheetRows = sheet.data.sheets![0].data![0].rowData!;
 
@@ -186,15 +152,15 @@ export class GoogleSheetsService {
 
     public async updateSheetCells(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<void> {
         try {
-            const sheetRow = await this.getRow(animalProfile, animalRescueSequenceNumber);
+            const sheetRow = await this.getRow(animalRescueSequenceNumber);
             if (!sheetRow) {
                 return;
             }
             const [row, rowIndex, sheetId] = sheetRow;
-            const updatedRow = this.updateSheetRow(row, animalProfile);
+            const updatedCellData = this.getUpdatedCellData(row, animalProfile);
 
             const updateRequests = this.buildUpdateRequests(
-                updatedRow,
+                updatedCellData,
                 rowIndex,
                 sheetId
             );
@@ -206,7 +172,7 @@ export class GoogleSheetsService {
         }
     }
 
-    private buildUpdateRequests(row: CatSheetsHeaders, rowIndex: number, sheetId: number): sheets_v4.Schema$Request[] {
+    private buildUpdateRequests(cellData: sheets_v4.Schema$CellData[], rowIndex: number, sheetId: number): sheets_v4.Schema$Request[] {
         const updateRequests: sheets_v4.Schema$Request[] = [];
 
         updateRequests.push({
@@ -218,7 +184,7 @@ export class GoogleSheetsService {
                 },
                 rows: [
                     {
-                        values: this.convertAnimalToCellDataArray(row),
+                        values: cellData,
                     },
                 ],
                 fields: 'userEnteredValue',

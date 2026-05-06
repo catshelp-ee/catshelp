@@ -1,4 +1,4 @@
-import { CatSheetsHeaders, Profile } from '@catshelp/types';
+import { Profile } from '@catshelp/types';
 import { extractFileId } from '@common/utils/google-utils';
 import { GoogleDriveService } from '@google/google-drive.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -60,11 +60,9 @@ export class FileService {
 
     public async processImages(
         profile: Profile,
-        values: CatSheetsHeaders,
+        imageLink: string,
         ownerName: string
     ): Promise<void> {
-        const imageLink = values.photo;
-
         if (!imageLink) {
             console.warn(`No image`);
             return;

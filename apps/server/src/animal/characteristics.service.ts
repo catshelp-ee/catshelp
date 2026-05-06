@@ -1,4 +1,3 @@
-import {Profile} from '@catshelp/types';
 import { Injectable } from '@nestjs/common';
 import { Characteristic } from './entities/characteristic.entity';
 import { CharacteristicRepository } from './repositories/characteristic.repository';

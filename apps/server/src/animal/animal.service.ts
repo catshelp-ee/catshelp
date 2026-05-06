@@ -1,4 +1,3 @@
-import { Profile, PersonalityInfo, createPersonalityInfo } from '@catshelp/types';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';

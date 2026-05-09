@@ -20,7 +20,7 @@ export default defineConfig({
         sourcemap: true,
     },
     server: {
-        port: process.env.FRONTEND_PORT,
+        port: Number(process.env.FRONTEND_PORT),
         strictPort: true,
         proxy: {
             "/api": {

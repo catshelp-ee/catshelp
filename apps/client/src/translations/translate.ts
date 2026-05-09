@@ -1,6 +1,6 @@
-import type {Language} from '@context/language-context.tsx';
+import type { Language } from '@config/app.ts';
 
-export function translate(key: any, lang: Language): string {
-    if (!key) return '';
-    return key[lang] || key.en || '';
+export function translate(key, lang: Language): string {
+  if (!key) return '';
+  return key[lang] || key.en || '';
 }

@@ -1,77 +1,74 @@
-import { useAlert } from "@context/alert-context";
-import { User } from "@server/user/entities/user.entity";
-import axios from "axios";
-import { ReactNode, createContext, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import type { IUser } from '@catshelp/types/src/index.ts';
+import { useAlert } from '@context/alert-context.tsx';
+import axios from 'axios';
+import type { ReactNode } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type AuthContext = {
-    getUser: () => Promise<User>;
-    logout: () => void;
-    checkIfAdmin: () => boolean;
+  getUser: () => Promise<IUser>;
+  logout: () => void;
+  checkIfAdmin: () => boolean;
 };
 
 type AuthContextProvider = {
-    children: ReactNode;
+  children: ReactNode;
 };
 
 export const AuthContext = createContext<AuthContext>({
-    getUser: () => { return null },
-    logout: () => { },
-    checkIfAdmin: () => { return null }
+  getUser: () => {
+    return null;
+  },
+  logout: () => {},
+  checkIfAdmin: () => {
+    return null;
+  },
 });
 
 export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
-    const [user, setUser] = useState<User>(null);
-    const navigate = useNavigate();
-    const { showAlert } = useAlert();
+  const [user, setUser] = useState<IUser>(null);
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
-    const getUser = async (): Promise<User> => {
-        if (user) {
-            return user;
-        }
-        let userReq = null;
-        try {
-            userReq = await axios.get('/api/user');
-        } catch (error) {
-            showAlert('Error', "Kasutaja andmete pärimine ebaõnnestus");
-            return;
-        }
-
-
-        setUser(userReq.data);
-        return userReq.data;
-    };
-
-    const logout = async () => {
-        //DO axios logout
-        try {
-            await axios.post("/api/auth/logout");
-        } catch (error) {
-            showAlert('Error', "Väljumine ebaõnnestus");
-            return;
-        }
-        setUser(null);
-        navigate("/login");
-    };
-
-    const checkIfAdmin = async () => {
-        const user = await getUser();
-
-        return user.role === "ADMIN";
+  const getUser = async (): Promise<IUser> => {
+    if (user) {
+      return user;
     }
+    try {
+      const userReq = await axios.get('/api/user');
+      setUser(userReq.data);
+      return userReq.data;
+    } catch (_error) {
+      showAlert('Error', 'Kasutaja andmete pärimine ebaõnnestus');
+      return;
+    }
+  };
 
-    const value = {
-        getUser,
-        logout,
-        checkIfAdmin
-    };
+  const logout = async () => {
+    //DO axios logout
+    try {
+      await axios.post('/api/auth/logout');
+    } catch (_error) {
+      showAlert('Error', 'Väljumine ebaõnnestus');
+      return;
+    }
+    setUser(null);
+    navigate('/login');
+  };
 
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const checkIfAdmin = async () => {
+    const user = await getUser();
+
+    return user.role === 'ADMIN';
+  };
+
+  const value = {
+    getUser,
+    logout,
+    checkIfAdmin,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // Custom hook to use auth

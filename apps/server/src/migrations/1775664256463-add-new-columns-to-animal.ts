@@ -1,7 +1,6 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddNewColumnsToAnimal1775664256463 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             ALTER TABLE animals ADD COLUMN requirements_for_new_family TEXT;

@@ -1,4 +1,4 @@
-import { DashboardNotification } from './DasboardNotification';
+import type { DashboardNotification } from './DasboardNotification';
 
 export default class PoleKassiNotification implements DashboardNotification {
     getText(): string {
@@ -17,7 +17,7 @@ export default class PoleKassiNotification implements DashboardNotification {
         return currentDate;
     }
 
-    name = "";
+    name = '';
     buttonText = 'Võtke kass';
     redirectURL = process.env.NO_CAT_REDIRECT!;
 }

@@ -1,11 +1,18 @@
-import { AnimalToFosterHome } from "@animal/entities/animalToFosterhome.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.entity";
-import { IFosterHome } from "@catshelp/types";
+import { AnimalToFosterHome } from '@animal/entities/animalToFosterhome.entity';
+import { IFosterHome } from '@catshelp/types';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity("foster_homes")
-export class FosterHome  implements IFosterHome {
+import { User } from './user.entity';
 
+@Entity('foster_homes')
+export class FosterHome implements IFosterHome {
     @PrimaryGeneratedColumn()
     public id: number;
 
@@ -28,6 +35,9 @@ export class FosterHome  implements IFosterHome {
     @JoinColumn()
     public user: User;
 
-    @OneToMany(() => AnimalToFosterHome, animalToFosterHome => animalToFosterHome.fosterHome)
+    @OneToMany(
+        () => AnimalToFosterHome,
+        (animalToFosterHome) => animalToFosterHome.fosterHome,
+    )
     public animalToFosterHome: AnimalToFosterHome[];
 }

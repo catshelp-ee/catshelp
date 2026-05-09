@@ -1,8 +1,8 @@
-import { SyncUserDataToDBJob } from '@cron/jobs/sync-users-to-db-job';
-import { Injectable } from '@nestjs/common';
 import { DeleteExpiredTokensJob } from '@cron/jobs/delete-expired-tokens-job';
 import { SyncSheetDataToDBJob } from '@cron/jobs/sync-sheets-to-db-job';
+import { SyncUserDataToDBJob } from '@cron/jobs/sync-users-to-db-job';
 import { TodoNotificationJob } from '@cron/jobs/todo-notification-job';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AdminService {
@@ -11,7 +11,7 @@ export class AdminService {
         private readonly deleteExpiredTokensJob: DeleteExpiredTokensJob,
         private readonly syncSheetDataToDBJob: SyncSheetDataToDBJob,
         private readonly sendTodoNotificationJob: TodoNotificationJob,
-    ) { }
+    ) {}
 
     public async runJob(jobName) {
         switch (jobName) {

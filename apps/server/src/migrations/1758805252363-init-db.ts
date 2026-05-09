@@ -1,9 +1,7 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitDb1758805252363 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
-
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id INT(11) NOT NULL AUTO_INCREMENT,
@@ -147,7 +145,5 @@ export class InitDb1758805252363 implements MigrationInterface {
             )`);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+    public async down(queryRunner: QueryRunner): Promise<void> {}
 }

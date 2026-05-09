@@ -1,5 +1,5 @@
-import { Animal } from "../entities/animal.entity";
-import { Rescue } from "../entities/rescue.entity";
+import type { Animal } from '../entities/animal.entity';
+import type { Rescue } from '../entities/rescue.entity';
 
 export interface RescueResult {
     animal: Animal;

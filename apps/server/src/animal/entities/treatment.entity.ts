@@ -1,10 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Animal } from "./animal.entity";
-import { ITreatment } from "@catshelp/types";
+import { ITreatment } from '@catshelp/types';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("treatments")
+import { Animal } from './animal.entity';
+
+@Entity('treatments')
 export class Treatment implements ITreatment {
-
     @PrimaryGeneratedColumn()
     public id: number;
 

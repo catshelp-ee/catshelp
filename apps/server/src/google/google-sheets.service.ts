@@ -1,20 +1,17 @@
 import { AnimalRescueDto } from '@animal/dto/create-animal.dto';
-import { AnimalRepository } from '@animal/repositories/animal.repository';
 import { CatSheetsHeaders, Profile } from '@catshelp/types';
+import { formatDate } from '@catshelp/utils';
 import { Injectable } from '@nestjs/common';
 import { User } from '@user/entities/user.entity';
 import { google, sheets_v4 } from 'googleapis';
-import moment from 'moment';
+
 import { GoogleAuthService } from './google-auth.service';
-import { formatDate } from '@catshelp/utils';
 
 @Injectable()
 export class GoogleSheetsService {
     sheets: sheets_v4.Sheets;
 
-    constructor(
-        private readonly googleAuthService: GoogleAuthService,
-    ) {
+    constructor(private readonly googleAuthService: GoogleAuthService) {
         this.sheets = google.sheets({
             version: 'v4',
             auth: this.googleAuthService.getAuth(),
@@ -55,12 +52,14 @@ export class GoogleSheetsService {
         });
     }
 
-        /**
-   * Alternative function if you have the values in the exact order of your original interface
-   * @param values - Array of 30 values in the exact order of the Header interface
-   * @returns Object with English property names and corresponding values
-   */
-    private sheetsRowToObject(row: sheets_v4.Schema$CellData[]): CatSheetsHeaders {
+    /**
+     * Alternative function if you have the values in the exact order of your original interface
+     * @param values - Array of 30 values in the exact order of the Header interface
+     * @returns Object with English property names and corresponding values
+     */
+    private sheetsRowToObject(
+        row: sheets_v4.Schema$CellData[],
+    ): CatSheetsHeaders {
         return {
             catName: row[0].formattedValue,
             rescueSequenceNumber: row[1].formattedValue,
@@ -93,10 +92,13 @@ export class GoogleSheetsService {
             dewormingOrFleaTreatmentDate: row[28].formattedValue,
             dewormingOrFleaTreatmentName: row[29].formattedValue,
             other: row[30].formattedValue,
-        }
+        };
     }
 
-    private updateSheetRow(row: sheets_v4.Schema$RowData, animalProfile: Profile) {
+    private updateSheetRow(
+        row: sheets_v4.Schema$RowData,
+        animalProfile: Profile,
+    ) {
         const values = this.sheetsRowToObject(row.values!);
 
         /* TODO
@@ -125,7 +127,9 @@ export class GoogleSheetsService {
         return values;
     }
 
-    private convertAnimalToCellDataArray(animal: CatSheetsHeaders): sheets_v4.Schema$CellData[] {
+    private convertAnimalToCellDataArray(
+        animal: CatSheetsHeaders,
+    ): sheets_v4.Schema$CellData[] {
         const orderedKeys: (keyof CatSheetsHeaders)[] = [
             'catName',
             'rescueSequenceNumber',
@@ -160,15 +164,21 @@ export class GoogleSheetsService {
             'other',
         ];
 
-        return orderedKeys.map(key => ({
+        return orderedKeys.map((key) => ({
             userEnteredValue: {
                 stringValue: String(animal[key] ?? ''),
             },
         }));
     }
 
-    private async getRow(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
-        const sheet = await this.getSheetData(process.env.CATS_SHEETS_ID!, process.env.CATS_TABLE_NAME!);
+    private async getRow(
+        animalProfile: Profile,
+        animalRescueSequenceNumber: string,
+    ): Promise<[sheets_v4.Schema$RowData, number, number] | null> {
+        const sheet = await this.getSheetData(
+            process.env.CATS_SHEETS_ID!,
+            process.env.CATS_TABLE_NAME!,
+        );
         const sheetRows = sheet.data.sheets![0].data![0].rowData!;
 
         for (let index = 1; index < sheetRows.length; index++) {
@@ -184,9 +194,15 @@ export class GoogleSheetsService {
         return null;
     }
 
-    public async updateSheetCells(animalProfile: Profile, animalRescueSequenceNumber: string): Promise<void> {
+    public async updateSheetCells(
+        animalProfile: Profile,
+        animalRescueSequenceNumber: string,
+    ): Promise<void> {
         try {
-            const sheetRow = await this.getRow(animalProfile, animalRescueSequenceNumber);
+            const sheetRow = await this.getRow(
+                animalProfile,
+                animalRescueSequenceNumber,
+            );
             if (!sheetRow) {
                 return;
             }
@@ -196,17 +212,24 @@ export class GoogleSheetsService {
             const updateRequests = this.buildUpdateRequests(
                 updatedRow,
                 rowIndex,
-                sheetId
+                sheetId,
             );
 
-            await this.executeSheetUpdate(updateRequests, process.env.CATS_SHEETS_ID!);
+            await this.executeSheetUpdate(
+                updateRequests,
+                process.env.CATS_SHEETS_ID!,
+            );
         } catch (error) {
             console.error('Error updating sheet cells:', error);
             throw new Error('Failed to update sheet cells', { cause: error });
         }
     }
 
-    private buildUpdateRequests(row: CatSheetsHeaders, rowIndex: number, sheetId: number): sheets_v4.Schema$Request[] {
+    private buildUpdateRequests(
+        row: CatSheetsHeaders,
+        rowIndex: number,
+        sheetId: number,
+    ): sheets_v4.Schema$Request[] {
         const updateRequests: sheets_v4.Schema$Request[] = [];
 
         updateRequests.push({
@@ -228,7 +251,10 @@ export class GoogleSheetsService {
         return updateRequests;
     }
 
-    private async executeSheetUpdate(updateRequests: sheets_v4.Schema$Request[], sheetId: string): Promise<void> {
+    private async executeSheetUpdate(
+        updateRequests: sheets_v4.Schema$Request[],
+        sheetId: string,
+    ): Promise<void> {
         if (!updateRequests.length) {
             throw new Error('No update requests provided');
         }

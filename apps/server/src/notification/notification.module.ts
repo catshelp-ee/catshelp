@@ -1,6 +1,8 @@
 import { EmailService } from '@auth/email.service';
-import {forwardRef, Module } from '@nestjs/common';
+import { FileModule } from '@file/file.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AnimalModule } from '../animal/animal.module';
 import { AnimalService } from '../animal/animal.service';
 import { Animal } from '../animal/entities/animal.entity';
@@ -11,9 +13,9 @@ import { AuthModule } from '../auth/auth.module';
 import { RevokedTokenRepository } from '../auth/revoked-token.repository';
 import { GoogleModule } from '../google/google.module';
 import { UserModule } from '../user/user.module';
+
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
-import {FileModule} from "@file/file.module";
 
 @Module({
     imports: [
@@ -23,7 +25,7 @@ import {FileModule} from "@file/file.module";
         forwardRef(() => AnimalModule),
         GoogleModule,
         UserModule,
-        FileModule
+        FileModule,
     ],
     controllers: [NotificationController],
     providers: [
@@ -36,4 +38,4 @@ import {FileModule} from "@file/file.module";
     ],
     exports: [NotificationService],
 })
-export class NotificationModule { }
+export class NotificationModule {}

@@ -31,7 +31,6 @@ export default tseslint.config(...rootConfig, {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
     'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
   },
 });

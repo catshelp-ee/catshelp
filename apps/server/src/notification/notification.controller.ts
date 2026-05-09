@@ -1,4 +1,6 @@
 // src/notifications/notification.controller.ts
+import * as path from 'path';
+
 import { EmailService } from '@auth/email.service';
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
 import {
@@ -15,14 +17,11 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import * as path from 'path';
 
 @Controller('notifications')
 @UseGuards(AuthorizationGuard)
 export class NotificationController {
-    constructor(
-        private readonly emailService: EmailService
-    ) { }
+    constructor(private readonly emailService: EmailService) {}
 
     @Post('email')
     @HttpCode(HttpStatus.OK)
@@ -41,7 +40,7 @@ export class NotificationController {
     @UsePipes(new ValidationPipe({ whitelist: true }))
     async sendNotificationToVolunteers(
         @UploadedFiles() images: Express.Multer.File[],
-        @Body() data: any,
+        @Body() data,
     ) {
         await this.emailService.sendNotificationToVolunteers(images, data);
         return { status: 'success' };

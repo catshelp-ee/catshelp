@@ -7,9 +7,10 @@ import {
     HttpStatus,
     Post,
     Req,
-    UseGuards
+    UseGuards,
 } from '@nestjs/common';
 import type { Request } from 'express';
+
 import { AdminService } from './admin.service';
 
 class RunCronJobDto {
@@ -19,9 +20,7 @@ class RunCronJobDto {
 @Controller('admin')
 @UseGuards(AuthorizationGuard)
 export class AdminController {
-    constructor(
-        private readonly adminService: AdminService
-    ) { }
+    constructor(private readonly adminService: AdminService) {}
 
     @Post('run-cron-job')
     @HttpCode(HttpStatus.OK)

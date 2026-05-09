@@ -7,13 +7,13 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import type { Request } from 'express';
+
 import { User } from './entities/user.entity';
 
 @Controller('user')
 @UseGuards(AuthorizationGuard)
 export class UserController {
-    constructor(
-    ) { }
+    constructor() {}
 
     @Get()
     async getCurrentUser(@Req() req: Request): Promise<User> {

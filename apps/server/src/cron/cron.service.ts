@@ -1,8 +1,9 @@
-import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
+
 import { DeleteExpiredTokensJob } from './jobs/delete-expired-tokens-job';
-import { SyncUserDataToDBJob } from './jobs/sync-users-to-db-job';
 import { SyncSheetDataToDBJob } from './jobs/sync-sheets-to-db-job';
+import { SyncUserDataToDBJob } from './jobs/sync-users-to-db-job';
 import { TodoNotificationJob } from './jobs/todo-notification-job';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class CronService {
         private readonly syncUserDataToDBJob: SyncUserDataToDBJob,
         private readonly syncSheetsToDbJob: SyncSheetDataToDBJob,
         private readonly todoNotificationJob: TodoNotificationJob,
-    ) { }
+    ) {}
 
     @Cron('0 0 * * *')
     async deleteExpiredTokens() {

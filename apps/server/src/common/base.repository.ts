@@ -1,17 +1,24 @@
 import { Inject } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import type { Request } from 'express';
 import { DataSource, Repository, ObjectLiteral } from 'typeorm';
 import type { EntityTarget } from 'typeorm';
-import type { Request } from 'express';
-import { ENTITY_MANAGER_KEY, TRANSACTION_ABORT_KEY } from "./interceptors/transaction.interceptor";
 
-export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
+import {
+    ENTITY_MANAGER_KEY,
+    TRANSACTION_ABORT_KEY,
+} from './interceptors/transaction.interceptor';
+
+export abstract class BaseRepository<
+    Entity extends ObjectLiteral,
+> extends Repository<Entity> {
     protected constructor(
         target: EntityTarget<Entity>,
         protected dataSource: DataSource,
         @Inject(REQUEST) protected request: Request,
     ) {
-        const manager = request[ENTITY_MANAGER_KEY] || dataSource.createEntityManager();
+        const manager =
+            request[ENTITY_MANAGER_KEY] || dataSource.createEntityManager();
         super(target, manager);
     }
 
@@ -26,7 +33,7 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     // Override remove to add abort checking
     async remove<T extends Entity>(entity: T | T[]): Promise<T | T[]> {
         this.checkAborted();
-        const result = await super.remove(entity as any) as T | T[];
+        const result = (await super.remove(entity as any)) as T | T[];
         this.checkAborted();
         return result;
     }
@@ -51,8 +58,8 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
         if (abortFlag) {
             throw new Error(
                 'Database operation aborted: transaction was closed. ' +
-                'This usually means a database operation was called without await, ' +
-                'and an error occurred before it could complete.'
+                    'This usually means a database operation was called without await, ' +
+                    'and an error occurred before it could complete.',
             );
         }
     }

@@ -43,7 +43,7 @@ export default tseslint.config(
           'newlines-between': 'always',
         },
       ],
-      'no-console': 'warn',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-arrow-callback': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',

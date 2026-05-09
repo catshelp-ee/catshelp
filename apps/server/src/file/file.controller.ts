@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
 import {
     BadRequestException,
@@ -12,21 +14,20 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import * as path from 'path';
+
 import { getRootPath } from '../main';
+
 import { FileService } from './file.service';
 
 @Controller('images')
 @UseGuards(AuthorizationGuard)
 export class FileController {
-    constructor(
-        private readonly imageService: FileService
-    ) { }
+    constructor(private readonly imageService: FileService) {}
 
     @Post()
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(
-        FilesInterceptor("files", 10, {
+        FilesInterceptor('files', 10, {
             storage: diskStorage({
                 destination: path.join(getRootPath(), 'images'),
                 filename: (req, file, cb) => {

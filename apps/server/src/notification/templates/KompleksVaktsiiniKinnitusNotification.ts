@@ -1,9 +1,8 @@
 import moment from 'moment';
 
-import { DashboardNotification } from './DasboardNotification';
+import type { DashboardNotification } from './DasboardNotification';
 
-export default class KompleksVaktsiiniKinnitusNotification
-    implements DashboardNotification {
+export default class KompleksVaktsiiniKinnitusNotification implements DashboardNotification {
     getText(): string {
         return 'Broneeri veterinaari juures vaktsineerimise aeg';
     }
@@ -24,7 +23,7 @@ export default class KompleksVaktsiiniKinnitusNotification
         return moment(currentDate).add(1, 'y').add(7, 'd').toDate();
     }
 
-    name = "COMPLEX_VACCINE";
+    name = 'COMPLEX_VACCINE';
     buttonText = 'Broneeri aeg';
     redirectURL = process.env.VACCINE_REDIRECT!;
 }

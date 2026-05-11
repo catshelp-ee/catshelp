@@ -1,15 +1,17 @@
+import { AnimalModule } from '@animal/animal.module';
 import { RevokedToken } from '@auth/revoked-token.entity';
 import { CacheModule } from '@nestjs/cache-manager';
-import {forwardRef, Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersController } from '@user/users.controller';
+
 import { AuthService } from '../auth/auth.service';
 import { RevokedTokenRepository } from '../auth/revoked-token.repository';
+
 import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
-import {UsersController} from "@user/users.controller";
-import {AnimalModule} from "@animal/animal.module";
 
 @Module({
     imports: [
@@ -20,10 +22,7 @@ import {AnimalModule} from "@animal/animal.module";
         }),
         forwardRef(() => AnimalModule),
     ],
-    controllers: [
-        UserController,
-        UsersController
-    ],
+    controllers: [UserController, UsersController],
     providers: [
         UserService,
         UserRepository,
@@ -32,10 +31,6 @@ import {AnimalModule} from "@animal/animal.module";
         UserRepository,
         AuthService,
     ],
-    exports: [
-        UserService,
-        UserRepository,
-        CacheModule,
-    ],
+    exports: [UserService, UserRepository, CacheModule],
 })
-export class UserModule { }
+export class UserModule {}

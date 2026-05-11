@@ -2,8 +2,10 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
+
 import { Animal } from '../animal/entities/animal.entity';
 import { BaseRepository } from '../common/base.repository';
+
 import { User } from './entities/user.entity';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -51,7 +53,10 @@ export class UserRepository extends BaseRepository<User> {
     async getAnimalsByUserId(id: number | string): Promise<Animal[]> {
         const user = await this.createQueryBuilder('user')
             .leftJoinAndSelect('user.fosterHome', 'fosterHome')
-            .leftJoinAndSelect('fosterHome.animalToFosterHome', 'animalToFosterHome')
+            .leftJoinAndSelect(
+                'fosterHome.animalToFosterHome',
+                'animalToFosterHome',
+            )
             .leftJoinAndSelect('animalToFosterHome.animal', 'animal')
             .where('user.id = :id', { id })
             .getOne();
@@ -61,6 +66,8 @@ export class UserRepository extends BaseRepository<User> {
         }
 
         // Map over the OneToMany relation to extract animals
-        return user.fosterHome.animalToFosterHome.map(rel => rel.animal).filter(Boolean);
+        return user.fosterHome.animalToFosterHome
+            .map((rel) => rel.animal)
+            .filter(Boolean);
     }
 }

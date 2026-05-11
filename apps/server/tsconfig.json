@@ -24,50 +24,20 @@
         "noFallthroughCasesInSwitch": false,
         "strictPropertyInitialization": false,
         "paths": {
-            "@server/*": [
-                "./*"
-            ],
-            "@admin/*": [
-                "./src/admin/*"
-            ],
-            "@animal/*": [
-                "./src/animal/*"
-            ],
-            "@auth/*": [
-                "./src/auth/*"
-            ],
-            "@common/*": [
-                "./src/common/*"
-            ],
-            "@cron/*": [
-                "./src/cron/*"
-            ],
-            "@dashboard/*": [
-                "./src/dashboard/*"
-            ],
-            "@file/*": [
-                "./src/file/*"
-            ],
-            "@google/*": [
-                "./src/google/*"
-            ],
-            "@notification/*": [
-                "./src/notification/*"
-            ],
-            "@profile/*": [
-                "./src/profile/*"
-            ],
-            "@user/*": [
-                "./src/user/*"
-            ],
+            "@server/*": ["./*"],
+            "@admin/*": ["./src/admin/*"],
+            "@animal/*": ["./src/animal/*"],
+            "@auth/*": ["./src/auth/*"],
+            "@common/*": ["./src/common/*"],
+            "@cron/*": ["./src/cron/*"],
+            "@dashboard/*": ["./src/dashboard/*"],
+            "@file/*": ["./src/file/*"],
+            "@google/*": ["./src/google/*"],
+            "@notification/*": ["./src/notification/*"],
+            "@profile/*": ["./src/profile/*"],
+            "@user/*": ["./src/user/*"]
         },
-        "typeRoots": [
-            "./src/types",
-            "./node_modules/@types"
-        ]
+        "typeRoots": ["./src/types", "./node_modules/@types"]
     },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.d.ts"
-    ]
+    "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }

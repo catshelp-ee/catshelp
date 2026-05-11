@@ -1,8 +1,7 @@
-import {Avatar, Typography, useTheme} from "@mui/material";
-import {AnimalSummary} from "@interfaces/animal-summary.ts";
-import React, {forwardRef, useEffect, useState} from "react";
-import {Link} from "react-router-dom";
-import axios from "axios";
+import type { AnimalSummary } from '@interfaces/animal-summary.ts';
+import { Avatar, Typography, useTheme } from '@mui/material';
+import React, { forwardRef } from 'react';
+import { Link } from 'react-router-dom';
 
 interface AllPetsPopupProps {
     pets: AnimalSummary[];
@@ -11,7 +10,7 @@ interface AllPetsPopupProps {
 }
 
 // Individual Pet Item Component
-const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
+const PetItem: React.FC<{ pet: AnimalSummary }> = ({ pet }) => {
     const theme = useTheme();
 
     return (
@@ -29,8 +28,8 @@ const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
                         height: 48,
                         transition: 'transform 0.2s ease-in-out',
                         '&:hover': {
-                            transform: 'scale(1.05)'
-                        }
+                            transform: 'scale(1.05)',
+                        },
                     }}
                 />
                 <Typography
@@ -38,7 +37,7 @@ const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
                     sx={{
                         fontWeight: 500,
                         color: theme.palette.text.primary,
-                        fontSize: '0.95rem'
+                        fontSize: '0.95rem',
                     }}
                 >
                     {pet.name}
@@ -49,7 +48,7 @@ const PetItem: React.FC<{ pet: AnimalSummary }> = ({pet}) => {
 };
 
 // Popup Header Component
-const PopupHeader: React.FC<{ totalCount: number }> = ({totalCount}) => {
+const PopupHeader: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     const theme = useTheme();
 
     return (
@@ -59,7 +58,7 @@ const PopupHeader: React.FC<{ totalCount: number }> = ({totalCount}) => {
                 sx={{
                     fontWeight: 600,
                     color: theme.palette.text.primary,
-                    fontSize: '1.1rem'
+                    fontSize: '1.1rem',
                 }}
             >
                 Kõik hoiuloomad ({totalCount})
@@ -68,49 +67,47 @@ const PopupHeader: React.FC<{ totalCount: number }> = ({totalCount}) => {
     );
 };
 
-const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(
-    ({pets, onClose, isOpen}, ref) => {
-        const theme = useTheme();
+const AllPetsPopup = forwardRef<HTMLDivElement, AllPetsPopupProps>(({ pets, onClose, isOpen }, ref) => {
+    const theme = useTheme();
 
-        if (!isOpen) {
-            return null;
-        }
-
-        return (
-            <div
-                ref={ref}
-                className="absolute w-full bg-white z-10 max-h-96 overflow-hidden flex flex-col"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Hoiuloomade nimekiri"
-                style={{
-                    boxShadow: theme.shadows[8]
-                }}
-            >
-                <PopupHeader totalCount={pets.length}/>
-
-                <div className="flex-1 overflow-y-scroll">
-                    {pets.map((pet, id) => (
-                        <PetItem key={id} pet={pet}/>
-                    ))}
-                </div>
-
-                {onClose && (
-                    <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
-                        <button
-                            onClick={onClose}
-                            className="w-full py-2 px-4 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
-                            aria-label="Sulge popup"
-                        >
-                            Sulge
-                        </button>
-                    </div>
-                )}
-            </div>
-        );
+    if (!isOpen) {
+        return null;
     }
-);
 
-AllPetsPopup.displayName = "AllPetsPopup";
+    return (
+        <div
+            ref={ref}
+            className="absolute w-full bg-white z-10 max-h-96 overflow-hidden flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Hoiuloomade nimekiri"
+            style={{
+                boxShadow: theme.shadows[8],
+            }}
+        >
+            <PopupHeader totalCount={pets.length} />
+
+            <div className="flex-1 overflow-y-scroll">
+                {pets.map((pet, id) => (
+                    <PetItem key={id} pet={pet} />
+                ))}
+            </div>
+
+            {onClose && (
+                <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+                    <button
+                        onClick={onClose}
+                        className="w-full py-2 px-4 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                        aria-label="Sulge popup"
+                    >
+                        Sulge
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+});
+
+AllPetsPopup.displayName = 'AllPetsPopup';
 
 export default AllPetsPopup;

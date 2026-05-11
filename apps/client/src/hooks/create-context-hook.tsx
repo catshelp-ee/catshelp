@@ -1,5 +1,6 @@
 // src/utils/createContext.ts
-import { Context, useContext } from 'react';
+import type { Context } from 'react';
+import { useContext } from 'react';
 
 /**
  * Creates a custom hook for a given React context.

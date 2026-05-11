@@ -1,30 +1,26 @@
-import React from "react";
-import axios from "axios";
-import { GoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
-import { Button, InputAdornment, TextField } from "@mui/material";
-import { useAlert } from "@context/alert-context.tsx";
-import { useIsMobile } from "@context/is-mobile-context.tsx";
+import { useAlert } from '@context/alert-context.tsx';
 import EmailIcon from '@mui/icons-material/Email';
+import { Button, InputAdornment, TextField } from '@mui/material';
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm: React.FC = () => {
     const navigate = useNavigate();
     const { showAlert } = useAlert();
-    const isMobile = useIsMobile();
 
-
-    const googleAuthSuccess = async (response: any) => {
+    const googleAuthSuccess = async (response) => {
         try {
-            const resp = await axios.post("/api/auth/login-google", response);
+            const resp = await axios.post('/api/auth/login-google', response);
             navigate(`/users/${resp.data.id}`);
-        } catch (error) {
-            showAlert('Error', "Kasutajat ei leitud");
+        } catch (_error) {
+            showAlert('Error', 'Kasutajat ei leitud');
             return;
         }
-
     };
 
-    const submitForm = async (e: any) => {
+    const submitForm = async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
@@ -35,15 +31,15 @@ const LoginForm: React.FC = () => {
         }
 
         try {
-            await axios.post("/api/auth/login-email", { email: payload.email });
-            showAlert('Success', "Emailile saadeti link juhistega");
-        } catch (error) {
-            showAlert('Success', "Emaili saatmine ebaõnnestus");
+            await axios.post('/api/auth/login-email', { email: payload.email });
+            showAlert('Success', 'Emailile saadeti link juhistega');
+        } catch (_error) {
+            showAlert('Success', 'Emaili saatmine ebaõnnestus');
         }
-    }
+    };
 
-    const errorMessage = (error: any) => {
-        showAlert('Error', "Google abil sisenemine ebaõnnestus");
+    const errorMessage = () => {
+        showAlert('Error', 'Google abil sisenemine ebaõnnestus');
     };
 
     return (
@@ -56,19 +52,23 @@ const LoginForm: React.FC = () => {
                     </div>
                     <p>või</p>
                     <div className="email-login">
-                        <TextField name="email"
+                        <TextField
+                            name="email"
                             slotProps={{
                                 input: {
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <EmailIcon sx={{ color: "#42ade2" }} />
+                                            <EmailIcon sx={{ color: '#42ade2' }} />
                                         </InputAdornment>
                                     ),
                                 },
                             }}
-                            label="E-maili aadress" />
+                            label="E-maili aadress"
+                        />
                         <div className="login-button-container">
-                            <Button type="submit" sx={{ textTransform: 'none', fontWeight: '500', fontSize: 16 }}>Logi sisse lingiga</Button>
+                            <Button type="submit" sx={{ textTransform: 'none', fontWeight: '500', fontSize: 16 }}>
+                                Logi sisse lingiga
+                            </Button>
                         </div>
                     </div>
                     {/*<span>Kui proovisid sisse logida, aga ei õnnestunud, aga sinu juures on mõni Cats Helpi kiisu, siis palun </span><a>Registreeri end siin</a>*/}

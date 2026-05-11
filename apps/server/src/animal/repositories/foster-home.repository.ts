@@ -1,7 +1,6 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { BaseRepository } from '@server/src/common/base.repository';
-import { User } from '@server/src/user/entities/user.entity';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
@@ -19,11 +18,11 @@ export class FosterHomeRepository extends BaseRepository<FosterHome> {
             relations: ['user'],
         });
     }
-    
+
     /** Find existing foster home by userId or create a new one */
     async saveOrUpdateFosterHome(userId: number): Promise<FosterHome> {
         let fosterHome = await this.findOne({
-            where: { userId: userId }
+            where: { userId: userId },
         });
 
         if (!fosterHome) {
@@ -33,5 +32,4 @@ export class FosterHomeRepository extends BaseRepository<FosterHome> {
 
         return fosterHome;
     }
-
 }

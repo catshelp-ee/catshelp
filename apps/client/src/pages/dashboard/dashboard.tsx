@@ -1,8 +1,7 @@
-import React from "react";
-import { useAnimals } from "@hooks/use-animals.tsx";
-import { useTodos } from "@hooks/use-todos.tsx";
-import { useUser } from "@hooks/use-user.tsx";
-
+import { useAnimals } from '@hooks/use-animals.tsx';
+import { useTodos } from '@hooks/use-todos.tsx';
+import { useUser } from '@hooks/use-user.tsx';
+import React from 'react';
 
 const Dashboard = () => {
     const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
@@ -12,11 +11,7 @@ const Dashboard = () => {
     const isLoading = userLoading || animalsLoading || todosLoading;
     const error = userError || animalsError || todosError;
 
-    return (
-        <div className="flex flex-col flex-1">
-            TEST
-        </div>
-    );
+    return <div className="flex flex-col flex-1">TEST</div>;
 };
 
 export default Dashboard;

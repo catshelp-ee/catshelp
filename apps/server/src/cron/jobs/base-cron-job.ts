@@ -1,5 +1,5 @@
-import { ModuleRef } from '@nestjs/core';
-import { DataSource } from 'typeorm';
+import type { ModuleRef } from '@nestjs/core';
+import type { DataSource } from 'typeorm';
 export const ENTITY_MANAGER_KEY = 'ENTITY_MANAGER';
 
 export abstract class BaseCronJob {
@@ -8,18 +8,16 @@ export abstract class BaseCronJob {
     constructor(
         protected dataSource: DataSource,
         protected moduleRef: ModuleRef,
-    ) {
-        
-    }
+    ) {}
 
     public async run(): Promise<void> {
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
-        console.log("Running job");
+        console.log('Running job');
         const mockRequest = {
-            [ENTITY_MANAGER_KEY]: queryRunner.manager
+            [ENTITY_MANAGER_KEY]: queryRunner.manager,
         };
 
         this.contextId = { id: Math.random() };
@@ -30,14 +28,14 @@ export abstract class BaseCronJob {
             await this.resolveScopeDependencies();
             // Do all your work with queryRunner.manager
             await this.doWork(queryRunner);
-            console.log("Job done");
+            console.log('Job done');
 
             // Commit when everything succeeds
             await queryRunner.commitTransaction();
         } catch (error) {
             // Rollback on any error
             await queryRunner.rollbackTransaction();
-            console.error("Error during cron job: " + error);
+            console.error('Error during cron job: ' + error);
         } finally {
             // Always release the query runner
             await queryRunner.release();
@@ -45,11 +43,7 @@ export abstract class BaseCronJob {
     }
 
     //Override this function
-    protected async doWork(queryRunner) {
+    protected async doWork(queryRunner) {}
 
-    };
-
-    protected async resolveScopeDependencies() {
-
-    };
+    protected async resolveScopeDependencies() {}
 }

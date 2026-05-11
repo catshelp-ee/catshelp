@@ -1,9 +1,10 @@
-import {useEffect, useState} from "react";
-import { Outlet } from "react-router-dom";
-import Sidebar from "./sidebar.tsx";
+import type { AppMode } from '@config/app.ts';
+import { useAuth } from '@context/auth-context.tsx';
+import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+
 import Header from './header.tsx';
-import {useAuth} from "@context/auth-context.tsx";
-import {AppMode} from "@config/app.ts";
+import Sidebar from './sidebar.tsx';
 
 const PageLayout = () => {
     const { checkIfAdmin } = useAuth();
@@ -18,7 +19,6 @@ const PageLayout = () => {
 
         setIsAdmin(true);
     }, [checkIfAdmin]);
-
 
     const DesktopView = () => {
         return (
@@ -35,12 +35,10 @@ const PageLayout = () => {
                     </main>
                 </div>
             </div>
-        )
-    }
+        );
+    };
 
-    return (
-        <DesktopView />
-    );
+    return <DesktopView />;
 };
 
 export default PageLayout;

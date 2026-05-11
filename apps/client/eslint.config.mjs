@@ -19,14 +19,15 @@ export default tseslint.config(...rootConfig, {
     },
     rules: {
         ...reactHooks.configs['recommended-latest'].rules,
-        'react-refresh/only-export-components': [
-            'warn',
-            { allowConstantExport: true },
+        'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+                caughtErrorsIgnorePattern: '^_',
+            },
         ],
-        // Enforces 'function App() {}' instead of 'const App = () => {}'
         'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
-
-        // Optional: ensures you don't use 'var' or 'let' for functions
-        'prefer-arrow-callback': 'error',
     },
 });

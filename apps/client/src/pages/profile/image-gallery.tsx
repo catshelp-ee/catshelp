@@ -1,22 +1,18 @@
-import React, { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
-import {
-    Dialog,
-    Button,
-    IconButton,
-    ImageList,
-    ImageListItem,
-    Typography,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useIsMobile } from "@context/is-mobile-context.tsx";
-import axios from "axios";
-import { useAlert } from "@context/alert-context.tsx";
+import { useAlert } from '@context/alert-context.tsx';
+import { useIsMobile } from '@context/is-mobile-context.tsx';
+import CloseIcon from '@mui/icons-material/Close';
+import { Dialog, Button, IconButton, ImageList, ImageListItem, Typography } from '@mui/material';
+import axios from 'axios';
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 
 interface ImageGalleryProps {
     name?: string;
     images: string[];
-    profilePictureState?: {selectedProfilePicture: string, setSelectedProfilePicture: React.Dispatch<React.SetStateAction<string>>};
+    profilePictureState?: {
+        selectedProfilePicture: string;
+        setSelectedProfilePicture: React.Dispatch<React.SetStateAction<string>>;
+    };
     animalId?: number;
     isEditMode?: boolean;
     previews?: PreviewImage[];
@@ -29,15 +25,7 @@ interface PreviewImage {
     id: string;
 }
 
-const ImageGallery: React.FC<ImageGalleryProps> = ({
-    name,
-    images,
-    profilePictureState,
-    animalId,
-    isEditMode = false,
-    previews,
-    setPreviews,
-}) => {
+const ImageGallery: React.FC<ImageGalleryProps> = ({ name, images, profilePictureState, animalId, isEditMode = false, previews, setPreviews }) => {
     const isMobile = useIsMobile();
     const { showAlert } = useAlert();
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -51,13 +39,14 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         setPreviews((prev) => [...prev, ...newPreviews]);
     }, []);
 
-    const removeImage = (id: string) => {
-        setPreviews((prev) => prev.filter((img) => img.id !== id));
-    };
+    /* UNSURE IF NOT USED
+  const removeImage = (id: string) => {
+    setPreviews((prev) => prev.filter((img) => img.id !== id));
+  }; */
 
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
-        accept: { "image/*": [] },
+        accept: { 'image/*': [] },
         multiple: true,
     });
 
@@ -65,12 +54,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         <ImageList cols={1} sx={{ height: '100%', overflowY: 'auto' }}>
             {previews.map((img, index) => (
                 <ImageListItem key={index} className="relative">
-                    <img
-                        className="p-4 rounded-sm object-fill!"
-                        srcSet={img.preview}
-                        src={img.preview}
-                        loading="lazy"
-                    />
+                    <img className="p-4 rounded-sm object-fill!" srcSet={img.preview} src={img.preview} loading="lazy" />
                     <CloseIcon
                         fontSize="small"
                         className="absolute top-1 right-1 bg-white/80 rounded-full p-1 cursor-pointer hover:bg-white"
@@ -91,11 +75,11 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
             <p>või</p>
             <Button
                 sx={{
-                    backgroundColor: "#007AFF",
-                    fontSize: "13px",
-                    padding: "4px 12px",
-                    borderRadius: "6px",
-                    textTransform: "none",
+                    backgroundColor: '#007AFF',
+                    fontSize: '13px',
+                    padding: '4px 12px',
+                    borderRadius: '6px',
+                    textTransform: 'none',
                 }}
                 variant="contained"
             >
@@ -105,20 +89,22 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     );
 
     const setAsProfilePicture = async () => {
-        const updateProfilePicture = { animalId: animalId, fileName: profilePictureState.selectedProfilePicture.split(".")[0] };
+        const updateProfilePicture = {
+            animalId: animalId,
+            fileName: profilePictureState.selectedProfilePicture.split('.')[0],
+        };
 
-        const response = await axios.put("/api/animals/profile-picture", updateProfilePicture, {
+        const response = await axios.put('/api/animals/profile-picture', updateProfilePicture, {
             withCredentials: true,
         });
 
         if (response.status !== 204) {
-            showAlert('Error', "Andmete uuendamine ebaõnnestus");
+            showAlert('Error', 'Andmete uuendamine ebaõnnestus');
             return;
         }
 
-        showAlert('Success', "🐈‍⬛ Andmed uuendatud! 🐈‍⬛");
-
-    }
+        showAlert('Success', '🐈‍⬛ Andmed uuendatud! 🐈‍⬛');
+    };
 
     const handleSelectProfilePicture = (event) => {
         const image = event.currentTarget.dataset.image;
@@ -126,7 +112,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     };
 
     return (
-        <div className={`${isMobile ? "w-full mt-8" : "w-1/3"}`}>
+        <div className={`${isMobile ? 'w-full mt-8' : 'w-1/3'}`}>
             <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                 <div className="flex flex-col items-center">
                     {images.length > 0 && (
@@ -137,9 +123,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                     {images.length > 1 && (
                         <button className={`relative w-64 h-64 mb-4`} onClick={() => setIsOpen(true)}>
                             <img className={`w-full h-full rounded-2xl opacity-50`} src={`/images/${images[0]}`} alt="More images" />
-                            <div className="absolute inset-0 text-xl flex items-center justify-center font-bold">
-                                +{images.length - 1} Pilti
-                            </div>
+                            <div className="absolute inset-0 text-xl flex items-center justify-center font-bold">+{images.length - 1} Pilti</div>
                         </button>
                     )}
 
@@ -155,17 +139,20 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                 </div>
             </div>
 
-            <Dialog PaperProps={{
-                sx: {
-                    borderRadius: "16px",
-                    maxWidth: '50vw', // 50% of the viewport width
-                    width: '100%',     // ensures it uses the full allowed width
-                },
-            }}
-                open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog
+                PaperProps={{
+                    sx: {
+                        borderRadius: '16px',
+                        maxWidth: '50vw', // 50% of the viewport width
+                        width: '100%', // ensures it uses the full allowed width
+                    },
+                }}
+                open={isOpen}
+                onClose={() => setIsOpen(false)}
+            >
                 <div className="w-full p-10">
                     <div className="w-full flex justify-between items-center mb-4">
-                        <Typography variant="h4" > {name} hetkede varakamber ✨</Typography>
+                        <Typography variant="h4"> {name} hetkede varakamber ✨</Typography>
                         <IconButton onClick={() => setIsOpen(false)} sx={{}}>
                             <CloseIcon />
                         </IconButton>
@@ -173,27 +160,25 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
                     <ImageList cols={4} gap={12} className="p-4!">
                         {images.map((image, index) => (
-
                             <ImageListItem
                                 key={index}
                                 data-image={image}
                                 onClick={handleSelectProfilePicture}
-                                className={`${isEditMode ? "" : "hover:scale-110 hover:cursor-pointer rounded-lg"} 
-                                            ${isEditMode || profilePictureState.selectedProfilePicture !== image
-                                            ? ""
-                                            : "border-4 border-solid border-[#007AFF]"}`}
+                                className={`${isEditMode ? '' : 'hover:scale-110 hover:cursor-pointer rounded-lg'} 
+                                            ${
+                                                isEditMode || profilePictureState.selectedProfilePicture !== image
+                                                    ? ''
+                                                    : 'border-4 border-solid border-[#007AFF]'
+                                            }`}
                             >
-                                <img
-                                    className="rounded-sm"
-                                    srcSet={`/images/${image}`}
-                                    src={`/images/${image}`}
-                                    loading="lazy"
-                                />
+                                <img className="rounded-sm" srcSet={`/images/${image}`} src={`/images/${image}`} loading="lazy" />
                             </ImageListItem>
                         ))}
                     </ImageList>
                     {!isEditMode && (
-                        <Button variant="contained" className="m-auto" onClick={setAsProfilePicture}>säti profiilipildiks</Button>
+                        <Button variant="contained" className="m-auto" onClick={setAsProfilePicture}>
+                            säti profiilipildiks
+                        </Button>
                     )}
                 </div>
             </Dialog>

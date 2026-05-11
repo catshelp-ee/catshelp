@@ -1,7 +1,6 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class MigrateToTypeormStructure1759234365767 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             ALTER TABLE animal_rescues ADD COLUMN animal_id INT
@@ -86,7 +85,5 @@ export class MigrateToTypeormStructure1759234365767 implements MigrationInterfac
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+    public async down(queryRunner: QueryRunner): Promise<void> {}
 }

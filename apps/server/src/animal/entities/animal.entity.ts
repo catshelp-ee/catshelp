@@ -1,14 +1,20 @@
-import { File } from "@file/file.entity";
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { AnimalToFosterHome } from "./animalToFosterhome.entity";
-import { Characteristic } from "./characteristic.entity";
-import { Rescue } from "./rescue.entity";
-import { Treatment } from "./treatment.entity";
-import { IAnimal } from "@catshelp/types";
+import { IAnimal } from '@catshelp/types';
+import { File } from '@file/file.entity';
+import {
+    Column,
+    Entity,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity("animals")
+import { AnimalToFosterHome } from './animalToFosterhome.entity';
+import { Characteristic } from './characteristic.entity';
+import { Rescue } from './rescue.entity';
+import { Treatment } from './treatment.entity';
+
+@Entity('animals')
 export class Animal implements IAnimal {
-
     @PrimaryGeneratedColumn()
     public id: number;
 
@@ -16,15 +22,15 @@ export class Animal implements IAnimal {
     public name: string;
 
     @Column({
-        type: "date",
-        nullable: true
+        type: 'date',
+        nullable: true,
     })
     public birthday: Date | null;
 
     @Column()
     public profileTitle: string;
 
-    @Column("text")
+    @Column('text')
     public description: string;
 
     @Column()
@@ -42,16 +48,22 @@ export class Animal implements IAnimal {
     @Column()
     public additionalNotes: string;
 
-    @Column("text")
+    @Column('text')
     public chronicConditions: string;
 
     @OneToMany(() => File, (file) => file.animal)
     public files: File[];
 
-    @OneToMany(() => AnimalToFosterHome, animalToFosterHome => animalToFosterHome.animal)
+    @OneToMany(
+        () => AnimalToFosterHome,
+        (animalToFosterHome) => animalToFosterHome.animal,
+    )
     public animalToFosterHome: AnimalToFosterHome[];
 
-    @OneToMany(() => Characteristic, (animalCharacteristic) => animalCharacteristic.animal)
+    @OneToMany(
+        () => Characteristic,
+        (animalCharacteristic) => animalCharacteristic.animal,
+    )
     public animalCharacteristics: Characteristic[];
 
     @OneToMany(() => Treatment, (treatment) => treatment.animal)

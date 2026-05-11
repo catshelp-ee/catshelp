@@ -1,8 +1,9 @@
 import { RevokedToken } from '@auth/revoked-token.entity';
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
-import { BaseCronJob } from './base-cron-job';
 import { ModuleRef } from '@nestjs/core';
+import { DataSource, Repository } from 'typeorm';
+
+import { BaseCronJob } from './base-cron-job';
 
 @Injectable()
 export class DeleteExpiredTokensJob extends BaseCronJob {
@@ -15,9 +16,11 @@ export class DeleteExpiredTokensJob extends BaseCronJob {
 
     /** Delete all expired revoked tokens */
     protected async doWork(): Promise<void> {
-        const repo: Repository<RevokedToken> = this.dataSource.getRepository(RevokedToken);
+        const repo: Repository<RevokedToken> =
+            this.dataSource.getRepository(RevokedToken);
 
-        await repo.createQueryBuilder()
+        await repo
+            .createQueryBuilder()
             .delete()
             .from(RevokedToken)
             .where('expiresAt < :now', { now: new Date() })

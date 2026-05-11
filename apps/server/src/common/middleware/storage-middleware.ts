@@ -32,7 +32,7 @@ const upload = multer({
 
 export default function uploadImages(req, res, next) {
     const handler = upload.array('images');
-    handler(req, res, function (err) {
+    handler(req, res, (err) => {
         if (err) {
             return res.status(400).json({ error: err.message });
         }

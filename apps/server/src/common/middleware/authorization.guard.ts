@@ -8,15 +8,15 @@ import {
     Inject,
     Injectable,
     Scope,
-    UnauthorizedException
+    UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { User } from '@server/src/user/entities/user.entity';
 import { UserRepository } from '@server/src/user/user.repository';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthorizationGuard implements CanActivate {
@@ -26,7 +26,7 @@ export class AuthorizationGuard implements CanActivate {
         @Inject(CACHE_MANAGER)
         private cacheManager: Cache,
         private readonly revokedTokenRepository: RevokedTokenRepository,
-    ) { }
+    ) {}
 
     private async getUser(userId: number | string): Promise<User | null> {
         userId = Number(userId);
@@ -82,10 +82,10 @@ export class AuthorizationGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         // Check if the route is public or not
-        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
+        const isPublic = this.reflector.getAllAndOverride<boolean>(
+            IS_PUBLIC_KEY,
+            [context.getHandler(), context.getClass()],
+        );
         if (isPublic) {
             return true;
         }
@@ -101,7 +101,7 @@ export class AuthorizationGuard implements CanActivate {
         let decodedToken;
         try {
             decodedToken = this.decodeJWT(jwt);
-        } catch (e) {
+        } catch (_e) {
             response.cookie('jwt', '');
             response.cookie('catshelp', '');
             throw new UnauthorizedException();
@@ -110,10 +110,9 @@ export class AuthorizationGuard implements CanActivate {
         let tokenInvalid: boolean;
         if (!jwt) {
             tokenInvalid = true;
-        }
-        else {
+        } else {
             const count = await this.revokedTokenRepository.count({
-                where: { token: jwt }
+                where: { token: jwt },
             });
             tokenInvalid = count > 0;
         }

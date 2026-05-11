@@ -1,12 +1,12 @@
-import { useAlert } from "@context/alert-context";
-import { useIsMobile } from "@context/is-mobile-context";
-import { createContextHook } from "@hooks/create-context-hook";
-import { isLoadingWrapper } from "@hooks/is-loading";
-import CircularProgress from "@mui/material/CircularProgress";
-import axios from "axios";
-import React, { createContext, useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "@context/auth-context";
+import { useAlert } from '@context/alert-context.tsx';
+import { useAuth } from '@context/auth-context.tsx';
+import { useIsMobile } from '@context/is-mobile-context.tsx';
+import { createContextHook } from '@hooks/create-context-hook.tsx';
+import { isLoadingWrapper } from '@hooks/is-loading.tsx';
+import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
+import React, { createContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface LoadingContextType {
     isLoading: boolean;
@@ -29,13 +29,13 @@ const AdminCatList: React.FC = () => {
 
             try {
                 const response = await axios.get(`/api/animals/profiles/users/${user.id}`, {
-                    withCredentials: true
+                    withCredentials: true,
                 });
 
                 setAnimals(response.data.profiles);
             } catch (error) {
-                console.error("Error loading cat profiles:", error);
-                showAlert("Error", "Kassi andmete pärimine ebaõnnestus");
+                console.error('Error loading cat profiles:', error);
+                showAlert('Error', 'Kassi andmete pärimine ebaõnnestus');
             }
         };
 
@@ -44,27 +44,22 @@ const AdminCatList: React.FC = () => {
         };
 
         fetchAndSetCatsWithLoading();
-
     }, []);
 
     return (
-        <IsLoadingContext.Provider value={{ isLoading, setIsLoading }} >
-            <div className={`flex flex-col flex-1 ${isMobile ? "mx-4" : "mx-24"}`}>
-                <div className={`flex flex-col ${isMobile ? "items-center" : ""}`}>
-                    {isLoading && (<CircularProgress />)}
+        <IsLoadingContext.Provider value={{ isLoading, setIsLoading }}>
+            <div className={`flex flex-col flex-1 ${isMobile ? 'mx-4' : 'mx-24'}`}>
+                <div className={`flex flex-col ${isMobile ? 'items-center' : ''}`}>
+                    {isLoading && <CircularProgress />}
                     <ul>
-                        {
-                            animals.length !== 0 && (animals.map(animal =>
+                        {animals.length !== 0 &&
+                            animals.map((animal) => (
                                 <li>
-                                    <Link
-                                        key={animal.id}
-                                        to={`/admin-cat-profile/${animal.id}`}
-                                        aria-label={`Vaata ${animal.name} profiili`}
-                                    >
+                                    <Link key={animal.id} to={`/admin-cat-profile/${animal.id}`} aria-label={`Vaata ${animal.name} profiili`}>
                                         {animal.name}
                                     </Link>
-                                </li>))
-                        }
+                                </li>
+                            ))}
                     </ul>
                 </div>
             </div>

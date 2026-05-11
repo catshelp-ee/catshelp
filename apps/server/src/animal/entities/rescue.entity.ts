@@ -1,10 +1,16 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Animal } from "./animal.entity";
-import { IRescue } from "@catshelp/types";
+import { IRescue } from '@catshelp/types';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity("animal_rescues")
+import { Animal } from './animal.entity';
+
+@Entity('animal_rescues')
 export class Rescue implements IRescue {
-
     @PrimaryGeneratedColumn()
     public id: number;
 
@@ -27,6 +33,6 @@ export class Rescue implements IRescue {
     public animalId: number;
 
     @OneToOne(() => Animal, (animal) => animal.animalRescue)
-    @JoinColumn({ name: "animal_id" })
-    public animal: Animal
+    @JoinColumn({ name: 'animal_id' })
+    public animal: Animal;
 }

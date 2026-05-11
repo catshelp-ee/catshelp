@@ -3,6 +3,7 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
+
 import { BaseRepository } from '../common/base.repository';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -16,21 +17,24 @@ export class FileRepository extends BaseRepository<File> {
         return this.findOne({
             where: {
                 animalId: animalId,
-                type: "PROFILE-PICTURE"
+                type: 'PROFILE-PICTURE',
             },
         });
     }
 
-    async setProfilePicture(animalId: number, fileName: string): Promise<File | null> {
+    async setProfilePicture(
+        animalId: number,
+        fileName: string,
+    ): Promise<File | null> {
         const oldProfilePicture = await this.getProfilePicture(animalId);
         const newProfilePicture = await this.getImage(fileName);
-        if (!newProfilePicture){
+        if (!newProfilePicture) {
             throw new Error('New image not found');
         }
 
         if (oldProfilePicture) {
-            oldProfilePicture.type = "";
-            newProfilePicture.type = "PROFILE-PICTURE";
+            oldProfilePicture.type = '';
+            newProfilePicture.type = 'PROFILE-PICTURE';
             this.save(oldProfilePicture);
         }
         return this.save(newProfilePicture);
@@ -45,34 +49,34 @@ export class FileRepository extends BaseRepository<File> {
 
     async getImage(fileName: string) {
         return this.findOne({
-            where: { uuid: fileName }
+            where: { uuid: fileName },
         });
     }
 
     async getImages(animalId: number) {
         return this.find({
-            where: { animalId: animalId }
+            where: { animalId: animalId },
         });
     }
 
     public fetchProfilePicture(animalId: number | string) {
         return this.findOne({
-            where: { animalId: animalId }
+            where: { animalId: animalId },
         });
     }
 
     public async insertImageFilenamesIntoDB(
         files: Express.Multer.File[],
-        animalId: number | string
+        animalId: number | string,
     ) {
         animalId = Number(animalId);
         return Promise.all(
-            files.map(file => {
+            files.map((file) => {
                 const f = this.create();
                 f.animalId = animalId;
                 f.uuid = file.filename.split('.')[0];
                 return this.save(f);
-            })
+            }),
         );
     }
 }

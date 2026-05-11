@@ -1,11 +1,7 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-const createImageCanvas = (
-    img: HTMLImageElement,
-    width: number,
-    height: number
-): HTMLCanvasElement => {
+const createImageCanvas = (img: HTMLImageElement, width: number, height: number): HTMLCanvasElement => {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -19,17 +15,9 @@ const createImageCanvas = (
     return canvas;
 };
 
-const canvasToBlob = (
-    canvas: HTMLCanvasElement,
-    quality = 0.8,
-    type = 'image/jpeg'
-): Promise<Blob> => {
+const canvasToBlob = (canvas: HTMLCanvasElement, quality = 0.8, type = 'image/jpeg'): Promise<Blob> => {
     return new Promise((resolve, reject) => {
-        canvas.toBlob(
-            blob => (blob ? resolve(blob) : reject(new Error('Canvas is empty'))),
-            type,
-            quality
-        );
+        canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Canvas is empty'))), type, quality);
     });
 };
 
@@ -49,11 +37,7 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
         img.src = src;
     });
 
-const resizeImage = async (
-    file: File,
-    width: number,
-    height: number
-): Promise<File> => {
+const resizeImage = async (file: File, width: number, height: number): Promise<File> => {
     const dataUrl = await readFileAsDataURL(file);
     const img = await loadImage(dataUrl);
     const canvas = createImageCanvas(img, width, height);
@@ -68,9 +52,7 @@ const resizeImage = async (
 };
 
 export const resizeImages = (images: File[]): Promise<File[]> => {
-    const allResizePromises = images.flatMap(image => [
-        resizeImage(image, 256, 256),
-    ]);
+    const allResizePromises = images.flatMap((image) => [resizeImage(image, 256, 256)]);
     return Promise.all(allResizePromises);
 };
 
@@ -80,7 +62,7 @@ export const uploadImages = async (files: File[], animalId: number) => {
 
     // Append each file to the FormData object
     resizedImages.forEach((file: File) => {
-        formData.append("files", file);
+        formData.append('files', file);
     });
     formData.append('animalId', animalId);
     try {

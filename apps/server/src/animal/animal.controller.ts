@@ -1,22 +1,34 @@
+import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
 import { AuthorizationGuard } from '@common/middleware/authorization.guard';
-import { Body, Controller, Get, HttpCode, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    Param,
+    Post,
+    Put,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
+import type { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 import type { Request } from 'express';
+
 import { AnimalService } from './animal.service';
 import type { AnimalRescueDto } from './dto/create-animal.dto';
-import { AnimalTodoDto } from "@animal/dto/animal-todo.dto";
-import type { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
 
 @Controller('animals')
 @UseGuards(AuthorizationGuard)
 export class AnimalController {
-    constructor(
-        private readonly animalService: AnimalService
-    ) { }
+    constructor(private readonly animalService: AnimalService) {}
 
-    @Get("profiles/users/:userId")
-    async getProfilesByUser(@Req() req: Request, @Param('userId') userId: string) {
+    @Get('profiles/users/:userId')
+    async getProfilesByUser(
+        @Req() req: Request,
+        @Param('userId') userId: string,
+    ) {
         const user = req.user;
-        if (user.id !== Number(userId) && user.role !== "ADMIN"){
+        if (user.id !== Number(userId) && user.role !== 'ADMIN') {
             throw new Error('Unauthorized');
         }
         const animals = await this.animalService.getAnimalsByUserId(userId);
@@ -25,28 +37,31 @@ export class AnimalController {
         return { profiles };
     }
 
-    @Get(":id/profile")
-    async getProfile(@Req() req: Request, @Param("id") id: string) {
+    @Get(':id/profile')
+    async getProfile(@Req() req: Request, @Param('id') id: string) {
         return this.animalService.getProfile(id);
     }
 
-    @Get("profiles")
-    async getProfiles(@Req() req: Request, @Param("id") id: string) {
+    @Get('profiles')
+    async getProfiles(@Req() req: Request) {
         const user = req.user;
         const animals = await this.animalService.getAnimalsByUserId(user.id);
         const profiles = await this.animalService.getAnimalSummaries(animals);
         return { profiles };
     }
 
-    @Get(":id/profile-picture")
-    async getProfilePicture(@Req() req: Request, @Param("id") id: string) {
+    @Get(':id/profile-picture')
+    async getProfilePicture(@Req() req: Request, @Param('id') id: string) {
         return this.animalService.getProfilePicture(id);
     }
 
-    @Get(":id/todos")
-    async getAnimalTodos(@Req() req: Request, @Param("id") id: string): Promise<AnimalTodoDto[]> {
+    @Get(':id/todos')
+    async getAnimalTodos(
+        @Req() req: Request,
+        @Param('id') id: string,
+    ): Promise<AnimalTodoDto[]> {
         const user = req.user;
-        if (user.role !== "ADMIN"){
+        if (user.role !== 'ADMIN') {
             throw new Error('Unauthorized');
         }
 

@@ -5,8 +5,8 @@ import type { Response, Request } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
-import { CookieService } from './cookie.service';
 
+import { CookieService } from './cookie.service';
 
 @Injectable()
 export class AuthService {
@@ -14,21 +14,22 @@ export class AuthService {
     private readonly jwtSecret: string;
     private readonly tokenLength: string;
 
-    constructor(
-        private readonly userService: UserService,
-    ) {
+    constructor(private readonly userService: UserService) {
         this.client = new OAuth2Client();
         this.jwtSecret = process.env.JWT_SECRET!;
         this.tokenLength = process.env.TOKEN_LENGTH!;
 
         if (!this.jwtSecret || !this.tokenLength) {
             throw new Error(
-                'Missing required environment variables: JWT_SECRET or TOKEN_LENGTH'
+                'Missing required environment variables: JWT_SECRET or TOKEN_LENGTH',
             );
         }
     }
 
-    public async authenticateUser(email: string, res: Response): Promise<User | null> {
+    public async authenticateUser(
+        email: string,
+        res: Response,
+    ): Promise<User | null> {
         const user = await this.userService.getUserByEmail(email);
         if (!user) {
             return null;
@@ -46,7 +47,10 @@ export class AuthService {
         }
     }
 
-    public async verifyAndRefreshToken(token: string, res: Response): Promise<boolean> {
+    public async verifyAndRefreshToken(
+        token: string,
+        res: Response,
+    ): Promise<boolean> {
         const decodedToken = this.verifyJWT(token);
         if (!decodedToken) {
             return false;
@@ -64,7 +68,10 @@ export class AuthService {
         return true;
     }
 
-    public async verifyGoogleToken(credential: string, clientId: string): Promise<string | null> {
+    public async verifyGoogleToken(
+        credential: string,
+        clientId: string,
+    ): Promise<string | null> {
         try {
             const ticket = await this.client.verifyIdToken({
                 idToken: credential,
@@ -115,7 +122,6 @@ export class AuthService {
             return true;
         }
 
-        return user.role == "ADMIN";
-
+        return user.role == 'ADMIN';
     }
 }

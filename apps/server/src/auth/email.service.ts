@@ -9,7 +9,7 @@ export class EmailService {
 
     constructor(
         //Animal pole kuidagi meili saatmisega seotud. See service peaks olema mujal.
-        private readonly animalService: AnimalService
+        private readonly animalService: AnimalService,
     ) {
         this.transporter = createTransport({
             host: 'smtp.gmail.com',
@@ -22,8 +22,10 @@ export class EmailService {
         });
     }
 
-
-    public async sendNotificationToVolunteers(images: Express.Multer.File[], data: any) {
+    public async sendNotificationToVolunteers(
+        images: Express.Multer.File[],
+        data,
+    ) {
         const mailList = JSON.parse(data.to);
         const subject = data.subject;
 
@@ -37,21 +39,21 @@ export class EmailService {
     </main>
     `;
 
-        const attachments = images.map(image => {
+        const attachments = images.map((image) => {
             return {
                 filename: image.filename,
                 path: image.path,
             };
         });
 
-        this.sendEmail(html, subject, mailList, attachments)
+        this.sendEmail(html, subject, mailList, attachments);
     }
 
     public sendNotificationToUser(
         html: string,
         subject: string,
         to: string[],
-        attachments?: { filename: string; path: string, cid?: string }[]
+        attachments?: { filename: string; path: string; cid?: string }[],
     ) {
         this.sendEmail(html, subject, to, attachments);
     }
@@ -60,7 +62,7 @@ export class EmailService {
         html: string,
         subject: string,
         to: string[],
-        attachments?: { filename: string; path: string, cid?: string }[]
+        attachments?: { filename: string; path: string; cid?: string }[],
     ) {
         return this.transporter.sendMail({
             from: process.env.MAGIC_LINK_SENDER,

@@ -11,6 +11,7 @@ import { NotificationService } from '@notification/notification.service';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
+
 import { AnimalModule } from '../animal/animal.module';
 import { AnimalToFosterHome } from '../animal/entities/animalToFosterhome.entity';
 import { Treatment } from '../animal/entities/treatment.entity';
@@ -18,6 +19,7 @@ import { AnimalToFosterHomeRepository } from '../animal/repositories/animal-to-f
 import { CharacteristicRepository } from '../animal/repositories/characteristic.repository';
 import { TreatmentRepository } from '../animal/repositories/treatment.repository';
 import { GoogleModule } from '../google/google.module';
+
 import { CronService } from './cron.service';
 import { DeleteExpiredTokensJob } from './jobs/delete-expired-tokens-job';
 import { SyncSheetDataToDBJob } from './jobs/sync-sheets-to-db-job';
@@ -51,13 +53,13 @@ import { TodoNotificationJob } from './jobs/todo-notification-job';
         UserRepository,
         NotificationService,
         EmailService,
-        CronService
+        CronService,
     ],
     exports: [
         SyncSheetDataToDBJob,
         SyncUserDataToDBJob,
         TodoNotificationJob,
-        DeleteExpiredTokensJob
+        DeleteExpiredTokensJob,
     ],
 })
-export class CronModule { }
+export class CronModule {}

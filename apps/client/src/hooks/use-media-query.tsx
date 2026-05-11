@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export function useMediaQuery(breakpoint: any = 768) {
+export function useMediaQuery(breakpoint: number = 768) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < breakpoint);
 
     useEffect(() => {

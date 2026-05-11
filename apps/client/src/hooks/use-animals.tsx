@@ -1,8 +1,8 @@
+import { usersApi } from '@api/users.service.ts';
+import { useAlert } from '@context/alert-context.tsx';
+import { useUser } from '@hooks/use-user.tsx';
+import type { AnimalSummary } from '@interfaces/animal-summary.ts';
 import { useEffect, useState } from 'react';
-import {AnimalSummary} from "@interfaces/animal-summary.ts";
-import {usersApi} from "@api/users.service.ts";
-import {useUser} from "@hooks/use-user.tsx";
-import {useAlert} from "@context/alert-context.tsx";
 
 export function useAnimals() {
     const [animals, setAnimals] = useState<AnimalSummary[]>([]);
@@ -10,7 +10,7 @@ export function useAnimals() {
     const [error, setError] = useState<Error | null>(null);
     const { showAlert } = useAlert();
 
-    const {user, loading: userLoading, error: userError} = useUser();
+    const { user, loading: userLoading, error: userError } = useUser();
 
     useEffect(() => {
         // Don't fetch if user isn't loaded yet
@@ -36,7 +36,7 @@ export function useAnimals() {
             } catch (e) {
                 if (isMounted) {
                     setError(e as Error);
-                    showAlert('Error', "Tekkis probleem kasside laadimisega");
+                    showAlert('Error', 'Tekkis probleem kasside laadimisega');
                 }
             } finally {
                 if (isMounted) {
@@ -57,6 +57,6 @@ export function useAnimals() {
     return {
         animals,
         loading: userLoading || loading,
-        error: userError || error
+        error: userError || error,
     };
 }

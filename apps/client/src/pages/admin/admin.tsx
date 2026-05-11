@@ -9,60 +9,58 @@ import { useNavigate } from 'react-router-dom';
 import AdminCatList from './admin-cat-list.tsx';
 
 const Admin = () => {
-  const { getUser } = useAuth();
-  const { showAlert } = useAlert();
-  const navigate = useNavigate();
-  const [cronJob, setCronJob] = useState('');
+    const { getUser } = useAuth();
+    const { showAlert } = useAlert();
+    const navigate = useNavigate();
+    const [cronJob, setCronJob] = useState('');
 
-  useEffect(() => {
-    const checkUserRights = async () => {
-      try {
-        const user = await getUser();
-        if (user.role !== 'ADMIN') {
-          showAlert('Error', 'Sul pole privileege, et kuva näha');
-          navigate(`/dashboard`);
+    useEffect(() => {
+        const checkUserRights = async () => {
+            try {
+                const user = await getUser();
+                if (user.role !== 'ADMIN') {
+                    showAlert('Error', 'Sul pole privileege, et kuva näha');
+                    navigate(`/dashboard`);
+                }
+            } catch (_error) {
+                showAlert('Error', 'Sul pole privileege, et kuva näha');
+                navigate(`/dashboard`);
+            }
+        };
+        checkUserRights();
+    }, []);
+
+    const runJob = async () => {
+        try {
+            await axios.post('/api/admin/run-cron-job', { jobName: cronJob });
+        } catch (_error) {
+            showAlert('Error', 'Töö jooksutamine ebaõnnestus');
         }
-      } catch (_error) {
-        showAlert('Error', 'Sul pole privileege, et kuva näha');
-        navigate(`/dashboard`);
-      }
     };
-    checkUserRights();
-  }, []);
 
-  const runJob = async () => {
-    try {
-      await axios.post('/api/admin/run-cron-job', { jobName: cronJob });
-    } catch (_error) {
-      showAlert('Error', 'Töö jooksutamine ebaõnnestus');
-    }
-  };
+    const handleChange = (event: SelectChangeEvent) => {
+        setCronJob(event.target.value as string);
+    };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setCronJob(event.target.value as string);
-  };
+    return (
+        <div className="flex-1">
+            <p className="page-heading">Admin töölaud</p>
 
-  return (
-    <div className="flex-1">
-      <p className="page-heading">Admin töölaud</p>
+            <h3 className="text-secondary text-xl text-justify pb-8">Taustatööde käivitamine</h3>
 
-      <h3 className="text-secondary text-xl text-justify pb-8">
-        Taustatööde käivitamine
-      </h3>
-
-      <InputLabel>Taustatöö</InputLabel>
-      <Select value={cronJob} label="Taustatöö" onChange={handleChange}>
-        <MenuItem value={'userSync'}>Kasutajate sünk</MenuItem>
-        <MenuItem value={'sheetsSync'}>Andmete sünk</MenuItem>
-        <MenuItem value={'todoNotification'}>Saada meeldetuletused</MenuItem>
-        <MenuItem value={'expiredTokens'}>Kustuta aegunud tokenid</MenuItem>
-      </Select>
-      <Button onClick={runJob}>Käivita</Button>
-      <div>
-        <AdminCatList></AdminCatList>
-      </div>
-    </div>
-  );
+            <InputLabel>Taustatöö</InputLabel>
+            <Select value={cronJob} label="Taustatöö" onChange={handleChange}>
+                <MenuItem value={'userSync'}>Kasutajate sünk</MenuItem>
+                <MenuItem value={'sheetsSync'}>Andmete sünk</MenuItem>
+                <MenuItem value={'todoNotification'}>Saada meeldetuletused</MenuItem>
+                <MenuItem value={'expiredTokens'}>Kustuta aegunud tokenid</MenuItem>
+            </Select>
+            <Button onClick={runJob}>Käivita</Button>
+            <div>
+                <AdminCatList></AdminCatList>
+            </div>
+        </div>
+    );
 };
 
 export default Admin;

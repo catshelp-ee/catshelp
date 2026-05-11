@@ -3,12 +3,12 @@ import { translate } from '@translations/translate.ts';
 import { translations } from '@translations/translations.ts';
 
 export function useTranslation() {
-  const { language } = useLanguage();
+    const { language } = useLanguage();
 
-  const t = (path: string) => {
-    const object = path.split('.').reduce((obj, key) => obj[key], translations);
-    return translate(object, language);
-  };
+    const t = (path: string) => {
+        const object = path.split('.').reduce((obj, key) => obj[key], translations);
+        return translate(object, language);
+    };
 
-  return { t };
+    return { t };
 }

@@ -8,47 +8,42 @@ import CatDetails from './cat-details.tsx';
 import ProfileTabs from './profile-tabs.tsx';
 
 const CatProfile: React.FC = () => {
-  const { showAlert } = useAlert();
-  const [cats, setCats] = useState<ProfileHeader[]>([]);
-  const [selectedCat, setSelectedCat] = useState<Profile | null>(null);
-  const isMobile = useIsMobile();
+    const { showAlert } = useAlert();
+    const [cats, setCats] = useState<ProfileHeader[]>([]);
+    const [selectedCat, setSelectedCat] = useState<Profile | null>(null);
+    const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const loadUserCats = async () => {
-      try {
-        const response = await axios.get('/api/animals/profiles', {
-          withCredentials: true,
-        });
+    useEffect(() => {
+        const loadUserCats = async () => {
+            try {
+                const response = await axios.get('/api/animals/profiles', {
+                    withCredentials: true,
+                });
 
-        const catProfiles = response.data.profiles;
-        setCats(catProfiles);
-      } catch (error) {
-        console.error('Error loading cat profiles:', error);
-        showAlert('Error', 'Kassi andmete pärimine ebaõnnestus');
-        setCats([]);
-      }
-    };
+                const catProfiles = response.data.profiles;
+                setCats(catProfiles);
+            } catch (error) {
+                console.error('Error loading cat profiles:', error);
+                showAlert('Error', 'Kassi andmete pärimine ebaõnnestus');
+                setCats([]);
+            }
+        };
 
-    loadUserCats();
-  }, []);
+        loadUserCats();
+    }, []);
 
-  return (
-    <div className={`flex flex-col flex-1`}>
-      <div className={`flex flex-col ${isMobile ? 'items-center' : ''}`}>
-        {cats.length !== 0 && (
-          <>
-            <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
-            {selectedCat && (
-              <CatDetails
-                selectedCat={selectedCat}
-                setSelectedCat={setSelectedCat}
-              />
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div className={`flex flex-col flex-1`}>
+            <div className={`flex flex-col ${isMobile ? 'items-center' : ''}`}>
+                {cats.length !== 0 && (
+                    <>
+                        <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
+                        {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat} />}
+                    </>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default CatProfile;

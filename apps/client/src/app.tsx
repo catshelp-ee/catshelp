@@ -17,25 +17,25 @@ dayjs.extend(weekday);
 dayjs.extend(localeData);
 
 function App() {
-  dayjs.locale('et');
-  dayjs().weekday(1);
+    dayjs.locale('et');
+    dayjs().weekday(1);
 
-  return (
-    <Routes>
-      <Route path="/" element={<Navigate to={HOME}></Navigate>} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route element={<ProtectedRoute />}>
-        <Route element={<PageLayout />}>
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
-          <Route path={HOME} element={<Dashboard />} />
-          <Route path="/users/:userId" element={<Dashboard />} />
-          <Route path="/cat-profiles" element={<CatProfile />} />
-          <Route path="/add-cat" element={<AddCatForm />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
+    return (
+        <Routes>
+            <Route path="/" element={<Navigate to={HOME}></Navigate>} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route element={<ProtectedRoute />}>
+                <Route element={<PageLayout />}>
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
+                    <Route path={HOME} element={<Dashboard />} />
+                    <Route path="/users/:userId" element={<Dashboard />} />
+                    <Route path="/cat-profiles" element={<CatProfile />} />
+                    <Route path="/add-cat" element={<AddCatForm />} />
+                </Route>
+            </Route>
+        </Routes>
+    );
 }
 
 export default App;

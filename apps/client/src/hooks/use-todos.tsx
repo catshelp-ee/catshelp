@@ -4,54 +4,54 @@ import type { AnimalTodo } from '@interfaces/animal-todo.ts';
 import { useEffect, useState } from 'react';
 
 export function useTodos(animals: AnimalSummary[]) {
-  const [todos, setTodos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+    const [todos, setTodos] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    if (!animals || animals.length === 0) {
-      setLoading(false);
-      return;
-    }
-
-    // Prevent state updates after component unmounts
-    // Example: User navigates away at 100ms, API returns at 500ms
-    // Without this check, setTodos() would run on unmounted component → warning/error
-    let isMounted = true;
-
-    const fetchTodos = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const allTodos: AnimalTodo[] = [];
-        for (let i = 0; i < animals.length; i++) {
-          const animalSummary = animals[i];
-
-          const todos = await animalsApi.getTodos(animalSummary.id);
-          allTodos.push(...todos);
+    useEffect(() => {
+        if (!animals || animals.length === 0) {
+            setLoading(false);
+            return;
         }
 
-        if (isMounted) {
-          setTodos(allTodos);
-        }
-      } catch (e) {
-        if (isMounted) {
-          setError(e as Error);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+        // Prevent state updates after component unmounts
+        // Example: User navigates away at 100ms, API returns at 500ms
+        // Without this check, setTodos() would run on unmounted component → warning/error
+        let isMounted = true;
 
-    fetchTodos();
+        const fetchTodos = async () => {
+            setLoading(true);
+            setError(null);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [animals]);
+            try {
+                const allTodos: AnimalTodo[] = [];
+                for (let i = 0; i < animals.length; i++) {
+                    const animalSummary = animals[i];
 
-  return { todos, loading, error };
+                    const todos = await animalsApi.getTodos(animalSummary.id);
+                    allTodos.push(...todos);
+                }
+
+                if (isMounted) {
+                    setTodos(allTodos);
+                }
+            } catch (e) {
+                if (isMounted) {
+                    setError(e as Error);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchTodos();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [animals]);
+
+    return { todos, loading, error };
 }

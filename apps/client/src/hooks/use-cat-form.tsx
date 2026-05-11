@@ -1,5 +1,5 @@
 {
-  /* 
+    /* 
   THIS USED TO BE USED IN THE PROFILE PAGE. CAN THIS BE DELETED?
 
  import type { Profile } from '@catshelp/types/src/index.ts';

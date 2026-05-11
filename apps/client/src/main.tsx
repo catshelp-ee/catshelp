@@ -12,21 +12,21 @@ import { PostHogProviderWrapper } from './analytics/post-hog-provider-wrapper.ts
 import App from './app.tsx';
 
 createRoot(document.getElementById('container')!).render(
-  <PostHogProviderWrapper>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
-        <BrowserRouter>
-          <AlertProvider>
-            <AuthProvider>
-              <IsMobileProvider>
-                <LanguageProvider>
-                  <App />
-                </LanguageProvider>
-              </IsMobileProvider>
-            </AuthProvider>
-          </AlertProvider>
-        </BrowserRouter>
-      </LocalizationProvider>
-    </GoogleOAuthProvider>
-  </PostHogProviderWrapper>,
+    <PostHogProviderWrapper>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
+                <BrowserRouter>
+                    <AlertProvider>
+                        <AuthProvider>
+                            <IsMobileProvider>
+                                <LanguageProvider>
+                                    <App />
+                                </LanguageProvider>
+                            </IsMobileProvider>
+                        </AuthProvider>
+                    </AlertProvider>
+                </BrowserRouter>
+            </LocalizationProvider>
+        </GoogleOAuthProvider>
+    </PostHogProviderWrapper>,
 );

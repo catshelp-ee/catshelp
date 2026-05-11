@@ -4,18 +4,14 @@ import { useUser } from '@hooks/use-user.tsx';
 import React from 'react';
 
 const Dashboard = () => {
-  const {
-    animals,
-    loading: animalsLoading,
-    error: animalsError,
-  } = useAnimals();
-  const { todos, loading: todosLoading, error: todosError } = useTodos(animals);
-  const { user, loading: userLoading, error: userError } = useUser();
+    const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
+    const { todos, loading: todosLoading, error: todosError } = useTodos(animals);
+    const { user, loading: userLoading, error: userError } = useUser();
 
-  const isLoading = userLoading || animalsLoading || todosLoading;
-  const error = userError || animalsError || todosError;
+    const isLoading = userLoading || animalsLoading || todosLoading;
+    const error = userError || animalsError || todosError;
 
-  return <div className="flex flex-col flex-1">TEST</div>;
+    return <div className="flex flex-col flex-1">TEST</div>;
 };
 
 export default Dashboard;

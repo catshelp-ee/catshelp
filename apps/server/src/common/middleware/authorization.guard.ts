@@ -1,7 +1,7 @@
 import { CookieService } from '@auth/cookie.service';
 import { RevokedTokenRepository } from '@auth/revoked-token.repository';
 import { JWTPayload } from '@catshelp/types/src';
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
     CanActivate,
     ExecutionContext,
@@ -13,6 +13,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { User } from '@server/src/user/entities/user.entity';
 import { UserRepository } from '@server/src/user/user.repository';
+import type { Cache } from 'cache-manager';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
 

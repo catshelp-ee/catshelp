@@ -1,6 +1,6 @@
-
 import * as fs from 'fs';
 import * as path from 'path';
+
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getRootPath } from '@server/src/main';
 import { v4 as uuidv4 } from 'uuid';
@@ -62,5 +62,5 @@ export async function getImageFromDisk(fileName: string): Promise<File> {
             throw new NotFoundException('Image not found');
         }
         throw error;
-    } 
+    }
 }

@@ -1,12 +1,20 @@
 import { AnimalSummaryDto } from '@animal/dto/animal-summary.dto';
 import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
+import {
+    saveBase64ImageToDisk,
+    getImageFromDisk,
+    deleteImageFromDisk,
+} from '@common/utils/disk-utils';
+import { FileDto } from '@file/dto/file.dto';
 import { FileService } from '@file/file.service';
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
 import { NotificationService } from '@notification/notification.service';
+import { AnimalProfileDto, ImageDto } from '@user/dtos/animal-profile.dto';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
+
 import { CharacteristicsService } from './characteristics.service';
 import { AnimalRescueDto } from './dto/create-animal.dto';
 import { Animal } from './entities/animal.entity';
@@ -17,9 +25,6 @@ import { AnimalToFosterHomeRepository } from './repositories/animal-to-fosterhom
 import { AnimalRepository } from './repositories/animal.repository';
 import { FosterHomeRepository } from './repositories/foster-home.repository';
 import { RescueRepository } from './repositories/rescue.repository';
-import { AnimalProfileDto, ImageDto } from '@user/dtos/animal-profile.dto';
-import { saveBase64ImageToDisk, getImageFromDisk, deleteImageFromDisk } from '@common/utils/disk-utils';
-import { FileDto } from '@file/dto/file.dto';
 
 @Injectable()
 export class AnimalService {
@@ -43,7 +48,7 @@ export class AnimalService {
         );
 
         if (!animal) {
-            throw new Error("No animal found");
+            throw new Error('No animal found');
         }
 
         return this.buildProfile(animal);
@@ -150,27 +155,36 @@ export class AnimalService {
         return updatedAnimal;
     }
 
-    private async saveImages(updatedAnimalData: AnimalProfileDto): Promise<void> {
-        const existingImages = await this.fileService.getImagesByAnimalId(updatedAnimalData.animalId);
-        const existingImageIds = existingImages.map(image => image.id);
-        const updatedImageIds = updatedAnimalData.images.map(image => image.id);
+    private async saveImages(
+        updatedAnimalData: AnimalProfileDto,
+    ): Promise<void> {
+        const existingImages = await this.fileService.getImagesByAnimalId(
+            updatedAnimalData.animalId,
+        );
+        const existingImageIds = existingImages.map((image) => image.id);
+        const updatedImageIds = updatedAnimalData.images.map(
+            (image) => image.id,
+        );
 
         await this.updateProfileImage(existingImages, updatedAnimalData.images);
 
-        const newImages = updatedAnimalData.images.filter(image => {
+        const newImages = updatedAnimalData.images.filter((image) => {
             return existingImageIds.indexOf(image.id) === -1;
         });
         await this.saveNewImages(newImages, updatedAnimalData.animalId);
 
-        const removedImages = existingImages.filter(image => {
+        const removedImages = existingImages.filter((image) => {
             return updatedImageIds.indexOf(image.id!) === -1;
         });
         await this.deleteRemovedImages(removedImages);
     }
 
-    private async saveNewImages(newImages: ImageDto[], animalId: number): Promise<void> {
+    private async saveNewImages(
+        newImages: ImageDto[],
+        animalId: number,
+    ): Promise<void> {
         if (newImages && newImages.length > 0) {
-            let newFiles: FileDto[] = [];
+            const newFiles: FileDto[] = [];
             for (const image of newImages) {
                 const fileName = await saveBase64ImageToDisk(image.data);
 
@@ -186,16 +200,32 @@ export class AnimalService {
         }
     }
 
-    private async updateProfileImage(existingImages: FileDto[], newImages: ImageDto[]) {
-        const oldProfileImage = existingImages.find(image => image.type === 'profile');
-        const newProfileImage = newImages.find(image => image.type === 'profile');
-        if (oldProfileImage && (!newProfileImage || oldProfileImage.id !== newProfileImage.id)) {
+    private async updateProfileImage(
+        existingImages: FileDto[],
+        newImages: ImageDto[],
+    ) {
+        const oldProfileImage = existingImages.find(
+            (image) => image.type === 'profile',
+        );
+        const newProfileImage = newImages.find(
+            (image) => image.type === 'profile',
+        );
+        if (
+            oldProfileImage &&
+            (!newProfileImage || oldProfileImage.id !== newProfileImage.id)
+        ) {
             oldProfileImage.type = 'image';
             await this.fileService.saveFiles([oldProfileImage]);
         }
 
-        if (newProfileImage && newProfileImage.id !== 0 && (!oldProfileImage || oldProfileImage.id !== newProfileImage.id)) {
-            const newProfileImageFile = existingImages.find(image => image.id === newProfileImage.id);
+        if (
+            newProfileImage &&
+            newProfileImage.id !== 0 &&
+            (!oldProfileImage || oldProfileImage.id !== newProfileImage.id)
+        ) {
+            const newProfileImageFile = existingImages.find(
+                (image) => image.id === newProfileImage.id,
+            );
             newProfileImageFile!.type = 'profile';
             await this.fileService.saveFiles([newProfileImageFile!]);
         }
@@ -203,7 +233,7 @@ export class AnimalService {
 
     private async deleteRemovedImages(removedImages: FileDto[]): Promise<void> {
         if (removedImages && removedImages.length > 0) {
-            let filesToDelete: number[] = [];
+            const filesToDelete: number[] = [];
             for (const image of removedImages) {
                 filesToDelete.push(image.id!);
                 await deleteImageFromDisk(image.uuid! + '.' + image.extension!);
@@ -216,7 +246,9 @@ export class AnimalService {
         const images = await this.fileService.getImagesByAnimalId(animalId);
         const result: ImageDto[] = [];
         for (const image of images) {
-            const file = await getImageFromDisk(image.uuid + '.' + image.extension);
+            const file = await getImageFromDisk(
+                image.uuid + '.' + image.extension,
+            );
             const mimeType = 'image/' + image.extension;
             const arrayBuffer = await file.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
@@ -231,14 +263,16 @@ export class AnimalService {
         return result;
     }
 
-    public async getAnimalSummaries(animals: Animal[]): Promise<AnimalSummaryDto[]> {
+    public async getAnimalSummaries(
+        animals: Animal[],
+    ): Promise<AnimalSummaryDto[]> {
         const data: AnimalSummaryDto[] = [];
         for (let index = 0; index < animals.length; index++) {
             const animal = animals[index];
 
             data.push({
                 id: animal.id,
-                name: animal.name
+                name: animal.name,
             } as AnimalSummaryDto);
         }
 
@@ -253,7 +287,8 @@ export class AnimalService {
 
         profile.animalId = animal.id;
         profile.mainInfo = this.createMainInfo(animal, characteristicsMap);
-        profile.personalityInfo = this.createPersonalityInfo(characteristicsMap);
+        profile.personalityInfo =
+            this.createPersonalityInfo(characteristicsMap);
 
         // Fetch images
         profile.images = await this.getImages(animal.id);

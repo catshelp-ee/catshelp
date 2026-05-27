@@ -50,8 +50,11 @@ export class AnimalController {
         return { profiles };
     }
 
-    @Get(":id/todos")
-    async getAnimalTodos(@Req() req: Request, @Param("id") id: string): Promise<AnimalTodoDto[]> {
+    @Get(':id/todos')
+    async getAnimalTodos(
+        @Req() req: Request,
+        @Param('id') id: string,
+    ): Promise<AnimalTodoDto[]> {
         const user = req.user;
         if (user.role !== 'ADMIN') {
             throw new Error('Unauthorized');

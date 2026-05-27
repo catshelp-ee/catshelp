@@ -5,6 +5,7 @@ import type { Request } from 'express';
 import { DataSource, Equal, Or } from 'typeorm';
 
 import { BaseRepository } from '../common/base.repository';
+
 import { FileDto } from './dto/file.dto';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -29,13 +30,13 @@ export class FileRepository extends BaseRepository<File> {
     async getImages(animalId: number) {
         return this.find({
             animalId: Equal(animalId),
-            type: Or(Equal('image'), Equal('profile'))
+            type: Or(Equal('image'), Equal('profile')),
         });
     }
 
     async saveFiles(files: FileDto[]): Promise<void> {
         await Promise.all(
-            files.map(async dto => {
+            files.map(async (dto) => {
                 const file = this.create();
                 file.id = dto.id ?? 0;
                 file.animalId = dto.animalId ?? 0;
@@ -43,7 +44,7 @@ export class FileRepository extends BaseRepository<File> {
                 file.extension = dto.extension ?? '';
                 file.type = dto.type ?? '';
                 await this.save(file);
-            })
+            }),
         );
     }
 

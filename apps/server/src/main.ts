@@ -1,9 +1,9 @@
-import express from 'express';
 import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
+import express from 'express';
 
 import 'reflect-metadata';
 import { AppModule } from './app.module';

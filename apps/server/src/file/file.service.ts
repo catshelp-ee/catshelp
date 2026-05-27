@@ -3,8 +3,8 @@ import { extractFileId } from '@common/utils/google-utils';
 import { GoogleDriveService } from '@google/google-drive.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { FileRepository } from './file.repository';
 import { FileDto } from './dto/file.dto';
+import { FileRepository } from './file.repository';
 
 @Injectable()
 export class FileService {
@@ -24,12 +24,12 @@ export class FileService {
 
     public async getImagesByAnimalId(animalId: number): Promise<FileDto[]> {
         const imageFiles = await this.fileRepository.getImages(animalId);
-        return imageFiles.map(file => ({
+        return imageFiles.map((file) => ({
             id: file.id,
             uuid: file.uuid,
             extension: file.extension,
             type: file.type,
-            animalId: file.animalId
+            animalId: file.animalId,
         }));
     }
 

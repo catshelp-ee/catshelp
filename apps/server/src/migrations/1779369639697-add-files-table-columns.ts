@@ -1,7 +1,6 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddFilesTableColumns1779369639697 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             ALTER TABLE files ADD COLUMN extension varchar(191);
@@ -17,5 +16,4 @@ export class AddFilesTableColumns1779369639697 implements MigrationInterface {
             ALTER TABLE files DROP COLUMN extension;
         `);
     }
-
 }

@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { DataSource, Repository, ObjectLiteral } from 'typeorm';
+import { DataSource, Repository, ObjectLiteral, DeleteResult } from 'typeorm';
 import type { EntityTarget } from 'typeorm';
 import type { Request } from 'express';
 import { ENTITY_MANAGER_KEY, TRANSACTION_ABORT_KEY } from "./interceptors/transaction.interceptor";
@@ -42,6 +42,13 @@ export abstract class BaseRepository<Entity extends ObjectLiteral> extends Repos
     async find(options?: any): Promise<Entity[]> {
         this.checkAborted();
         const result = await super.find(options);
+        this.checkAborted();
+        return result;
+    }
+
+    async delete(options: any): Promise<DeleteResult> {
+        this.checkAborted();
+        const result = await super.delete(options);
         this.checkAborted();
         return result;
     }

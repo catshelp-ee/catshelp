@@ -2,38 +2,14 @@ import { File } from '@file/file.entity';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
-import { DataSource } from 'typeorm';
+import { DataSource, Equal, Or } from 'typeorm';
 import { BaseRepository } from '../common/base.repository';
+import { FileDto } from './dto/file.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class FileRepository extends BaseRepository<File> {
     constructor(dataSource: DataSource, @Inject(REQUEST) request: Request) {
         super(File, dataSource, request);
-    }
-
-    /** Get the first file associated with an animal (profile picture) */
-    async getProfilePicture(animalId: number | string): Promise<File | null> {
-        return this.findOne({
-            where: {
-                animalId: animalId,
-                type: "PROFILE-PICTURE"
-            },
-        });
-    }
-
-    async setProfilePicture(animalId: number, fileName: string): Promise<File | null> {
-        const oldProfilePicture = await this.getProfilePicture(animalId);
-        const newProfilePicture = await this.getImage(fileName);
-        if (!newProfilePicture){
-            throw new Error('New image not found');
-        }
-
-        if (oldProfilePicture) {
-            oldProfilePicture.type = "";
-            newProfilePicture.type = "PROFILE-PICTURE";
-            this.save(oldProfilePicture);
-        }
-        return this.save(newProfilePicture);
     }
 
     /** Optional: fetch all files for an animal */
@@ -51,16 +27,30 @@ export class FileRepository extends BaseRepository<File> {
 
     async getImages(animalId: number) {
         return this.find({
-            where: { animalId: animalId }
+            animalId: Equal(animalId),
+            type: Or(Equal('image'), Equal('profile'))
         });
     }
 
-    public fetchProfilePicture(animalId: number | string) {
-        return this.findOne({
-            where: { animalId: animalId }
-        });
+    async saveFiles(files: FileDto[]): Promise<void> {
+        await Promise.all(
+            files.map(async dto => {
+                const file = this.create();
+                file.id = dto.id ?? 0;
+                file.animalId = dto.animalId ?? 0;
+                file.uuid = dto.uuid ?? '';
+                file.extension = dto.extension ?? '';
+                file.type = dto.type ?? '';
+                await this.save(file);
+            })
+        );
     }
 
+    public async deleteFiles(fileIds: number[]): Promise<void> {
+        await this.delete(fileIds);
+    }
+
+    //TODO eemaldada
     public async insertImageFilenamesIntoDB(
         files: Express.Multer.File[],
         animalId: number | string

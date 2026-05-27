@@ -14,6 +14,9 @@ export class File {
     public type: string;
 
     @Column()
+    public extension: string;
+
+    @Column()
     public animalId: number;
 
     @ManyToOne(() => Animal, (animal) => animal.files)

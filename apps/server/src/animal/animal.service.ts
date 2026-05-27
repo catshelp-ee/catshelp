@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import { User } from '@user/entities/user.entity';
 import { UserRepository } from '@user/user.repository';
-import { DataSource } from 'typeorm';
 import { CharacteristicsService } from './characteristics.service';
 import { AnimalRescueDto } from './dto/create-animal.dto';
 import { Animal } from './entities/animal.entity';
@@ -18,16 +17,14 @@ import { FileService } from '@file/file.service';
 import { NotificationService } from '@notification/notification.service';
 import { AnimalSummaryDto } from '@animal/dto/animal-summary.dto';
 import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
-import { AnimalProfileDto } from '@user/dtos/animal-profile.dto';
-import { UpdateProfilePictureDTO } from './dto/update-profile-picture-dto';
-import { FileRepository } from '../file/file.repository';
+import { AnimalProfileDto, ImageDto } from '@user/dtos/animal-profile.dto';
 import { Characteristic } from './entities/characteristic.entity';
-import { join } from 'path';
+import { saveBase64ImageToDisk, getImageFromDisk, deleteImageFromDisk } from '@common/utils/disk-utils';
+import { FileDto } from '@file/dto/file.dto';
 
 @Injectable()
 export class AnimalService {
     constructor(
-        private readonly dataSource: DataSource,
         private readonly animalRepository: AnimalRepository,
         private readonly userRepository: UserRepository,
         private readonly fosterhomeRepository: FosterHomeRepository,
@@ -37,13 +34,12 @@ export class AnimalService {
         private readonly animalToFosterhomeRepository: AnimalToFosterHomeRepository,
         private readonly fileService: FileService,
         private readonly notificationService: NotificationService,
-        private readonly fileRepository: FileRepository,
     ) { }
 
     public async getProfile(animalId: number | string): Promise<AnimalProfileDto | null> {
         const animal = await this.animalRepository.getAnimalByIdWithRescue(Number(animalId));
 
-        if (!animal){
+        if (!animal) {
             throw new Error("No animal found");
         }
 
@@ -123,6 +119,7 @@ export class AnimalService {
             address: animalRescue.address
         };
         await this.rescueRepository.saveOrUpdateAnimalRescue(animalRescueData);
+        await this.saveImages(updatedAnimalData);
 
         /*
         VAJAB VEEL TEGEMIST
@@ -133,30 +130,85 @@ export class AnimalService {
         return updatedAnimal;
     }
 
-    async setAsProfilePicture(updatedProfilePictureDTO: UpdateProfilePictureDTO) {
-        const animal = await this.animalRepository.getAnimalById(updatedProfilePictureDTO.animalId);
-        if (!animal){
-            throw new Error('Animal not found');
+    private async saveImages(updatedAnimalData: AnimalProfileDto): Promise<void> {
+        const existingImages = await this.fileService.getImagesByAnimalId(updatedAnimalData.animalId);
+        const existingImageIds = existingImages.map(image => image.id);
+        const updatedImageIds = updatedAnimalData.images.map(image => image.id);
+
+        await this.updateProfileImage(existingImages, updatedAnimalData.images);
+
+        const newImages = updatedAnimalData.images.filter(image => {
+            return existingImageIds.indexOf(image.id) === -1;
+        });
+        await this.saveNewImages(newImages, updatedAnimalData.animalId);
+
+        const removedImages = existingImages.filter(image => {
+            return updatedImageIds.indexOf(image.id!) === -1;
+        });
+        await this.deleteRemovedImages(removedImages);
+    }
+
+    private async saveNewImages(newImages: ImageDto[], animalId: number): Promise<void> {
+        if (newImages && newImages.length > 0) {
+            let newFiles: FileDto[] = [];
+            for (const image of newImages) {
+                const fileName = await saveBase64ImageToDisk(image.data);
+
+                const fileData = {
+                    uuid: fileName.replace('.jpg', ''),
+                    extension: 'jpg',
+                    type: image.type ?? 'image',
+                    animalId: animalId,
+                };
+                newFiles.push(fileData);
+            }
+            await this.fileService.saveFiles(newFiles);
+        }
+    }
+
+    private async updateProfileImage(existingImages: FileDto[], newImages: ImageDto[]) {
+        const oldProfileImage = existingImages.find(image => image.type === 'profile');
+        const newProfileImage = newImages.find(image => image.type === 'profile');
+        if (oldProfileImage && (!newProfileImage || oldProfileImage.id !== newProfileImage.id)) {
+            oldProfileImage.type = 'image';
+            await this.fileService.saveFiles([oldProfileImage]);
         }
 
-        return await this.fileRepository.setProfilePicture(animal.id, updatedProfilePictureDTO.fileName);
-    }
-
-    public async getImages(animalId: number) {
-        return this.fileService.fetchImagePathsByAnimalId(animalId);
-    }
-
-    private getDefaultProfilePicture() {
-        return '/missing64x64.png';
-    }
-
-    public async getProfilePicture(id: number | string) {
-        try {
-            const file = await this.fileService.getProfilePicture(id);
-            return join('/images', `${file?.uuid}.jpg`);
-        } catch (error) {
-            return this.getDefaultProfilePicture();
+        if (newProfileImage && newProfileImage.id !== 0 && (!oldProfileImage || oldProfileImage.id !== newProfileImage.id)) {
+            const newProfileImageFile = existingImages.find(image => image.id === newProfileImage.id);
+            newProfileImageFile!.type = 'profile';
+            await this.fileService.saveFiles([newProfileImageFile!]);
         }
+    }
+
+    private async deleteRemovedImages(removedImages: FileDto[]): Promise<void> {
+        if (removedImages && removedImages.length > 0) {
+            let filesToDelete: number[] = [];
+            for (const image of removedImages) {
+                filesToDelete.push(image.id!);
+                await deleteImageFromDisk(image.uuid! + '.' + image.extension!);
+            }
+            await this.fileService.deleteFiles(filesToDelete);
+        }
+    }
+
+    public async getImages(animalId: number): Promise<ImageDto[]> {
+        const images = await this.fileService.getImagesByAnimalId(animalId);
+        const result: ImageDto[] = [];
+        for (const image of images) {
+            const file = await getImageFromDisk(image.uuid + '.' + image.extension);
+            const mimeType = 'image/' + image.extension;
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const imageData = `data:${mimeType};base64,${buffer.toString('base64')}`;
+
+            result.push({
+                id: image.id ?? 0,
+                data: imageData,
+                type: image.type ?? 'image',
+            });
+        }
+        return result;
     }
 
     public async getAnimalSummaries(animals: Animal[]): Promise<AnimalSummaryDto[]> {
@@ -166,8 +218,7 @@ export class AnimalService {
 
             data.push({
                 id: animal.id,
-                name: animal.name,
-                pathToProfilePicture: await this.getProfilePicture(animal.id)
+                name: animal.name
             } as AnimalSummaryDto);
         }
 
@@ -179,7 +230,7 @@ export class AnimalService {
         const characteristicsMap = await this.getCharacteristicMap(animal.id);
 
         profile.animalId = animal.id;
-        profile.mainInfo = this.createMainInfo(animal, characteristicsMap);        
+        profile.mainInfo = this.createMainInfo(animal, characteristicsMap);
         profile.personalityInfo = this.createPersonalityInfo(characteristicsMap);
 
         // Fetch images

@@ -1,8 +1,9 @@
 import { CatSheetsHeaders, Profile } from '@catshelp/types';
 import { extractFileId } from '@common/utils/google-utils';
 import { GoogleDriveService } from '@google/google-drive.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FileRepository } from './file.repository';
+import { FileDto } from './dto/file.dto';
 
 @Injectable()
 export class FileService {
@@ -20,12 +21,24 @@ export class FileService {
         }
     };
 
-    //TODO images kaust tekib valesti. rooti ja server kausta. Alati peaks olema root. Tuleb üle kontrollida ka muud kohad.
-    public async fetchImagePathsByAnimalId(animalId: number) {
-        const files = await this.fileRepository.getImages(animalId);
-        return files.map(file => {
-            return `${file.uuid}.jpg`;
-        });
+    public async getImagesByAnimalId(animalId: number): Promise<FileDto[]> {
+        const imageFiles = await this.fileRepository.getImages(animalId);
+        return imageFiles.map(file => ({
+            id: file.id,
+            uuid: file.uuid,
+            extension: file.extension,
+            type: file.type,
+            animalId: file.animalId
+        }));
+    }
+
+
+    public async saveFiles(files: FileDto[]): Promise<void> {
+        return await this.fileRepository.saveFiles(files);
+    }
+
+    public async deleteFiles(fileIds: number[]): Promise<void> {
+        return await this.fileRepository.deleteFiles(fileIds);
     }
 
     private normalizeFiles(
@@ -50,14 +63,7 @@ export class FileService {
         await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
     }
 
-    public async getProfilePicture(animalID: number | string) {
-        const pfp = await this.fileRepository.getProfilePicture(animalID);
-        if (!pfp) {
-            throw new NotFoundException(`Profile picture not found for animal ${animalID}`);
-        }
-        return pfp;
-    }
-
+    //UNUSED
     public async processImages(
         profile: Profile,
         values: CatSheetsHeaders,

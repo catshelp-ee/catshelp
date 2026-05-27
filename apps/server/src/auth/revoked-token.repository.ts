@@ -9,7 +9,10 @@ export class RevokedTokenRepository extends Repository<RevokedToken> {
     }
 
     /** Insert a new revoked token or do nothing if it exists */
-    async saveOrUpdateRevokedToken(token: string, expiresAt: Date): Promise<RevokedToken> {
+    async saveOrUpdateRevokedToken(
+        token: string,
+        expiresAt: Date,
+    ): Promise<RevokedToken> {
         let revokedToken = await this.findOne({ where: { token } });
 
         if (!revokedToken) {
@@ -24,5 +27,4 @@ export class RevokedTokenRepository extends Repository<RevokedToken> {
     async getRevokedTokenCountByToken(token: string): Promise<number> {
         return this.count({ where: { token } });
     }
-
 }

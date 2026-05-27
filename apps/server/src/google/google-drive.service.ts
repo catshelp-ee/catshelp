@@ -1,22 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { drive_v3, google } from 'googleapis';
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { Injectable } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
+import { drive_v3, google } from 'googleapis';
 
 @Injectable()
 export class GoogleDriveService {
     drive: drive_v3.Drive;
-    constructor(
-        private readonly client: OAuth2Client
-    ) {
+    constructor(private readonly client: OAuth2Client) {
         this.drive = google.drive({
             version: 'v3',
             auth: client,
         });
     }
 
-    async downloadImage(fileId: string, destinationPath: string): Promise<void> {
+    async downloadImage(
+        fileId: string,
+        destinationPath: string,
+    ): Promise<void> {
         try {
             if (fs.existsSync(destinationPath)) {
                 return;
@@ -29,7 +31,7 @@ export class GoogleDriveService {
             }
             const response = await this.drive.files.get(
                 { fileId, alt: 'media' },
-                { responseType: 'stream' }
+                { responseType: 'stream' },
             );
 
             const writeStream = fs.createWriteStream(destinationPath);
@@ -40,7 +42,9 @@ export class GoogleDriveService {
                     .on('error', reject);
             });
         } catch (e) {
-            throw new Error(`failed to download image with ID ${fileId}`, { cause: e });
+            throw new Error(`failed to download image with ID ${fileId}`, {
+                cause: e,
+            });
         }
     }
 }

@@ -1,10 +1,10 @@
-
 import { GoogleSheetsService } from '@google/google-sheets.service';
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '@user/user.repository';
-import { BaseCronJob } from './base-cron-job';
-import { DataSource} from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
+import { UserRepository } from '@user/user.repository';
+import { DataSource } from 'typeorm';
+
+import { BaseCronJob } from './base-cron-job';
 
 @Injectable()
 export class SyncUserDataToDBJob extends BaseCronJob {
@@ -18,19 +18,31 @@ export class SyncUserDataToDBJob extends BaseCronJob {
         super(dataSource, moduleRef);
     }
 
-    protected async resolveScopeDependencies() { // Create a unique context
-        this.userRepository = await this.moduleRef.resolve(UserRepository, this.contextId);
+    protected async resolveScopeDependencies() {
+        // Create a unique context
+        this.userRepository = await this.moduleRef.resolve(
+            UserRepository,
+            this.contextId,
+        );
     }
 
     public async doWork() {
-        if (!process.env.HOIUKODUDE_SHEETS_ID || !process.env.HOIKUODUDE_TABLE_NAME) {
-            console.log("Google hoikukodude sheet id or table name not set. Skipping db sync");
+        if (
+            !process.env.HOIUKODUDE_SHEETS_ID ||
+            !process.env.HOIKUODUDE_TABLE_NAME
+        ) {
+            console.log(
+                'Google hoikukodude sheet id or table name not set. Skipping db sync',
+            );
             return;
         }
 
-        const sheetData = await this.googleSheetsService.getSheetData(process.env.HOIUKODUDE_SHEETS_ID, process.env.HOIKUODUDE_TABLE_NAME);
+        const sheetData = await this.googleSheetsService.getSheetData(
+            process.env.HOIUKODUDE_SHEETS_ID,
+            process.env.HOIKUODUDE_TABLE_NAME,
+        );
         if (!sheetData) {
-            console.log("Could not sync user data");
+            console.log('Could not sync user data');
         }
 
         const formattedData = this.getFormattedUserData(sheetData);
@@ -46,16 +58,19 @@ export class SyncUserDataToDBJob extends BaseCronJob {
 
         const sheetRows = sheet.data.sheets[0].data[0].rowData;
         for (let index = 1; index < sheetRows.length; index++) {
-            let row = sheetRows[index];
-            let email = row.values[9].formattedValue;
+            const row = sheetRows[index];
+            const email = row.values[9].formattedValue;
             if (!email) {
                 continue;
             }
 
-            let newObject = {
-                fullName: row.values[2].formattedValue + " " + row.values[3].formattedValue,
+            const newObject = {
+                fullName:
+                    row.values[2].formattedValue +
+                    ' ' +
+                    row.values[3].formattedValue,
                 identityCode: row.values[4].formattedValue,
-                email: email
+                email: email,
             };
             result.push(newObject);
         }

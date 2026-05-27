@@ -1,14 +1,14 @@
-import { useAlert } from "@context/alert-context.tsx";
-import { useAuth } from "@context/auth-context.tsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Button, Select, MenuItem, InputLabel, SelectChangeEvent } from "@mui/material";
-import AdminCatList from "./admin-cat-list";
+import { useAlert } from '@context/alert-context.tsx';
+import { useAuth } from '@context/auth-context.tsx';
+import type { SelectChangeEvent } from '@mui/material';
+import { Button, Select, MenuItem, InputLabel } from '@mui/material';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-interface AdminProps { }
+import AdminCatList from './admin-cat-list.tsx';
 
-const Admin: React.FC<AdminProps> = () => {
+const Admin = () => {
     const { getUser } = useAuth();
     const { showAlert } = useAlert();
     const navigate = useNavigate();
@@ -19,24 +19,24 @@ const Admin: React.FC<AdminProps> = () => {
             try {
                 const user = await getUser();
                 if (user.role !== 'ADMIN') {
-                    showAlert('Error', "Sul pole privileege, et kuva näha");
+                    showAlert('Error', 'Sul pole privileege, et kuva näha');
                     navigate(`/dashboard`);
                 }
-            } catch (error) {
-                showAlert('Error', "Sul pole privileege, et kuva näha");
+            } catch (_error) {
+                showAlert('Error', 'Sul pole privileege, et kuva näha');
                 navigate(`/dashboard`);
             }
-        }
+        };
         checkUserRights();
     }, []);
 
     const runJob = async () => {
         try {
             await axios.post('/api/admin/run-cron-job', { jobName: cronJob });
-        } catch (error) {
+        } catch (_error) {
             showAlert('Error', 'Töö jooksutamine ebaõnnestus');
         }
-    }
+    };
 
     const handleChange = (event: SelectChangeEvent) => {
         setCronJob(event.target.value as string);
@@ -44,26 +44,18 @@ const Admin: React.FC<AdminProps> = () => {
 
     return (
         <div className="flex-1">
-            <p className="page-heading">
-                Admin töölaud
-            </p>
+            <p className="page-heading">Admin töölaud</p>
 
             <h3 className="text-secondary text-xl text-justify pb-8">Taustatööde käivitamine</h3>
 
             <InputLabel>Taustatöö</InputLabel>
-            <Select
-                value={cronJob}
-                label="Taustatöö"
-                onChange={handleChange}
-            >
-                <MenuItem value={"userSync"}>Kasutajate sünk</MenuItem>
-                <MenuItem value={"sheetsSync"}>Andmete sünk</MenuItem>
-                <MenuItem value={"todoNotification"}>Saada meeldetuletused</MenuItem>
-                <MenuItem value={"expiredTokens"}>Kustuta aegunud tokenid</MenuItem>
+            <Select value={cronJob} label="Taustatöö" onChange={handleChange}>
+                <MenuItem value={'userSync'}>Kasutajate sünk</MenuItem>
+                <MenuItem value={'sheetsSync'}>Andmete sünk</MenuItem>
+                <MenuItem value={'todoNotification'}>Saada meeldetuletused</MenuItem>
+                <MenuItem value={'expiredTokens'}>Kustuta aegunud tokenid</MenuItem>
             </Select>
-            <Button onClick={(e) => runJob()}>
-                Käivita
-            </Button>
+            <Button onClick={runJob}>Käivita</Button>
             <div>
                 <AdminCatList></AdminCatList>
             </div>

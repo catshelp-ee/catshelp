@@ -1,34 +1,32 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import rootConfig from '../../eslint.config.mjs';
 import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
-    {
-        ignores: ['eslint.config.mjs'],
+export default tseslint.config(...rootConfig, {
+    files: ['**/*.{ts,tsx}'],
+    plugins: {
+        'react-hooks': reactHooks,
+        'react-refresh': reactRefresh,
     },
-    eslint.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked,
-    eslintPluginPrettierRecommended,
-    {
-        languageOptions: {
-            globals: {
-                ...globals.node,
-                ...globals.jest,
-            },
-            sourceType: 'commonjs',
-            parserOptions: {
-                projectService: true,
-                tsconfigRootDir: import.meta.dirname,
-            },
+    languageOptions: {
+        globals: globals.browser,
+        parserOptions: {
+            projectService: true,
+            tsconfigRootDir: import.meta.dirname,
         },
     },
-    {
-        rules: {
-            '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-floating-promises': 'warn',
-            '@typescript-eslint/no-unsafe-argument': 'warn'
-        },
+    rules: {
+        ...reactHooks.configs['recommended-latest'].rules,
+        'react-refresh/only-export-components': [
+            'warn',
+            { allowConstantExport: true },
+        ],
+        // Enforces 'function App() {}' instead of 'const App = () => {}'
+        'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
+
+        // Optional: ensures you don't use 'var' or 'let' for functions
+        'prefer-arrow-callback': 'error',
     },
-);
+});

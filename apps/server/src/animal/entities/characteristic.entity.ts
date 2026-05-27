@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Animal } from "./animal.entity";
+import { ICharacteristic } from '@catshelp/types';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("animal_characteristics")
-export class Characteristic {
+import { Animal } from './animal.entity';
 
+@Entity('animal_characteristics')
+export class Characteristic implements ICharacteristic {
     @PrimaryGeneratedColumn()
     public id: number;
 

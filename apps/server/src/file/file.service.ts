@@ -1,7 +1,8 @@
 import { CatSheetsHeaders, Profile } from '@catshelp/types';
 import { extractFileId } from '@common/utils/google-utils';
 import { GoogleDriveService } from '@google/google-drive.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { FileRepository } from './file.repository';
 import { FileDto } from './dto/file.dto';
 
@@ -10,7 +11,7 @@ export class FileService {
     constructor(
         private readonly googleDriveService: GoogleDriveService,
         private readonly fileRepository: FileRepository,
-    ) { }
+    ) {}
 
     private isValidHyperlink = (link: string): boolean => {
         try {
@@ -32,7 +33,6 @@ export class FileService {
         }));
     }
 
-
     public async saveFiles(files: FileDto[]): Promise<void> {
         return await this.fileRepository.saveFiles(files);
     }
@@ -42,7 +42,7 @@ export class FileService {
     }
 
     private normalizeFiles(
-        files: Express.Request['files']
+        files: Express.Request['files'],
     ): Express.Multer.File[] {
         if (!files) return [];
 
@@ -57,17 +57,20 @@ export class FileService {
         files:
             | { [fieldname: string]: Express.Multer.File[] }
             | Express.Multer.File[],
-        animalId: number | string
+        animalId: number | string,
     ) {
         const normalizedFiles = this.normalizeFiles(files);
-        await this.fileRepository.insertImageFilenamesIntoDB(normalizedFiles, animalId);
+        await this.fileRepository.insertImageFilenamesIntoDB(
+            normalizedFiles,
+            animalId,
+        );
     }
 
     //UNUSED
     public async processImages(
         profile: Profile,
         values: CatSheetsHeaders,
-        ownerName: string
+        ownerName: string,
     ): Promise<void> {
         const imageLink = values.photo;
 
@@ -78,31 +81,40 @@ export class FileService {
 
         if (!this.isValidHyperlink(imageLink)) {
             console.warn(
-                `Skipping image for ${profile.mainInfo.name} due to invalid image link.`
+                `Skipping image for ${profile.mainInfo.name} due to invalid image link.`,
             );
             return;
         }
 
         const fileId = extractFileId(imageLink);
         if (!fileId) {
-            console.warn(`Unable to extract fileId from imageLink: ${imageLink}`);
+            console.warn(
+                `Unable to extract fileId from imageLink: ${imageLink}`,
+            );
             return;
         }
 
-        await this.downloadProfileImage(profile.mainInfo.name, fileId, ownerName);
+        await this.downloadProfileImage(
+            profile.mainInfo.name,
+            fileId,
+            ownerName,
+        );
     }
 
     public async downloadProfileImage(
         catName: string,
         fileId: string,
-        ownerName: string
+        ownerName: string,
     ): Promise<string> {
         const destinationPath = `./images/${ownerName}/${catName}.png`;
 
         try {
-            await this.googleDriveService.downloadImage(fileId, destinationPath);
+            await this.googleDriveService.downloadImage(
+                fileId,
+                destinationPath,
+            );
             return `images/${ownerName}/${catName}.png`;
-        } catch (e) {
+        } catch (_e) {
             return 'missing256x256.png';
         }
     }

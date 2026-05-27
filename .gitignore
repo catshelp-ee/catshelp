@@ -7,3 +7,4 @@ credentials.json
 build/*
 files/*
 images/*
+package-lock.json

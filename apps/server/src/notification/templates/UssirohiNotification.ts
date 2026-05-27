@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { DashboardNotification } from './DasboardNotification';
+import type { DashboardNotification } from './DasboardNotification';
 
 export default class UssirohiNotification implements DashboardNotification {
     getText(): string {
@@ -23,7 +23,7 @@ export default class UssirohiNotification implements DashboardNotification {
         return moment(currentDate).add(1, 'y').toDate();
     }
 
-    name = "DEWORMING_MEDICATION";
+    name = 'DEWORMING_MEDICATION';
     buttonText = 'Vaata juhendit';
     redirectURL = process.env.WORM_MED_REDIRECT!;
 }

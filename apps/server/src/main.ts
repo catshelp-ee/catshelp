@@ -1,18 +1,20 @@
-import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import { join } from 'path';
-import "reflect-metadata";
+
+import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import cookieParser from 'cookie-parser';
+
+import 'reflect-metadata';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 export function getRootPath() {
     let rootDir = __dirname;
-    while (!rootDir.endsWith("build")) {
-        rootDir = join(rootDir, "..");
+    while (!rootDir.endsWith('build')) {
+        rootDir = join(rootDir, '..');
     }
-    return join(rootDir, "..");
+    return join(rootDir, '..');
 }
 
 function setNodeExceptionHandlers() {
@@ -45,7 +47,6 @@ async function bootstrap() {
     app.useStaticAssets(join(getRootPath(), 'images'), {
         prefix: '/images/',
     });
-
 
     // Serve static files from build/client
     const clientPath = join(__dirname, '../client');

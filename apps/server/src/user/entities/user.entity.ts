@@ -1,9 +1,16 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { IUser } from '@catshelp/types';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+
 import { FosterHome } from './foster-home.entity';
 
-@Entity("users")
-export class User {
-
+@Entity('users')
+export class User implements IUser {
     @PrimaryGeneratedColumn()
     public id: number;
 

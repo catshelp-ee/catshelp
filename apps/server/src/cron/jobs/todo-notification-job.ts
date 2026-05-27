@@ -1,13 +1,15 @@
-import { AnimalRepository } from "@animal/repositories/animal.repository";
-import { EmailService } from "@auth/email.service";
-import { Injectable } from "@nestjs/common";
-import { NotificationService } from "@notification/notification.service";
-import { UserRepository } from "@user/user.repository";
-import path from "path";
-import { BaseCronJob } from "./base-cron-job";
-import { DataSource } from "typeorm";
-import { ModuleRef } from "@nestjs/core";
-import {AnimalTodoDto} from "@animal/dto/animal-todo.dto";
+import path from 'path';
+
+import { AnimalTodoDto } from '@animal/dto/animal-todo.dto';
+import { AnimalRepository } from '@animal/repositories/animal.repository';
+import { EmailService } from '@auth/email.service';
+import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { NotificationService } from '@notification/notification.service';
+import { UserRepository } from '@user/user.repository';
+import { DataSource } from 'typeorm';
+
+import { BaseCronJob } from './base-cron-job';
 
 type Tasks = {
     [assignee: string]: string[];
@@ -28,10 +30,22 @@ export class TodoNotificationJob extends BaseCronJob {
     }
 
     protected async resolveScopeDependencies() {
-        this.animalRepository = await this.moduleRef.resolve(AnimalRepository, this.contextId);
-        this.userRepository = await this.moduleRef.resolve(UserRepository, this.contextId);
-        this.notificationService = await this.moduleRef.resolve(NotificationService, this.contextId);
-        this.emailService = await this.moduleRef.resolve(EmailService, this.contextId);
+        this.animalRepository = await this.moduleRef.resolve(
+            AnimalRepository,
+            this.contextId,
+        );
+        this.userRepository = await this.moduleRef.resolve(
+            UserRepository,
+            this.contextId,
+        );
+        this.notificationService = await this.moduleRef.resolve(
+            NotificationService,
+            this.contextId,
+        );
+        this.emailService = await this.moduleRef.resolve(
+            EmailService,
+            this.contextId,
+        );
     }
 
     public async doWork() {
@@ -40,12 +54,17 @@ export class TodoNotificationJob extends BaseCronJob {
         for (let index = 0; index < users.length; index++) {
             const user = users[index];
 
-            const animals = await this.animalRepository.getAnimalsByUserId(user.id);
+            const animals = await this.animalRepository.getAnimalsByUserId(
+                user.id,
+            );
 
             const notifications: AnimalTodoDto[] = [];
 
             for (let i = 0; i < animals.length; i++) {
-                const todos = await this.notificationService.processNotifications(animals[i]);
+                const todos =
+                    await this.notificationService.processNotifications(
+                        animals[i],
+                    );
 
                 notifications.push(...todos);
             }
@@ -63,18 +82,26 @@ export class TodoNotificationJob extends BaseCronJob {
                 tasks[notification.assignee].push(notification.label);
             }
 
-
             this.emailService.sendNotificationToUser(
                 this.createHtmlTemplate(tasks),
-                "Hoiukodu meeldetuletus",
+                'Hoiukodu meeldetuletus',
                 [user.email],
-                [{ filename: "email-cat.jpg", path: path.join(__dirname, "../../assets/email-cat.jpg"), cid: "email-cat" }]
-            )
+                [
+                    {
+                        filename: 'email-cat.jpg',
+                        path: path.join(
+                            __dirname,
+                            '../../assets/email-cat.jpg',
+                        ),
+                        cid: 'email-cat',
+                    },
+                ],
+            );
         }
     }
 
     private renderTasks(tasks: Tasks) {
-        let html = "";
+        let html = '';
         for (const [assignee, labels] of Object.entries(tasks)) {
             html += `<h3 style="margin:0 0 10px 0; color:#333;">${assignee}:</h3>`;
             html += `<ol style="padding-left:20px; margin:0;">`;
@@ -84,8 +111,7 @@ export class TodoNotificationJob extends BaseCronJob {
             html += `</ol>`;
         }
         return html;
-    };
-
+    }
 
     private createHtmlTemplate(tasks: Tasks) {
         return `
@@ -123,6 +149,6 @@ export class TodoNotificationJob extends BaseCronJob {
                     <a href="mailto:abi@catshelp.ee" style="color:#0073e6;">abi@catshelp.ee</a>
                 </footer>
             </body>
-         `
-    };
+         `;
+    }
 }

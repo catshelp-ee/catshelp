@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import type { Response } from 'express';
 
 const COOKIE_SETTINGS = {
     MAX_AGE: 24 * 60 * 60 * 1000, // 24 hours

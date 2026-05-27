@@ -1,11 +1,12 @@
+import { AnimalService } from '@animal/animal.service';
+import { AnimalSummaryDto } from '@animal/dto/animal-summary.dto';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
+
 import { RevokedTokenRepository } from '../auth/revoked-token.repository';
+
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
-import {AnimalService} from "@animal/animal.service";
-import {AnimalSummaryDto} from "@animal/dto/animal-summary.dto";
-import {AnimalProfileDto} from "@user/dtos/animal-profile.dto";
 
 @Injectable()
 export class UserService {
@@ -15,10 +16,12 @@ export class UserService {
         private readonly userRepository: UserRepository,
         private readonly revokedTokenRepository: RevokedTokenRepository,
         private readonly animalService: AnimalService,
-    ) { }
+    ) {}
 
     public async getAnimals(userId: string): Promise<AnimalSummaryDto[]> {
-        const animals = await this.animalService.getAnimalsByUserId(parseInt(userId));
+        const animals = await this.animalService.getAnimalsByUserId(
+            parseInt(userId),
+        );
         return this.animalService.getAnimalSummaries(animals);
     }
 
@@ -42,7 +45,7 @@ export class UserService {
     }
 
     public async getUsers(): Promise<User[]> {
-        return this.userRepository.getUsers()
+        return this.userRepository.getUsers();
     }
 
     public async getUserByEmail(email: string): Promise<User | null> {
@@ -68,7 +71,7 @@ export class UserService {
             return true;
         }
         const count = await this.revokedTokenRepository.count({
-            where: { token }
+            where: { token },
         });
         return count > 0;
     }

@@ -3,6 +3,7 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
 import { DataSource, Equal, Or } from 'typeorm';
+
 import { BaseRepository } from '../common/base.repository';
 import { FileDto } from './dto/file.dto';
 
@@ -21,7 +22,7 @@ export class FileRepository extends BaseRepository<File> {
 
     async getImage(fileName: string) {
         return this.findOne({
-            where: { uuid: fileName }
+            where: { uuid: fileName },
         });
     }
 
@@ -53,16 +54,16 @@ export class FileRepository extends BaseRepository<File> {
     //TODO eemaldada
     public async insertImageFilenamesIntoDB(
         files: Express.Multer.File[],
-        animalId: number | string
+        animalId: number | string,
     ) {
         animalId = Number(animalId);
         return Promise.all(
-            files.map(file => {
+            files.map((file) => {
                 const f = this.create();
                 f.animalId = animalId;
                 f.uuid = file.filename.split('.')[0];
                 return this.save(f);
-            })
+            }),
         );
     }
 }

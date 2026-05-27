@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface LoadingWrapperProps {
     loading: boolean;
@@ -8,13 +8,7 @@ interface LoadingWrapperProps {
     errorComponent?: React.ReactNode;
 }
 
-export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
-      loading,
-      error,
-      children,
-      loadingComponent,
-      errorComponent
-  }) => {
+export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ loading, error, children, loadingComponent, errorComponent }) => {
     if (loading) {
         return <>{loadingComponent || <DefaultLoader />}</>;
     }

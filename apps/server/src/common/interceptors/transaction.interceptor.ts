@@ -13,7 +13,7 @@ export const TRANSACTION_ABORT_KEY = 'TRANSACTION_ABORT';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TransactionInterceptor implements NestInterceptor {
-    constructor(private dataSource: DataSource) { }
+    constructor(private dataSource: DataSource) {}
 
     async intercept(
         context: ExecutionContext,
@@ -35,7 +35,7 @@ export class TransactionInterceptor implements NestInterceptor {
                     await queryRunner.commitTransaction();
                     req[TRANSACTION_ABORT_KEY] = true; // Signal that transaction is closed
                     await queryRunner.release();
-                } catch (err) {
+                } catch (_err) {
                     await queryRunner.rollbackTransaction();
                     req[TRANSACTION_ABORT_KEY] = true; // Signal that transaction is closed
                     await queryRunner.release();
@@ -51,7 +51,7 @@ export class TransactionInterceptor implements NestInterceptor {
                     // Log rollback error but throw original
                     console.error('Rollback failed:', rollbackError);
                 }
-                return throwError(() => (err));
+                return throwError(() => err);
             }),
         );
     }

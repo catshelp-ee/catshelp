@@ -1,13 +1,15 @@
+import { join } from 'path';
+
 import { Animal } from '@animal/entities/animal.entity';
 import { AnimalRepository } from '@animal/repositories/animal.repository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
+
 import { GoogleAuthService } from './google-auth.service';
 import { GoogleDriveService } from './google-drive.service';
 import { GoogleSheetsService } from './google-sheets.service';
-import { join } from 'path';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Animal])],
@@ -50,7 +52,7 @@ import { join } from 'path';
         },
         GoogleSheetsService,
         AnimalRepository,
-        OAuth2Client
+        OAuth2Client,
     ],
     exports: [
         GoogleAuthService,
@@ -59,4 +61,4 @@ import { join } from 'path';
         OAuth2Client,
     ],
 })
-export class GoogleModule { }
+export class GoogleModule {}

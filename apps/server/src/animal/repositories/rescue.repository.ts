@@ -16,7 +16,10 @@ export class RescueRepository extends BaseRepository<Rescue> {
             where: {
                 animal: { id: animalId },
             },
-            relations: ['animalToAnimalRescues', 'animalToAnimalRescues.animal'],
+            relations: [
+                'animalToAnimalRescues',
+                'animalToAnimalRescues.animal',
+            ],
         });
     }
 
@@ -39,5 +42,4 @@ export class RescueRepository extends BaseRepository<Rescue> {
     async deleteAnimalRescueById(id: number) {
         return this.delete({ id });
     }
-
 }

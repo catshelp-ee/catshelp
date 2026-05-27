@@ -1,12 +1,13 @@
+import { join } from 'path';
+
+import { CronModule } from '@cron/cron.module';
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CronModule } from '@cron/cron.module';
-import { CacheModule } from '@nestjs/cache-manager';
-import { join } from 'path';
 import { AdminModule } from './admin/admin.module';
 import { AnimalModule } from './animal/animal.module';
 import { AuthModule } from './auth/auth.module';
@@ -25,7 +26,7 @@ const pathToEnv = join(__dirname, '../../.env');
     providers: [
         {
             provide: APP_INTERCEPTOR,
-            useClass: TransactionInterceptor
+            useClass: TransactionInterceptor,
         },
         {
             provide: APP_GUARD,
@@ -39,7 +40,7 @@ const pathToEnv = join(__dirname, '../../.env');
         }),
         ConfigModule.forRoot({
             envFilePath: [pathToEnv],
-            isGlobal: true
+            isGlobal: true,
         }),
         ScheduleModule.forRoot(),
         TypeOrmModule.forRootAsync({
@@ -59,4 +60,4 @@ const pathToEnv = join(__dirname, '../../.env');
         CommonModule,
     ],
 })
-export class AppModule { }
+export class AppModule {}

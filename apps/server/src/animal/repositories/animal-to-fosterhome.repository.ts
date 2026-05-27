@@ -3,6 +3,7 @@ import { REQUEST } from '@nestjs/core';
 import { BaseRepository } from '@server/src/common/base.repository';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
+
 import { AnimalToFosterHome } from '../entities/animalToFosterhome.entity';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -11,11 +12,13 @@ export class AnimalToFosterHomeRepository extends BaseRepository<AnimalToFosterH
         super(AnimalToFosterHome, dataSource, request);
     }
 
-        /** Save or update animal */
-    public async saveOrUpdate(data: Partial<AnimalToFosterHome>): Promise<AnimalToFosterHome> {
-        const animalToFosterhome = await this.findOne({where: data});
+    /** Save or update animal */
+    public async saveOrUpdate(
+        data: Partial<AnimalToFosterHome>,
+    ): Promise<AnimalToFosterHome> {
+        const animalToFosterhome = await this.findOne({ where: data });
 
-        if (animalToFosterhome){
+        if (animalToFosterhome) {
             Object.assign(animalToFosterhome, data);
             return this.save(animalToFosterhome);
         }
@@ -23,5 +26,4 @@ export class AnimalToFosterHomeRepository extends BaseRepository<AnimalToFosterH
         const newRecord = this.create(data);
         return this.save(newRecord);
     }
-    
 }

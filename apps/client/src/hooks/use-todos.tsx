@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react';
-import {AnimalSummary} from "@interfaces/animal-summary.ts";
-import {AnimalTodo} from "@interfaces/animal-todo.ts";
-import {animalsApi} from "@api/animals.service.ts";
+import { animalsApi } from '@api/animals.service.ts';
+import type { AnimalSummary } from '@interfaces/animal-summary.ts';
+import type { AnimalTodo } from '@interfaces/animal-todo.ts';
+import { useEffect, useState } from 'react';
 
 export function useTodos(animals: AnimalSummary[]) {
     const [todos, setTodos] = useState([]);

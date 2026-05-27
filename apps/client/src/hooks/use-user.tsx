@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
-import {usersApi} from "@api/users.service.ts";
-import {UserResponse} from "@interfaces/user-response.ts";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "@context/auth-context.tsx";
+import { usersApi } from '@api/users.service.ts';
+import { useAuth } from '@context/auth-context.tsx';
+import type { UserResponse } from '@interfaces/user-response.ts';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 export function useUser() {
     const [user, setUser] = useState<UserResponse | null>(null);
@@ -12,10 +12,9 @@ export function useUser() {
     const url = useLocation();
     const params = useParams();
     const navigate = useNavigate();
-    const {getUser} = useAuth();
+    const { getUser } = useAuth();
 
     useEffect(() => {
-
         // Prevent state updates after component unmounts
         // Example: User navigates away at 100ms, API returns at 500ms
         // Without this check, setUser() would run on unmounted component → warning/error
@@ -27,9 +26,7 @@ export function useUser() {
 
             try {
                 const userLoggedIn = await getUser();
-                const userId = url.pathname === "/users"
-                    ? userLoggedIn.id
-                    : Number(params.userId);
+                const userId = url.pathname === '/users' ? userLoggedIn.id : Number(params.userId);
 
                 const fetchedUser = await usersApi.getUser(userId);
 
@@ -42,7 +39,7 @@ export function useUser() {
                     const userLoggedIn = await getUser();
                     navigate(`/users/${userLoggedIn.id}`);
                 }
-                console.error("Error fetching user: ", e);
+                console.error('Error fetching user: ', e);
             } finally {
                 if (isMounted) {
                     setLoading(false);
@@ -51,7 +48,7 @@ export function useUser() {
         };
 
         fetchUser().catch((e) => {
-            console.error("Unexpected error in fetchUser: ", e);
+            console.error('Unexpected error in fetchUser: ', e);
         });
 
         return () => {
@@ -59,5 +56,5 @@ export function useUser() {
         };
     }, [getUser, navigate, params.userId, url.pathname]);
 
-    return {user, loading, error};
+    return { user, loading, error };
 }

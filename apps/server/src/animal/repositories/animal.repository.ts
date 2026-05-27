@@ -6,6 +6,7 @@ import { BaseRepository } from '@server/src/common/base.repository';
 import { FosterHome } from '@user/entities/foster-home.entity';
 import type { Request } from 'express';
 import { DataSource } from 'typeorm';
+
 import { Rescue } from '../entities/rescue.entity';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -16,7 +17,7 @@ export class AnimalRepository extends BaseRepository<Animal> {
 
     public getAnimalById(id: number | string): Promise<Animal | null> {
         return this.findOne({
-            where: { id: Number(id) }
+            where: { id: Number(id) },
         });
     }
 
@@ -29,7 +30,11 @@ export class AnimalRepository extends BaseRepository<Animal> {
                 relations: ['animals', 'animals.animalRescues'],
             });
 
-        return userFosterHome?.animalToFosterHome.map(rel => rel.animal).filter(Boolean) ?? [];
+        return (
+            userFosterHome?.animalToFosterHome
+                .map((rel) => rel.animal)
+                .filter(Boolean) ?? []
+        );
     }
 
     /** Get animal by ID including rescue info */
@@ -41,10 +46,12 @@ export class AnimalRepository extends BaseRepository<Animal> {
     }
 
     /** Get animal by Rescue ID */
-    public async getAnimalByAnimalRescueId(animalRescueId: number): Promise<Animal | null> {
+    public async getAnimalByAnimalRescueId(
+        animalRescueId: number,
+    ): Promise<Animal | null> {
         const rescue = await this.dataSource.getRepository(Rescue).findOne({
             where: { id: animalRescueId },
-            relations: ["animal"],
+            relations: ['animal'],
         });
 
         return rescue?.animal ?? null;
@@ -52,7 +59,9 @@ export class AnimalRepository extends BaseRepository<Animal> {
 
     /** Update basic animal profile */
     public async updateEditProfile(data: UpdateAnimalDto): Promise<Animal> {
-        const animal = await this.findOne({ where: { id: Number(data.animalId) } });
+        const animal = await this.findOne({
+            where: { id: Number(data.animalId) },
+        });
         if (!animal) throw new Error('Animal not found');
 
         animal.profileTitle = data.title;
@@ -64,7 +73,7 @@ export class AnimalRepository extends BaseRepository<Animal> {
     /** Save or update animal */
     public async saveOrUpdateAnimal(animal: Partial<Animal>): Promise<Animal> {
         if (animal.id) {
-            var existing = await this.findOne({ where: { id: animal.id }});
+            const existing = await this.findOne({ where: { id: animal.id } });
             Object.assign(existing as Animal, animal);
             return this.save(existing);
         }

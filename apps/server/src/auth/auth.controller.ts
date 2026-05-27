@@ -15,11 +15,12 @@ import {
 } from '@nestjs/common';
 import { UserService } from '@user/user.service';
 import type { Response } from 'express';
+
 import { Public } from '../common/decorators/public.decorator';
+
 import { AuthService } from './auth.service';
 import { CookieService } from './cookie.service';
 import { EmailService } from './email.service';
-
 
 @Public()
 @Controller('auth')
@@ -28,7 +29,7 @@ export class AuthController {
         private readonly authService: AuthService,
         private readonly userService: UserService,
         private readonly emailService: EmailService,
-    ) { }
+    ) {}
 
     @Post('login-google')
     async googleLogin(
@@ -44,9 +45,15 @@ export class AuthController {
             );
         }
 
-        const email = await this.authService.verifyGoogleToken(credential, clientId);
+        const email = await this.authService.verifyGoogleToken(
+            credential,
+            clientId,
+        );
         if (!email) {
-            throw new HttpException({ error: 'Invalid Google token' }, HttpStatus.BAD_REQUEST);
+            throw new HttpException(
+                { error: 'Invalid Google token' },
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         const user = await this.authService.authenticateUser(email, res);
@@ -65,7 +72,10 @@ export class AuthController {
         const { email } = body;
 
         if (!email) {
-            throw new HttpException({ error: 'Email is required' }, HttpStatus.BAD_REQUEST);
+            throw new HttpException(
+                { error: 'Email is required' },
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         const user = await this.userService.getUserByEmail(email);
@@ -94,14 +104,20 @@ export class AuthController {
     }
 
     @Get('verify')
-    async verify(@Query() query: VerifyRequest, @Res() res: Response): Promise<void> {
+    async verify(
+        @Query() query: VerifyRequest,
+        @Res() res: Response,
+    ): Promise<void> {
         const { token } = query;
 
         if (!token || typeof token !== 'string') {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
 
-        const isValid = await this.authService.verifyAndRefreshToken(token, res);
+        const isValid = await this.authService.verifyAndRefreshToken(
+            token,
+            res,
+        );
         if (!isValid) {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }

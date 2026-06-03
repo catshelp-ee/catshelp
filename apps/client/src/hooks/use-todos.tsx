@@ -1,15 +1,15 @@
 import { animalsApi } from '@api/animals.service.ts';
 import type { AnimalSummary } from '@interfaces/animal-summary.ts';
-import type { AnimalTodo } from '@interfaces/animal-todo.ts';
+import type { AnimalTodo, AnimalTodos } from '@interfaces/animal-todo.ts';
 import { useEffect, useState } from 'react';
 
 export function useTodos(animals: AnimalSummary[]) {
-    const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState<AnimalTodos>();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        if (!animals || animals.length === 0) {
+        if (animals === undefined || animals.length === 0) {
             setLoading(false);
             return;
         }
@@ -24,12 +24,20 @@ export function useTodos(animals: AnimalSummary[]) {
             setError(null);
 
             try {
-                const allTodos: AnimalTodo[] = [];
+                const allTodos: AnimalTodos = {
+                    today: [],
+                    soon: [],
+                    later: [],
+                    completed: [],
+                };
                 for (let i = 0; i < animals.length; i++) {
                     const animalSummary = animals[i];
 
                     const todos = await animalsApi.getTodos(animalSummary.id);
-                    allTodos.push(...todos);
+                    allTodos.today.push(...todos.today);
+                    allTodos.soon.push(...todos.soon);
+                    allTodos.later.push(...todos.later);
+                    allTodos.completed.push(...todos.completed);
                 }
 
                 if (isMounted) {

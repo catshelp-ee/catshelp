@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
             return user;
         }
         try {
-            const userReq = await axios.get('/api/user');
+            const userReq = await axios.get('/api/users/me');
             setUser(userReq.data);
             return userReq.data;
         } catch (_error) {

@@ -9,7 +9,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        /*
         Schema::table('animal_rescues', function (Blueprint $table) {
             $table->unsignedInteger('animal_id')->nullable()->after('rank_nr');
             $table->index('animal_id', 'animal_rescues_animal_id_key');
@@ -46,7 +45,6 @@ return new class extends Migration
         });
 
         Schema::dropIfExists('treatment_history');
-        */
     }
 
     public function down(): void {}

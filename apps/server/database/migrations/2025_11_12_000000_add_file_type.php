@@ -8,11 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        /*
         Schema::table('files', function (Blueprint $table) {
             $table->string('type', 191)->nullable()->after('uuid');
         });
-        */
     }
 
     public function down(): void

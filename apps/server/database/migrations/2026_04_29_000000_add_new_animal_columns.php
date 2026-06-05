@@ -8,11 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        /*
         Schema::table('animals', function (Blueprint $table) {
             $table->text('chronic_conditions')->nullable()->after('additional_notes');
         });
-        */
     }
 
     public function down(): void

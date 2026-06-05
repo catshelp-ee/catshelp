@@ -20,6 +20,7 @@ https://herd.laravel.com/windows
 
 # Deploying in zone
 Deploy needs to be redone.
+Run composer update
 
 # Migrations
 For creating a migration table in db

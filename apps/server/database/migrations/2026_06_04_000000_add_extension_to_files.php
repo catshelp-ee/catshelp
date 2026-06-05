@@ -9,13 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        /*
         Schema::table('files', function (Blueprint $table) {
             $table->string('extension', 191)->nullable();
         });
 
         DB::table('files')->update(['extension' => 'jpg']);
-        */
     }
 
     public function down(): void

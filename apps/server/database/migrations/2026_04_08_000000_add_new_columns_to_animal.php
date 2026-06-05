@@ -8,12 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        /*
         Schema::table('animals', function (Blueprint $table) {
             $table->text('requirements_for_new_family')->nullable()->after('description');
             $table->text('additional_notes')->nullable()->after('requirements_for_new_family');
         });
-        */
     }
 
     public function down(): void

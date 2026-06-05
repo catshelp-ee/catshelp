@@ -8,7 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        /*
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('full_name')->nullable()->unique();
@@ -120,7 +119,6 @@ return new class extends Migration
             $table->unsignedInteger('treatmentHistoryId')->unique();
             $table->foreign('treatmentHistoryId', 'treatments_treatmentHistoryId_fkey')->references('id')->on('treatment_history')->onUpdate('cascade')->onDelete('restrict');
         });
-        */
     }
 
     public function down(): void

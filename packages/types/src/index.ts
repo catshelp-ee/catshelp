@@ -1,7 +1,6 @@
 export * from './auth-types';
 export * from './cat';
 export * from './dashboard';
-export * from './google-sheets';
 export * from './jwt-token';
 
 export * from './entities/animal-to-foster-home';

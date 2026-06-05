@@ -1,10 +1,3 @@
-import { SheetData } from "./google-sheets";
-
-export interface SheetsData {
-    cats?: SheetData[];
-    contracts?: SheetData[];
-}
-
 export interface Result {
     assignee: string;
     urgent: boolean;

@@ -3,6 +3,7 @@ import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
+import express from 'express';
 
 import 'reflect-metadata';
 import { AppModule } from './app.module';
@@ -38,6 +39,8 @@ async function bootstrap() {
 
     app.use(cookieParser());
     app.useGlobalFilters(new HttpExceptionFilter());
+    app.use(express.json({ limit: '20mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '20mb' }));
     app.setGlobalPrefix('api');
 
     // Serve static images FIRST (before client)

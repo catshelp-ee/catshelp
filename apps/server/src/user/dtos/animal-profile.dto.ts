@@ -1,8 +1,14 @@
 export interface AnimalProfileDto {
     animalId: number;
-    images: string[];
+    images: ImageDto[];
     mainInfo: MainInfoDto;
     personalityInfo: PersonalityInfoDto;
+}
+
+export interface ImageDto {
+    id: number;
+    data: string;
+    type: string;
 }
 
 interface MainInfoDto {

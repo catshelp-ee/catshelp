@@ -6,4 +6,6 @@ credentials.json
 .vscode
 build/*
 files/*
+images/*
 package-lock.json
+_figma_code/*

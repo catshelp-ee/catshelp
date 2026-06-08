@@ -50,11 +50,6 @@ export class AnimalController {
         return { profiles };
     }
 
-    @Get(':id/profile-picture')
-    async getProfilePicture(@Req() req: Request, @Param('id') id: string) {
-        return this.animalService.getProfilePicture(id);
-    }
-
     @Get(':id/todos')
     async getAnimalTodos(
         @Req() req: Request,

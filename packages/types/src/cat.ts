@@ -37,9 +37,15 @@ export interface Avatar {
     pathToImage: string;
 }
 
+export interface Image {
+    id: number;
+    data: string;
+    type: string;
+}
+
 export interface Profile {
     animalId: number;
-    images: string[];
+    images: Image[];
     mainInfo: MainInfo;
     personalityInfo: PersonalityInfo;
 }

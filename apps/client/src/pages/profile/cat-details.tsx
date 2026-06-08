@@ -1,17 +1,15 @@
-import type { Profile } from '@catshelp/types/src/index.ts';
-import { formatDate } from '@catshelp/utils/src/index.ts';
-import { Button } from '@components/button.tsx';
-import { Checkbox } from '@components/checkbox.tsx';
-import { Input } from '@components/input.tsx';
-import { Label } from '@components/label.tsx';
-import { Textarea } from '@components/textarea.tsx';
-import { useAlert } from '@context/alert-context.tsx';
-import { useIsMobile } from '@context/is-mobile-context.tsx';
-import axios from 'axios';
-import { Save } from 'lucide-react';
-import React, { useState } from 'react';
-
-import ImageGallery from './image-gallery.tsx';
+import { Profile } from "@catshelp/types/src/index.ts";
+import { formatDate } from "@catshelp/utils/src/index.ts";
+import React, { useState } from "react";
+import { Label } from "@components/label.tsx";
+import { Input } from "@components/input.tsx";
+import { Textarea } from "@components/textarea.tsx";
+import { Checkbox } from "@components/checkbox.tsx";
+import { Button } from "@components/button.tsx";
+import { Save, Upload, Star, Trash2 } from "lucide-react";
+import axios from "axios";
+import { useAlert } from "@context/alert-context.tsx";
+import { readFileAsDataURL, resizeImage } from "@utils/image-utils.ts";
 
 const personalityOptions = {
     bold: { et: 'Julge', en: 'Bold', ru: 'Смелый' },
@@ -97,13 +95,34 @@ const habitsOptions = {
     },
 };
 
-const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => (
-    <div className="profile-section">
-        <h1 className="profile-title">{selectedCat?.mainInfo.name}</h1>
-        <p className="section-label">Päästenumber: {selectedCat.mainInfo.rankNr}</p>
-        {/* Todo kategooria ikoonid ja märgi broneerituks nupp */}
-    </div>
-);
+const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+    const profileImage = selectedCat.images ? selectedCat.images.find(img => img.type === 'profile') : null;
+    return (
+        <div className="profile-section">
+            <div className="flex gap-4">
+                {/* Profile image */}
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-100 flex items-center justify-center shrink-0">
+                    {profileImage ? (
+                        <img
+                            src={profileImage.data}
+                            alt={selectedCat.mainInfo.name}
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <span className="text-4xl">🐱</span>
+                    )}
+                </div>
+                <div>
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                        {selectedCat?.mainInfo.name}
+                    </h1>
+                    <p className="text-sm text-gray-600 mb-3">
+                        Päästenumber: {selectedCat.mainInfo.rankNr}
+                    </p>
+                </div>
+            </div>
+        </div>);
+};
 
 const CatBlogPost: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => (
     <div className="profile-section">
@@ -314,48 +333,195 @@ const CatPersonalityInfo: React.FC<{
     );
 };
 
-const CatDetails: React.FC<{
-    selectedCat: Profile;
-    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>;
+const CatImages: React.FC<{
+    selectedCat: Profile,
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
 }> = ({ selectedCat, setSelectedCat }) => {
-    const isMobile = useIsMobile();
-    const { showAlert } = useAlert();
+    const [isDragging, setIsDragging] = useState(false);
 
-    const handleSave = async () => {
-        if (selectedCat) {
-            await axios
-                .put('/api/animals', selectedCat)
-                .then(() => {
-                    showAlert('Success', 'Andmed uuendatud!');
-                })
-                .catch((_error) => {
-                    showAlert('Error', 'Andmete uuendamine ebaõnnestus');
-                });
+    const handleFiles = async (files: File[]) => {
+        const imageFiles = files.filter(f => f.type.startsWith('image/'));
+        if (imageFiles.length === 0) {
+            return;
         }
+        const newImages = await Promise.all(imageFiles.map(async (file) => {
+            const resizedImage = await resizeImage(file);
+            const data = await readFileAsDataURL(resizedImage);
+
+            return {
+                id: 0,
+                data: data,
+                type: 'image'
+            }
+        }));
+        const updatedCatInfo = { ...selectedCat, images: selectedCat.images.concat(newImages) };
+        setSelectedCat(updatedCatInfo);
+    };
+
+    const handleSetProfile = (index: number) => {
+        const updatedImages = selectedCat.images.map((img, i) => {
+            img.type = (i === index) ? 'profile' : 'image';
+            return img;
+        });
+        const updatedCatInfo = { ...selectedCat, images: updatedImages };
+        setSelectedCat(updatedCatInfo);
+    };
+
+    const handleRemove = (index: number) => {
+        const newImages = selectedCat.images.filter((_, i) => i !== index);
+        const updatedCatInfo = { ...selectedCat, images: newImages };
+        setSelectedCat(updatedCatInfo);
     };
 
     return (
-        <>
-            {isMobile && <ImageGallery animalId={selectedCat.animalId} images={selectedCat?.images || []} />}
-            <div className="w-full">
-                <CatDetailsHeader selectedCat={selectedCat} />
+        <div className="profile-section">
+            <h2 className="section-header">Pildid</h2>
 
-                <CatBlogPost selectedCat={selectedCat} />
-                <CatMainInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
-                <CatPersonalityInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
+            {/* Photo gallery grid */}
+            {selectedCat.images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
+                    {selectedCat.images.map((image, index) => {
+                        const isProfilePic = image.type === 'profile';
+                        return (
+                            <div key={`${selectedCat.animalId}-${index}`} className="relative group">
+                                <div
+                                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${isProfilePic
+                                        ? 'border-emerald-500 ring-2 ring-emerald-200'
+                                        : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                >
+                                    <img
+                                        src={image.data}
+                                        //alt={`${catName} foto ${index + 1}`} TODO
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
 
-                <div className="sticky bottom-20 lg:bottom-6 z-10">
-                    <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-4">
-                        <Button onClick={handleSave} disabled={!selectedCat} className="w-full" size="lg">
-                            <Save className="w-4 h-4 mr-2" />
-                            Salvesta ja uuenda veebis
-                        </Button>
-                    </div>
+                                {/* Profile pic badge */}
+                                {isProfilePic && (
+                                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-emerald-600 text-white text-xs px-2 py-1 rounded-full shadow-sm">
+                                        <Star className="w-3 h-3 fill-current" />
+                                        <span>Profiilipilt</span>
+                                    </div>
+                                )}
+
+                                {/* Hover actions */}
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors rounded-lg flex items-end justify-center opacity-0 group-hover:opacity-100 pb-3 gap-2">
+                                    {!isProfilePic && (
+                                        <button
+                                            onClick={() => handleSetProfile(index)}
+                                            className="flex items-center gap-1 bg-white text-gray-800 text-xs px-2.5 py-1.5 rounded-lg shadow-sm hover:bg-emerald-50 transition-colors"
+                                            title="Profiilipilt"
+                                        >
+                                            <Star className="w-3 h-3" />
+                                            Profiilipilt
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => handleRemove(index)}
+                                        className="flex items-center gap-1 bg-white text-red-600 text-xs px-2.5 py-1.5 rounded-lg shadow-sm hover:bg-red-50 transition-colors"
+                                        title="Kustuta"
+                                    >
+                                        <Trash2 className="w-3 h-3" />
+                                        Kustuta
+                                    </button>
+                                </div>
+
+                            </div>
+                        );
+                    })}
                 </div>
+            )}
+
+
+
+            {/* Upload area */}
+            <div
+                onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    handleFiles(Array.from(e.dataTransfer.files));
+                }}
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${isDragging
+                    ? 'border-emerald-400 bg-emerald-50'
+                    : 'border-gray-300 hover:border-gray-400'
+                    }`}
+            >
+                <Upload className="w-10 h-10 mx-auto mb-3 text-gray-400" />
+                <div className="text-sm text-gray-600 mb-1">
+                    Lohista pildid siia või {' '}
+                    <label className="text-emerald-600 hover:text-emerald-700 cursor-pointer font-medium">
+                        vali failid
+                        <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                if (e.target.files) {
+                                    handleFiles(Array.from(e.target.files));
+                                }
+                                e.target.value = '';
+                            }}
+                        />
+                    </label>
+                </div>
+                <p className="text-xs text-gray-500">Maksimaalselt 10 pilti. JPG, PNG, WebP</p>
             </div>
-            {!isMobile && <ImageGallery animalId={selectedCat.animalId} name={selectedCat.mainInfo.name} images={[]} />}
-        </>
+        </div>
     );
 };
+
+const CatDetails: React.FC<{
+    selectedCat: Profile,
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
+}> = ({
+    selectedCat,
+    setSelectedCat
+}) => {
+        const { showAlert } = useAlert();
+        const handleSave = async () => {
+            console.log('Salvestatud kassiprofiil:', selectedCat);
+            if (selectedCat) {
+                await axios.put("/api/animals", selectedCat).then(() => {
+                    showAlert('Success', "Andmed uuendatud!");
+                }).catch((error) => {
+                    showAlert('Error', "Andmete uuendamine ebaõnnestus");
+                })
+            }
+        };
+
+        return (
+            <> {Object.keys(selectedCat || {}).length > 0 && (
+                <div className='w-full'>
+                    <CatDetailsHeader selectedCat={selectedCat} />
+
+                    <CatBlogPost selectedCat={selectedCat} />
+                    <CatMainInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
+                    <CatPersonalityInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
+                    <CatImages selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
+
+                    <div className="sticky bottom-20 lg:bottom-6 z-10">
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-4">
+                            <Button
+                                onClick={handleSave}
+                                disabled={!selectedCat}
+                                className="w-full"
+                                size="lg"
+                            >
+                                <Save className="w-4 h-4 mr-2" />
+                                Salvesta ja uuenda veebis
+                            </Button>
+                        </div>
+                    </div>
+                </div>)}
+            </>
+        );
+    };
 
 export default CatDetails;

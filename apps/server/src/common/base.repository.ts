@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
-import { DataSource, Repository, ObjectLiteral } from 'typeorm';
+import { DataSource, Repository, ObjectLiteral, DeleteResult } from 'typeorm';
 import type { EntityTarget } from 'typeorm';
 
 import {
@@ -49,6 +49,13 @@ export abstract class BaseRepository<
     async find(options?: any): Promise<Entity[]> {
         this.checkAborted();
         const result = await super.find(options);
+        this.checkAborted();
+        return result;
+    }
+
+    async delete(options: any): Promise<DeleteResult> {
+        this.checkAborted();
+        const result = await super.delete(options);
         this.checkAborted();
         return result;
     }

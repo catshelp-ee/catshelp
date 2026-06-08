@@ -2,7 +2,7 @@ import type { IUser } from '@catshelp/types/src/index.ts';
 import { useAlert } from '@context/alert-context.tsx';
 import axios from 'axios';
 import type { ReactNode } from 'react';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type AuthContext = {
@@ -26,47 +26,52 @@ export const AuthContext = createContext<AuthContext>({
 });
 
 export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
-    const [user, setUser] = useState<IUser>(null);
+    const userRef = useRef<IUser>(null);
+    const loggingOutRef = useRef(false);
     const navigate = useNavigate();
     const { showAlert } = useAlert();
 
-    const getUser = async (): Promise<IUser> => {
-        if (user) {
-            return user;
+    const getUser = useCallback(async (): Promise<IUser> => {
+        if (loggingOutRef.current) {
+            return null;
+        }
+        if (userRef.current) {
+            return userRef.current;
         }
         try {
             const userReq = await axios.get('/api/user');
-            setUser(userReq.data);
+            userRef.current = userReq.data;
             return userReq.data;
         } catch (_error) {
             showAlert('Error', 'Kasutaja andmete pärimine ebaõnnestus');
             return;
         }
-    };
+    }, [showAlert]);
 
-    const logout = async () => {
-        //DO axios logout
+    const logout = useCallback(async () => {
+        if (loggingOutRef.current) {
+            return;
+        }
+        loggingOutRef.current = true;
         try {
             await axios.post('/api/auth/logout');
         } catch (_error) {
+            loggingOutRef.current = false;
             showAlert('Error', 'Väljumine ebaõnnestus');
             return;
         }
-        setUser(null);
+        userRef.current = null;
         navigate('/login');
-    };
+        loggingOutRef.current = false;
+    }, [navigate, showAlert]);
 
-    const checkIfAdmin = async () => {
+    const checkIfAdmin = useCallback(async () => {
         const user = await getUser();
 
-        return user.role === 'ADMIN';
-    };
+        return user?.role === 'ADMIN';
+    }, [getUser]);
 
-    const value = {
-        getUser,
-        logout,
-        checkIfAdmin,
-    };
+    const value = useMemo(() => ({ getUser, logout, checkIfAdmin }), [getUser, logout, checkIfAdmin]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

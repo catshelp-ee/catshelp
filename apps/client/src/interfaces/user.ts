@@ -1,6 +1,4 @@
-import { IFosterHome } from "./foster-home";
-
-export interface IUser {
+export interface User {
     id: number;
     fullName: string;
     role: string;
@@ -8,7 +6,4 @@ export interface IUser {
     identityCode: string;
     citizenship: string;
     createdAt: Date;
-
-    // Relation
-    fosterHome: IFosterHome;
 }

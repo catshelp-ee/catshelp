@@ -14,8 +14,9 @@ export default defineConfig({
         tsconfigPaths: true,
         dedupe: ['react', 'react-dom'],
     },
+    base: process.env.VITE_ENVIRONMENT === 'TEST' ? '' : '/client/',
     build: {
-        outDir: './../../build/client',
+        outDir: './../server/public/client',
         emptyOutDir: true,
         sourcemap: true,
     },

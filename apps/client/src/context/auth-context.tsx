@@ -1,4 +1,4 @@
-import type { IUser } from '@catshelp/types/src/index.ts';
+import type { User } from '@interfaces/user.ts';
 import { useAlert } from '@context/alert-context.tsx';
 import axios from 'axios';
 import type { ReactNode } from 'react';
@@ -6,7 +6,7 @@ import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type AuthContext = {
-    getUser: () => Promise<IUser>;
+    getUser: () => Promise<User>;
     logout: () => void;
     checkIfAdmin: () => boolean;
 };
@@ -26,11 +26,11 @@ export const AuthContext = createContext<AuthContext>({
 });
 
 export const AuthProvider: React.FC<AuthContextProvider> = ({ children }) => {
-    const [user, setUser] = useState<IUser>(null);
+    const [user, setUser] = useState<User>(null);
     const navigate = useNavigate();
     const { showAlert } = useAlert();
 
-    const getUser = async (): Promise<IUser> => {
+    const getUser = async (): Promise<User> => {
         if (user) {
             return user;
         }

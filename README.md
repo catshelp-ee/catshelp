@@ -19,8 +19,9 @@ https://herd.laravel.com/windows
 4. Remove \files folder
 
 # Deploying in zone
-Deploy needs to be redone.
 Run composer update
+Run ```npm run build```
+Move apps/server to htdocs/kiisud
 
 # Migrations
 For creating a migration table in db

@@ -1,5 +1,5 @@
-import type { Profile } from '@catshelp/types/src/index.ts';
-import { calculateAge, isFutureDate } from '@catshelp/utils/src/index.ts';
+import type { Profile } from '@interfaces/profile.ts';
+import { calculateAge, isFutureDate } from '@utils/date-utils.ts';
 import { useIsMobile } from '@context/is-mobile-context.tsx';
 import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';

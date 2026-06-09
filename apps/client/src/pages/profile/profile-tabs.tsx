@@ -1,4 +1,5 @@
-import type { Profile, ProfileHeader } from '@catshelp/types/src/index.ts';
+import type { Profile } from '@interfaces/profile.ts';
+import type { ProfileHeader } from '@interfaces/profile-header.ts';
 import { useAlert } from '@context/alert-context.tsx';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';

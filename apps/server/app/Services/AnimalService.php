@@ -21,7 +21,15 @@ class AnimalService
 
         $dtos = [];
         foreach ($animals as $animal) {
-            $dtos[] = AnimalSummaryDTO::fromModel($animal);
+            $profileFile = $animal->files()->where('type', 'profile')->first();
+            $imageData = '';
+            if ($profileFile) {
+                $contents = Storage::get("images/{$profileFile->uuid}.{$profileFile->extension}");
+                if ($contents !== null) {
+                    $imageData = "data:image/{$profileFile->extension};base64," . base64_encode($contents);
+                }
+            }
+            $dtos[] = AnimalSummaryDTO::fromModel($animal, $imageData);
         }
         return $dtos;
     }

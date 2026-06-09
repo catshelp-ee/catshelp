@@ -1,5 +1,5 @@
-import type { Profile } from '@catshelp/types/src/index.ts';
-import { formatDate } from '@catshelp/utils/src/index.ts';
+import type { Profile } from '@interfaces/profile.ts';
+import { formatDate } from '@utils/date-utils.ts';
 import { Button } from '@components/button.tsx';
 import { Checkbox } from '@components/checkbox.tsx';
 import { Input } from '@components/input.tsx';

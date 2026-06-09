@@ -16,6 +16,10 @@ class AnimalService
 {
     public static function getProfiles() {
         //TODO vajab ümber tegemist. See peaks tagastama kõik loomad. Oleks vaja panna FE kasutama teist õigemat otsa.
+        return self::getUserProfiles();
+    }
+
+    public static function getUserProfiles() {
         $user = Auth::user();
         $animals = $user->fosterHome ? $user->fosterHome->animals : [];
 

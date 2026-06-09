@@ -35,4 +35,22 @@ class AnimalController extends Controller
     {
         return response()->json(AnimalService::updateProfile($request->all()));
     }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //TODO Not implemented yet
+    }
+
+    public function getUserProfiles()
+    {
+        return response()->json(["profiles" => AnimalService::getUserProfiles()]);
+    }
+
+    public function getAnimalTodos()
+    {
+        //TODO Not implemented yet
+    }
 }

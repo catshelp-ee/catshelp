@@ -28,12 +28,21 @@ class AuthController extends Controller
         );
     }
 
+    public function loginEmail()
+    {
+        //TODO NOT IMPLEMENTED
+    }
+
     public function logout(Request $request): JsonResponse
     {
         AuthService::logout($request);
 
-        //TODO get cookie names from auth service
         return response()->json(['message' => 'Logged out'])
-            ->withoutCookie('jwt')->withoutCookie('catshelp');
+            ->withoutCookie(AuthService::JWT_COOKIE_NAME)->withoutCookie(AuthService::CATSHELP_COOKIE_NAME);
+    }
+
+    public function verifyCookie()
+    {
+        //TODO NOT IMPLEMENTED
     }
 }

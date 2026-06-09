@@ -12,6 +12,12 @@ https://herd.laravel.com/windows
 7. Build the app to before running migrations: ```npm run build```
 8. To run the frontend execute ```npm run client```
 
+# Reccomended VS code extensions
+Git Graph
+PHP Debug
+Laravel - To use laravel extensions command palette features properly add apps/server folder to the workspace. File -> Add Folder to Workspace
+PHP Intelephense
+
 # Migrating from Node server
 1. Comment out all code in public function up(): void for every migration
 2. Remove migration table from database

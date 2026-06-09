@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 
 class AuthService
 {
-    private const COOKIE_NAME = 'jwt';
+    public const JWT_COOKIE_NAME = 'jwt';
+    public const CATSHELP_COOKIE_NAME = 'catshelp';
     private const TTL_MINUTES = 24 * 60; // 24 hours
     private const ALGORITHM = 'HS256';
 
@@ -51,7 +52,7 @@ class AuthService
     public static function attachTokenCookie(JsonResponse $response, string $token): JsonResponse
     {
         return $response->withCookie(cookie(
-            name: self::COOKIE_NAME,
+            name: self::JWT_COOKIE_NAME,
             value: $token,
             minutes: self::TTL_MINUTES,
             path: '/',
@@ -59,7 +60,7 @@ class AuthService
             httpOnly: true,
             sameSite: 'strict',
         ))->withCookie(cookie(
-            name: 'catshelp',
+            name: self::CATSHELP_COOKIE_NAME,
             value: 'true',
             minutes: self::TTL_MINUTES,
             httpOnly: false,
@@ -68,7 +69,7 @@ class AuthService
 
     public static function logout(Request $request): void
     {
-        $token = $request->cookie(self::COOKIE_NAME);
+        $token = $request->cookie(self::JWT_COOKIE_NAME);
 
         if ($token) {
             $payload = self::decodeToken($token);

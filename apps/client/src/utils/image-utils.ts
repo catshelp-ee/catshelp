@@ -21,7 +21,7 @@ const canvasToBlob = (canvas: HTMLCanvasElement, quality = 0.8, type = 'image/jp
     });
 };
 
-const readFileAsDataURL = (file: File): Promise<string> =>
+export const readFileAsDataURL = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -37,9 +37,18 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
         img.src = src;
     });
 
-const resizeImage = async (file: File, width: number, height: number): Promise<File> => {
+export const resizeImage = async (
+    file: File,
+    maxWidth: number = 500,
+    maxHeight: number = 500
+): Promise<File> => {
     const dataUrl = await readFileAsDataURL(file);
     const img = await loadImage(dataUrl);
+
+    const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+    const width = Math.round(img.width * ratio);
+    const height = Math.round(img.height * ratio);
+
     const canvas = createImageCanvas(img, width, height);
     const blob = await canvasToBlob(canvas);
 
@@ -52,7 +61,9 @@ const resizeImage = async (file: File, width: number, height: number): Promise<F
 };
 
 export const resizeImages = (images: File[]): Promise<File[]> => {
-    const allResizePromises = images.flatMap((image) => [resizeImage(image, 256, 256)]);
+    const allResizePromises = images.flatMap(image => [
+        resizeImage(image),
+    ]);
     return Promise.all(allResizePromises);
 };
 

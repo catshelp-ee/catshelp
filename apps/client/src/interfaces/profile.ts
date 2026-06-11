@@ -1,11 +1,17 @@
 export interface Profile {
     animalId: number;
-    images: string[];
-    mainInfo: MainInfo;
-    personalityInfo: PersonalityInfo;
+    images: ImageDto[];
+    mainInfo: MainInfoDto;
+    personalityInfo: PersonalityInfoDto;
 }
 
-interface MainInfo {
+export interface ImageDto {
+    id: number;
+    data: string;
+    type: string;
+}
+
+interface MainInfoDto {
     name: string;
     rankNr: string;
     birthDate: Date | null;
@@ -26,7 +32,7 @@ interface MainInfo {
     spayedOrNeutered: string;
 }
 
-export interface PersonalityInfo {
+export interface PersonalityInfoDto {
     bold: boolean;
     shy: boolean;
     active: boolean;

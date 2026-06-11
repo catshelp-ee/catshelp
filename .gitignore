@@ -4,8 +4,4 @@ dist
 credentials.json
 .turbo
 .vscode
-build/*
-files/*
-images/*
 package-lock.json
-_figma_code/*

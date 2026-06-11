@@ -1,14 +1,14 @@
-import { Profile } from "@catshelp/types/src/index.ts";
-import { formatDate } from "@catshelp/utils/src/index.ts";
-import React, { useState } from "react";
-import { Label } from "@components/label.tsx";
-import { Input } from "@components/input.tsx";
-import { Textarea } from "@components/textarea.tsx";
-import { Checkbox } from "@components/checkbox.tsx";
-import { Button } from "@components/button.tsx";
+import type { Profile } from '@interfaces/profile.ts';
+import { formatDate } from '@utils/date-utils.ts';
+import { Button } from '@components/button.tsx';
+import { Checkbox } from '@components/checkbox.tsx';
+import { Input } from '@components/input.tsx';
+import { Label } from '@components/label.tsx';
+import { Textarea } from '@components/textarea.tsx';
+import { useAlert } from '@context/alert-context.tsx';
+import axios from 'axios';
+import React, { useState } from 'react';
 import { Save, Upload, Star, Trash2 } from "lucide-react";
-import axios from "axios";
-import { useAlert } from "@context/alert-context.tsx";
 import { readFileAsDataURL, resizeImage } from "@utils/image-utils.ts";
 
 const personalityOptions = {

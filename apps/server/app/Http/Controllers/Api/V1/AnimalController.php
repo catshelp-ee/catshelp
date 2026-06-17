@@ -53,4 +53,8 @@ class AnimalController extends Controller
     {
         //TODO Not implemented yet
     }
+
+    public function findAnimal(Request $request) {
+        return response()->json(AnimalService::findAnimal($request->all()));
+    }
 }

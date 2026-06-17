@@ -14,31 +14,26 @@ use Illuminate\Support\Str;
 
 class AnimalService
 {
-    public static function getProfiles() {
+    public static function getProfiles()
+    {
         //TODO vajab ümber tegemist. See peaks tagastama kõik loomad. Oleks vaja panna FE kasutama teist õigemat otsa.
         return self::getUserProfiles();
     }
 
-    public static function getUserProfiles() {
+    public static function getUserProfiles()
+    {
         $user = Auth::user();
         $animals = $user->fosterHome ? $user->fosterHome->animals : [];
 
         $dtos = [];
         foreach ($animals as $animal) {
-            $profileFile = $animal->files()->where('type', 'profile')->first();
-            $imageData = '';
-            if ($profileFile) {
-                $contents = Storage::get("images/{$profileFile->uuid}.{$profileFile->extension}");
-                if ($contents !== null) {
-                    $imageData = "data:image/{$profileFile->extension};base64," . base64_encode($contents);
-                }
-            }
-            $dtos[] = AnimalSummaryDTO::fromModel($animal, $imageData);
+            $dtos[] = AnimalSummaryDTO::fromModel($animal);
         }
         return $dtos;
     }
 
-    public static function getProfile(int $id) {
+    public static function getProfile(int $id)
+    {
         $animal = Animal::find($id);
         if (!$animal) {
             return null;
@@ -64,7 +59,8 @@ class AnimalService
         return $result;
     }
 
-    public static function updateProfile(array $data) {
+    public static function updateProfile(array $data)
+    {
         $animal = Animal::find($data['animalId']);
         if (!$animal) {
             throw new \Exception('Animal not found');
@@ -80,17 +76,44 @@ class AnimalService
         $animal->requirements_for_new_family = $data['mainInfo']['specialRequirementsForNewFamily'];
         $animal->additional_notes = $data['mainInfo']['additionalNotes'];
         $animal->chronic_conditions = $data['mainInfo']['chronicConditions'];
-        
+
         $animal->update($data);
 
         $personalityTraits = [
-            'bold', 'shy', 'active', 'veryActive', 'calm', 'friendly', 'grumpy', 'vocal',
-            'dislikesTouching', 'sociable', 'aloof', 'goodAppetite', 'curious', 'playful',
-            'stressed', 'sensitive', 'peaceful', 'selfish', 'hisses', 'sleepsCuddling',
-            'likesPetting', 'likesAttention', 'likesPlayingWithPeople', 'likesPlayingAlone',
-            'usesLitterbox', 'usesScratchingpost', 'selectiveWithFood', 'adaptable',
-            'scratchesFurniture', 'trusting', 'attitudeTowardsCats', 'attitudeTowardsDogs',
-            'attitudeTowardsChildren', 'suitabilityForIndoorOrOutdoor',
+            'bold',
+            'shy',
+            'active',
+            'veryActive',
+            'calm',
+            'friendly',
+            'grumpy',
+            'vocal',
+            'dislikesTouching',
+            'sociable',
+            'aloof',
+            'goodAppetite',
+            'curious',
+            'playful',
+            'stressed',
+            'sensitive',
+            'peaceful',
+            'selfish',
+            'hisses',
+            'sleepsCuddling',
+            'likesPetting',
+            'likesAttention',
+            'likesPlayingWithPeople',
+            'likesPlayingAlone',
+            'usesLitterbox',
+            'usesScratchingpost',
+            'selectiveWithFood',
+            'adaptable',
+            'scratchesFurniture',
+            'trusting',
+            'attitudeTowardsCats',
+            'attitudeTowardsDogs',
+            'attitudeTowardsChildren',
+            'suitabilityForIndoorOrOutdoor',
         ];
 
         foreach ($personalityTraits as $trait) {
@@ -173,5 +196,24 @@ class AnimalService
             Storage::delete("images/{$file->uuid}.jpg");
             $file->delete();
         }
+    }
+
+    public static function findAnimal(array $criteria)
+    {
+        $query = Animal::query();
+
+        if (!empty($criteria['name'])) {
+            $query->where('name', 'like', '%' . $criteria['name'] . '%');
+        }
+
+        if (!empty($criteria['chip_number'])) {
+            $query->where('chip_number', $criteria['chip_number']);
+        }
+
+        $animal = $query->first();
+        if ($animal) {
+            return AnimalProfileDTO::fromModel($animal);
+        }
+        return null;
     }
 }

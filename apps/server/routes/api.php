@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\AnimalController;
 
 Route::prefix('')->group(function () {
     Route::post('/auth/login-google', [AuthController::class, 'loginGoogle']);
+    Route::post('/animals/find', [AnimalController::class, 'findAnimal']);
 
     Route::middleware('auth.jwt')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);

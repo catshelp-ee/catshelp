@@ -68,11 +68,12 @@ jobs:
             mv ${{ env.APP_ROOT }}/liides/oauth.json .
             mv ${{ env.APP_ROOT }}/liides/.env .
             mv ${{ env.APP_ROOT }}/liides/storage .
+            mv ${{ env.APP_ROOT }}/liides/${{ env.RELEASE_NAME }}.tar.gz .
 
             tar -xzf ${{ env.RELEASE_NAME }}.tar.gz
             rm ${{ env.RELEASE_NAME }}.tar.gz
 
-            composer install --no-dev
+            composer update
 
             # Run migrations
             php artisan migrate

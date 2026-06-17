@@ -34,7 +34,7 @@ jobs:
           GIT_SHA=$(git rev-parse --short HEAD)
           RELEASE_NAME=$TIMESTAMP-$GIT_SHA
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-          tar -czf $RELEASE_NAME.tar.gz build packages
+          tar -czf $RELEASE_NAME.tar.gz apps/server
 
       - name: 📤 Upload release to server
         uses: appleboy/scp-action@v0.1.4
@@ -46,7 +46,7 @@ jobs:
           source: "${{ env.RELEASE_NAME }}.tar.gz"
           target: "${{ env.APP_ROOT }}/liides"
 
-      - name: 🚀 Deploy and restart via PM2
+      - name: 🚀 Deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -56,15 +56,25 @@ jobs:
           script: |
             set -e
 
-            cd ${{ env.APP_ROOT }}/liides
-            rm -rf build packages
+            cd ${{ env.APP_ROOT }}/htdocs/liides
+            mv credentials.json ${{ env.APP_ROOT }}/liides
+            mv oauth.json ${{ env.APP_ROOT }}/liides
+            mv .env ${{ env.APP_ROOT }}/liides
+            mv storage ${{ env.APP_ROOT }}/liides
+
+            rm -rf ./*
+
+            mv ${{ env.APP_ROOT }}/liides/credentials.json .
+            mv ${{ env.APP_ROOT }}/liides/oauth.json .
+            mv ${{ env.APP_ROOT }}/liides/.env .
+            mv ${{ env.APP_ROOT }}/liides/storage .
+
             tar -xzf ${{ env.RELEASE_NAME }}.tar.gz
             rm ${{ env.RELEASE_NAME }}.tar.gz
 
-            # Run migrations
-            npm run migration:run
+            composer install --no-dev
 
-            # Start server
-            pm2 startOrRestart pm2.config.js
+            # Run migrations
+            php artisan migrate
 
             echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"

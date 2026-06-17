@@ -7,8 +7,8 @@ https://herd.laravel.com/windows
     Create the .env file in root folder based on the example
     Create the .env file in apps/server folder based on the example
     Add credentials.json to root folder
-5. You need to manually create the DB at the moment. (Use mariaDb)
-6. Run ```npm install``` install in app\server folder
+5. You need to manually create the DB at the moment. (Use download and use mariaDb)
+6. Run ```composer install``` install in app\server folder
 7. Build the app to before running migrations: ```npm run build```
 8. To run the frontend execute ```npm run client```
 

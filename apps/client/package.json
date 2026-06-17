@@ -10,8 +10,6 @@
         "lint:fix": "eslint . --fix"
     },
     "dependencies": {
-        "@catshelp/types": "^1.0.0",
-        "@catshelp/utils": "^1.0.0",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@mui/icons-material": "^9.0.0",

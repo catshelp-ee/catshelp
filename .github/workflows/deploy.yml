@@ -57,15 +57,11 @@ jobs:
             set -e
 
             cd ${{ env.APP_ROOT }}/htdocs/liides
-            mv credentials.json ${{ env.APP_ROOT }}/liides
-            mv oauth.json ${{ env.APP_ROOT }}/liides
             mv .env ${{ env.APP_ROOT }}/liides
             mv storage ${{ env.APP_ROOT }}/liides
 
             rm -rf ./*
 
-            mv ${{ env.APP_ROOT }}/liides/credentials.json .
-            mv ${{ env.APP_ROOT }}/liides/oauth.json .
             mv ${{ env.APP_ROOT }}/liides/.env .
             mv ${{ env.APP_ROOT }}/liides/storage .
             mv ${{ env.APP_ROOT }}/liides/${{ env.RELEASE_NAME }}.tar.gz .

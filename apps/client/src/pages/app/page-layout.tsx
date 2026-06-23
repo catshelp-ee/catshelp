@@ -1,24 +1,24 @@
 import type { AppMode } from '@config/app.ts';
-import { useAuth } from '@context/auth-context.tsx';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import AuthStore from '@stores/AuthStore.ts';
 
 import Header from './header.tsx';
 import Sidebar from './sidebar.tsx';
 
 const PageLayout = () => {
-    const { checkIfAdmin } = useAuth();
 
     const [appMode, setAppMode] = useState<AppMode>('foster');
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        if (!checkIfAdmin()) {
+        const isAdmin = AuthStore.isAdmin();
+        if (!isAdmin) {
             return;
         }
 
         setIsAdmin(true);
-    }, [checkIfAdmin]);
+    }, []);
 
     const DesktopView = () => {
         return (

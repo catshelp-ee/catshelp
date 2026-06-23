@@ -1,15 +1,20 @@
 import { AlertProvider } from '@context/alert-context.tsx';
-import { AuthProvider } from '@context/auth-context.tsx';
-import { IsMobileProvider } from '@context/is-mobile-context.tsx';
 import { LanguageProvider } from '@context/language-context.tsx';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { configure as configureMobx } from 'mobx';
 
 import { PostHogProviderWrapper } from './analytics/post-hog-provider-wrapper.tsx';
 import App from './app.tsx';
+
+configureMobx({
+    enforceActions: 'always',
+    computedRequiresReaction: true,
+    reactionRequiresObservable: true,
+});
 
 createRoot(document.getElementById('container')!).render(
     <PostHogProviderWrapper>
@@ -17,13 +22,9 @@ createRoot(document.getElementById('container')!).render(
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="et">
                 <BrowserRouter>
                     <AlertProvider>
-                        <AuthProvider>
-                            <IsMobileProvider>
-                                <LanguageProvider>
-                                    <App />
-                                </LanguageProvider>
-                            </IsMobileProvider>
-                        </AuthProvider>
+                        <LanguageProvider>
+                            <App />
+                        </LanguageProvider>
                     </AlertProvider>
                 </BrowserRouter>
             </LocalizationProvider>

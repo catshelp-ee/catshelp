@@ -53,9 +53,9 @@
             "@hooks/*": [
                 "./src/hooks/*"
             ],
-            "@server/*": [
-                "../server/src/*"
-            ],
+            "@stores/*": [
+                "./src/stores/*"
+            ]
         }
     },
     "include": [

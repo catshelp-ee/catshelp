@@ -1,15 +1,13 @@
 import { useAnimals } from '@hooks/use-animals.tsx';
 import { useTodos } from '@hooks/use-todos.tsx';
-import { useUser } from '@hooks/use-user.tsx';
+import AuthStore from '@stores/AuthStore.ts';
 import React from 'react';
 
 const Dashboard = () => {
-    const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
+    /*const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
     const { todos, loading: todosLoading, error: todosError } = useTodos(animals);
-    const { user, loading: userLoading, error: userError } = useUser();
-
-    const isLoading = userLoading || animalsLoading || todosLoading;
-    const error = userError || animalsError || todosError;
+    const { user } = AuthStore;
+    */
 
     return <div className="flex flex-col flex-1">TEST</div>;
 };

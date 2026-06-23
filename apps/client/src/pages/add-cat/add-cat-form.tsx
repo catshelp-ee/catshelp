@@ -1,5 +1,4 @@
 import { useAlert } from '@context/alert-context.tsx';
-import { useAuth } from '@context/auth-context.tsx';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Autocomplete, Button, ImageList, ImageListItem, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -9,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import States from './states.json' with { type: 'json' };
+import AuthStore from '@stores/AuthStore.ts';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -23,14 +23,13 @@ const VisuallyHiddenInput = styled('input')({
 const AddCatForm = () => {
     const [images, setImages] = useState<File[]>([]);
     const { showAlert } = useAlert();
-    const { getUser } = useAuth();
+    const { user } = AuthStore;
     const navigate = useNavigate();
 
     useEffect(() => {
         const checkUserRights = async () => {
             try {
-                const user = await getUser();
-                if (user.role !== 'ADMIN') {
+                if (user?.role !== 'ADMIN') {
                     showAlert('Error', 'Sul pole privileege, et kuva näha');
                     navigate(`/dashboard`);
                 }

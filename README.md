@@ -32,10 +32,8 @@ Move apps/server to htdocs/kiisud
 # Migrations
 For creating a migration table in db
 ```php artisan migrate:install```
-
 Run migrations
 ```php artisan migrate```
-
 Creating a migration script:
 ```php artisan make:migration script-name```
 
@@ -47,3 +45,6 @@ https://herd.laravel.com/docs/windows/debugging/xdebug
 Download the Xdebug helper by Jetbrains extension for your browser
 Create a launch json in vscode
 Run with F5
+
+# Running cron jobs
+php artisan tokens:prune-revoked

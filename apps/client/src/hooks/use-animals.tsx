@@ -1,7 +1,7 @@
 import { usersApi } from '@api/users.service.ts';
 import { useAlert } from '@context/alert-context.tsx';
-import { useUser } from '@hooks/use-user.tsx';
 import type { AnimalSummary } from '@interfaces/animal-summary.ts';
+import AuthStore from '@stores/AuthStore.ts';
 import { useEffect, useState } from 'react';
 
 export function useAnimals() {
@@ -10,11 +10,11 @@ export function useAnimals() {
     const [error, setError] = useState<Error | null>(null);
     const { showAlert } = useAlert();
 
-    const { user, loading: userLoading, error: userError } = useUser();
+    const { user } = AuthStore;
 
     useEffect(() => {
         // Don't fetch if user isn't loaded yet
-        if (userLoading || userError || !user) {
+        if (!user) {
             return;
         }
 

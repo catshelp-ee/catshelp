@@ -3,6 +3,7 @@
 namespace App\DTOs\Animal;
 
 use App\Models\Animal;
+use Illuminate\Support\Facades\Storage;
 
 readonly class AnimalSummaryDTO
 {
@@ -12,12 +13,20 @@ readonly class AnimalSummaryDTO
         public string $profilePicture,
     ) {}
 
-    public static function fromModel(Animal $animal, string $profilePicture): self
+    public static function fromModel(Animal $animal): self
     {
+        $profileFile = $animal->files()->where('type', 'profile')->first();
+        $imageData = '';
+        if ($profileFile) {
+            $contents = Storage::get("images/{$profileFile->uuid}.{$profileFile->extension}");
+            if ($contents !== null) {
+                $imageData = "data:image/{$profileFile->extension};base64," . base64_encode($contents);
+            }
+        }
         return new self(
             id: $animal->id,
             name: $animal->name,
-            profilePicture: $profilePicture,
+            profilePicture: $imageData,
         );
     }
 }

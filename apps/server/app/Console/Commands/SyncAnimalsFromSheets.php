@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\TransactionalCommand;
 use App\Models\Animal;
 use App\Models\AnimalCharacteristic;
 use App\Models\AnimalRescue;

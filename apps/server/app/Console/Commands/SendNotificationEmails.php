@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Console\TransactionalCommand;
+
 class SendNotificationEmails extends TransactionalCommand
 {
     protected $signature = 'email:send-notifications';

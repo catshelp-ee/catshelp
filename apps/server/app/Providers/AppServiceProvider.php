@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schedule::command('tokens:prune-revoked')->daily();
-        Schedule::command('users:sync-from-sheets')->daily();
-        Schedule::command('animals:sync-from-sheets')->daily();
+        //Schedule::command('users:sync-from-sheets')->daily();
+        Schedule::command('animals:sync-from-sheets')->everyTenMinutes();
     }
 }

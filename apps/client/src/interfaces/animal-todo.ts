@@ -1,11 +1,16 @@
+export interface AnimalTodos {
+    today: AnimalTodo[];
+    soon: AnimalTodo[];
+    later: AnimalTodo[];
+    completed: AnimalTodo[];
+}
+
 export interface AnimalTodo {
-    label: string;
+    id: number;
+    message: string;
     assignee: string;
-    due: string;
-    catColour: string;
-    urgent: boolean;
-    action: {
-        label: string;
-        redirect?: string;
-    };
+    due_date: string;
+    completed_date: string;
+    action_label: string;
+    action_redirect: string;
 }

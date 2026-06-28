@@ -1,57 +1,102 @@
 import { animalsApi } from '@api/animals.service.ts';
 import type { AnimalSummary } from '@interfaces/animal-summary.ts';
-import type { AnimalTodo } from '@interfaces/animal-todo.ts';
+import type { AnimalTodo, AnimalTodos } from '@interfaces/animal-todo.ts';
 import { useEffect, useState } from 'react';
 
-export function useTodos(animals: AnimalSummary[]) {
-    const [todos, setTodos] = useState([]);
+export function useTodos(selectedAnimalId: number | 'all', animals: AnimalSummary[]) {
+    const [todos, setTodos] = useState<AnimalTodos>();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
-        if (!animals || animals.length === 0) {
-            setLoading(false);
+    async function completeTask(todoId: number) {
+        if (!todos) {
             return;
         }
 
-        // Prevent state updates after component unmounts
-        // Example: User navigates away at 100ms, API returns at 500ms
-        // Without this check, setTodos() would run on unmounted component → warning/error
-        let isMounted = true;
+        await animalsApi.completeTodo(todoId);
+
+        let found: AnimalTodo | undefined;
+
+        const updatedGroups = {
+            today: todos.today.filter((t: AnimalTodo) => {
+                if (t.id === todoId) {
+                    found = t;
+                    return false;
+                }
+                return true;
+            }),
+            soon: todos.soon.filter((t: AnimalTodo) => {
+                if (t.id === todoId) {
+                    found = t;
+                    return false;
+                }
+                return true;
+            }),
+            later: todos.later.filter((t: AnimalTodo) => {
+                if (t.id === todoId) {
+                    found = t;
+                    return false;
+                }
+                return true;
+            }),
+            completed: todos.completed,
+        };
+
+        if (found) {
+            updatedGroups.completed = [
+                ...todos.completed,
+                {
+                    ...found,
+                    completed_date: new Date().toISOString(),
+                },
+            ];
+        }
+
+        setTodos(updatedGroups);
+    }
+
+    useEffect(() => {
+        const selectedAnimals = selectedAnimalId === 'all' ? animals : [animals.find((a) => a.id === Number(selectedAnimalId))];
+
+        if (selectedAnimals === undefined || selectedAnimals.length === 0) {
+            return;
+        }
 
         const fetchTodos = async () => {
             setLoading(true);
             setError(null);
 
             try {
-                const allTodos: AnimalTodo[] = [];
-                for (let i = 0; i < animals.length; i++) {
-                    const animalSummary = animals[i];
+                const allTodos: AnimalTodos = {
+                    today: [],
+                    soon: [],
+                    later: [],
+                    completed: [],
+                };
+                for (let i = 0; i < selectedAnimals.length; i++) {
+                    const animalSummary = selectedAnimals[i];
+
+                    if (!animalSummary) {
+                        continue;
+                    }
 
                     const todos = await animalsApi.getTodos(animalSummary.id);
-                    allTodos.push(...todos);
+                    allTodos.today.push(...todos.today);
+                    allTodos.soon.push(...todos.soon);
+                    allTodos.later.push(...todos.later);
+                    allTodos.completed.push(...todos.completed);
                 }
 
-                if (isMounted) {
-                    setTodos(allTodos);
-                }
+                setTodos(allTodos);
             } catch (e) {
-                if (isMounted) {
-                    setError(e as Error);
-                }
+                setError(e as Error);
             } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
+                setLoading(false);
             }
         };
 
         fetchTodos();
+    }, [selectedAnimalId, animals]);
 
-        return () => {
-            isMounted = false;
-        };
-    }, [animals]);
-
-    return { todos, loading, error };
+    return { todos, loading, error, completeTask };
 }

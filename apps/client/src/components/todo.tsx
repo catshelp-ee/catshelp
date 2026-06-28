@@ -18,16 +18,26 @@ function Todo({ todo, completeTask }: Props) {
     const isToday = new Date(todo.due_date).toDateString() === new Date().toDateString();
 
     const getBorderColor = () => {
-        if (todo.completed_date) return 'border-emerald-200 bg-emerald-50/50';
-        if (isPastDue) return 'border-red-200 bg-red-50/50';
-        if (isToday) return 'border-teal-200 bg-teal-50/50';
+        if (todo.completed_date) {
+            return 'border-emerald-200 bg-emerald-50/50';
+        }
+        if (isPastDue) {
+            return 'border-red-200 bg-red-50/50';
+        }
+        if (isToday) {
+            return 'border-teal-200 bg-teal-50/50';
+        }
         return 'border-gray-200 bg-white';
     };
 
     // Get cat emoji based on status
     const getCatEmoji = () => {
-        if (todo.completed_date) return '😸'; // Happy cat for done
-        if (isPastDue) return '😿'; // Crying cat for overdue
+        if (todo.completed_date) {
+            return '😸'; // Happy cat for done
+        }
+        if (isPastDue) {
+            return '😿'; // Crying cat for overdue
+        }
         return '😺'; // Smiling cat for normal/future tasks
     };
 

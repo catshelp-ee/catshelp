@@ -54,12 +54,6 @@ function Todos({ todos, completeTask }: props) {
                         </div>
                     </div>
                 )}
-
-                {/* Empty state 
-                {filteredTodos.filter((t) => t.status !== 'done').length === 0 && (
-                    <EmptyState icon={<CheckCircle2 className="w-16 h-16" />} title={t(translations.noTasks, language)} />
-                )}
-                  */}
             </div>
             {todos.completed.length > 0 && (
                 <section>

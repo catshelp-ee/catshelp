@@ -1,11 +1,10 @@
 import { useAnimals } from '@hooks/use-animals.tsx';
 import { useTodos } from '@hooks/use-todos.tsx';
-import AuthStore from '@stores/AuthStore.ts';
 import { useTranslation } from '@hooks/use-translation.tsx';
-import { useUser } from '@hooks/use-user.tsx';
-import type { AnimalSummary } from '@interfaces/animal-summary.ts';
 import { MenuItem, Select } from '@mui/material';
-import React, { useState } from 'react';
+import AuthStore from '@stores/AuthStore.ts';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 
 import Todos from './todos.tsx';
 
@@ -14,16 +13,10 @@ const Dashboard = () => {
     const [selectedAnimalId, setSelectedAnimalId] = useState<number | 'all'>('all');
     const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
     const { user } = AuthStore;
-    const {
-        todos,
-        loading: todosLoading,
-        error: todosError,
-    } = useTodos(selectedAnimalId === 'all' ? animals : [animals.find((a) => a.id === selectedAnimalId)]);
-    const isLoading = userLoading || animalsLoading || todosLoading;
-    const error = userError || animalsError || todosError;
+    const { todos, loading: todosLoading, error: todosError, completeTask } = useTodos(selectedAnimalId, animals);
+    const isLoading = animalsLoading || todosLoading;
+    const error = animalsError || todosError;
 
-    // Fucked bug kus useTodos kutsutakse esimesel renderil mingi 10 korda ja todosLoading
-    // koguaeg flipib ja laseb läbi undefined todos
     return (
         <div className="flex flex-col flex-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -42,9 +35,9 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {todos === undefined ? <div></div> : <Todos todos={todos} />}
+            {todos === undefined ? <div></div> : <Todos completeTask={completeTask} todos={todos} />}
         </div>
     );
 };
 
-export default Dashboard;
+export default observer(Dashboard);

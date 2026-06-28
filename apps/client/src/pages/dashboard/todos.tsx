@@ -1,18 +1,18 @@
 import Todo from '@components/todo.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
 import type { AnimalTodos } from '@interfaces/animal-todo.ts';
-import React from 'react';
 
 interface props {
-    todos?: AnimalTodos;
+    todos: AnimalTodos;
+    completeTask: (todoId: number) => void;
 }
 
-function Todos({ todos }: props) {
+function Todos({ todos, completeTask }: props) {
     const { t } = useTranslation();
+
     return (
         <div>
             <div className="space-y-6">
-                {/* Today */}
                 {todos.today.length > 0 && (
                     <div className="space-y-3">
                         <h3 className="font-medium text-gray-700 flex items-center gap-2">
@@ -21,13 +21,12 @@ function Todos({ todos }: props) {
                         </h3>
                         <div className="space-y-2">
                             {todos.today.map((todo) => (
-                                <Todo todo={todo} />
+                                <Todo completeTask={completeTask} todo={todo} />
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* Soon */}
                 {todos.soon.length > 0 && (
                     <div className="space-y-3">
                         <h3 className="font-medium text-gray-700 flex items-center gap-2">
@@ -36,13 +35,12 @@ function Todos({ todos }: props) {
                         </h3>
                         <div className="space-y-2">
                             {todos.soon.map((todo) => (
-                                <Todo todo={todo} />
+                                <Todo completeTask={completeTask} todo={todo} />
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* Later */}
                 {todos.later.length > 0 && (
                     <div className="space-y-3">
                         <h3 className="font-medium text-gray-700 flex items-center gap-2">
@@ -51,7 +49,7 @@ function Todos({ todos }: props) {
                         </h3>
                         <div className="space-y-2">
                             {todos.later.map((todo) => (
-                                <Todo todo={todo} />
+                                <Todo completeTask={completeTask} todo={todo} />
                             ))}
                         </div>
                     </div>
@@ -63,7 +61,6 @@ function Todos({ todos }: props) {
                 )}
                   */}
             </div>
-            {/* Completed tasks (last 2 weeks) */}
             {todos.completed.length > 0 && (
                 <section>
                     <h3 className="font-medium text-gray-700 flex items-center gap-2 mb-3">
@@ -72,7 +69,7 @@ function Todos({ todos }: props) {
                     </h3>
                     <div className="space-y-2">
                         {todos.completed.map((todo) => (
-                            <Todo todo={todo} />
+                            <Todo completeTask={completeTask} todo={todo} />
                         ))}
                     </div>
                 </section>

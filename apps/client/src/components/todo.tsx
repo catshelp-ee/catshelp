@@ -1,21 +1,24 @@
-import { formatDate } from '@catshelp/utils/src/date-utils.ts';
+import { animalsApi } from '@api/animals.service.ts';
 import { useTranslation } from '@hooks/use-translation.tsx';
 import type { AnimalTodo } from '@interfaces/animal-todo.ts';
 import { Button } from '@mui/material';
-import { Check, Clock, FileText, CheckSquare, BookOpen, Calendar, Upload, PencilLine } from 'lucide-react';
+import { Check, Clock, CheckSquare } from 'lucide-react';
+
+import { formatDate } from '../utils/date-utils.ts';
 
 interface Props {
     todo: AnimalTodo;
+    completeTask: (todoId: number) => void;
 }
 
-function Todo({ todo }: Props) {
+function Todo({ todo, completeTask }: Props) {
     const { t } = useTranslation();
 
-    const isPastDue = new Date(todo.due) < new Date();
-    const isToday = new Date(todo.due).toDateString() === new Date().toDateString();
+    const isPastDue = new Date(todo.due_date) < new Date();
+    const isToday = new Date(todo.due_date).toDateString() === new Date().toDateString();
 
     const getBorderColor = () => {
-        if (todo.completed) return 'border-emerald-200 bg-emerald-50/50';
+        if (todo.completed_date) return 'border-emerald-200 bg-emerald-50/50';
         if (isPastDue) return 'border-red-200 bg-red-50/50';
         if (isToday) return 'border-teal-200 bg-teal-50/50';
         return 'border-gray-200 bg-white';
@@ -23,7 +26,7 @@ function Todo({ todo }: Props) {
 
     // Get cat emoji based on status
     const getCatEmoji = () => {
-        if (todo.completed) return '😸'; // Happy cat for done
+        if (todo.completed_date) return '😸'; // Happy cat for done
         if (isPastDue) return '😿'; // Crying cat for overdue
         return '😺'; // Smiling cat for normal/future tasks
     };
@@ -37,14 +40,14 @@ function Todo({ todo }: Props) {
                         <span className="text-lg">{getCatEmoji()}</span>
                         <span className="text-sm font-semibold text-gray-700">{todo.assignee || t('you')}</span>
                     </div>
-                    <div className="text-sm text-gray-600 font-medium">{formatDate(todo.due)}</div>
+                    <div className="text-sm text-gray-600 font-medium">{formatDate(todo.due_date)}</div>
                 </div>
 
                 {/* Task title */}
-                <div className="text-base font-medium text-gray-900 leading-snug">{todo.label}</div>
+                <div className="text-base font-medium text-gray-900 leading-snug">{todo.message}</div>
 
                 {/* Status indicator for overdue */}
-                {isPastDue && (
+                {isPastDue && todo.completed_date === null && (
                     <div className="flex items-center gap-2 text-sm text-red-600 font-medium">
                         <Clock className="w-4 h-4" />
                         <span>{t('overdue')}</span>
@@ -52,7 +55,7 @@ function Todo({ todo }: Props) {
                 )}
 
                 {/* Actions */}
-                {todo.completed ? (
+                {todo.completed_date ? (
                     <div className="flex items-center gap-2 pt-2">
                         <div className="flex items-center gap-2 text-emerald-700 font-semibold">
                             <Check className="w-5 h-5" />
@@ -62,7 +65,7 @@ function Todo({ todo }: Props) {
                 ) : (
                     <div className="flex flex-wrap items-center gap-2 pt-2">
                         <Button
-                            href={todo.action.redirect}
+                            href={todo.action_redirect}
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{
@@ -77,7 +80,7 @@ function Todo({ todo }: Props) {
                                 textTransform: 'none',
                             }}
                         >
-                            {todo.action.label}
+                            {todo.action_label}
                         </Button>
 
                         <Button
@@ -96,6 +99,7 @@ function Todo({ todo }: Props) {
                                 gap: 1,
                                 textTransform: 'none',
                             }}
+                            onClick={() => completeTask(todo.id)}
                         >
                             <CheckSquare className="w-4 h-4" />
                             {t('markDone')}

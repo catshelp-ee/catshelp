@@ -12,8 +12,8 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/et.js';
 import localeData from 'dayjs/plugin/localeData.js';
 import weekday from 'dayjs/plugin/weekday.js';
-import { Navigate, Route, Routes } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);

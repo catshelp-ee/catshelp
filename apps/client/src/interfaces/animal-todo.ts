@@ -6,12 +6,11 @@ export interface AnimalTodos {
 }
 
 export interface AnimalTodo {
-    label: string;
+    id: number;
+    message: string;
     assignee: string;
-    due: string;
-    completed: boolean;
-    action: {
-        label: string;
-        redirect?: string;
-    };
+    due_date: string;
+    completed_date: string;
+    action_label: string;
+    action_redirect: string;
 }

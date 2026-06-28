@@ -49,9 +49,13 @@ class AnimalController extends Controller
         return response()->json(["profiles" => AnimalService::getUserProfiles()]);
     }
 
-    public function getAnimalTodos()
+    public function todos(int $id)
     {
-        //TODO Not implemented yet
+        return response()->json(AnimalService::getTodos($id));
+    }
+
+    public function updateTodo(Request $request, int $id){
+        return response()->json(AnimalService::updateTodo($id, $request->all()));
     }
 
     public function findAnimal(Request $request) {

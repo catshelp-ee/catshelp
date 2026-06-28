@@ -47,6 +47,11 @@ class Animal extends Model
         return $this->hasMany(File::class);
     }
 
+    public function todos()
+    {
+        return $this->hasMany(Todo::class);
+    }
+
     public function profileFile()
     {
         return $this->hasOne(File::class, 'profile_animal_id');

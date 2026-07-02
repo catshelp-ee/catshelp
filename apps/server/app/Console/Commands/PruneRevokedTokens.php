@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\TransactionalCommand;
 use App\Models\RevokedToken;
 
 class PruneRevokedTokens extends TransactionalCommand

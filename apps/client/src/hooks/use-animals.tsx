@@ -18,11 +18,6 @@ export function useAnimals() {
             return;
         }
 
-        // Prevent state updates after component unmounts
-        // Example: User navigates away at 100ms, API returns at 500ms
-        // Without this check, setAnimals() would run on unmounted component → warning/error
-        let isMounted = true;
-
         const fetchAnimals = async () => {
             setLoading(true);
             setError(null);
@@ -30,33 +25,23 @@ export function useAnimals() {
             try {
                 const animalSummaries = await usersApi.getUserAnimals(user.id);
 
-                if (isMounted) {
-                    setAnimals(animalSummaries);
-                }
+                setAnimals(animalSummaries);
             } catch (e) {
-                if (isMounted) {
-                    setError(e as Error);
-                    showAlert('Error', 'Tekkis probleem kasside laadimisega');
-                }
+                setError(e as Error);
+                showAlert('Error', 'Tekkis probleem kasside laadimisega');
             } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
+                setLoading(false);
             }
         };
 
         fetchAnimals().catch((e) => {
             console.error('Unexpected error in fetchAnimals:', e);
         });
-
-        return () => {
-            isMounted = false;
-        };
-    }, [user, userLoading, userError, showAlert]);
+    }, [user, showAlert]);
 
     return {
         animals,
-        loading: userLoading || loading,
-        error: userError || error,
+        loading,
+        error,
     };
 }

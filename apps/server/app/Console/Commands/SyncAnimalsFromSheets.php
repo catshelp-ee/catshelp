@@ -112,6 +112,18 @@ class SyncAnimalsFromSheets extends TransactionalCommand
             if (str_contains($header, 'PÄÄSTETUD JÄRJEKORRA NR')) {
                 return 'jarjekorraNr';
             }
+            if (str_contains($header, 'KIIP LLR-is MTÜ nimel')) {
+                return 'KIIP_LLR-is_MTÜ_nimel';
+            }
+            if (str_contains($header, 'PÄÄSTMIS')) {
+                return 'PÄÄSTMIS_KP';
+            }
+            if (str_contains($header, 'HOIUKODU')) {
+                return 'HOIUKODU_NIMI';
+            }
+            if (str_contains($header, 'KASSI NIMI') || str_contains($header, 'Fk')) {
+                return 'KASSI_NIMI';
+            }
             return str_replace(' ', '_', $header);
         }, $headerRow);
     }
@@ -133,11 +145,11 @@ class SyncAnimalsFromSheets extends TransactionalCommand
 
     private function diff(array $current, array $previous): array
     {
-        $previousHashes = array_column($previous, '_hash', 'jarjekorraNr');
-        $currentRankNrs = array_column($current, 'jarjekorraNr');
+        $previousHashes = array_column($previous, '_hash', 'JÄRJEKORRA_NUMBER');
+        $currentRankNrs = array_column($current, 'JÄRJEKORRA_NUMBER');
 
         $toUpdate = array_values(array_filter($current, function (array $row) use ($previousHashes) {
-            $rankNr = $row['jarjekorraNr'] ?? '';
+            $rankNr = $row['JÄRJEKORRA_NUMBER'] ?? '';
             return $rankNr && ($previousHashes[$rankNr] ?? null) !== $row['_hash'];
         }));
 
@@ -150,7 +162,7 @@ class SyncAnimalsFromSheets extends TransactionalCommand
 
     private function syncRow(array $row): void
     {
-        $rankNr = $row['jarjekorraNr'] ?? '';
+        $rankNr = $row['JÄRJEKORRA_NUMBER'] ?? '';
         if (!$rankNr) {
             return;
         }
@@ -162,16 +174,16 @@ class SyncAnimalsFromSheets extends TransactionalCommand
             'name'                    => $row['KASSI_NIMI'] ?? null,
             'birthday'                => $this->parseDate($row['SÜNNIAEG'] ?? null),
             'chip_number'             => ($row['KIIP'] ?? '') ?: null,
-            'chip_registered_with_us' => ($row['KIIP_LLR-is_MTÜ_nimel-_täidab_registreerija'] ?? '') === 'Jah',
+            'chip_registered_with_us' => ($row['KIIP_LLR-is_MTÜ_nimel'] ?? '') === 'Jah',
         ])->save();
 
         $rescue->fill([
             'animal_id'   => $animal->id,
             'address'     => $row['LEIDMISKOHT'] ?? null,
-            'rescue_date' => $this->parseDate($row['PÄÄSTMISKP/_SÜNNIKP'] ?? null),
+            'rescue_date' => $this->parseDate($row['PÄÄSTMIS_KP'] ?? null),
         ])->save();
 
-        $fosterHomeName = $row['_HOIUKODU/_KLIINIKU_NIMI'] ?? '';
+        $fosterHomeName = $row['HOIUKODU_NIMI'] ?? '';
         if ($fosterHomeName) {
             $user       = User::firstOrCreate(['full_name' => $fosterHomeName]);
             $fosterHome = FosterHome::firstOrCreate(['user_id' => $user->id]);

@@ -7,7 +7,7 @@ use App\Models\Animal;
 readonly class AnimalProfileMainInfoDTO
 {
     public function __construct(
-        public string $name,
+        public ?string $name,
         public string $rankNr,
         public ?\DateTime $birthDate,
         public ?\DateTime $rescueDate,

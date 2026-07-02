@@ -9,8 +9,8 @@ readonly class AnimalSummaryDTO
 {
     public function __construct(
         public int $id,
-        public string $name,
-        public string $profilePicture,
+        public ?string $name,
+        public ?string $profilePicture,
     ) {}
 
     public static function fromModel(Animal $animal): self

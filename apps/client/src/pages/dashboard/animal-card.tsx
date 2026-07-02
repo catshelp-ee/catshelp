@@ -2,8 +2,10 @@ import { animalsApi } from '@api/animals.service.ts';
 import { StatusBadge } from '@components/status-badge.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
 import type { AnimalSummary } from '@interfaces/animal-summary.ts';
+import { calculateAge } from '@utils/date-utils.ts';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Props {
     animalSummary: AnimalSummary;
@@ -20,32 +22,6 @@ export function AnimalCard({ animalSummary }: Props) {
         };
         fetchAnimal();
     }, [animalSummary]);
-
-    // Reactive calculations
-    const { ageText } = useMemo(() => {
-        if (!animal || animal.mainInfo.birthDate === '') {
-            return { ageText: '' };
-        }
-
-        // 1. Calculate Age
-        const birthDate = new Date(animal.mainInfo.birthDate);
-        const today = new Date();
-        let months = (today.getFullYear() - birthDate.getFullYear()) * 12;
-        months += today.getMonth() - birthDate.getMonth();
-        if (today.getDate() < birthDate.getDate()) months--;
-        const ageInMonths = Math.max(0, months);
-
-        let ageStr = '';
-        if (ageInMonths < 12) {
-            ageStr = `${ageInMonths} ${t('monthsOld')}`;
-        } else if (ageInMonths < 24) {
-            ageStr = `1 ${t('yearOld')}`;
-        } else {
-            ageStr = `${Math.floor(ageInMonths / 12)} ${t('yearsOld')}`;
-        }
-
-        return { ageText: ageStr };
-    }, [animal, t]);
 
     // Safety check: Show a skeleton or nothing if data is still loading
     if (!animal) {
@@ -65,19 +41,19 @@ export function AnimalCard({ animalSummary }: Props) {
                         {animal.mainInfo.status !== '' && <StatusBadge status={animal.mainInfo.status} size="sm" />}
                     </div>
                     <p className="text-sm text-gray-600 font-medium">
-                        {ageText}
+                        {calculateAge(new Date(animal.mainInfo.birthDate))}
                         {animal.mainInfo.gender !== '' ? ` • ${t(animal.mainInfo.gender)}` : ''}
                         {animal.mainInfo.coatColour !== '' ? ` • ${t(animal.mainInfo.coatColour)}` : ''}
                     </p>
                 </div>
 
-                <a
-                    href={`/cat-profiles?cat=${animal.animalId}`}
-                    className="flex items-center gap-2 w-full px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-colors flex items-center justify-center gap-2 mt-3"
+                <Link
+                    to={`/cat-profiles?cat=${animal.animalId}`}
+                    className="w-full px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-colors flex items-center justify-center gap-2 mt-3"
                 >
                     {t('openProfile')}
                     <ArrowRight className="w-4 h-4" />
-                </a>
+                </Link>
             </div>
         </div>
     );

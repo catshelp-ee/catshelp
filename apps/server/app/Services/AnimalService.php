@@ -5,12 +5,16 @@ namespace App\Services;
 use App\DTOs\Animal\AnimalProfileDTO;
 use App\DTOs\Animal\AnimalProfileImageDTO;
 use App\DTOs\Animal\AnimalSummaryDTO;
+use App\DTOs\TodoDTO;
 use App\Models\Animal;
 use App\Models\AnimalCharacteristic;
 use App\Models\File;
+use App\Models\Todo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+
 
 class AnimalService
 {
@@ -113,6 +117,7 @@ class AnimalService
             'attitudeTowardsCats',
             'attitudeTowardsDogs',
             'attitudeTowardsChildren',
+            'attitudeTowardsChildren',
             'suitabilityForIndoorOrOutdoor',
         ];
 
@@ -211,9 +216,81 @@ class AnimalService
         }
 
         $animal = $query->first();
-        if ($animal) {
+        if ($animal)
+        {
             return AnimalProfileDTO::fromModel($animal);
         }
         return null;
     }
+
+    public static function getTodos(int $id)
+    {
+        $todos = Todo::where('animal_id', $id)->get();
+
+        $now = Carbon::now()->startOfDay();
+
+        $grouped = [
+            'today' => [],
+            'soon' => [],
+            'later' => [],
+            'completed' => [],
+        ];
+
+        $animalName = Animal::find($id)->name;
+        foreach ($todos as $todo) {
+
+            $model = TodoDTO::fromModel($todo, $animalName);
+            $twoWeeksAgo = Carbon::parse($todo->due_date)->subWeeks(2)->startOfDay();
+
+
+            if ($model == null){
+                continue;
+            }
+
+            // completed always wins
+            if (!empty($todo->completed_date)) {
+                $grouped['completed'][] = $model;
+                continue;
+            }
+
+            $date = Carbon::parse($todo->due_date);
+
+            // today or past → today
+            if ($date <= $now) {
+                $grouped['today'][] = $model;
+                continue;
+            }
+
+            // within 2 weeks → soon
+            if ($twoWeeksAgo <= $now && $now <= $date ) {
+                $grouped['soon'][] = $model;
+                continue;
+            }
+
+            // more than 2 weeks → later
+            $grouped['later'][] = $model;
+        }
+
+        return $grouped;
+    }
+
+    public static function updateTodo(int $id, array $data)
+    {
+        $todo = Todo::findOrFail($id);
+
+        // If marking as completed, auto-set timestamp if not provided
+        if (isset($data['completed_date']) && !$data['completed_date']) {
+            $data['completed_date'] = Carbon::now();
+        }
+
+        // Optional: enforce completion logic
+        if (!empty($data['completed_date']) && !$todo->completed_date) {
+            $data['completed_date'] = Carbon::now();
+        }
+
+        $todo->update($data);
+
+        return $todo->fresh();
+    }
+
 }

@@ -1,5 +1,4 @@
 import { useAlert } from '@context/alert-context.tsx';
-import { useAuth } from '@context/auth-context.tsx';
 import type { SelectChangeEvent } from '@mui/material';
 import { Button, Select, MenuItem, InputLabel } from '@mui/material';
 import axios from 'axios';
@@ -7,9 +6,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AdminCatList from './admin-cat-list.tsx';
+import AuthStore from '@stores/AuthStore.ts';
 
 const Admin = () => {
-    const { getUser } = useAuth();
+    const {user} = AuthStore;
     const { showAlert } = useAlert();
     const navigate = useNavigate();
     const [cronJob, setCronJob] = useState('');
@@ -17,8 +17,7 @@ const Admin = () => {
     useEffect(() => {
         const checkUserRights = async () => {
             try {
-                const user = await getUser();
-                if (user.role !== 'ADMIN') {
+                if (user?.role !== 'ADMIN') {
                     showAlert('Error', 'Sul pole privileege, et kuva näha');
                     navigate(`/dashboard`);
                 }

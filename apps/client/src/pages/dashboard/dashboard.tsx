@@ -1,18 +1,16 @@
 import { useAnimals } from '@hooks/use-animals.tsx';
 import { useTodos } from '@hooks/use-todos.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
-import { useUser } from '@hooks/use-user.tsx';
-import React from 'react';
+
 import { AnimalCard } from './animal-card.tsx';
 
 const Dashboard = () => {
     const { t } = useTranslation();
     const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
+    /*const { animals, loading: animalsLoading, error: animalsError } = useAnimals();
     const { todos, loading: todosLoading, error: todosError } = useTodos(animals);
-    const { user, loading: userLoading, error: userError } = useUser();
-
-    const isLoading = userLoading || animalsLoading || todosLoading;
-    const error = userError || animalsError || todosError;
+    const { user } = AuthStore;
+    */
 
     return (
         <div className="">

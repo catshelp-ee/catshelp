@@ -1,9 +1,9 @@
 import { useAlert } from '@context/alert-context.tsx';
-import { useAuth } from '@context/auth-context.tsx';
 import { useIsMobile } from '@context/is-mobile-context.tsx';
 import { createContextHook } from '@hooks/create-context-hook.tsx';
 import { isLoadingWrapper } from '@hooks/is-loading.tsx';
 import CircularProgress from '@mui/material/CircularProgress';
+import AuthStore from '@stores/AuthStore.ts';
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -20,13 +20,11 @@ const AdminCatList: React.FC = () => {
     const { showAlert } = useAlert();
     const [isLoading, setIsLoading] = useState(false);
     const [animals, setAnimals] = useState([]);
-    const { getUser } = useAuth();
+    const { user } = AuthStore;
     const isMobile = useIsMobile();
 
     useEffect(() => {
         const loadUserCats = async () => {
-            const user = await getUser();
-
             try {
                 const response = await axios.get(`/api/animals/profiles/users/${user.id}`, {
                     withCredentials: true,

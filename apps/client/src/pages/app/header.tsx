@@ -1,10 +1,9 @@
 import type { AppMode } from '@config/app.ts';
 import type { Language } from '@config/app.ts';
 import { LANGUAGES } from '@config/app.ts';
-import { useAuth } from '@context/auth-context.tsx';
 import { useLanguage } from '@context/language-context.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
-import { useUser } from '@hooks/use-user.tsx';
+import AuthStore from '@stores/AuthStore.ts';
 import { Shield, User, Heart, LogOut } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
@@ -59,7 +58,7 @@ const UserAvatar = ({ onLogout }: UserAvatarProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const { t } = useTranslation();
-    const { user } = useUser();
+    const { user } = AuthStore;
 
     useEffect(() => {
         // Close the dropdown when clicking outside the avatar/menu
@@ -118,7 +117,7 @@ interface HeaderProps {
 
 const Header = ({ appMode, isAdmin, setAppMode }: HeaderProps) => {
     const { language, setLanguage } = useLanguage();
-    const { logout } = useAuth();
+    const { logout } = AuthStore;
     const isFosterMode = appMode === 'foster';
 
     return (

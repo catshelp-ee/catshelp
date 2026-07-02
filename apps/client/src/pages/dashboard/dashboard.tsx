@@ -1,6 +1,7 @@
 import { useAnimals } from '@hooks/use-animals.tsx';
 import { useTodos } from '@hooks/use-todos.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
+import { observer } from 'mobx-react-lite';
 
 import { AnimalCard } from './animal-card.tsx';
 
@@ -26,4 +27,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default observer(Dashboard);

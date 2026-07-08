@@ -117,7 +117,6 @@ class AnimalService
             'attitudeTowardsCats',
             'attitudeTowardsDogs',
             'attitudeTowardsChildren',
-            'attitudeTowardsChildren',
             'suitabilityForIndoorOrOutdoor',
         ];
 
@@ -240,12 +239,12 @@ class AnimalService
         foreach ($todos as $todo) {
 
             $model = TodoDTO::fromModel($todo, $animalName);
-            $twoWeeksAgo = Carbon::parse($todo->due_date)->subWeeks(2)->startOfDay();
-
 
             if ($model == null){
                 continue;
             }
+
+            $twoWeeksAgo = Carbon::parse($todo->due_date)->subWeeks(2)->startOfDay();
 
             // completed always wins
             if (!empty($todo->completed_date)) {

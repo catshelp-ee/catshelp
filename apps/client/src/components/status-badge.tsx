@@ -1,8 +1,8 @@
 import { useTranslation } from '@hooks/use-translation.tsx';
-import { IAnimal } from '@catshelp/types/src/index.ts';
+import { AnimalSummary } from '@interfaces/animal-summary.ts';
 
 interface Props {
-    status: IAnimal['status'];
+    status: AnimalSummary['status'];
     size?: 'sm' | 'md';
 }
 

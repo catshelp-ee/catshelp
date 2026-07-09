@@ -1,15 +1,16 @@
 import { animalsApi } from '@api/animals.service.ts';
-import { usersApi } from '@api/users.service.ts';
-import { useAlert } from '@context/alert-context.tsx';
-import { useTranslation } from '@hooks/use-translation.tsx';
-import type { AnimalSummary } from '@interfaces/animal-summary.ts';
 import type { AnimalTodo, AnimalTodos } from '@interfaces/animal-todo.ts';
 import { MenuItem, Select } from '@mui/material';
-import AuthStore from '@stores/AuthStore.ts';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
 
 import Todos from './todos.tsx';
+import { useTranslation } from '@hooks/use-translation.tsx';
+import { AnimalCard } from './animal-card.tsx';
+import { useEffect, useState } from 'react';
+import AuthStore from '@stores/AuthStore.ts';
+import { AnimalSummary } from '@interfaces/animal-summary.ts';
+import { useAlert } from '@context/alert-context.tsx';
+import { usersApi } from '@api/users.service.ts';
 
 const Dashboard = () => {
     const { t } = useTranslation();
@@ -68,7 +69,7 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        if (!user) {
+       if (!user) {
             return;
         }
 
@@ -123,7 +124,15 @@ const Dashboard = () => {
 
     return (
         <div className="flex flex-col flex-1">
+            <h2 className="font-semibold text-xl text-gray-900 mb-4"> {t('myCats')} </h2>
+
+            <div className="flex gap-4"> {animals.map((animal) => (
+                    <AnimalCard key={animal.id} animalSummary={animal} />
+                ))}
+            </div>
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+
                 <h2 className="text-xl font-semibold text-gray-900">{t('nextTodos')}</h2>
 
                 {/* Filters */}

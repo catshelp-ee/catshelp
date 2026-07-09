@@ -1,4 +1,5 @@
 import type { AnimalTodo, AnimalTodos } from '@interfaces/animal-todo.ts';
+import { Profile } from '@interfaces/profile.ts';
 import axios from 'axios';
 
 export const animalsApi = {
@@ -9,4 +10,6 @@ export const animalsApi = {
                 completed_date: new Date().toISOString(),
             })
             .then((r) => r.data),
+
+    getAnimal: (animalId: number): Promise<Profile> => axios.get<Profile>(`/api/animals/${animalId}/profile`).then((r) => r.data),
 };

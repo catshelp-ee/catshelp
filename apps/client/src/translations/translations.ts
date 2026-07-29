@@ -94,11 +94,11 @@ export const translations = {
 
     // Cat card
     openProfile: { et: 'Ava profiil', en: 'Open profile', ru: 'Открыть профиль' },
-    monthsOld: { et: 'kuud vana', en: 'months old', ru: 'месяцев' },
-    yearOld: { et: 'aasta vana', en: 'year old', ru: 'год' },
-    yearsOld: { et: 'aastat vana', en: 'years old', ru: 'лет' },
-    male: { et: 'isane', en: 'male', ru: 'самец' },
-    female: { et: 'emane', en: 'female', ru: 'самка' },
+    months: { et: 'kuud', en: 'months', ru: 'месяцев' },
+    conj: { et: 'ja', en: 'and', ru: 'и'},
+    years: { et: 'aastat', en: 'years', ru: 'лет' },
+    MALE: { et: 'isane', en: 'male', ru: 'самец' },
+    FEMALE: { et: 'emane', en: 'female', ru: 'самка' },
 
     // Status badges
     lookingForHome: { et: 'Otsib kodu', en: 'Looking for home', ru: 'Ищет дом' },

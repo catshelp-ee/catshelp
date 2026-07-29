@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export const parseDate = (dateString: string | Date): Date | null => {
+export const parseDate = (dateString: string | Date, t): Date | null => {
     if (!dateString) {
         return null;
     }
@@ -9,7 +9,7 @@ export const parseDate = (dateString: string | Date): Date | null => {
     return parsed.isValid() ? parsed.toDate() : null;
 };
 
-export const calculateAge = (birthDate: Date): string => {
+export const calculateAge = (birthDate: Date, t: (s: string) => string): string => {
     if (!birthDate) {
         return '';
     }
@@ -27,13 +27,13 @@ export const calculateAge = (birthDate: Date): string => {
     );
 
     if (years === 0) {
-        return `${months} kuud`;
+        return `${months} ${t('months')}`;
     }
 
     if (months === 0) {
-        return `${years} aastat`;
+        return `${years} ${t('years')}`;
     }
-    return `${years} aastat ja ${months} kuud`;
+    return `${years} ${t('years')} ${t('conj')} ${months} ${t('months')}`;
 };
 
 export const isFutureDate = (date: Date): boolean => {

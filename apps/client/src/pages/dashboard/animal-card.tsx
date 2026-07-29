@@ -2,6 +2,7 @@ import { animalsApi } from '@api/animals.service.ts';
 import { StatusBadge } from '@components/status-badge.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
 import type { AnimalSummary } from '@interfaces/animal-summary.ts';
+import { Profile } from '@interfaces/profile.ts';
 import { calculateAge } from '@utils/date-utils.ts';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ interface Props {
 
 export function AnimalCard({ animalSummary }: Props) {
     const { t } = useTranslation();
-    const [animal, setAnimal] = useState();
+    const [animal, setAnimal] = useState<Profile>();
 
     useEffect(() => {
         const fetchAnimal = async () => {
@@ -37,11 +38,11 @@ export function AnimalCard({ animalSummary }: Props) {
             <div className="p-5 flex flex-col flex-1">
                 <div className="space-y-2 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-bold text-lg text-gray-900">{animal.name}</h3>
+                        <h3 className="font-bold text-lg text-gray-900">{animal.mainInfo.name}</h3>
                         {animal.mainInfo.status !== '' && <StatusBadge status={animal.mainInfo.status} size="sm" />}
                     </div>
                     <p className="text-sm text-gray-600 font-medium">
-                        {calculateAge(new Date(animal.mainInfo.birthDate))}
+                        {calculateAge(new Date(animal.mainInfo.birthDate), t)}
                         {animal.mainInfo.gender !== '' ? ` • ${t(animal.mainInfo.gender)}` : ''}
                         {animal.mainInfo.coatColour !== '' ? ` • ${t(animal.mainInfo.coatColour)}` : ''}
                     </p>

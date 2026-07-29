@@ -11,7 +11,7 @@ readonly class AnimalSummaryDTO
         public int $id,
         public string $name,
         public string $profilePicture,
-        public string $status,
+        public ?string $status,
     ) {}
 
     public static function fromModel(Animal $animal): self

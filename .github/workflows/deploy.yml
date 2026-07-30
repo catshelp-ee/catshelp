@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.CATSHELP_SSH_KEY }}
           port: 22
-          source: "${{ env.RELEASE_NAME }}.tar.gz"
+          source: "${{ env.RELEASE_NAME }}.tar.gz,deploy.sh"
           target: "${{ env.APP_ROOT }}/liides"
 
       - name: 🚀 Deploy
@@ -56,22 +56,5 @@ jobs:
           script: |
             set -e
 
-            cd ${{ env.APP_ROOT }}/htdocs/liides
-            mv .env ${{ env.APP_ROOT }}/liides
-            mv storage ${{ env.APP_ROOT }}/liides
-
-            rm -rf ./*
-
-            mv ${{ env.APP_ROOT }}/liides/.env .
-            mv ${{ env.APP_ROOT }}/liides/storage .
-            mv ${{ env.APP_ROOT }}/liides/${{ env.RELEASE_NAME }}.tar.gz .
-
-            tar -xzf ${{ env.RELEASE_NAME }}.tar.gz
-            rm ${{ env.RELEASE_NAME }}.tar.gz
-
-            composer update
-
-            # Run migrations
-            php artisan migrate
-
-            echo "✅ Deployed ${{ env.RELEASE_NAME }} successfully"
+            chmod +x ${{ env.APP_ROOT }}/liides/deploy.sh
+            ${{ env.APP_ROOT }}/liides/deploy.sh ${{ env.APP_ROOT }}/htdocs/liides

@@ -55,7 +55,7 @@ class AuthStore {
     }
 
     public isAdmin() {
-        return this.user?.role === 'admin';
+        return this.user?.role === 'ADMIN';
     }
 
     /**

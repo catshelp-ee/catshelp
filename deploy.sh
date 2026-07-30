@@ -33,6 +33,7 @@ rm "$DEPLOY_TAR"
 
 cd "$DEPLOY_DIR"
 
+composer update
 composer install --no-dev
 php artisan migrate --force
 

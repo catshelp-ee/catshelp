@@ -2,9 +2,14 @@ export const translations = {
     // Navigation
     nav: {
         title: {
-            et: 'CatsHelp hoiukoduportaal',
-            en: 'CatsHelp foster home portal',
-            ru: 'CatsHelp Портал передержки',
+            et: 'Cats Help Hoiukoduportaal',
+            en: 'Cats Help Foster Home Portal',
+            ru: 'Cats Help Портал передержки',
+        },
+        titleAdmin: {
+            et: 'Loomade varjupaiga haldussüsteem',
+            en: 'Animal Shelter Management System',
+            ru: 'Система управления приютом для животных',
         },
         dashboard: { et: 'Töölaud', en: 'Dashboard', ru: 'Панель' },
         catProfile: { et: 'Kassi profiil', en: 'Cat Profile', ru: 'Профиль кота' },

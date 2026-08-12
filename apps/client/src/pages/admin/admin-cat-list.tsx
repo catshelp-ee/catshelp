@@ -1,67 +1,21 @@
-import { useAlert } from '@context/alert-context.tsx';
-import { useIsMobile } from '@context/is-mobile-context.tsx';
-import { createContextHook } from '@hooks/create-context-hook.tsx';
-import { isLoadingWrapper } from '@hooks/is-loading.tsx';
-import CircularProgress from '@mui/material/CircularProgress';
-import AuthStore from '@stores/AuthStore.ts';
-import axios from 'axios';
-import React, { createContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-interface LoadingContextType {
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const IsLoadingContext = createContext<LoadingContextType | undefined>(undefined);
-export const useLoading = createContextHook(IsLoadingContext, 'useLoading');
+import React from 'react';
 
 const AdminCatList: React.FC = () => {
-    const { showAlert } = useAlert();
-    const [isLoading, setIsLoading] = useState(false);
-    const [animals, setAnimals] = useState([]);
-    const { user } = AuthStore;
-    const isMobile = useIsMobile();
 
-    useEffect(() => {
-        const loadUserCats = async () => {
-            try {
-                const response = await axios.get(`/api/animals/profiles/users/${user.id}`, {
-                    withCredentials: true,
-                });
-
-                setAnimals(response.data.profiles);
-            } catch (error) {
-                console.error('Error loading cat profiles:', error);
-                showAlert('Error', 'Kassi andmete pärimine ebaõnnestus');
-            }
-        };
-
-        const fetchAndSetCatsWithLoading = async () => {
-            await isLoadingWrapper(loadUserCats, setIsLoading);
-        };
-
-        fetchAndSetCatsWithLoading();
-    }, []);
-
+    const filteredAndSortedCats = [];
+    const filters = {};
     return (
-        <IsLoadingContext.Provider value={{ isLoading, setIsLoading }}>
-            <div className={`flex flex-col flex-1 ${isMobile ? 'mx-4' : 'mx-24'}`}>
-                <div className={`flex flex-col ${isMobile ? 'items-center' : ''}`}>
-                    {isLoading && <CircularProgress />}
-                    <ul>
-                        {animals.length !== 0 &&
-                            animals.map((animal) => (
-                                <li>
-                                    <Link key={animal.id} to={`/admin-cat-profile/${animal.id}`} aria-label={`Vaata ${animal.name} profiili`}>
-                                        {animal.name}
-                                    </Link>
-                                </li>
-                            ))}
-                    </ul>
+        <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Kasside ülevaade</h2>
+                    <p className="text-sm sm:text-base text-gray-600 mt-1">
+                        {filteredAndSortedCats.length} kass{filteredAndSortedCats.length !== 1 ? 'i' : ''}
+                        {filters.searchQuery && ` vastab otsingule "${filters.searchQuery}"`}
+                    </p>
                 </div>
             </div>
-        </IsLoadingContext.Provider>
+        </div>
     );
 };
 

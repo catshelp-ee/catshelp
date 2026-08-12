@@ -7,10 +7,10 @@ import AuthStore from '@stores/AuthStore.ts';
 import { Shield, User, Heart, LogOut } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const tabButtonClass = (isActive: boolean) =>
-    `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-        isActive ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+    `flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors ${isActive ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
     }`;
 
 interface ModeSwitcherProps {
@@ -20,14 +20,21 @@ interface ModeSwitcherProps {
 
 const ModeSwitcher = ({ appMode, setAppMode }: ModeSwitcherProps) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     return (
         <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-            <button onClick={() => setAppMode('foster')} className={tabButtonClass(appMode === 'foster')}>
+            <button onClick={() => {
+                setAppMode('foster');
+                navigate("/dashboard");
+            }} className={tabButtonClass(appMode === 'foster')}>
                 <Heart className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">{t('mode.foster')}</span>
             </button>
-            <button onClick={() => setAppMode('admin')} className={tabButtonClass(appMode === 'admin')}>
+            <button onClick={() => {
+                setAppMode('admin');
+                navigate("/admin/cat-list");
+            }} className={tabButtonClass(appMode === 'admin')}>
                 <Shield className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">{t('mode.admin')}</span>
             </button>
@@ -37,7 +44,7 @@ const ModeSwitcher = ({ appMode, setAppMode }: ModeSwitcherProps) => {
 
 interface LanguageSwitcherProps {
     language: Language;
-    setLanguage: Dispatch<SetStateAction<Language>>;
+    setLanguage: (lang: Language) => void;
 }
 
 const LanguageSwitcher = ({ language, setLanguage }: LanguageSwitcherProps) => (
@@ -96,14 +103,21 @@ const UserAvatar = ({ onLogout }: UserAvatarProps) => {
     );
 };
 
-const Logo = () => {
+const Logo = ({ appMode }: { appMode: AppMode }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="flex items-center gap-3 h-full">
-            <img src="header.png" className="h-3/4" alt="" />
+        <div className="flex items-center gap-3">
+            <img src="/header.png" alt="Cats Help" className="h-10 w-auto" />
             <div>
-                <div className="text-base font-semibold text-gray-900">{t('nav.title')}</div>
+                <div>
+                    <div className="text-base font-semibold text-gray-900">{t('nav.title')}</div>
+                </div>
+                {appMode !== 'foster' && (
+                    <div className="text-xs text-gray-600">
+                        {t('nav.titleAdmin')}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -122,13 +136,15 @@ const Header = ({ appMode, isAdmin, setAppMode }: HeaderProps) => {
 
     return (
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-            <div className="flex items-center justify-between h-16 px-4 sm:px-6">
-                <Logo />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="flex items-center justify-between h-16">
+                    <Logo appMode={appMode} />
 
-                <div className="flex items-center gap-2">
-                    {isAdmin && <ModeSwitcher appMode={appMode} setAppMode={setAppMode} />}
-                    {isFosterMode && <LanguageSwitcher language={language} setLanguage={setLanguage} />}
-                    {isFosterMode && <UserAvatar onLogout={logout} />}
+                    <div className="flex items-center gap-2">
+                        {isAdmin && <ModeSwitcher appMode={appMode} setAppMode={setAppMode} />}
+                        {isFosterMode && <LanguageSwitcher language={language} setLanguage={setLanguage} />}
+                        <UserAvatar onLogout={logout} />
+                    </div>
                 </div>
             </div>
         </nav>

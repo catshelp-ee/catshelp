@@ -1,6 +1,6 @@
 import AddCatForm from '@pages/add-cat/add-cat-form.tsx';
 import AdminCatProfile from '@pages/admin/admin-cat-profile.tsx';
-import Admin from '@pages/admin/admin.tsx';
+import AdminCatList from '@pages/admin/admin-cat-list.tsx';
 import PageLayout from '@pages/app/page-layout.tsx';
 import Dashboard from '@pages/dashboard/dashboard.tsx';
 import LoginForm from '@pages/login/login-form.tsx';
@@ -45,12 +45,12 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             <Route element={<ProtectedRoute />}>
                 <Route element={<PageLayout />}>
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
                     <Route path={HOME} element={<Dashboard />} />
                     <Route path="/users/:userId" element={<Dashboard />} />
                     <Route path="/cat-profiles" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />
+                    <Route path="/admin/cat-list" element={<AdminCatList />} />
+                    <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
                 </Route>
             </Route>
         </Routes>

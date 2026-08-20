@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('todos', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('animal_id');
+            $table->integer('animal_id');
             $table->string('type');
             $table->dateTime('due_date', 3);
             $table->dateTime('completed_date', 3)->nullable();

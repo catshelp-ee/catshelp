@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\AnimalService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Enums\UserRole;
 
 class AnimalController extends Controller
 {
@@ -13,7 +16,11 @@ class AnimalController extends Controller
      */
     public function index()
     {
-        return response()->json(["profiles" => AnimalService::getProfiles()]);
+        $user = Auth::user();
+        if (!$user || $user->role !== UserRole::ADMIN->value) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        return response()->json(AnimalService::getProfiles());
     }
 
     /**
@@ -44,9 +51,18 @@ class AnimalController extends Controller
         //TODO Not implemented yet
     }
 
-    public function getUserProfiles()
+    public function profileImage(int $id)
     {
-        return response()->json(["profiles" => AnimalService::getUserProfiles()]);
+        $file = AnimalService::getProfileImageFile($id);
+        if (!$file) {
+            return response()->json(['message' => 'Image not found'], 404);
+        }
+
+        return Storage::response(
+            "images/{$file->uuid}.{$file->extension}",
+            null,
+            ['Cache-Control' => 'private, max-age=86400']
+        );
     }
 
     public function todos(int $id)

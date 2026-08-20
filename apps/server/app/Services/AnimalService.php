@@ -20,15 +20,7 @@ class AnimalService
 {
     public static function getProfiles()
     {
-        //TODO vajab ümber tegemist. See peaks tagastama kõik loomad. Oleks vaja panna FE kasutama teist õigemat otsa.
-        return self::getUserProfiles();
-    }
-
-    public static function getUserProfiles()
-    {
-        $user = Auth::user();
-        $animals = $user->fosterHome ? $user->fosterHome->animals : [];
-
+        $animals = Animal::with(['files', 'rescues', 'fosterHomes.user', 'characteristics', 'treatments'])->get();
         $dtos = [];
         foreach ($animals as $animal) {
             $dtos[] = AnimalSummaryDTO::fromModel($animal);
@@ -43,6 +35,11 @@ class AnimalService
             return null;
         }
         return AnimalProfileDTO::fromModel($animal, self::getImages($animal));
+    }
+
+    public static function getProfileImageFile(int $animalId): ?File
+    {
+        return File::where('animal_id', $animalId)->where('type', 'profile')->first();
     }
 
     private static function getImages(Animal $animal): array

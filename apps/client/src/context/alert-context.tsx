@@ -1,7 +1,7 @@
 import { Stack } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import type { ReactNode } from 'react';
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useMemo } from 'react';
 
 type AlertType = 'Success' | 'Error' | 'Warning' | 'Info';
 
@@ -32,7 +32,7 @@ export const AlertProvider: React.FC<AlertContextProvider> = ({ children }) => {
     };
 
     // Context value containing the showAlert function
-    const contextValue: AlertContext = {
+    const contextValue: AlertContext = useMemo(() => ({
         showAlert: (type, message) => {
             const alertMessage: Alert = {
                 type,
@@ -40,7 +40,7 @@ export const AlertProvider: React.FC<AlertContextProvider> = ({ children }) => {
             };
             setAlertMessage((prev) => [...prev, alertMessage]);
         },
-    };
+    }), []);
 
     return (
         <AlertContext.Provider value={contextValue}>

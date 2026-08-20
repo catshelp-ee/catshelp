@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Auth;
+use App\Enums\UserRole;
 
 class UserController extends Controller
 {
@@ -13,6 +15,10 @@ class UserController extends Controller
      */
     public function index()
     {
+        $currentUser = Auth::user();
+        if (!$currentUser || $currentUser->role !== UserRole::ADMIN->value) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         return response()->json(UserService::getUsers());
     }
 
@@ -29,6 +35,11 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
+        $currentUser = Auth::user();
+        
+        if ($id !== 'me' && $id !== 'NaN' && (!$currentUser || ($currentUser->id != $id && $currentUser->role !== UserRole::ADMIN->value))) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         return response()->json(UserService::getUser($id));
     }
 

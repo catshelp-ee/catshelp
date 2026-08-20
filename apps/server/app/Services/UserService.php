@@ -6,11 +6,11 @@ use App\DTOs\UserDTO;
 use App\DTOs\Animal\AnimalSummaryDTO;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\UserRole;
 
 class UserService
 {
     public static function getUsers() {
-        //TODO add admin check to allow fetching other users' profiles
         $users = User::all();
         $dtos = [];
         foreach ($users as $user) {
@@ -29,17 +29,28 @@ class UserService
         if ($id === 'me') {
             return self::getCurrentUser();
         }
-        //TODO add admin check to allow fetching other users' profiles
+
         $user = User::find($id);
         $dto = UserDTO::fromModel($user);
         return $dto;
     }
 
     public static function getUserAnimals(string $id) {
-        $user = User::find($id);
-        if (!$user) {
-            return null;
+        $currentUser = Auth::user();
+        if ($currentUser->id != $id && $currentUser->role !== UserRole::ADMIN->value) {
+            return [];
         }
+        
+        $user = null;
+        if ($currentUser->id === $id) {
+            $user = $currentUser;
+        } else {
+            $user = User::find($id);
+            if (!$user) {
+                return [];
+            }
+        }
+
         $animals = $user->fosterHome ? $user->fosterHome->animals : [];
         $dtos = [];
         foreach ($animals as $animal) {

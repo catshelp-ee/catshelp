@@ -1,11 +1,15 @@
+import { Profile } from '@interfaces/profile.ts';
+import CatDetails from '@pages/profile/cat-details.tsx';
 import React from 'react';
 
 
-const AdminCatDetails: React.FC = ({}) => {
+const AdminCatDetails: React.FC<{
+    selectedCat: Profile,
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
+}> = ({ selectedCat, setSelectedCat }) => {
     return (
         <>
-            <div>
-            </div>
+            {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat} />}
         </>
     );
 };

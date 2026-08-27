@@ -50,7 +50,7 @@ function App() {
                     <Route path="/cat-profiles" element={<CatProfile />} />
                     <Route path="/add-cat" element={<AddCatForm />} />
                     <Route path="/admin/cat-list" element={<AdminCatList />} />
-                    <Route path="/admin-cat-profile/:id" element={<AdminCatProfile />} />
+                    <Route path="/admin/cat-profile/:id" element={<AdminCatProfile />} />
                 </Route>
             </Route>
         </Routes>

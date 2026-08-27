@@ -46,7 +46,6 @@ const ProfileTab: React.FC<TabProps> = ({ cats, setSelectedCat }) => {
 
         const loadCat = async () => {
             try {
-                
                 const catProfile = await animalsApi.getAnimal(activeTab);
                 setSelectedCat(catProfile);
             } catch (error) {

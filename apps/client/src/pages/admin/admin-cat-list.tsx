@@ -6,6 +6,7 @@ import { AlertCircle, Clock, Calendar, Eye } from 'lucide-react';
 import { TaskBadge } from '@components/TaskBadge.tsx';
 import { FilterPanel } from './filter-panel.tsx';
 import { FilterState } from '@interfaces/filter-state.ts';
+import { Link } from 'react-router-dom';
 
 
 
@@ -49,12 +50,6 @@ const AdminCatList: React.FC = () => {
         const months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
         return months;
     };
-
-    const onViewCat = (catId: number) => {
-        // Implement the logic to view cat details, e.g., navigate to a detail page
-        console.log(`View cat with ID: ${catId}`);
-    }
-
 
     const filteredAndSortedCats = useMemo(() => {
         let filtered = cats.filter(cat => {
@@ -202,15 +197,10 @@ const AdminCatList: React.FC = () => {
                 </td>
                 <td className="px-4 py-4">
                     <div className="flex items-center gap-2">
-                        <>
-                            <button
-                                onClick={() => onViewCat(cat.id)}
-                                className="p-1 text-gray-600 hover:bg-gray-100 rounded"
-                                title="Vaata"
-                            >
-                                <Eye className="w-5 h-5" />
-                            </button>
-                        </>
+                        <Link to={`/admin/cat-profile/${cat.id}`}
+                            className="p-1 text-gray-600 hover:bg-gray-100 rounded cursor-pointer" title="Vaata">
+                            <Eye className="w-5 h-5" />
+                        </Link>
                     </div>
                 </td>
             </tr>

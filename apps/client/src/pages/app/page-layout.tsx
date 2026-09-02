@@ -12,31 +12,27 @@ const PageLayout = () => {
     const isAdmin = AuthStore.isAdmin();
     const isFosterMode = appMode === 'foster';
 
-    const DesktopView = () => {
-        return (
-            <div id="page" className="page">
-                <Header appMode={appMode} setAppMode={setAppMode} isAdmin={isAdmin} />
-                <div className="min-h-screen bg-gray-50">
-                    {isFosterMode && <Sidebar />}
-                    {isFosterMode ? (
-                        <main className="lg:pl-64 pb-20 lg:pb-8">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-                                <div className="space-y-6">
-                                    <Outlet />
-                                </div>
+    return (
+        <div id="page" className="page">
+            <Header appMode={appMode} setAppMode={setAppMode} isAdmin={isAdmin} />
+            <div className="min-h-screen bg-gray-50">
+                {isFosterMode && <Sidebar />}
+                {isFosterMode ? (
+                    <main className="lg:pl-64 pb-20 lg:pb-8">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+                            <div className="space-y-6">
+                                <Outlet />
                             </div>
-                        </main>
-                    ) : (
-                        <main className="max-w-[1600px] mx-auto px-3 sm:px-6 py-4 sm:py-8">
-                            <Outlet />
-                        </main>
-                    )}
-                </div>
+                        </div>
+                    </main>
+                ) : (
+                    <main className="max-w-[1600px] mx-auto px-3 sm:px-6 py-4 sm:py-8">
+                        <Outlet />
+                    </main>
+                )}
             </div>
-        );
-    };
-
-    return <DesktopView />;
+        </div>
+    );
 };
 
 export default observer(PageLayout);

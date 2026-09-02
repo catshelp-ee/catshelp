@@ -126,7 +126,7 @@ const Dashboard = () => {
         <div className="flex flex-col flex-1">
             <h2 className="font-semibold text-xl text-gray-900 mb-4"> {t('myCats')} </h2>
 
-            <div className="flex gap-4"> {animals.map((animal) => (
+            <div className="flex gap-4"> {animals && animals.map((animal) => (
                     <AnimalCard key={animal.id} animalSummary={animal} />
                 ))}
             </div>
@@ -139,7 +139,7 @@ const Dashboard = () => {
                 <div className="flex flex-wrap items-center gap-2">
                     <Select value={selectedAnimalId} onChange={(e) => setSelectedAnimalId(e.target.value)}>
                         <MenuItem value="all">Kõik kassid</MenuItem>
-                        {animals.map((a) => (
+                        {animals && animals.map((a) => (
                             <MenuItem key={a.id} value={a.id}>
                                 {a.name}
                             </MenuItem>

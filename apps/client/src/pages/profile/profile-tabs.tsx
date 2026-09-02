@@ -1,11 +1,11 @@
 import type { Profile } from '@interfaces/profile.ts';
-import type { ProfileHeader } from '@interfaces/profile-header.ts';
 import { useAlert } from '@context/alert-context.tsx';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { AnimalSummary } from '@interfaces/animal-summary.ts';
+import { animalsApi } from '@api/animals.service.ts';
 
 interface TabProps {
-    cats: ProfileHeader[];
+    cats: AnimalSummary[];
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>;
 }
 
@@ -46,11 +46,8 @@ const ProfileTab: React.FC<TabProps> = ({ cats, setSelectedCat }) => {
 
         const loadCat = async () => {
             try {
-                const response = await axios.get('/api/animals/' + activeTab + '/profile', {
-                    withCredentials: true,
-                });
-
-                const catProfile = response.data;
+                
+                const catProfile = await animalsApi.getAnimal(activeTab);
                 setSelectedCat(catProfile);
             } catch (error) {
                 console.error('Error loading cat profiles:', error);

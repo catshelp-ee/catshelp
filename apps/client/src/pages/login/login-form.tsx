@@ -12,8 +12,8 @@ const LoginForm: React.FC = () => {
 
     const googleAuthSuccess = async (response) => {
         try {
-            const resp = await axios.post('/api/auth/login-google', response);
-            navigate(`/users/${resp.data.id}`);
+            await axios.post('/api/auth/login-google', response);
+            navigate(`/dashboard`);
         } catch (_error) {
             showAlert('Error', 'Kasutajat ei leitud');
             return;

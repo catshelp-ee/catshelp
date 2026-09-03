@@ -10,7 +10,6 @@ use App\Models\Animal;
 use App\Models\AnimalCharacteristic;
 use App\Models\File;
 use App\Models\Todo;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;

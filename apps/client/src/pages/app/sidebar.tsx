@@ -1,6 +1,7 @@
 import type { Screen } from '@config/app.ts';
 import { useTranslation } from '@hooks/use-translation.tsx';
 import { LayoutDashboard, Cat, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export function Sidebar() {
@@ -39,18 +40,15 @@ export function Sidebar() {
                         const isActive = path && url.pathname.includes(path);
 
                         return (
-                            <button
+                            <Link to={path} 
                                 key={item.id}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                                     isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
                                 }`}
-                                onClick={() => {
-                                    navigate(path);
-                                }}
                             >
                                 <Icon className={`w-5 h-5 text-gray-500`} />
                                 <span className="font-medium">{item.label}</span>
-                            </button>
+                            </Link>
                         );
                     })}
                 </nav>

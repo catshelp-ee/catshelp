@@ -32,7 +32,10 @@ export function AnimalCard({ animalSummary }: Props) {
     return (
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all flex flex-col">
             <div className="aspect-[4/3] bg-gradient-to-br from-teal-50 to-emerald-100 flex items-center justify-center">
-                <img className="text-7xl" src={animalSummary.profilePicture} alt="🐱" />
+                {animalSummary.profilePicture && animalSummary.profilePicture.trim() !== '' ?
+                    (<img className="text-7xl" src={animalSummary.profilePicture} alt="🐱" />) :
+                    (<span className="text-7xl">🐱</span>)
+                }
             </div>
 
             <div className="p-5 flex flex-col flex-1">

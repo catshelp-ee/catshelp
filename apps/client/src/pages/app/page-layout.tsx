@@ -1,20 +1,19 @@
-import type { AppMode } from '@config/app.ts';
-import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import AuthStore from '@stores/AuthStore.ts';
 
 import Header from './header.tsx';
 import Sidebar from './sidebar.tsx';
 
 const PageLayout = () => {
-    const [appMode, setAppMode] = useState<AppMode>('foster');
+    const location = useLocation();
+    const appMode = location.pathname.startsWith('/admin') ? 'admin' : 'foster';
     const isAdmin = AuthStore.isAdmin();
     const isFosterMode = appMode === 'foster';
 
     return (
         <div id="page" className="page">
-            <Header appMode={appMode} setAppMode={setAppMode} isAdmin={isAdmin} />
+            <Header appMode={appMode} isAdmin={isAdmin} />
             <div className="min-h-screen bg-gray-50">
                 {isFosterMode && <Sidebar />}
                 {isFosterMode ? (

@@ -3,6 +3,8 @@ import { useAlert } from '@context/alert-context.tsx';
 import React, { useState, useEffect } from 'react';
 import { AnimalSummary } from '@interfaces/animal-summary.ts';
 import { animalsApi } from '@api/animals.service.ts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/select.tsx';
+import { Check } from 'lucide-react';
 
 interface TabProps {
     cats: AnimalSummary[];
@@ -23,6 +25,7 @@ const ProfileTab: React.FC<TabProps> = ({ cats, setSelectedCat }) => {
 
     const [activeTab, setActiveTab] = useState(getTabFromURL());
     const { showAlert } = useAlert();
+    const useTabs = cats.length <= 4;
 
     const setInitialTab = () => {
         const url = new URL(window.location.toString());
@@ -31,10 +34,10 @@ const ProfileTab: React.FC<TabProps> = ({ cats, setSelectedCat }) => {
     };
 
     // Update URL when tab changes
-    const handleTabChange = (tab) => {
-        setActiveTab(tab.id);
+    const handleTabChange = (catId: string) => {
+        setActiveTab(Number(catId));
         const url = new URL(window.location.toString());
-        url.searchParams.set('cat', tab.id);
+        url.searchParams.set('cat', catId.toString());
         window.history.pushState({}, '', url);
     };
 
@@ -61,15 +64,48 @@ const ProfileTab: React.FC<TabProps> = ({ cats, setSelectedCat }) => {
         return () => window.removeEventListener('popstate', handlePopState);
     }, [activeTab]);
 
-    return (
-        <div className="profile-tab-container">
-            <div className="flex">
-                {cats.map((tab) => (
-                    <button key={tab.id} onClick={() => handleTabChange(tab)} className={`profile-tab ${activeTab === tab.id ? 'profile-tab-active' : ''}`}>
-                        {tab.name}
-                    </button>
-                ))}
+
+    if (useTabs) {
+        return (
+            <div className="border-b border-gray-200 overflow-x-auto">
+                <div className="flex gap-1 min-w-max">
+                    {cats.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => handleTabChange(cat.id.toString())}
+                            className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === cat.id
+                                ? 'border-blue-600 text-blue-700'
+                                : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                                }`}
+                        >
+                            {cat.name}
+                        </button>
+                    ))}
+                </div>
             </div>
+        );
+    }
+
+    // Dropdown for more than 4 cats
+    return (
+        <div className="border-b border-gray-200 p-4">
+            <Select value={activeTab.toString()} onValueChange={handleTabChange}>
+                <SelectTrigger className="w-full sm:w-64">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    {cats.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                            <div className="flex items-center gap-2">
+                                <span>{cat.name}</span>
+                                {activeTab === cat.id && (
+                                    <Check className="w-4 h-4 text-blue-600" />
+                                )}
+                            </div>
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
     );
 };

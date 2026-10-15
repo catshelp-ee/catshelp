@@ -8,11 +8,11 @@ import { FilterPanel } from './filter-panel.tsx';
 import { FilterState } from '@interfaces/filter-state.ts';
 import { Link } from 'react-router-dom';
 
-
-
 const AdminCatList: React.FC = () => {
     const { showAlert } = useAlert();
     const [cats, setCats] = useState<AnimalSummary[]>([]);
+    const [sortField, setSortField] = useState<keyof AnimalSummary | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [filters, setFilters] = useState<FilterState>({
         location: [],
         fosterHome: [],
@@ -40,6 +40,15 @@ const AdminCatList: React.FC = () => {
 
         loadCats();
     }, [showAlert]);
+
+    const handleSort = (field: keyof AnimalSummary) => {
+        if (sortField === field) {
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
 
     const getAgeInMonths = (birthDate: string) => {
         if (!birthDate) {
@@ -81,36 +90,22 @@ const AdminCatList: React.FC = () => {
             return true;
         });
 
-        /*
         if (sortField) {
             filtered.sort((a, b) => {
                 let aValue: any;
                 let bValue: any;
 
-                if (sortField === 'nearestDueDate') {
-                    aValue = getNearestDueDate(a.id);
-                    bValue = getNearestDueDate(b.id);
-                    if (!aValue) return 1;
-                    if (!bValue) return -1;
-                } else if (sortField === 'fosterHomeId') {
-                    const aHome = fosterHomes.find(fh => fh.id === a.fosterHomeId);
-                    const bHome = fosterHomes.find(fh => fh.id === b.fosterHomeId);
-                    aValue = aHome?.name || '';
-                    bValue = bHome?.name || '';
-                } else {
-                    aValue = a[sortField];
-                    bValue = b[sortField];
-                }
+                aValue = a[sortField];
+                bValue = b[sortField];
 
                 if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
                 if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
                 return 0;
             });
         }
-        */
 
         return filtered;
-    }, [cats, filters, /*sortField, sortDirection, tasks*/]);
+    }, [cats, filters, sortField, sortDirection]);
 
     const groupedCats = useMemo(() => {
         const overdue: AnimalSummary[] = [];
@@ -118,9 +113,9 @@ const AdminCatList: React.FC = () => {
         const other: AnimalSummary[] = [];
 
         filteredAndSortedCats.forEach(cat => {
-            if (cat.status === 'overdue') {
+            if (cat.overdueCount > 0) {
                 overdue.push(cat);
-            } else if (cat.status === 'due-soon') {
+            } else if (cat.dueSoonCount > 0) {
                 dueSoon.push(cat);
             } else {
                 other.push(cat);
@@ -147,12 +142,12 @@ const AdminCatList: React.FC = () => {
                         </div>
                         <div className="flex flex-col">
                             <span className="font-medium text-gray-900">{cat.rescueNumber}</span>
-                            {(['overdue', 'due-soon'].includes(cat.status)) && (
+                            {(cat.overdueCount > 0 || cat.dueSoonCount > 0) && (
                                 <div className="flex gap-1 mt-1 flex-wrap">
-                                    {cat.status === 'overdue' && (
+                                    {cat.overdueCount > 0 && (
                                         <TaskBadge status="overdue" count={cat.overdueCount} />
                                     )}
-                                    {cat.status === 'due-soon' && (
+                                    {cat.dueSoonCount > 0 && (
                                         <TaskBadge status="due-soon" count={cat.dueSoonCount} />
                                     )}
                                 </div>
@@ -231,152 +226,88 @@ const AdminCatList: React.FC = () => {
             {/* Desktop Table View */}
             <div className="hidden lg:block bg-white rounded-lg shadow overflow-hidden">
                 <div className="overflow-x-auto">
-                    {groupedCats.overdue.length > 0 && (
-                        <>
-                            <div className="bg-red-50 px-4 py-3 border-b border-red-200">
-                                <div className="flex items-center gap-2">
-                                    <AlertCircle className="w-5 h-5 text-red-600" />
-                                    <h3 className="font-semibold text-red-900">
-                                        Tähtaja ületanud ({groupedCats.overdue.length})
-                                    </h3>
-                                </div>
-                            </div>
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('rescueNumber')}>
-                                            Päästenr
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>
-                                            Nimi
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('fosterHomeId')}>
-                                            Hoiukodu
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('location')}>
-                                            Asukoht
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Sugu
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('birthDate')}>
-                                            Sünniaeg
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Steriliseeritud
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Vaktsineeritud
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Tegevused
-                                        </th>
+                    <table className="w-full">
+                        <thead className="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('rescueNumber')}>
+                                    Päästenr
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>
+                                    Nimi
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('fosterHome')}>
+                                    Hoiukodu
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('location')}>
+                                    Asukoht
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Sugu
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('birthDate')}>
+                                    Sünniaeg
+                                </th>
+                                <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Steriliseeritud
+                                </th>
+                                <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Vaktsineeritud
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Tegevused
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {groupedCats.overdue.length > 0 && (
+                                <>
+                                    <tr className="bg-red-50 border-b border-red-200">
+                                        <td colSpan={9} className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <AlertCircle className="w-5 h-5 text-red-600" />
+                                                <h3 className="font-semibold text-red-900">
+                                                    Tähtaja ületanud ({groupedCats.overdue.length})
+                                                </h3>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
                                     {groupedCats.overdue.map(renderCatRow)}
-                                </tbody>
-                            </table>
-                        </>
-                    )}
+                                </>
+                            )}
 
-                    {groupedCats.dueSoon.length > 0 && (
-                        <>
-                            <div className="bg-yellow-50 px-4 py-3 border-b border-yellow-200">
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-yellow-600" />
-                                    <h3 className="font-semibold text-yellow-900">
-                                        Tähtaeg läheneb ({groupedCats.dueSoon.length})
-                                    </h3>
-                                </div>
-                            </div>
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Päästenr
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Nimi
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Hoiukodu
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Asukoht
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Sugu
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Sünniaeg
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Steriliseeritud
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Vaktsineeritud
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Tegevused
-                                        </th>
+                            {groupedCats.dueSoon.length > 0 && (
+                                <>
+                                    <tr className="bg-yellow-50 border-b border-yellow-200">
+                                        <td colSpan={9} className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="w-5 h-5 text-yellow-600" />
+                                                <h3 className="font-semibold text-yellow-900">
+                                                    Tähtaeg läheneb ({groupedCats.dueSoon.length})
+                                                </h3>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
                                     {groupedCats.dueSoon.map(renderCatRow)}
-                                </tbody>
-                            </table>
-                        </>
-                    )}
+                                </>
+                            )}
 
-                    {groupedCats.other.length > 0 && (
-                        <>
-                            <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-5 h-5 text-gray-600" />
-                                    <h3 className="font-semibold text-gray-900">
-                                        Kõik teised kassid ({groupedCats.other.length})
-                                    </h3>
-                                </div>
-                            </div>
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Päästenr
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Nimi
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Hoiukodu
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Asukoht
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Sugu
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Sünniaeg
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Steriliseeritud
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Vaktsineeritud
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                            Tegevused
-                                        </th>
+                            {groupedCats.other.length > 0 && (
+                                <>
+                                    <tr className="bg-gray-50 border-b border-gray-200">
+                                        <td colSpan={9} className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-5 h-5 text-gray-600" />
+                                                <h3 className="font-semibold text-gray-900">
+                                                    Kõik teised kassid ({groupedCats.other.length})
+                                                </h3>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
                                     {groupedCats.other.map(renderCatRow)}
-                                </tbody>
-                            </table>
-                        </>
-                    )}
+                                </>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

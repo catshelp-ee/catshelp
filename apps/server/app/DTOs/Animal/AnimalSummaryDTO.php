@@ -43,8 +43,8 @@ readonly class AnimalSummaryDTO
             gender: self::formatGender($animal->characteristics->firstWhere('type', 'gender')?->value),
             sterilised: strtoupper($animal->characteristics->firstWhere('type', 'spayedOrNeutered')?->value ?? '') === 'JAH',
             medicalOngoing: false,
-            overdueCount: 0, //$animal->todos()->where('due_date', '<', now())->count(),
-            dueSoonCount: 0, //$animal->todos()->whereBetween('due_date', [now(), now()->addDays(7)])->count(),
+            overdueCount: $animal->todos()->where('due_date', '<', now())->count(),
+            dueSoonCount: $animal->todos()->whereBetween('due_date', [now(), now()->addDays(7)])->count(),
             complexVaccineDate: $animal->treatments->firstWhere('treatment_name', 'COMPLEX_VACCINE')?->next_visit_date?->format('Y-m-d'),
             published: false
         );

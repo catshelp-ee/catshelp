@@ -19,7 +19,7 @@ class AnimalService
 {
     public static function getProfiles()
     {
-        $animals = Animal::with(['files', 'rescues', 'fosterHomes.user', 'characteristics', 'treatments'])->get();
+        $animals = Animal::with(['files', 'rescues', 'fosterHomes.user', 'characteristics', 'treatments', 'todos'])->get();
         $dtos = [];
         foreach ($animals as $animal) {
             $dtos[] = AnimalSummaryDTO::fromModel($animal);

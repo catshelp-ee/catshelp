@@ -1,12 +1,5 @@
 @import 'tailwindcss';
 
-@font-face {
-    font-family: 'Inter';
-    src:
-        local('Inter'),
-        url('../assets/font/Inter-VariableFont_opsz,wght.ttf') format('truetype');
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -49,8 +42,6 @@
 }
 
 @theme {
-    --font-sans: 'Inter', sans-serif;
-
     --animate-slide-down: slideDown 0.3s ease-in;
     --animate-slide-up: slideUp 0.3s ease-out;
     --animate-slide-right: slideRight 0.2s linear forwards;
@@ -155,6 +146,59 @@ body {
     ::file-selector-button {
         border-color: var(--color-gray-200, currentcolor);
     }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
 }
 
 @utility text-secondary {
@@ -282,36 +326,4 @@ body {
 .dashboard-heading {
     color: #82869e;
     font-weight: 600;
-}
-
-.profile-section {
-    margin: 24px 0px;
-    border-radius: 8px;
-    border: solid;
-    border-color: rgba(0, 0, 0, 0.1);
-    border-width: 1px;
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
-    background-color: white;
-}
-
-.section-header {
-    color: oklch(0.21 0.034 264.665);
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 28px;
-    margin-bottom: 16px;
-}
-
-.section-label {
-    color: oklch(0.446 0.03 256.802);
-    font-size: 14px;
-    line-height: 20px;
-    margin-bottom: 4px;
-}
-
-.section-value {
-    font-size: 14px;
-    line-height: 20px;
 }

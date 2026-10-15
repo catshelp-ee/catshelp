@@ -98,35 +98,39 @@ const habitsOptions = {
 const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
     const profileImage = selectedCat.images ? selectedCat.images.find(img => img.type === 'profile') : null;
     return (
-        <div className="profile-section">
-            <div className="flex gap-4">
-                {/* Profile image */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-100 flex items-center justify-center shrink-0">
-                    {profileImage ? (
-                        <img
-                            src={profileImage.data}
-                            alt={selectedCat.mainInfo.name}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <span className="text-4xl">🐱</span>
-                    )}
-                </div>
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-                        {selectedCat?.mainInfo.name}
-                    </h1>
-                    <p className="text-sm text-gray-600 mb-3">
-                        Päästenumber: {selectedCat.mainInfo.rankNr}
-                    </p>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="flex gap-4">
+                    {/* Profile image */}
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-100 flex items-center justify-center shrink-0">
+                        {profileImage ? (
+                            <img
+                                src={profileImage.data}
+                                alt={selectedCat.mainInfo.name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-4xl">🐱</span>
+                        )}
+                    </div>
+                    <div className="flex-1">
+                        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                            {selectedCat?.mainInfo.name}
+                        </h1>
+                        <p className="text-sm text-gray-600 mb-3">
+                            Päästenumber: {selectedCat.mainInfo.rankNr}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>);
 };
 
 const CatBlogPost: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => (
-    <div className="profile-section">
-        <h2 className="section-header">Kuulutuse pealkiri ja tekst</h2>
+    <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Kuulutuse pealkiri ja tekst
+        </h2>
         {/* Todo kuulutuse plokki sisu */}
     </div>
 );
@@ -144,46 +148,53 @@ const CatMainInfo: React.FC<{
     };
 
     return (
-        <div className="profile-section">
-            <h2 className="section-header">Põhiandmed</h2>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Põhiandmed
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                    <p className="section-label">Sünniaeg</p>
-                    <p className="section-value">{formatDate(selectedCat.mainInfo.birthDate, 'YYYY-MM-DD')}</p>
+                    <p className="text-gray-600 mb-1">Sünniaeg</p>
+                    <p className="text-gray-900">{formatDate(selectedCat.mainInfo.birthDate, 'YYYY-MM-DD')}</p>
                 </div>
                 <div>
-                    <p className="section-label">Päästmiskuupäev</p>
-                    <p className="section-value">{formatDate(selectedCat.mainInfo.rescueDate, 'YYYY-MM-DD')}</p>
+                    <p className="text-gray-600 mb-1">Päästmiskuupäev</p>
+                    <p className="text-gray-900">{formatDate(selectedCat.mainInfo.rescueDate, 'YYYY-MM-DD')}</p>
                 </div>
                 <div>
-                    <p className="section-label">Sugu</p>
-                    <p className="section-value">{selectedCat.mainInfo.gender}</p>
+                    <p className="text-gray-600 mb-1">Sugu</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.gender}</p>
                 </div>
                 <div>
-                    <p className="section-label">Värv</p>
-                    <p className="section-value">{selectedCat.mainInfo.coatColour}</p>
+                    <p className="text-gray-600 mb-1">Värv</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.coatColour}</p>
                 </div>
                 <div>
-                    <p className="section-label">Karva pikkus</p>
-                    <p className="section-value">{selectedCat.mainInfo.coatLength}</p>
+                    <p className="text-gray-600 mb-1">Karva pikkus</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.coatLength}</p>
                 </div>
                 <div>
-                    <p className="section-label">Asukoht</p>
-                    <p className="section-value">{selectedCat.mainInfo.location}</p>
+                    <p className="text-gray-600 mb-1">Asukoht</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.location}</p>
                 </div>
                 <div>
-                    <p className="section-label">Kiibinumber</p>
-                    <p className="section-value">{selectedCat.mainInfo.microchip}</p>
+                    <p className="text-gray-600 mb-1">Kiibinumber</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.microchip}</p>
                 </div>
             </div>
+
             <div className="mt-6 space-y-4">
                 <div>
-                    <Label htmlFor="timeInCare">Aeg hoolduses</Label>
-                    <Input id="timeInCare" value="TODO" onChange={(e) => {}} placeholder="Nt 3 kuud, 1 aasta" />
+                    <Label htmlFor="timeInCare">
+                        Aeg hoolduses
+                    </Label>
+                    <Input id="timeInCare" value="TODO" onChange={(e) => { }} placeholder="Nt 3 kuud, 1 aasta" />
                 </div>
 
                 <div>
-                    <Label htmlFor="chronicIllness">Krooniline haigus</Label>
+                    <Label htmlFor="chronicIllness">
+                        Krooniline haigus
+                    </Label>
                     <Input
                         id="chronicIllness"
                         value={selectedCat.mainInfo.chronicConditions || ''}
@@ -195,7 +206,9 @@ const CatMainInfo: React.FC<{
                 </div>
 
                 <div>
-                    <Label htmlFor="notes">Märkmed</Label>
+                    <Label htmlFor="notes">
+                        Märkmed
+                    </Label>
                     <Textarea
                         id="notes"
                         value={selectedCat.mainInfo.additionalNotes || ''}
@@ -209,7 +222,9 @@ const CatMainInfo: React.FC<{
                 </div>
 
                 <div>
-                    <Label htmlFor="rescueStory">Päästmise lugu</Label>
+                    <Label htmlFor="rescueStory">
+                        Päästmise lugu
+                    </Label>
                     <Textarea
                         id="rescueStory"
                         value={selectedCat.mainInfo.rescueStory || ''}
@@ -245,12 +260,16 @@ const CatPersonalityInfo: React.FC<{
         setSelectedCat(updatedCatInfo);
     };
     return (
-        <div className="profile-section">
-            <h2 className="section-header">Iseloom ja Sobivus</h2>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Iseloom ja Sobivus
+            </h2>
 
             <div className="space-y-6">
                 <div>
-                    <Label className="block">Iseloomujooned</Label>
+                    <Label className="block">
+                        Iseloomujooned
+                    </Label>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                         {Object.keys(personalityOptions).map((key) => (
@@ -267,7 +286,9 @@ const CatPersonalityInfo: React.FC<{
                     </div>
                 </div>
                 <div>
-                    <Label className="block">Kassile meeldib</Label>
+                    <Label className="block">
+                        Kassile meeldib
+                    </Label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {Object.keys(likesOptions).map((key) => (
@@ -284,7 +305,9 @@ const CatPersonalityInfo: React.FC<{
                     </div>
                 </div>
                 <div>
-                    <Label className="block">Harjumused ja käitumine</Label>
+                    <Label className="block">
+                        Harjumused ja käitumine
+                    </Label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {Object.keys(habitsOptions).map((key) => (
@@ -301,8 +324,9 @@ const CatPersonalityInfo: React.FC<{
                     </div>
                 </div>
                 <div>
-                    <Label htmlFor="dailyDescription">Kirjelda kassi mõne iseloomustava lausega</Label>
-
+                    <Label htmlFor="dailyDescription">
+                        Kirjelda kassi mõne iseloomustava lausega
+                    </Label>
                     <Textarea
                         id="dailyDescription"
                         value={selectedCat.mainInfo.description || ''}
@@ -315,7 +339,9 @@ const CatPersonalityInfo: React.FC<{
                     />
                 </div>
                 <div>
-                    <Label htmlFor="specialRequirements">Erisoovid uuele perele</Label>
+                    <Label htmlFor="specialRequirements">
+                        Erisoovid uuele perele
+                    </Label>
 
                     <Textarea
                         id="specialRequirements"
@@ -374,8 +400,10 @@ const CatImages: React.FC<{
     };
 
     return (
-        <div className="profile-section">
-            <h2 className="section-header">Pildid</h2>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Pildid
+            </h2>
 
             {/* Photo gallery grid */}
             {selectedCat.images.length > 0 && (
@@ -498,7 +526,7 @@ const CatDetails: React.FC<{
 
         return (
             <> {Object.keys(selectedCat || {}).length > 0 && (
-                <div className='w-full'>
+                <div className='space-y-6'>
                     <CatDetailsHeader selectedCat={selectedCat} />
 
                     <CatBlogPost selectedCat={selectedCat} />

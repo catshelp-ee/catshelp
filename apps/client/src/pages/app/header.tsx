@@ -46,7 +46,9 @@ interface LanguageSwitcherProps {
 const LanguageSwitcher = ({ language, setLanguage }: LanguageSwitcherProps) => (
     <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
         {LANGUAGES.map((lang) => (
-            <button key={lang} onClick={() => setLanguage(lang)} className={tabButtonClass(language === lang)}>
+            <button key={lang} onClick={() => setLanguage(lang)} className={
+                    `px-2 py-1 text-xs font-medium rounded transition-colors ` +
+                    `${language === lang ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
                 {lang.toUpperCase()}
             </button>
         ))}
@@ -86,12 +88,13 @@ const UserAvatar = ({ onLogout }: UserAvatarProps) => {
             </button>
 
             {isOpen && (
-                <div className="absolute flex flex-col right-0 mt-1 p-2 w-52 max-w-72 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                    <span>{t('nav.role.' + user?.role)}</span>
-                    <span className="text-xs text-secondary mb-4 break-all">{user?.email}</span>
-                    <hr />
-                    <button onClick={onLogout} className="flex gap-2 mt-4 p-2 text-sm text-red-700 cursor-pointer">
-                        <LogOut /> {t('nav.logout')}
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">{t('nav.role.' + user?.role)}</p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
+                    </div>
+                    <button onClick={onLogout} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        <LogOut className="w-4 h-4" /> {t('nav.logout')}
                     </button>
                 </div>
             )}

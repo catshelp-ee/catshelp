@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\Animal\AnimalProfileDTO;
 use App\DTOs\Animal\AnimalProfileImageDTO;
+use App\DTOs\Animal\AnimalSearchCriteriaDTO;
 use App\DTOs\Animal\AnimalSummaryDTO;
 use App\DTOs\TodoDTO;
 use App\Models\Animal;
@@ -198,16 +199,16 @@ class AnimalService
         }
     }
 
-    public static function findAnimal(array $criteria)
+    public static function findAnimal(AnimalSearchCriteriaDTO $criteria)
     {
         $query = Animal::query();
 
-        if (!empty($criteria['name'])) {
-            $query->where('name', 'like', '%' . $criteria['name'] . '%');
+        if (!empty($criteria->name)) {
+            $query->where('name', 'like', '%' . $criteria->name . '%');
         }
 
-        if (!empty($criteria['chip_number'])) {
-            $query->where('chip_number', $criteria['chip_number']);
+        if (!empty($criteria->chipNumber)) {
+            $query->where('chip_number', $criteria->chipNumber);
         }
 
         $animal = $query->first();

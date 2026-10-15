@@ -2,18 +2,22 @@
 
 namespace App\Services;
 
+use App\Models\EmailToken;
 use App\Models\RevokedToken;
 use App\Models\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AuthService
 {
     public const JWT_COOKIE_NAME = 'jwt';
     public const CATSHELP_COOKIE_NAME = 'catshelp';
     private const TTL_MINUTES = 24 * 60; // 24 hours
+    private const EMAIL_TOKEN_TTL_MINUTES = 15;
     private const ALGORITHM = 'HS256';
 
     public static function loginWithGoogle(string $credential, string $clientId): ?User
@@ -49,7 +53,7 @@ class AuthService
         }
     }
 
-    public static function attachTokenCookie(JsonResponse $response, string $token): JsonResponse
+    public static function attachTokenCookie(JsonResponse|RedirectResponse $response, string $token): JsonResponse|RedirectResponse
     {
         return $response->withCookie(cookie(
             name: self::JWT_COOKIE_NAME,
@@ -81,11 +85,35 @@ class AuthService
         }
     }
 
-    public static function loginWithEmail() {
-        //TODO
+    public static function loginWithEmail(string $email): void
+    {
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            throw new \Exception('Invalid email');
+        }
+
+        $token = Str::random(64);
+
+        EmailToken::create([
+            'user_id' => $user->id,
+            'token' => $token,
+            'expires_at' => now()->addMinutes(self::EMAIL_TOKEN_TTL_MINUTES),
+        ]);
+
+        EmailService::sendMagicLink($user, $token);
     }
 
-    public static function verifyEmailToken() {
-        //TODO
+    public static function verifyEmailToken(string $token): ?User
+    {
+        $emailToken = EmailToken::where('token', $token)->first();
+
+        if (!$emailToken || $emailToken->expires_at->isPast()) {
+            return null;
+        }
+
+        $user = $emailToken->user;
+        $emailToken->delete();
+
+        return $user;
     }
 }

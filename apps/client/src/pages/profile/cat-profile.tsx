@@ -37,15 +37,13 @@ const CatProfile: React.FC = () => {
     }, [user, showAlert]);
 
     return (
-        <div className={`flex flex-col flex-1`}>
-            <div className={`flex flex-col ${isMobile ? 'items-center' : ''}`}>
-                {cats.length !== 0 && (
-                    <>
-                        <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
-                        {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat} />}
-                    </>
-                )}
-            </div>
+        <div className="space-y-6">
+            {cats.length !== 0 && (
+                <>
+                    <ProfileTabs cats={cats} setSelectedCat={setSelectedCat} />
+                    {selectedCat && <CatDetails selectedCat={selectedCat} setSelectedCat={setSelectedCat} />}
+                </>
+            )}
         </div>
     );
 };

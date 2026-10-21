@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\DTOs\Animal\AnimalSearchCriteriaDTO;
 use App\Services\AnimalService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -75,6 +76,6 @@ class AnimalController extends Controller
     }
 
     public function findAnimal(Request $request) {
-        return response()->json(AnimalService::findAnimal($request->all()));
+        return response()->json(AnimalService::findAnimal(AnimalSearchCriteriaDTO::fromArray($request->all())));
     }
 }

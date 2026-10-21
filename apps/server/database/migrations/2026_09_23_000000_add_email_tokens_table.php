@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('email_tokens', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
+            $table->unsignedInteger('user_id');
             $table->string('token')->unique();
             $table->dateTime('expires_at', 3);
             $table->dateTime('created_at', 3)->useCurrent();

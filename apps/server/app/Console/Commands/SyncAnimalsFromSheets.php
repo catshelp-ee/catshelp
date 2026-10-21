@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 class SyncAnimalsFromSheets extends TransactionalCommand
 {
-    protected $signature = 'animals:sync-from-sheets';
+    protected $signature = 'command:animals:sync-from-sheets';
     protected $description = 'Sync animal data from Google Sheets';
 
     private const PREVIOUS_DATA_FILE = 'sheets/previous_animals_data.json';

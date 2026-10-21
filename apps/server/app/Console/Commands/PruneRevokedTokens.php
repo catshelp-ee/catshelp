@@ -7,7 +7,7 @@ use App\Models\RevokedToken;
 
 class PruneRevokedTokens extends TransactionalCommand
 {
-    protected $signature = 'tokens:prune-revoked';
+    protected $signature = 'command:tokens:prune-revoked';
     protected $description = 'Delete expired revoked tokens';
 
     public function handle(): void

@@ -9,7 +9,7 @@ use Google\Service\Sheets;
 
 class SyncUsersFromSheets extends TransactionalCommand
 {
-    protected $signature = 'users:sync-from-sheets';
+    protected $signature = 'command:users:sync-from-sheets';
     protected $description = 'Sync user data from Google Sheets';
 
     public function handle(): int

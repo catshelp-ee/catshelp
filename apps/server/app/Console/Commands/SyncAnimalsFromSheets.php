@@ -110,7 +110,7 @@ class SyncAnimalsFromSheets extends TransactionalCommand
     {
         return array_map(function (string $header) {
             if (str_contains($header, 'PÄÄSTETUD JÄRJEKORRA NR')) {
-                return 'jarjekorraNr';
+                return 'JÄRJEKORRA_NUMBER';
             }
             if (str_contains($header, 'KIIP LLR-is MTÜ nimel')) {
                 return 'KIIP_LLR-is_MTÜ_nimel';

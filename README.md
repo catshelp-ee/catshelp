@@ -25,7 +25,7 @@ PHP Intelephense
 4. Remove \files folder
 
 # Deploying in zone
-Run script deploy.sh {path to folder in htdocs ex .../htdocs/liides}
+Run script deploy.sh {path to folder in htdocs ex ../htdocs/liides}
 
 # Migrations
 For creating a migration table in db

@@ -34,7 +34,7 @@ const LoginForm: React.FC = () => {
             await axios.post('/api/auth/login-email', { email: payload.email });
             showAlert('Success', 'Emailile saadeti link juhistega');
         } catch (_error) {
-            showAlert('Success', 'Emaili saatmine ebaõnnestus');
+            showAlert('Error', 'Emaili saatmine ebaõnnestus');
         }
     };
 

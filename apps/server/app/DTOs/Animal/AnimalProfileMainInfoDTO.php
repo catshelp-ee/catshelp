@@ -45,7 +45,7 @@ readonly class AnimalProfileMainInfoDTO
             coatColour: $mappedCharacteristics['coatColour'] ?? '',
             coatLength: $mappedCharacteristics['coatLength'] ?? '',
             location: $animalRescue?->address ?? '',
-            microchip: $animal->microchip ?? '',
+            microchip: $animal->chip_number ?? '',
             fosterStayDuration: 'TODO', //TODO calculate foster stay duration
             chronicConditions: $animal->chronic_conditions ?? '',
             description: $animal->description ?? '',

@@ -107,7 +107,7 @@ const Logo = ({ appMode }: { appMode: AppMode }) => {
 
     return (
         <Link to="/dashboard" className="flex items-center gap-3">
-            <img src="/header.png" alt="Cats Help" className="h-10 w-auto" />
+            <img src={`${import.meta.env.BASE_URL}header.png`} alt="Cats Help" className="h-10 w-auto" />
             <div>
                 <div>
                     <div className="text-base font-semibold text-gray-900">{t('nav.title')}</div>

@@ -5,9 +5,9 @@ import { translations } from '@translations/translations.ts';
 export function useTranslation() {
     const { language } = useLanguage();
 
-    const t = (path: string) => {
+    const t = (path: string, args?: any) => {
         const object = path.split('.').reduce((obj, key) => obj[key], translations);
-        return translate(object, language);
+        return translate(object, language, args);
     };
 
     return { t };

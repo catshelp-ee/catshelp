@@ -10,93 +10,52 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Save, Upload, Star, Trash2 } from "lucide-react";
 import { readFileAsDataURL, resizeImage } from "@utils/image-utils.ts";
+import { useTranslation } from '@hooks/use-translation.tsx';
 
-const personalityOptions = {
-    bold: { et: 'Julge', en: 'Bold', ru: 'Смелый' },
-    shy: { et: 'Arg', en: 'Shy', ru: 'Застенчивый' },
-    active: { et: 'Aktiivne', en: 'Active', ru: 'Активный' },
-    veryActive: { et: 'Väga aktiivne', en: 'Very active', ru: 'Очень активный' },
-    calm: { et: 'Rahulik', en: 'Calm', ru: 'Спокойный' },
-    friendly: { et: 'Sõbralik', en: 'Friendly', ru: 'Дружелюбный' },
-    grumpy: { et: 'Pahur', en: 'Grumpy', ru: 'Ворчливый' },
-    vocal: { et: 'Hellik', en: 'Vocal', ru: 'Разговорчивый' },
-    dislikesTouching: {
-        et: 'Ei lase puudutada ennast',
-        en: "Doesn't allow touching",
-        ru: 'Не позволяет прикасаться',
-    },
-    sociable: { et: 'Seltsiv', en: 'Sociable', ru: 'Общительный' },
-    aloof: { et: 'Omaette hoidev', en: 'Aloof', ru: 'Отстраненный' },
-    goodAppetite: { et: 'Hea isuga', en: 'Good appetite', ru: 'Хороший аппетит' },
-    curious: { et: 'Uudishimulik', en: 'Curious', ru: 'Любопытный' },
-    playful: { et: 'Mänguline', en: 'Playful', ru: 'Игривый' },
-    stressed: { et: 'Stressis', en: 'Stressed', ru: 'В стрессе' },
-    sensitive: { et: 'Õrnahingeline', en: 'Sensitive', ru: 'Чувствительный' },
-    peaceful: { et: 'Rahumeelne', en: 'Peaceful', ru: 'Миролюбивый' },
-    selfish: { et: 'Isekas', en: 'Selfish', ru: 'Эгоистичный' },
-    hisses: { et: 'Sisiseb palju', en: 'Purrs a lot', ru: 'Много мурлычет' },
-};
+const personalityOptions = [
+    'bold',
+    'shy',
+    'active',
+    'veryActive',
+    'calm',
+    'friendly',
+    'grumpy',
+    'vocal',
+    'dislikesTouching',
+    'sociable',
+    'aloof',
+    'goodAppetite',
+    'curious',
+    'playful',
+    'stressed',
+    'sensitive',
+    'peaceful',
+    'selfish',
+    'hisses',
+];
 
-const likesOptions = {
-    beingOnLap: { et: 'Süles olla', en: 'Being on lap', ru: 'Сидеть на коленях' },
-    sleepsCuddling: {
-        et: 'Kaisus magada',
-        en: 'Sleep cuddling',
-        ru: 'Спать в обнимку',
-    },
-    likesPetting: { et: 'Pai saada', en: 'Getting petted', ru: 'Получать ласку' },
-    likesAttention: {
-        et: 'Palju tähelepanu',
-        en: 'Lots of attention',
-        ru: 'Много внимания',
-    },
-    likesPlayingWithPeople: {
-        et: 'Mängida mänguasjadega inimesega',
-        en: 'Play with toys with human',
-        ru: 'Играть с игрушками с человеком',
-    },
-    likesPlayingAlone: {
-        et: 'Mängida mänguasjadega üksinda',
-        en: 'Play with toys alone',
-        ru: 'Играть с игрушками одна',
-    },
-};
+const likesOptions = [
+    'beingOnLap',
+    'sleepsCuddling',
+    'likesPetting',
+    'likesAttention',
+    'likesPlayingWithPeople',
+    'likesPlayingAlone',
+];
 
-const habitsOptions = {
-    usesLitterbox: {
-        et: 'Kasutab liivakasti hästi',
-        en: 'Uses litter box well',
-        ru: 'Хорошо использует лоток',
-    },
-    usesScratchingpost: {
-        et: 'Kasutab kratsimispuud hästi',
-        en: 'Uses scratching post well',
-        ru: 'Хорошо использует когтеточку',
-    },
-    selectiveWithFood: {
-        et: 'On valikuline toiduga, pirtsutab',
-        en: 'Picky with food, splashes',
-        ru: 'Привередлив с едой, разбрасывает',
-    },
-    adaptable: {
-        et: 'Harjub kiirelt uue kohaga',
-        en: 'Adapts quickly to new place',
-        ru: 'Быстро привыкает к новому месту',
-    },
-    scratchesFurniture: {
-        et: 'Kipub kratsima muud mööblit',
-        en: 'Tends to scratch other furniture',
-        ru: 'Склонен царапать другую мебель',
-    },
-    trusting: {
-        et: 'Usaldab inimesi kiiresti',
-        en: 'Trusts people quickly',
-        ru: 'Быстро доверяет людям',
-    },
-};
+const habitsOptions = [
+    'usesLitterbox',
+    'usesScratchingpost',
+    'selectiveWithFood',
+    'adaptable',
+    'scratchesFurniture',
+    'trusting',
+];
 
 const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+    const { t } = useTranslation();
     const profileImage = selectedCat.images ? selectedCat.images.find(img => img.type === 'profile') : null;
+
     return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -118,7 +77,7 @@ const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) =
                             {selectedCat?.mainInfo.name}
                         </h1>
                         <p className="text-sm text-gray-600 mb-3">
-                            Päästenumber: {selectedCat.mainInfo.rankNr}
+                            {t('catDetails.rescueId')}: {selectedCat.mainInfo.rankNr}
                         </p>
                     </div>
                 </div>
@@ -126,19 +85,23 @@ const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) =
         </div>);
 };
 
-const CatBlogPost: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => (
+const CatBlogPost: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+    const { t } = useTranslation();
+    return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Kuulutuse pealkiri ja tekst
+            {t('catDetails.listingInfo')}
         </h2>
         {/* Todo kuulutuse plokki sisu */}
     </div>
-);
+    );
+};
 
 const CatMainInfo: React.FC<{
     selectedCat: Profile;
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>;
 }> = ({ selectedCat, setSelectedCat }) => {
+    const { t } = useTranslation();
     const setValue = (key: string, value: string | boolean) => {
         const updatedCatInfo = {
             ...selectedCat,
@@ -150,35 +113,35 @@ const CatMainInfo: React.FC<{
     return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Põhiandmed
+                {t('catDetails.baseInfo')}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                    <p className="text-gray-600 mb-1">Sünniaeg</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.birthDate')}</p>
                     <p className="text-gray-900">{formatDate(selectedCat.mainInfo.birthDate, 'YYYY-MM-DD')}</p>
                 </div>
                 <div>
-                    <p className="text-gray-600 mb-1">Päästmiskuupäev</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.rescueDate')}</p>
                     <p className="text-gray-900">{formatDate(selectedCat.mainInfo.rescueDate, 'YYYY-MM-DD')}</p>
                 </div>
                 <div>
-                    <p className="text-gray-600 mb-1">Sugu</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.gender')}</p>
                     <p className="text-gray-900">{selectedCat.mainInfo.gender}</p>
                 </div>
                 <div>
-                    <p className="text-gray-600 mb-1">Värv</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.color')}</p>
                     <p className="text-gray-900">{selectedCat.mainInfo.coatColour}</p>
                 </div>
                 <div>
-                    <p className="text-gray-600 mb-1">Karva pikkus</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.furLength')}</p>
                     <p className="text-gray-900">{selectedCat.mainInfo.coatLength}</p>
                 </div>
                 <div>
-                    <p className="text-gray-600 mb-1">Asukoht</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.location')}</p>
                     <p className="text-gray-900">{selectedCat.mainInfo.location}</p>
                 </div>
                 <div>
-                    <p className="text-gray-600 mb-1">Kiibinumber</p>
+                    <p className="text-gray-600 mb-1">{t('catDetails.chipNumber')}</p>
                     <p className="text-gray-900">{selectedCat.mainInfo.microchip}</p>
                 </div>
             </div>
@@ -186,14 +149,14 @@ const CatMainInfo: React.FC<{
             <div className="mt-6 space-y-4">
                 <div>
                     <Label htmlFor="timeInCare">
-                        Aeg hoolduses
+                        {t('catDetails.timeInCare')}
                     </Label>
-                    <Input id="timeInCare" value="TODO" onChange={(e) => { }} placeholder="Nt 3 kuud, 1 aasta" />
+                    <Input id="timeInCare" value="TODO" onChange={(e) => { }} placeholder={t('catDetails.timeInCarePlaceholder')} />
                 </div>
 
                 <div>
                     <Label htmlFor="chronicIllness">
-                        Krooniline haigus
+                        {t('catDetails.chronicIllness')}
                     </Label>
                     <Input
                         id="chronicIllness"
@@ -201,13 +164,13 @@ const CatMainInfo: React.FC<{
                         onChange={(e) => {
                             setValue('chronicConditions', e.target.value);
                         }}
-                        placeholder="Kui pole, jäta tühjaks"
+                        placeholder={t('catDetails.chronicIllnessPlaceholder')}
                     />
                 </div>
 
                 <div>
                     <Label htmlFor="notes">
-                        Märkmed
+                        {t('catDetails.notes')}
                     </Label>
                     <Textarea
                         id="notes"
@@ -216,14 +179,14 @@ const CatMainInfo: React.FC<{
                             setValue('additionalNotes', e.target.value);
                         }}
                         rows={2}
-                        placeholder="Täiendavad märkmed"
+                        placeholder={t('catDetails.notesPlaceholder')}
                         className="resize-y"
                     />
                 </div>
 
                 <div>
                     <Label htmlFor="rescueStory">
-                        Päästmise lugu
+                        {t('catDetails.rescueStory')}
                     </Label>
                     <Textarea
                         id="rescueStory"
@@ -232,7 +195,7 @@ const CatMainInfo: React.FC<{
                             setValue('rescueStory', e.target.value);
                         }}
                         rows={3}
-                        placeholder="Kirjelda, kuidas kass meie MTÜ hoole alla sattus"
+                        placeholder={t('catDetails.rescueStoryPlaceholder')}
                         className="resize-y"
                     />
                 </div>
@@ -245,6 +208,7 @@ const CatPersonalityInfo: React.FC<{
     selectedCat: Profile;
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>;
 }> = ({ selectedCat, setSelectedCat }) => {
+    const { t } = useTranslation();
     const setValue = (key: string, value: string | boolean) => {
         const updatedCatInfo = {
             ...selectedCat,
@@ -262,17 +226,17 @@ const CatPersonalityInfo: React.FC<{
     return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Iseloom ja Sobivus
+                {t('catDetails.personalityAndCompatibility')}
             </h2>
 
             <div className="space-y-6">
                 <div>
                     <Label className="block">
-                        Iseloomujooned
+                        {t('catDetails.personalityOptions.title')}
                     </Label>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                        {Object.keys(personalityOptions).map((key) => (
+                        {personalityOptions.map((key) => (
                             <label key={key} className="flex items-center gap-2 p-2 rounded-sm hover:bg-gray-50 cursor-pointer">
                                 <Checkbox
                                     checked={selectedCat.personalityInfo[key]}
@@ -280,18 +244,18 @@ const CatPersonalityInfo: React.FC<{
                                         setValue(key, value);
                                     }}
                                 />
-                                <span className="text-sm">{personalityOptions[key].et}</span>
+                                <span className="text-sm">{t(`catDetails.personalityOptions.${key}`)}</span>
                             </label>
                         ))}
                     </div>
                 </div>
                 <div>
                     <Label className="block">
-                        Kassile meeldib
+                        {t('catDetails.likesOptions.title')}
                     </Label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {Object.keys(likesOptions).map((key) => (
+                        {likesOptions.map((key) => (
                             <label key={key} className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer">
                                 <Checkbox
                                     checked={selectedCat.personalityInfo[key]}
@@ -299,18 +263,18 @@ const CatPersonalityInfo: React.FC<{
                                         setValue(key, value);
                                     }}
                                 />
-                                <span className="text-sm">{likesOptions[key].et}</span>
+                                <span className="text-sm">{t(`catDetails.likesOptions.${key}`)}</span>
                             </label>
                         ))}
                     </div>
                 </div>
                 <div>
                     <Label className="block">
-                        Harjumused ja käitumine
+                        {t('catDetails.habitsOptions.title')}
                     </Label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {Object.keys(habitsOptions).map((key) => (
+                        {habitsOptions.map((key) => (
                             <label key={key} className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer">
                                 <Checkbox
                                     checked={selectedCat.personalityInfo[key]}
@@ -318,14 +282,14 @@ const CatPersonalityInfo: React.FC<{
                                         setValue(key, value);
                                     }}
                                 />
-                                <span className="text-sm">{habitsOptions[key].et}</span>
+                                <span className="text-sm">{t(`catDetails.habitsOptions.${key}`)}</span>
                             </label>
                         ))}
                     </div>
                 </div>
                 <div>
                     <Label htmlFor="dailyDescription">
-                        Kirjelda kassi mõne iseloomustava lausega
+                        {t('catDetails.dailyDescription')}
                     </Label>
                     <Textarea
                         id="dailyDescription"
@@ -334,13 +298,13 @@ const CatPersonalityInfo: React.FC<{
                             setMainInfoValue('description', e.target.value);
                         }}
                         rows={3}
-                        placeholder={'Nt milline on kiisu argipäev'}
+                        placeholder={t('catDetails.dailyDescriptionPlaceholder')}
                         className="resize-y"
                     />
                 </div>
                 <div>
                     <Label htmlFor="specialRequirements">
-                        Erisoovid uuele perele
+                        {t('catDetails.specialRequirements')}
                     </Label>
 
                     <Textarea
@@ -350,7 +314,7 @@ const CatPersonalityInfo: React.FC<{
                             setMainInfoValue('specialRequirementsForNewFamily', e.target.value);
                         }}
                         rows={3}
-                        placeholder={'Nt vajab kõrvale kassi, ilma lasteta pere, rahulikuma eluviisiga pere, kass vajab suurt tähelepanu jne'}
+                        placeholder={t('catDetails.specialRequirementsPlaceholder')}
                         className="resize-y"
                     />
                 </div>
@@ -363,6 +327,7 @@ const CatImages: React.FC<{
     selectedCat: Profile,
     setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>
 }> = ({ selectedCat, setSelectedCat }) => {
+    const { t } = useTranslation();
     const [isDragging, setIsDragging] = useState(false);
 
     const handleFiles = async (files: File[]) => {
@@ -402,7 +367,7 @@ const CatImages: React.FC<{
     return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Pildid
+                {t('photoGallery.title')}
             </h2>
 
             {/* Photo gallery grid */}
@@ -420,7 +385,7 @@ const CatImages: React.FC<{
                                 >
                                     <img
                                         src={image.data}
-                                        //alt={`${catName} foto ${index + 1}`} TODO
+                                        alt={`${selectedCat.mainInfo.name} foto ${index + 1}`}
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
@@ -429,7 +394,7 @@ const CatImages: React.FC<{
                                 {isProfilePic && (
                                     <div className="absolute top-2 left-2 flex items-center gap-1 bg-emerald-600 text-white text-xs px-2 py-1 rounded-full shadow-sm">
                                         <Star className="w-3 h-3 fill-current" />
-                                        <span>Profiilipilt</span>
+                                        <span>{t('photoGallery.profilePic')}</span>
                                     </div>
                                 )}
 
@@ -439,19 +404,19 @@ const CatImages: React.FC<{
                                         <button
                                             onClick={() => handleSetProfile(index)}
                                             className="flex items-center gap-1 bg-white text-gray-800 text-xs px-2.5 py-1.5 rounded-lg shadow-sm hover:bg-emerald-50 transition-colors"
-                                            title="Profiilipilt"
+                                            title={t('photoGallery.setAsProfile')}
                                         >
                                             <Star className="w-3 h-3" />
-                                            Profiilipilt
+                                            {t('photoGallery.setAsProfile')}
                                         </button>
                                     )}
                                     <button
                                         onClick={() => handleRemove(index)}
                                         className="flex items-center gap-1 bg-white text-red-600 text-xs px-2.5 py-1.5 rounded-lg shadow-sm hover:bg-red-50 transition-colors"
-                                        title="Kustuta"
+                                        title={t('photoGallery.delete')}
                                     >
                                         <Trash2 className="w-3 h-3" />
-                                        Kustuta
+                                        {t('photoGallery.delete')}
                                     </button>
                                 </div>
 
@@ -460,8 +425,6 @@ const CatImages: React.FC<{
                     })}
                 </div>
             )}
-
-
 
             {/* Upload area */}
             <div
@@ -482,9 +445,9 @@ const CatImages: React.FC<{
             >
                 <Upload className="w-10 h-10 mx-auto mb-3 text-gray-400" />
                 <div className="text-sm text-gray-600 mb-1">
-                    Lohista pildid siia või {' '}
+                    {t('photoGallery.dragDrop')} {' '}
                     <label className="text-emerald-600 hover:text-emerald-700 cursor-pointer font-medium">
-                        vali failid
+                        {t('photoGallery.browse')}
                         <input
                             type="file"
                             multiple
@@ -499,7 +462,7 @@ const CatImages: React.FC<{
                         />
                     </label>
                 </div>
-                <p className="text-xs text-gray-500">Maksimaalselt 10 pilti. JPG, PNG, WebP</p>
+                <p className="text-xs text-gray-500">{t('photoGallery.maxFiles', 10)}</p>
             </div>
         </div>
     );
@@ -512,14 +475,15 @@ const CatDetails: React.FC<{
     selectedCat,
     setSelectedCat
 }) => {
+        const { t } = useTranslation();
         const { showAlert } = useAlert();
         const handleSave = async () => {
             console.log('Salvestatud kassiprofiil:', selectedCat);
             if (selectedCat) {
                 await axios.put("/api/animals", selectedCat).then(() => {
-                    showAlert('Success', "Andmed uuendatud!");
+                    showAlert('Success', t('saveSuccess'));
                 }).catch((error) => {
-                    showAlert('Error', "Andmete uuendamine ebaõnnestus");
+                    showAlert('Error', t('saveError'));
                 })
             }
         };
@@ -543,7 +507,7 @@ const CatDetails: React.FC<{
                                 size="lg"
                             >
                                 <Save className="w-4 h-4 mr-2" />
-                                Salvesta ja uuenda veebis
+                                {t('saveAndUpdate')}
                             </Button>
                         </div>
                     </div>

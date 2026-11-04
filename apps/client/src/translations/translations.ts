@@ -110,45 +110,6 @@ export const translations = {
     notListed: { et: 'Pole veebis', en: 'Not listed', ru: 'Не опубликован' },
     reserved: { et: 'Broneeritud', en: 'Reserved', ru: 'Забронирован' },
 
-    // Cat Profile
-    baseInfo: {
-        et: 'Põhiandmed',
-        en: 'Base information',
-        ru: 'Основная информация',
-    },
-    characteristics: {
-        et: 'Iseloom ja sobivus',
-        en: 'Personality & fit',
-        ru: 'Характер и совместимость',
-    },
-    listingInfo: {
-        et: 'Kuulutuse pealkiri ja tekst',
-        en: 'Listing title and text',
-        ru: 'Заголовок и описание',
-    },
-    photos: { et: 'Pildid', en: 'Photos', ru: 'Фотографии' },
-    category: { et: 'Kategooria', en: 'Category', ru: 'Категория' },
-
-    // Form fields
-    rescueId: { et: 'Päästenumber', en: 'Rescue ID', ru: 'ID спасения' },
-    location: { et: 'Asukoht', en: 'Location', ru: 'Местоположение' },
-    birthDate: { et: 'Sünniaeg', en: 'Birth date', ru: 'Дата рождения' },
-    gender: { et: 'Sugu', en: 'Gender', ru: 'Пол' },
-    color: { et: 'Värv', en: 'Color', ru: 'Цвет' },
-    furLength: { et: 'Karva pikkus', en: 'Fur length', ru: 'Длина шерсти' },
-    chipNumber: { et: 'Kiibinumber', en: 'Chip number', ru: 'Номер чипа' },
-    notes: { et: 'Märkmed', en: 'Notes', ru: 'Заметки' },
-
-    // Personality traits
-    friendly: { et: 'Sõbralik', en: 'Friendly', ru: 'Дружелюбный' },
-    playful: { et: 'Mänguhimuline', en: 'Playful', ru: 'Игривый' },
-    calm: { et: 'Rahulik', en: 'Calm', ru: 'Спокойный' },
-    energetic: { et: 'Energiline', en: 'Energetic', ru: 'Энергичный' },
-    shy: { et: 'Arg', en: 'Shy', ru: 'Застенчивый' },
-    independent: { et: 'Iseseisev', en: 'Independent', ru: 'Независимый' },
-    affectionate: { et: 'Hellitav', en: 'Affectionate', ru: 'Ласковый' },
-    vocal: { et: 'Häälitsev', en: 'Vocal', ru: 'Голосистый' },
-
     // Buttons
     save: { et: 'Salvesta', en: 'Save', ru: 'Сохранить' },
     cancel: { et: 'Tühista', en: 'Cancel', ru: 'Отменить' },
@@ -233,4 +194,208 @@ export const translations = {
     done: { et: 'Tehtud', en: 'Done', ru: 'Готово' },
     notDone: { et: 'Tegemata', en: 'Not done', ru: 'Не сделано' },
     needsInfo: { et: 'Vajab infot', en: 'Needs info', ru: 'Нужна информация' },
+
+    catDetails: {
+        baseInfo: {
+            et: 'Põhiandmed',
+            en: 'Base information',
+            ru: 'Основная информация',
+        },
+        characteristics: {
+            et: 'Iseloom ja sobivus',
+            en: 'Personality & fit',
+            ru: 'Характер и совместимость',
+        },
+        listingInfo: {
+            et: 'Kuulutuse pealkiri ja tekst',
+            en: 'Listing title and text',
+            ru: 'Заголовок и описание',
+        },
+        photos: { et: 'Pildid', en: 'Photos', ru: 'Фотографии' },
+        category: { et: 'Kategooria', en: 'Category', ru: 'Категория' },
+
+        // Form fields
+        rescueId: { et: 'Päästenumber', en: 'Rescue ID', ru: 'ID спасения' },
+        location: { et: 'Asukoht', en: 'Location', ru: 'Местоположение' },
+        birthDate: { et: 'Sünniaeg', en: 'Birth date', ru: 'Дата рождения' },
+        gender: { et: 'Sugu', en: 'Gender', ru: 'Пол' },
+        color: { et: 'Värv', en: 'Color', ru: 'Цвет' },
+        furLength: { et: 'Karva pikkus', en: 'Fur length', ru: 'Длина шерсти' },
+        chipNumber: { et: 'Kiibinumber', en: 'Chip number', ru: 'Номер чипа' },
+        notes: { et: 'Märkmed', en: 'Notes', ru: 'Заметки' },
+        timeInCare: { et: 'Aeg hoolduses', en: 'Time in care', ru: 'Время в уходе' },
+        timeInCarePlaceholder: { et: 'Nt 3 kuud, 1 aasta', en: 'E.g., 3 months, 1 year', ru: 'Например, 3 месяца, 1 год' },
+        chronicIllness: { et: 'Krooniline haigus', en: 'Chronic illness', ru: 'Хроническое заболевание' },
+        chronicIllnessPlaceholder: { et: 'Kui pole, jäta tühjaks', en: 'If none, leave blank', ru: 'Если нет, оставьте пустым' },
+        notesPlaceholder: { et: 'Täiendavad märkmed', en: 'Additional notes', ru: 'Дополнительные заметки' },
+        rescueStory: { et: 'Päästmise lugu', en: 'Rescue story', ru: 'История спасения' },
+        rescueStoryPlaceholder: { et: 'Kirjelda, kuidas kass meie MTÜ hoole alla sattus', en: 'Describe how the cat came under our NGO\'s care', ru: 'Опишите, как кошка попала под опеку нашей НКО' },
+
+        habitsOptions: {
+            title: {
+                et: 'Harjumused ja käitumine',
+                en: 'Habits and behavior',
+                ru: 'Привычки и поведение',
+            },
+            usesLitterbox: {
+                et: 'Kasutab liivakasti hästi',
+                en: 'Uses litter box well',
+                ru: 'Хорошо использует лоток',
+            },
+            usesScratchingpost: {
+                et: 'Kasutab kratsimispuud hästi',
+                en: 'Uses scratching post well',
+                ru: 'Хорошо использует когтеточку',
+            },
+            selectiveWithFood: {
+                et: 'On valikuline toiduga, pirtsutab',
+                en: 'Picky with food, splashes',
+                ru: 'Привередлив с едой, разбрасывает',
+            },
+            adaptable: {
+                et: 'Harjub kiirelt uue kohaga',
+                en: 'Adapts quickly to new place',
+                ru: 'Быстро привыкает к новому месту',
+            },
+            scratchesFurniture: {
+                et: 'Kipub kratsima muud mööblit',
+                en: 'Tends to scratch other furniture',
+                ru: 'Склонен царапать другую мебель',
+            },
+            trusting: {
+                et: 'Usaldab inimesi kiiresti',
+                en: 'Trusts people quickly',
+                ru: 'Быстро доверяет людям',
+            },
+        },
+        likesOptions: {
+            title: { et: 'Kassile meeldib', ru: 'Кошке нравится', en: 'Cat likes' },
+            beingOnLap: { et: 'Süles olla', en: 'Being on lap', ru: 'Сидеть на коленях' },
+            sleepsCuddling: {
+                et: 'Kaisus magada',
+                en: 'Sleep cuddling',
+                ru: 'Спать в обнимку',
+            },
+            likesPetting: { et: 'Pai saada', en: 'Getting petted', ru: 'Получать ласку' },
+            likesAttention: {
+                et: 'Palju tähelepanu',
+                en: 'Lots of attention',
+                ru: 'Много внимания',
+            },
+            likesPlayingWithPeople: {
+                et: 'Mängida mänguasjadega inimesega',
+                en: 'Play with toys with human',
+                ru: 'Играть с игрушками с человеком',
+            },
+            likesPlayingAlone: {
+                et: 'Mängida mänguasjadega üksinda',
+                en: 'Play with toys alone',
+                ru: 'Играть с игрушками одна',
+            },
+        },
+        personalityOptions: {
+            title: { et: 'Iseloomujooned', ru: 'Черты характера', en: 'Personality traits' },
+            bold: { et: 'Julge', en: 'Bold', ru: 'Смелый' },
+            shy: { et: 'Arg', en: 'Shy', ru: 'Застенчивый' },
+            active: { et: 'Aktiivne', en: 'Active', ru: 'Активный' },
+            veryActive: { et: 'Väga aktiivne', en: 'Very active', ru: 'Очень активный' },
+            calm: { et: 'Rahulik', en: 'Calm', ru: 'Спокойный' },
+            friendly: { et: 'Sõbralik', en: 'Friendly', ru: 'Дружелюбный' },
+            grumpy: { et: 'Pahur', en: 'Grumpy', ru: 'Ворчливый' },
+            vocal: { et: 'Hellik', en: 'Vocal', ru: 'Разговорчивый' },
+            dislikesTouching: {
+                et: 'Ei lase puudutada ennast',
+                en: "Doesn't allow touching",
+                ru: 'Не позволяет прикасаться',
+            },
+            sociable: { et: 'Seltsiv', en: 'Sociable', ru: 'Общительный' },
+            aloof: { et: 'Omaette hoidev', en: 'Aloof', ru: 'Отстраненный' },
+            goodAppetite: { et: 'Hea isuga', en: 'Good appetite', ru: 'Хороший аппетит' },
+            curious: { et: 'Uudishimulik', en: 'Curious', ru: 'Любопытный' },
+            playful: { et: 'Mänguline', en: 'Playful', ru: 'Игривый' },
+            stressed: { et: 'Stressis', en: 'Stressed', ru: 'В стрессе' },
+            sensitive: { et: 'Õrnahingeline', en: 'Sensitive', ru: 'Чувствительный' },
+            peaceful: { et: 'Rahumeelne', en: 'Peaceful', ru: 'Миролюбивый' },
+            selfish: { et: 'Isekas', en: 'Selfish', ru: 'Эгоистичный' },
+            hisses: { et: 'Sisiseb palju', en: 'Purrs a lot', ru: 'Много мурлычет' },
+        },
+        personalityAndCompatibility: {
+            et: 'Iseloom ja sobivus',
+            ru: 'Характер и Совместимость',
+            en: 'Personality and Compatibility',
+        },
+        dailyDescription: {
+            et: 'Kirjelda kassi mõne iseloomustava lausega',
+            ru: 'Опишите кота несколькими характерными фразами',
+            en: 'Describe the cat with a few characteristic sentences'
+        },
+        dailyDescriptionPlaceholder: {
+            et: 'Nt milline on kiisu argipäev',
+            ru: 'Например, как проходит обычный день кота',
+            en: 'E.g. what is the cat\'s daily routine like'
+        },
+        specialRequirements: {
+            et: 'Erisoovid uuele perele',
+            ru: 'Особые требования к новой семье',
+            en: 'Special requirements for new home'
+        },
+        specialRequirementsPlaceholder: {
+            et: 'Nt vajab kõrvale kassi, ilma lasteta pere, rahulikuma eluviisiga pere, kass vajab suurt tähelepanu jne',
+            ru: 'Например, нужен другой кот рядом, семья без детей, спокойная семья, кот требует много внимания и т.д.',
+            en: 'E.g. needs another cat, no kids, calm family, needs lots of attention, etc.'
+        }
+    },
+    photoGallery: {
+        title: {
+            et: 'Pildid',
+            en: 'Photos',
+            ru: 'Фотографии'
+        },
+        profilePic: {
+            et: 'Profiilipilt',
+            en: 'Profile picture',
+            ru: 'Фото профиля'
+        },
+        delete: {
+            et: 'Kustuta',
+            en: 'Delete',
+            ru: 'Удалить'
+        },
+        setAsProfile: {
+            et: 'Profiilipilt',
+            en: 'Profile pic',
+            ru: 'Фото профиля'
+        },
+        dragDrop: {
+            et: 'Lohista pildid siia või',
+            en: 'Drag photos here or',
+            ru: 'Перетащите фото сюда или'
+        },
+        browse: {
+            et: 'vali failid',
+            en: 'browse files',
+            ru: 'выберите файлы'
+        },
+        maxFiles: {
+            et: (n: number) => `Maksimaalselt ${n} pilti. JPG, PNG, WebP`,
+            en: (n: number) => `Max ${n} photos. JPG, PNG, WebP`,
+            ru: (n: number) => `Максимум ${n} фото. JPG, PNG, WebP`
+        },
+        noPhotos: {
+            et: 'Pilte pole lisatud',
+            en: 'No photos added',
+            ru: 'Фотографии не добавлены'
+        }
+    },
+    saveSuccess: {
+        et: 'Andmed uuendatud!',
+        en: 'Data updated!',
+        ru: 'Данные обновлены!'
+    },
+    saveError: {
+        et: 'Andmete uuendamine ebaõnnestus',
+        en: 'Failed to update data',
+        ru: 'Не удалось обновить данные'
+    }
+
 };

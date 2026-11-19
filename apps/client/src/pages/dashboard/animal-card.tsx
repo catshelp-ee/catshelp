@@ -1,5 +1,5 @@
 import { animalsApi } from '@api/animals.service.ts';
-import { StatusBadge } from '@components/status-badge.tsx';
+import { StatusBadge } from '@components/StatusBadge.tsx';
 import { useTranslation } from '@hooks/use-translation.tsx';
 import type { AnimalSummary } from '@interfaces/animal-summary.ts';
 import { Profile } from '@interfaces/profile.ts';
@@ -47,7 +47,7 @@ export function AnimalCard({ animalSummary }: Props) {
                     <p className="text-sm text-gray-600 font-medium">
                         {calculateAge(new Date(animal.mainInfo.birthDate), t)}
                         {animal.mainInfo.gender !== '' ? ` • ${t(animal.mainInfo.gender)}` : ''}
-                        {animal.mainInfo.coatColour !== '' ? ` • ${t(animal.mainInfo.coatColour)}` : ''}
+                        {animal.mainInfo.coatColor !== '' ? ` • ${t(animal.mainInfo.coatColor)}` : ''}
                     </p>
                 </div>
 

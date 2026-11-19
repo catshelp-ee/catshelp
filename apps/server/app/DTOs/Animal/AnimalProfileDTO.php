@@ -11,6 +11,8 @@ readonly class AnimalProfileDTO
         public int $animalId,
         /** @var AnimalProfileImageDTO[] */
         public array $images,
+        public string $listingTitle,
+        public string $listingDescription,
         public AnimalProfileMainInfoDTO $mainInfo,
         public AnimalProfilePersonalityInfoDTO $personalityInfo,
     ) {}
@@ -20,6 +22,8 @@ readonly class AnimalProfileDTO
         return new self(
             animalId: $animal->id,
             images: $images,
+            listingTitle: $animal->listing_title ?? '',
+            listingDescription: $animal->listing_description ?? '',
             mainInfo: AnimalProfileMainInfoDTO::fromModel($animal),
             personalityInfo: AnimalProfilePersonalityInfoDTO::fromModel($animal),
         );

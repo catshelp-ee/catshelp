@@ -47,49 +47,19 @@ readonly class AnimalProfilePersonalityInfoDTO
 
     public static function fromModel(Animal $animal): self
     {
-        $characteristics = $animal->characteristics()->get();
-        $mappedCharacteristics = [];
-        foreach ($characteristics as $characteristic) {
-            $mappedCharacteristics[$characteristic->type] = $characteristic->value;
+        $values = [];
+
+        foreach (Animal::PERSONALITY_FLAGS as $key => $column) {
+            $values[$key] = (bool) $animal->{$column};
+        }
+
+        foreach (Animal::PERSONALITY_OPTIONS as $key => $column) {
+            $values[$key] = $animal->{$column} ?? '';
         }
 
         return new self(
-            bold: $mappedCharacteristics['bold'] ?? false,
-            shy: $mappedCharacteristics['shy'] ?? false,
-            active: $mappedCharacteristics['active'] ?? false,
-            veryActive: $mappedCharacteristics['veryActive'] ?? false,
-            calm: $mappedCharacteristics['calm'] ?? false,
-            friendly: $mappedCharacteristics['friendly'] ?? false,
-            grumpy: $mappedCharacteristics['grumpy'] ?? false,
-            vocal: $mappedCharacteristics['vocal'] ?? false,
-            dislikesTouching: $mappedCharacteristics['dislikesTouching'] ?? false,
-            sociable: $mappedCharacteristics['sociable'] ?? false,
-            aloof: $mappedCharacteristics['aloof'] ?? false,
-            goodAppetite: $mappedCharacteristics['goodAppetite'] ?? false,
-            curious: $mappedCharacteristics['curious'] ?? false,
-            playful: $mappedCharacteristics['playful'] ?? false,
-            stressed: $mappedCharacteristics['stressed'] ?? false,
-            sensitive: $mappedCharacteristics['sensitive'] ?? false,
-            peaceful: $mappedCharacteristics['peaceful'] ?? false,
-            selfish: $mappedCharacteristics['selfish'] ?? false,
-            hisses: $mappedCharacteristics['hisses'] ?? false,
-            beingOnLap: $mappedCharacteristics['beingOnLap'] ?? false,
-            sleepsCuddling: $mappedCharacteristics['sleepsCuddling'] ?? false,
-            likesPetting: $mappedCharacteristics['likesPetting'] ?? false,
-            likesAttention: $mappedCharacteristics['likesAttention'] ?? false,
-            likesPlayingWithPeople: $mappedCharacteristics['likesPlayingWithPeople'] ?? false,
-            likesPlayingAlone: $mappedCharacteristics['likesPlayingAlone'] ?? false,
-            usesLitterbox: $mappedCharacteristics['usesLitterbox'] ?? false,
-            usesScratchingpost: $mappedCharacteristics['usesScratchingpost'] ?? false,
-            selectiveWithFood: $mappedCharacteristics['selectiveWithFood'] ?? false,
-            adaptable: $mappedCharacteristics['adaptable'] ?? false,
-            scratchesFurniture: $mappedCharacteristics['scratchesFurniture'] ?? false,
-            trusting: $mappedCharacteristics['trusting'] ?? false,
-            description: $mappedCharacteristics['description'] ?? '',
-            attitudeTowardsCats: $mappedCharacteristics['attitudeTowardsCats'] ?? '',
-            attitudeTowardsDogs: $mappedCharacteristics['attitudeTowardsDogs'] ?? '',
-            attitudeTowardsChildren: $mappedCharacteristics['attitudeTowardsChildren'] ?? '',
-            suitabilityForIndoorOrOutdoor: $mappedCharacteristics['suitabilityForIndoorOrOutdoor'] ?? '',
+            ...$values,
+            description: '',
         );
     }
 }

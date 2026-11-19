@@ -54,7 +54,7 @@ class GoogleService
         //GENDER
         values[10] = this.createUserEnteredValue(animalProfile.mainInfo.gender);
         //COAT COLOR
-        values[11] = this.createUserEnteredValue(animalProfile.mainInfo.coatColour);
+        values[11] = this.createUserEnteredValue(animalProfile.mainInfo.coatColor);
         //FUR LENGTH
         values[12] = this.createUserEnteredValue(animalProfile.mainInfo.coatLength);
         //ADDITIONAL NOTES

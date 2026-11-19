@@ -27,11 +27,14 @@ class SyncAnimalsFromSheets extends TransactionalCommand
         'DEWORMING_MEDICATION' => 'USSIROHU/_TURJATILGA_KP',
     ];
 
-    private const CHARACTERISTIC_COLUMNS = [
-        'coatColour'       => 'KASSI_VÄRV',
-        'coatLength'       => 'KASSI_KARVA_PIKKUS',
-        'gender'           => 'SUGU',
-        'spayedOrNeutered' => 'LÕIGATUD',
+    /**
+     * animals column => sheet column. Values are stored as UPPER_SNAKE_CASE.
+     */
+    private const OPTION_COLUMNS = [
+        'coat_color'      => 'KASSI_VÄRV',
+        'coat_length'     => 'KASSI_KARVA_PIKKUS',
+        'gender'          => 'SUGU',
+        'spayed_neutered' => 'LÕIGATUD',
     ];
 
     public function handle(): int
@@ -175,7 +178,13 @@ class SyncAnimalsFromSheets extends TransactionalCommand
             'birthday'                => $this->parseDate($row['SÜNNIAEG'] ?? null),
             'chip_number'             => ($row['KIIP'] ?? '') ?: null,
             'chip_registered_with_us' => ($row['KIIP_LLR-is_MTÜ_nimel'] ?? '') === 'Jah',
-        ])->save();
+        ]);
+
+        foreach (self::OPTION_COLUMNS as $attribute => $column) {
+            $animal->{$attribute} = Animal::normalizeOption($row[$column] ?? null);
+        }
+
+        $animal->save();
 
         $rescue->fill([
             'animal_id'   => $animal->id,
@@ -188,18 +197,6 @@ class SyncAnimalsFromSheets extends TransactionalCommand
             $user       = User::firstOrCreate(['full_name' => $fosterHomeName]);
             $fosterHome = FosterHome::firstOrCreate(['user_id' => $user->id]);
             $animal->fosterHomes()->syncWithoutDetaching([$fosterHome->id]);
-        }
-
-        foreach (self::CHARACTERISTIC_COLUMNS as $type => $column) {
-            $value = $row[$column] ?? '';
-            if ($value) {
-                AnimalCharacteristic::updateOrCreate(
-                    ['animal_id' => $animal->id, 'type' => $type],
-                    ['value' => $value]
-                );
-            } else {
-                AnimalCharacteristic::where(['animal_id' => $animal->id, 'type' => $type])->delete();
-            }
         }
 
         foreach (self::TREATMENT_COLUMNS as $treatmentName => $column) {
@@ -228,6 +225,7 @@ class SyncAnimalsFromSheets extends TransactionalCommand
 
         $animal = $rescue->animal;
         if ($animal) {
+            // Legacy rows still reference the animal (FK is ON DELETE RESTRICT) until animal_characteristics is dropped.
             AnimalCharacteristic::where('animal_id', $animal->id)->delete();
             Treatment::where('animal_id', $animal->id)->delete();
             $animal->fosterHomes()->detach();

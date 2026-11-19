@@ -24,6 +24,7 @@ export const translations = {
             FOSTER: { et: 'Hoiukodu', en: 'Fosterhome', ru: 'Передержка' },
         },
     },
+    selectOption: { et: 'Vali variant', en: 'Select option', ru: 'Выбрать вариант' },
 
     // App mode
     mode: {
@@ -104,6 +105,9 @@ export const translations = {
     years: { et: 'aastat', en: 'years', ru: 'лет' },
     MALE: { et: 'isane', en: 'male', ru: 'самец' },
     FEMALE: { et: 'emane', en: 'female', ru: 'самка' },
+    // Gender values as stored from the sheet (UPPER_SNAKE)
+    ISANE: { et: 'isane', en: 'male', ru: 'самец' },
+    EMANE: { et: 'emane', en: 'female', ru: 'самка' },
 
     // Status badges
     lookingForHome: { et: 'Otsib kodu', en: 'Looking for home', ru: 'Ищет дом' },
@@ -211,6 +215,11 @@ export const translations = {
             en: 'Listing title and text',
             ru: 'Заголовок и описание',
         },
+        listingTitlePlaceholder: { et: 'Kuulutuse pealkiri', en: 'Listing title', ru: 'Заголовок объявления' },
+        listingDescriptionPlaceholder: { et: 'Kirjelda kassi iseloomu, harjumusi ja mida ta armastab. Ole sõbralik ja praktiline!', en: 'Describe the cat\'s personality, habits, and what they love. Be friendly and practical!', ru: 'Опишите характер кота, привычки и что он любит. Будьте дружелюбны и практичны!' },
+        listingTitle: {et: 'Pealkiri', en: 'Title', ru: 'Заголовок'},
+        listingDescription: {et: 'Kirjeldus', en: 'Description', ru: 'Описание'},
+
         photos: { et: 'Pildid', en: 'Photos', ru: 'Фотографии' },
         category: { et: 'Kategooria', en: 'Category', ru: 'Категория' },
 
@@ -218,6 +227,7 @@ export const translations = {
         rescueId: { et: 'Päästenumber', en: 'Rescue ID', ru: 'ID спасения' },
         location: { et: 'Asukoht', en: 'Location', ru: 'Местоположение' },
         birthDate: { et: 'Sünniaeg', en: 'Birth date', ru: 'Дата рождения' },
+        rescueDate: { et: 'Päästmise kuupäev', en: 'Rescue date', ru: 'Дата спасения' },
         gender: { et: 'Sugu', en: 'Gender', ru: 'Пол' },
         color: { et: 'Värv', en: 'Color', ru: 'Цвет' },
         furLength: { et: 'Karva pikkus', en: 'Fur length', ru: 'Длина шерсти' },
@@ -319,6 +329,84 @@ export const translations = {
             selfish: { et: 'Isekas', en: 'Selfish', ru: 'Эгоистичный' },
             hisses: { et: 'Sisiseb palju', en: 'Purrs a lot', ru: 'Много мурлычет' },
         },
+        catCompatibilityOptions: {
+            title: {
+                et: 'Kuidas suhtub teistesse kassidesse?',
+                en: 'How does it get along with other cats?',
+                ru: 'Как относится к другим кошкам?',
+            },
+            LOVES_NEEDS_CAT: {
+                et: 'Meeldivad väga, vajab kindlasti kõrvale kassi',
+                en: 'Loves them, definitely needs another cat',
+                ru: 'Очень нравятся, обязательно нужен другой кот рядом',
+            },
+            LIKES: { et: 'Meeldivad', en: 'Likes them', ru: 'Нравятся' },
+            NEUTRAL: { et: 'Neutraalselt', en: 'Neutral', ru: 'Нейтрально' },
+            SUSPICIOUS: { et: 'Umbusklik', en: 'Suspicious', ru: 'Подозрительно' },
+            DISLIKES: { et: 'Ei meeldi', en: "Doesn't like", ru: 'Не нравятся' },
+            NOT_MET: {
+                et: 'Ei ole tutvunud teiste kassidega',
+                en: "Hasn't met other cats",
+                ru: 'Не встречался с другими кошками',
+            },
+            MUST_BE_ONLY: {
+                et: 'Peab olema ainus kass peres',
+                en: 'Must be the only cat',
+                ru: 'Должен быть единственным котом в семье',
+            },
+        },
+        dogCompatibilityOptions: {
+            title: {
+                et: 'Kuidas suhtub koertesse?',
+                en: 'How does it get along with dogs?',
+                ru: 'Как относится к собакам?',
+            },
+            LOVES: {
+                et: 'Jumaldab koeri, tahaks väga koertega koju saada',
+                en: 'Loves dogs, wants to go to a home with dogs',
+                ru: 'Обожает собак, очень хочет попасть в дом с собаками',
+            },
+            GETS_ALONG: {
+                et: 'Saab koertega hästi läbi',
+                en: 'Gets along well with dogs',
+                ru: 'Хорошо ладит с собаками',
+            },
+            NEUTRAL: { et: 'Neutraalselt', en: 'Neutral', ru: 'Нейтрально' },
+            SUSPICIOUS: { et: 'Umbusklik', en: 'Suspicious', ru: 'Подозрительно' },
+            DISLIKES: { et: 'Ei meeldi', en: "Doesn't like", ru: 'Не нравятся' },
+            NOT_MET: { et: 'Pole tutvunud', en: "Hasn't met", ru: 'Не встречался' },
+        },
+        kidCompatibilityOptions: {
+            title: {
+                et: 'Kuidas suhtub lastesse?',
+                en: 'How does it get along with kids?',
+                ru: 'Как относится к детям?',
+            },
+            GOOD: { et: 'Hästi', en: 'Good', ru: 'Хорошо' },
+            NEUTRAL: { et: 'Neutraalselt', en: 'Neutral', ru: 'Нейтрально' },
+            SUSPICIOUS: { et: 'Umbusklik', en: 'Suspicious', ru: 'Подозрительно' },
+            NOT_SUITABLE: {
+                et: 'Ei sobi lastega',
+                en: 'Not suitable with kids',
+                ru: 'Не подходит для детей',
+            },
+            NOT_MET: {
+                et: 'Ei ole kohanud lapsi, ei tea',
+                en: "Hasn't met kids, don't know",
+                ru: 'Не встречал детей, не знаю',
+            },
+        },
+        indoorOutdoorOptions: {
+            title: {
+                et: 'Kas ta sobiks toa- või õuekassiks?',
+                en: 'Indoor or outdoor cat?',
+                ru: 'Подходит для дома или улицы?',
+            },
+            INDOOR: { et: 'Toakassiks', en: 'Indoor', ru: 'Домашняя' },
+            OUTDOOR: { et: 'Õuekassiks', en: 'Outdoor', ru: 'Уличная' },
+            BOTH: { et: 'Toa- ja õuekassiks', en: 'Both', ru: 'Домашняя и уличная' },
+        },
+
         personalityAndCompatibility: {
             et: 'Iseloom ja sobivus',
             ru: 'Характер и Совместимость',

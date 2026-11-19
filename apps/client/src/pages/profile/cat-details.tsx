@@ -1,16 +1,18 @@
 import type { Profile } from '@interfaces/profile.ts';
 import { formatDate } from '@utils/date-utils.ts';
-import { Button } from '@components/button.tsx';
-import { Checkbox } from '@components/checkbox.tsx';
-import { Input } from '@components/input.tsx';
-import { Label } from '@components/label.tsx';
-import { Textarea } from '@components/textarea.tsx';
+import { Button } from '@components/ui/button.tsx';
+import { Checkbox } from '@components/ui/checkbox.tsx';
+import { Input } from '@components/ui/input.tsx';
+import { Label } from '@components/ui/label.tsx';
+import { Textarea } from '@components/ui/textarea.tsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select.tsx';
 import { useAlert } from '@context/alert-context.tsx';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Save, Upload, Star, Trash2 } from "lucide-react";
 import { readFileAsDataURL, resizeImage } from "@utils/image-utils.ts";
 import { useTranslation } from '@hooks/use-translation.tsx';
+import { EmojiPicker } from '@components/EmojiPicker.tsx';
 
 const personalityOptions = [
     'bold',
@@ -52,6 +54,39 @@ const habitsOptions = [
     'trusting',
 ];
 
+const catCompatibilityOptions = [
+    'LOVES_NEEDS_CAT',
+    'LIKES',
+    'NEUTRAL',
+    'SUSPICIOUS',
+    'DISLIKES',
+    'NOT_MET',
+    'MUST_BE_ONLY'
+];
+
+const dogCompatibilityOptions = [
+    'LOVES',
+    'GETS_ALONG',
+    'NEUTRAL',
+    'SUSPICIOUS',
+    'DISLIKES',
+    'NOT_MET'
+];
+
+const kidCompatibilityOptions = [
+    'GOOD',
+    'NEUTRAL',
+    'SUSPICIOUS',
+    'NOT_SUITABLE',
+    'NOT_MET'
+];
+
+const indoorOutdoorOptions = [
+    'INDOOR',
+    'OUTDOOR',
+    'BOTH'
+];
+
 const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
     const { t } = useTranslation();
     const profileImage = selectedCat.images ? selectedCat.images.find(img => img.type === 'profile') : null;
@@ -85,15 +120,75 @@ const CatDetailsHeader: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) =
         </div>);
 };
 
-const CatBlogPost: React.FC<{ selectedCat: Profile }> = ({ selectedCat }) => {
+const CatBlogPost: React.FC<{
+    selectedCat: Profile;
+    setSelectedCat: React.Dispatch<React.SetStateAction<Profile | null>>;
+}> = ({ selectedCat, setSelectedCat }) => {
     const { t } = useTranslation();
+    const setValue = (key: string, value: string | boolean) => {
+        const updatedCatInfo = {
+            ...selectedCat,
+            [key]: value,
+        };
+        setSelectedCat(updatedCatInfo);
+    };
+
+    // Insert emoji at cursor position
+    const insertEmoji = (emoji: string) => {
+        const textarea = document.getElementById('listingDescription') as HTMLTextAreaElement;
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = selectedCat.listingDescription || '';
+        const newText = text.substring(0, start) + emoji + text.substring(end);
+
+        setValue('listingDescription', newText);
+
+        // Set cursor position after emoji
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+        }, 0);
+    };
+
     return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            {t('catDetails.listingInfo')}
-        </h2>
-        {/* Todo kuulutuse plokki sisu */}
-    </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                {t('catDetails.listingInfo')}
+            </h2>
+            <div className="space-y-4">
+                <div>
+                    <Label htmlFor="title">
+                        {t('catDetails.listingTitle')}
+                    </Label>
+                    <Input
+                        id="title"
+                        value={selectedCat.listingTitle || ''}
+                        onChange={(e) => setValue('listingTitle', e.target.value)}
+                        placeholder={t('catDetails.listingTitlePlaceholder')}
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="listingDescription">
+                        {t('catDetails.listingDescription')}
+                    </Label>
+                    <Textarea
+                        id="listingDescription"
+                        value={selectedCat.listingDescription || ''}
+                        onChange={(e) => {
+                            setValue('listingDescription', e.target.value);
+                        }}
+                        rows={6}
+                        placeholder={t('catDetails.listingDescriptionPlaceholder')}
+                        className="resize-y min-h-[200px]"
+                    />
+                    <div className="mt-2">
+                        <EmojiPicker onSelect={insertEmoji} />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
@@ -126,11 +221,11 @@ const CatMainInfo: React.FC<{
                 </div>
                 <div>
                     <p className="text-gray-600 mb-1">{t('catDetails.gender')}</p>
-                    <p className="text-gray-900">{selectedCat.mainInfo.gender}</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.gender ? t(selectedCat.mainInfo.gender) || selectedCat.mainInfo.gender : ''}</p>
                 </div>
                 <div>
                     <p className="text-gray-600 mb-1">{t('catDetails.color')}</p>
-                    <p className="text-gray-900">{selectedCat.mainInfo.coatColour}</p>
+                    <p className="text-gray-900">{selectedCat.mainInfo.coatColor}</p>
                 </div>
                 <div>
                     <p className="text-gray-600 mb-1">{t('catDetails.furLength')}</p>
@@ -151,7 +246,14 @@ const CatMainInfo: React.FC<{
                     <Label htmlFor="timeInCare">
                         {t('catDetails.timeInCare')}
                     </Label>
-                    <Input id="timeInCare" value="TODO" onChange={(e) => { }} placeholder={t('catDetails.timeInCarePlaceholder')} />
+                    <Input
+                        id="timeInCare"
+                        value={selectedCat.mainInfo.fosterStayDuration || ''}
+                        onChange={(e) => {
+                            setValue('fosterStayDuration', e.target.value);
+                        }}
+                        placeholder={t('catDetails.timeInCarePlaceholder')}
+                    />
                 </div>
 
                 <div>
@@ -302,6 +404,91 @@ const CatPersonalityInfo: React.FC<{
                         className="resize-y"
                     />
                 </div>
+
+                <div>
+                    <Label htmlFor="attitudeTowardsCats">
+                        {t('catDetails.catCompatibilityOptions.title')}
+                    </Label>
+                    <Select
+                        value={selectedCat.personalityInfo.attitudeTowardsCats || ''}
+                        onValueChange={(value) => setValue('attitudeTowardsCats', value)}
+                    >
+                        <SelectTrigger id="attitudeTowardsCats">
+                            <SelectValue placeholder={t('catDetails.selectOption')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {catCompatibilityOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {t(`catDetails.catCompatibilityOptions.${option}`)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div>
+                    <Label htmlFor="attitudeTowardsDogs">
+                        {t('catDetails.dogCompatibilityOptions.title')}
+                    </Label>
+                    <Select
+                        value={selectedCat.personalityInfo.attitudeTowardsDogs || ''}
+                        onValueChange={(value) => setValue('attitudeTowardsDogs', value)}
+                    >
+                        <SelectTrigger id="attitudeTowardsDogs">
+                            <SelectValue placeholder={t('catDetails.selectOption')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {dogCompatibilityOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {t(`catDetails.dogCompatibilityOptions.${option}`)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div>
+                    <Label htmlFor="attitudeTowardsChildren">
+                        {t('catDetails.kidCompatibilityOptions.title')}
+                    </Label>
+                    <Select
+                        value={selectedCat.personalityInfo.attitudeTowardsChildren || ''}
+                        onValueChange={(value) => setValue('attitudeTowardsChildren', value)}
+                    >
+                        <SelectTrigger id="attitudeTowardsChildren">
+                            <SelectValue placeholder={t('catDetails.selectOption')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {kidCompatibilityOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {t(`catDetails.kidCompatibilityOptions.${option}`)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div>
+                    <Label htmlFor="suitabilityForIndoorOrOutdoor">
+                        {t('catDetails.indoorOutdoorOptions.title')}
+                    </Label>
+                    <Select
+                        value={selectedCat.personalityInfo.suitabilityForIndoorOrOutdoor || ''}
+                        onValueChange={(value) => setValue('suitabilityForIndoorOrOutdoor', value)}
+                    >
+                        <SelectTrigger id="suitabilityForIndoorOrOutdoor">
+                            <SelectValue placeholder={t('selectOption')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {indoorOutdoorOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {t(`catDetails.indoorOutdoorOptions.${option}`)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
                 <div>
                     <Label htmlFor="specialRequirements">
                         {t('catDetails.specialRequirements')}
@@ -493,7 +680,7 @@ const CatDetails: React.FC<{
                 <div className='space-y-6'>
                     <CatDetailsHeader selectedCat={selectedCat} />
 
-                    <CatBlogPost selectedCat={selectedCat} />
+                    <CatBlogPost selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
                     <CatMainInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
                     <CatPersonalityInfo selectedCat={selectedCat} setSelectedCat={setSelectedCat} />
                     <CatImages selectedCat={selectedCat} setSelectedCat={setSelectedCat} />

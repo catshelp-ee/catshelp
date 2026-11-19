@@ -1,14 +1,14 @@
 import React from 'react';
 
 interface SVGProps {
-    colour: string;
+    color: string;
     width: number;
     height: number;
 }
 
-const CatSvg: React.FC<SVGProps> = ({ colour, width, height }) => {
+const CatSvg: React.FC<SVGProps> = ({ color, width, height }) => {
     return (
-        <svg width={width} height={height} viewBox="0 0 512 512" style={{ fill: colour }}>
+        <svg width={width} height={height} viewBox="0 0 512 512" style={{ fill: color }}>
             <path
                 d="M504.302,195.59c-10.618-6.362-29.71-43.514-33.959-47.755c-4.249-4.256-28.662-13.81-28.662-13.81
 		l-13.795-43.514c-26.542,3.185-42.449,45.634-43.513,48.819c0,0-2.661,73.764-120.47,45.11

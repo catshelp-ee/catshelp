@@ -8,7 +8,6 @@ use App\DTOs\Animal\AnimalSearchCriteriaDTO;
 use App\DTOs\Animal\AnimalSummaryDTO;
 use App\DTOs\TodoDTO;
 use App\Models\Animal;
-use App\Models\AnimalCharacteristic;
 use App\Models\File;
 use App\Models\Todo;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +19,7 @@ class AnimalService
 {
     public static function getProfiles()
     {
-        $animals = Animal::with(['files', 'rescues', 'fosterHomes.user', 'characteristics', 'treatments', 'todos'])->get();
+        $animals = Animal::with(['files', 'rescues', 'fosterHomes.user', 'treatments', 'todos'])->get();
         $dtos = [];
         foreach ($animals as $animal) {
             $dtos[] = AnimalSummaryDTO::fromModel($animal);
@@ -77,61 +76,29 @@ class AnimalService
         $animal->requirements_for_new_family = $data['mainInfo']['specialRequirementsForNewFamily'];
         $animal->additional_notes = $data['mainInfo']['additionalNotes'];
         $animal->chronic_conditions = $data['mainInfo']['chronicConditions'];
+        $animal->time_in_care = $data['mainInfo']['fosterStayDuration'] ?? null;
+        $animal->listing_title = $data['listingTitle'] ?? null;
+        $animal->listing_description = $data['listingDescription'] ?? null;
+        $animal->coat_color = Animal::normalizeOption($data['mainInfo']['coatColor'] ?? null);
+        $animal->coat_length = Animal::normalizeOption($data['mainInfo']['coatLength'] ?? null);
+        $animal->gender = Animal::normalizeOption($data['mainInfo']['gender'] ?? null);
+        $animal->spayed_neutered = Animal::normalizeOption($data['mainInfo']['spayedOrNeutered'] ?? null);
 
-        $animal->update($data);
+        $personalityInfo = $data['personalityInfo'] ?? [];
 
-        $personalityTraits = [
-            'bold',
-            'shy',
-            'active',
-            'veryActive',
-            'calm',
-            'friendly',
-            'grumpy',
-            'vocal',
-            'dislikesTouching',
-            'sociable',
-            'aloof',
-            'goodAppetite',
-            'curious',
-            'playful',
-            'stressed',
-            'sensitive',
-            'peaceful',
-            'selfish',
-            'hisses',
-            'sleepsCuddling',
-            'likesPetting',
-            'likesAttention',
-            'likesPlayingWithPeople',
-            'likesPlayingAlone',
-            'usesLitterbox',
-            'usesScratchingpost',
-            'selectiveWithFood',
-            'adaptable',
-            'scratchesFurniture',
-            'trusting',
-            'attitudeTowardsCats',
-            'attitudeTowardsDogs',
-            'attitudeTowardsChildren',
-            'suitabilityForIndoorOrOutdoor',
-        ];
-
-        foreach ($personalityTraits as $trait) {
-            AnimalCharacteristic::updateOrCreate(
-                ['animal_id' => $animal->id, 'type' => $trait],
-                ['value' => $data['personalityInfo'][$trait] ?? null]
-            );
+        foreach (Animal::PERSONALITY_FLAGS as $key => $column) {
+            $animal->{$column} = (bool) ($personalityInfo[$key] ?? false);
         }
 
-        $mainInfoTraits = ['coatColour', 'coatLength', 'gender', 'spayedOrNeutered'];
-
-        foreach ($mainInfoTraits as $trait) {
-            AnimalCharacteristic::updateOrCreate(
-                ['animal_id' => $animal->id, 'type' => $trait],
-                ['value' => $data['mainInfo'][$trait] ?? null]
-            );
+        foreach (Animal::PERSONALITY_OPTIONS as $key => $column) {
+            $animal->{$column} = Animal::normalizeOption($personalityInfo[$key] ?? null);
         }
+
+        $animal->save();
+
+        $animal->rescues()->first()?->update([
+            'location_notes' => $data['mainInfo']['rescueStory'] ?? null,
+        ]);
 
         self::saveImages($animal, $data['images'] ?? []);
 

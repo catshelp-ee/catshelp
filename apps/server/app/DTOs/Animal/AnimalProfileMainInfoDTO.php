@@ -12,7 +12,7 @@ readonly class AnimalProfileMainInfoDTO
         public ?\DateTime $birthDate,
         public ?\DateTime $rescueDate,
         public string $gender,
-        public string $coatColour,
+        public string $coatColor,
         public string $coatLength,
         public string $location,
         public string $microchip,
@@ -29,11 +29,6 @@ readonly class AnimalProfileMainInfoDTO
 
     public static function fromModel(Animal $animal): self
     {
-        $characteristics = $animal->characteristics()->get();
-        $mappedCharacteristics = [];
-        foreach ($characteristics as $characteristic) {
-            $mappedCharacteristics[$characteristic->type] = $characteristic->value;
-        }
         $animalRescue = $animal->rescues()->first();
 
         return new self(
@@ -41,12 +36,12 @@ readonly class AnimalProfileMainInfoDTO
             rankNr: $animalRescue?->rank_nr ?? '',
             birthDate: $animal->birthday,
             rescueDate: $animalRescue?->rescue_date ?? null,
-            gender: $mappedCharacteristics['gender'] ?? '',
-            coatColour: $mappedCharacteristics['coatColour'] ?? '',
-            coatLength: $mappedCharacteristics['coatLength'] ?? '',
+            gender: $animal->gender ?? '',
+            coatColor: $animal->coat_color ?? '',
+            coatLength: $animal->coat_length ?? '',
             location: $animalRescue?->address ?? '',
             microchip: $animal->chip_number ?? '',
-            fosterStayDuration: 'TODO', //TODO calculate foster stay duration
+            fosterStayDuration: $animal->time_in_care ?? '',
             chronicConditions: $animal->chronic_conditions ?? '',
             description: $animal->description ?? '',
             rescueStory: $animalRescue?->location_notes ?? '',
@@ -54,7 +49,7 @@ readonly class AnimalProfileMainInfoDTO
             chipRegisteredWithUs: $animal->chip_registered_with_us ?? false,
             specialRequirementsForNewFamily: $animal->requirements_for_new_family ?? '',
             additionalNotes: $animal->additional_notes ?? '',
-            spayedOrNeutered: $mappedCharacteristics['spayed_or_neutered'] ?? '',
+            spayedOrNeutered: $animal->spayed_neutered ?? '',
         );
     }
 }

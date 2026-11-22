@@ -3,7 +3,7 @@ import { useAlert } from '@context/alert-context.tsx';
 import React, { useState, useEffect } from 'react';
 import { AnimalSummary } from '@interfaces/animal-summary.ts';
 import { animalsApi } from '@api/animals.service.ts';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/select.tsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select.tsx';
 import { Check } from 'lucide-react';
 
 interface TabProps {

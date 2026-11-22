@@ -1,6 +1,8 @@
 export interface Profile {
     animalId: number;
     images: ImageDto[];
+    listingTitle: string;
+    listingDescription: string;
     mainInfo: MainInfoDto;
     personalityInfo: PersonalityInfoDto;
 }
@@ -17,7 +19,7 @@ interface MainInfoDto {
     birthDate: Date | null;
     rescueDate: Date | null;
     gender: string;
-    coatColour: string;
+    coatColor: string;
     coatLength: string;
     location: string;
     microchip: string;

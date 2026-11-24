@@ -7,7 +7,8 @@ export interface AnimalSummary {
     birthDate: string;
     fosterHome: string;
     location: string;
-    gender: 'Male' | 'Female' | 'Unknown';
+    gender: string;
+    coatColor: string;
     sterilised: boolean;
     medicalOngoing: boolean;
     overdueCount: number;

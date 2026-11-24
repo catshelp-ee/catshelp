@@ -4,25 +4,19 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 
 const ProtectedRoute = () => {
-
-        // Load assets
-    useEffect(() => {
-        const loadAssets = async () => {
-            try {
-                // Load the assets
-                await Promise.all([
-                    // Initialize AuthStore
-                    AuthStore.initialize(),
-                ]);
-            } catch (error) {
-                console.error('Error loading assets:', error);
-            }
-        };
-
-        void loadAssets();
-    }, []);
-
     const loginCookie = Cookies.get('catshelp');
+
+    // Load assets only when logged in; otherwise we redirect to /login
+    useEffect(() => {
+        if (!loginCookie) {
+            return;
+        }
+
+        AuthStore.initialize().catch(error => {
+            console.error('Error loading assets:', error);
+        });
+    }, [loginCookie]);
+
     return loginCookie ? <Outlet /> : <Navigate to="/login" />;
 };
 

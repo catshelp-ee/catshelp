@@ -21,6 +21,7 @@ readonly class AnimalSummaryDTO
         public ?int $overdueCount,
         public ?int $dueSoonCount,
         public ?string $complexVaccineDate,
+        public ?string $coatColor,
         public ?bool $published,
     ) {}
 
@@ -40,7 +41,8 @@ readonly class AnimalSummaryDTO
             birthDate: $animal->birthday?->format('Y-m-d'),
             fosterHome: $fosterHome?->user?->full_name,
             location: $fosterHome?->location,
-            gender: self::formatGender($animal->gender),
+            gender: $animal->gender,
+            coatColor: $animal->coat_color,
             sterilised: $animal->spayed_neutered === 'JAH',
             medicalOngoing: false,
             overdueCount: $animal->todos()->where('due_date', '<', now())->count(),
@@ -50,13 +52,6 @@ readonly class AnimalSummaryDTO
         );
     }
 
-    public static function formatGender(?string $gender): string
-    {
-        return match (strtoupper($gender ?? '')) {
-            'ISANE' => 'Male',
-            'EMANE' => 'Female',
-            default => 'Unknown',
-        };
-    }
+
 
 }

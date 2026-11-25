@@ -22,7 +22,7 @@ function Todos({ todos, completeTask }: props) {
                         </h3>
                         <div className="space-y-2">
                             {todos.today.map((todo) => (
-                                <Todo completeTask={completeTask} todo={todo} />
+                                <Todo key={todo.id} completeTask={completeTask} todo={todo} />
                             ))}
                         </div>
                     </div>
@@ -36,7 +36,7 @@ function Todos({ todos, completeTask }: props) {
                         </h3>
                         <div className="space-y-2">
                             {todos.soon.map((todo) => (
-                                <Todo completeTask={completeTask} todo={todo} />
+                                <Todo key={todo.id} completeTask={completeTask} todo={todo} />
                             ))}
                         </div>
                     </div>
@@ -50,7 +50,7 @@ function Todos({ todos, completeTask }: props) {
                         </h3>
                         <div className="space-y-2">
                             {todos.later.map((todo) => (
-                                <Todo completeTask={completeTask} todo={todo} />
+                                <Todo key={todo.id} completeTask={completeTask} todo={todo} />
                             ))}
                         </div>
                     </div>
@@ -64,7 +64,7 @@ function Todos({ todos, completeTask }: props) {
                     </h3>
                     <div className="space-y-2">
                         {todos.completed.map((todo) => (
-                            <Todo completeTask={completeTask} todo={todo} />
+                            <Todo key={todo.id} completeTask={completeTask} todo={todo} />
                         ))}
                     </div>
                 </section>

@@ -7,6 +7,7 @@ export interface AnimalTodos {
 
 export interface AnimalTodo {
     id: number;
+    animal_id: number;
     message: string;
     assignee: string;
     due_date: string;

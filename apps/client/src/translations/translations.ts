@@ -36,17 +36,22 @@ export const translations = {
     greeting: { et: 'Tere', en: 'Hi', ru: 'Здравствуйте' },
 
     // Dashboard
-    dashboardTitle: {
-        et: 'Tere tulemast! 🐱',
-        en: 'Welcome! 🐱',
-        ru: 'Добро пожаловать! 🐱',
+    dashboard: {
+        title: {
+            et: 'Tere tulemast! 🐱',
+            en: 'Welcome! 🐱',
+            ru: 'Добро пожаловать! 🐱',
+        },
+        allCats: { et: 'Kõik kassid', en: 'All cats', ru: 'Все кошки' },
+        myCats: { et: 'Minu hoiukassid', en: 'My foster cats', ru: 'Мои кошки' },
+        nextTodos: {
+            et: 'Järgmised ülesanded',
+            en: 'Next to-dos',
+            ru: 'Следующие задачи',
+        },
     },
-    myCats: { et: 'Minu hoiukassid', en: 'My foster cats', ru: 'Мои кошки' },
-    nextTodos: {
-        et: 'Järgmised ülesanded',
-        en: 'Next to-dos',
-        ru: 'Следующие задачи',
-    },
+
+
     notifications: { et: 'Teavitused', en: 'Notifications', ru: 'Уведомления' },
     notificationInfo: {
         et: 'Meeldetuletused tulevad nii töölauale kui meilile.',
@@ -101,7 +106,7 @@ export const translations = {
     // Cat card
     openProfile: { et: 'Ava profiil', en: 'Open profile', ru: 'Открыть профиль' },
     months: { et: 'kuud', en: 'months', ru: 'месяцев' },
-    conj: { et: 'ja', en: 'and', ru: 'и'},
+    conj: { et: 'ja', en: 'and', ru: 'и' },
     years: { et: 'aastat', en: 'years', ru: 'лет' },
     MALE: { et: 'isane', en: 'male', ru: 'самец' },
     FEMALE: { et: 'emane', en: 'female', ru: 'самка' },
@@ -217,8 +222,8 @@ export const translations = {
         },
         listingTitlePlaceholder: { et: 'Kuulutuse pealkiri', en: 'Listing title', ru: 'Заголовок объявления' },
         listingDescriptionPlaceholder: { et: 'Kirjelda kassi iseloomu, harjumusi ja mida ta armastab. Ole sõbralik ja praktiline!', en: 'Describe the cat\'s personality, habits, and what they love. Be friendly and practical!', ru: 'Опишите характер кота, привычки и что он любит. Будьте дружелюбны и практичны!' },
-        listingTitle: {et: 'Pealkiri', en: 'Title', ru: 'Заголовок'},
-        listingDescription: {et: 'Kirjeldus', en: 'Description', ru: 'Описание'},
+        listingTitle: { et: 'Pealkiri', en: 'Title', ru: 'Заголовок' },
+        listingDescription: { et: 'Kirjeldus', en: 'Description', ru: 'Описание' },
 
         photos: { et: 'Pildid', en: 'Photos', ru: 'Фотографии' },
         category: { et: 'Kategooria', en: 'Category', ru: 'Категория' },

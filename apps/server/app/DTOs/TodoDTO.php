@@ -9,6 +9,7 @@ readonly class TodoDTO
 {
     public function __construct(
         public int $id,
+        public int $animal_id,
         public string $message,
         public string $assignee,
         public ?\DateTime $completed_date,
@@ -27,6 +28,7 @@ readonly class TodoDTO
 
         return new self(
             id: $todo->id,
+            animal_id: $todo->animal_id,
             assignee: $animalName,
             message: "Broneeri veterinaari juures vaktsineerimise aeg",
             completed_date: $todo->completed_date,
@@ -46,6 +48,7 @@ readonly class TodoDTO
 
         return new self(
             id: $todo->id,
+            animal_id: $todo->animal_id,
             assignee: $animalName,
             message: "Anna 2 nädalat enne vaktsineerimist ussirohi",
             completed_date: $todo->completed_date,
@@ -66,6 +69,7 @@ readonly class TodoDTO
 
         return new self(
             id: $todo->id,
+            animal_id: $todo->animal_id,
             assignee: $animalName,
             message: "Broneeri veterinaari juures marutaudi vaktsineerimise aeg",
             completed_date: $todo->completed_date,

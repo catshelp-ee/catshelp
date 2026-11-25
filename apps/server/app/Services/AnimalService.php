@@ -188,8 +188,17 @@ class AnimalService
 
     public static function getTodos(int $id)
     {
-        $todos = Todo::where('animal_id', $id)->get();
+        $todos = Todo::with('animal')->where('animal_id', $id)->get();
 
+        return self::groupTodos($todos);
+    }
+
+    /**
+     * Group todos into today / soon / later / completed buckets.
+     * Each todo must have its `animal` relation available.
+     */
+    public static function groupTodos(iterable $todos): array
+    {
         $now = Carbon::now()->startOfDay();
 
         $grouped = [
@@ -199,10 +208,9 @@ class AnimalService
             'completed' => [],
         ];
 
-        $animalName = Animal::find($id)->name;
         foreach ($todos as $todo) {
 
-            $model = TodoDTO::fromModel($todo, $animalName);
+            $model = TodoDTO::fromModel($todo, $todo->animal?->name ?? '');
 
             if ($model == null){
                 continue;

@@ -66,4 +66,12 @@ class UserController extends Controller
     {
         return response()->json(UserService::getUserAnimals($id));
     }
+
+    /**
+     * Display the todos of all the user's animals, grouped by due date.
+     */
+    public function getUserTodos(string $id)
+    {
+        return response()->json(UserService::getUserTodos($id));
+    }
 }

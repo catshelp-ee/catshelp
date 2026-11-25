@@ -16,6 +16,7 @@ Route::prefix('')->group(function () {
         Route::get('/users', [UserController::class, 'index']);
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::get('/users/{id}/animals', [UserController::class, 'getUserAnimals']);
+        Route::get('/users/{id}/todos', [UserController::class, 'getUserTodos']);
 
         Route::get('/animals', [AnimalController::class, 'index']);
         Route::get('/animals/{id}/profile', [AnimalController::class, 'show']);

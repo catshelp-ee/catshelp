@@ -9,10 +9,10 @@ readonly class UserDTO
     public function __construct(
         public int $id,
         public string $full_name,
-        public string $email,
+        public ?string $email,
         public ?string $identity_code,
         public ?string $citizenship,
-        public string $role,
+        public ?string $role,
         public string $created_at,
     ) {}
 

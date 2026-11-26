@@ -30,28 +30,26 @@ class AuthStore {
             return this.userFetchPromise;
         }
 
-        this.userFetchPromise = new Promise((resolve, reject) => {
-            axios.get('/api/users/me')
-                .then(({ data, error }) => {
-                    if (error || !data) {
-                        reject(new Error('Failed to fetch user'));
-                        return;
-                    }
+        this.userFetchPromise = axios.get<User>('/api/users/me')
+            .then(({ data }) => {
+                if (!data) {
+                    throw new Error('Failed to fetch user');
+                }
 
-                    runInAction(() => {
-                        this.userFetchPromise = null;
-                        this.user = data;
-                    });
-
-                    resolve(data);
-                })
-                .catch(err => {
-                    reject(new Error(err instanceof Error ? err.message : String(err)));
+                runInAction(() => {
+                    this.user = data;
                 });
-        });
 
-        const user = await this.userFetchPromise;
-        return user;
+                return data;
+            })
+            .finally(() => {
+                // Clear on success and failure so a failed fetch doesn't stick forever
+                runInAction(() => {
+                    this.userFetchPromise = null;
+                });
+            });
+
+        return this.userFetchPromise;
     }
 
     public isAdmin() {
